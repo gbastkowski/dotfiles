@@ -26,3 +26,13 @@ export LESS_TERMCAP_md="${yellow}";
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';
+
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+export GROOVY_HOME=/usr/local/opt/groovy/libexec
+
+export ANDROID_SDK_ROOT=/usr/local/Cellar/android-sdk/24.4.1
+export ANDROID_HOME=/usr/local/Cellar/android-sdk/24.4.1
+export ANDROID_SDK=/usr/local/Cellar/android-sdk/24.4.1
+export ANDROID_NDK=/usr/local/Cellar/android-ndk/9
+
+export HOMEBREW_GITHUB_API_TOKEN=

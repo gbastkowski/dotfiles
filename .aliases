@@ -94,3 +94,9 @@ alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resource
 
 # Reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
+
+alias lessh='LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s" less -M '
+
+alias screen="screen -U"
+
+# alias sbt="sbt -Dsbt.override.build.repos=true -Dfile.encoding=UTF-8"

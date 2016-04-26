@@ -55,3 +55,6 @@ alias epost='source ~/Projects/E-Post/Config/epost.sh'
 
 source ~/.aliases
 source ~/.exports
+
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh

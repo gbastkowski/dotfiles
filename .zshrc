@@ -51,8 +51,7 @@ unalias run-help
 autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles
 
-alias epost='source ~/Projects/E-Post/Config/epost.sh'
-
+source ~/.private
 source ~/.aliases
 source ~/.exports
 

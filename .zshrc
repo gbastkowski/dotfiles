@@ -6,6 +6,11 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status vcs time)
 
 export DEFAULT_USER=gunnar
 
+if [ -f ~/.private ]
+then
+    source ~/.private
+fi
+
 alias zshconfig="emacsclient ~/.zshrc"
 alias ohmyzsh="emacsclient ~/.oh-my-zsh"
 
@@ -51,7 +56,6 @@ unalias run-help
 autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles
 
-source ~/.private
 source ~/.aliases
 source ~/.exports
 

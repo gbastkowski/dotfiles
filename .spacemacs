@@ -18,26 +18,40 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
+     asciidoc
      auto-completion
-     ;; better-defaults
+     better-defaults
+     clojure
+     common-lisp
+     dockerfile
      emacs-lisp
      git
+     haskell
+     html
      ibuffer
+     jabber
+     java
+     javascript
+     latex
      markdown
-     org
+     (org :variables
+          org-enable-github-support t)
      osx
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
-     ;; syntax-checking
-     ;; version-control
-     themes-megapack
+     pandoc
+     php
+     puppet
+     ruby
+     scala
+     (shell :variables
+            shell-default-height 30
+            shell-default-position 'bottom)
+     shell-scripts
+     spell-checking
+     sql
+     syntax-checking
+     vagrant
+     version-control
+     yaml
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -219,7 +233,7 @@ values."
    dotspacemacs-highlight-delimiters 'all
    ;; If non nil advises quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server nil
+   dotspacemacs-persistent-server t
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
@@ -241,13 +255,54 @@ values."
 It is called immediately after `dotspacemacs/init'.  You are free to put almost
 any user code here.  The exception is org related code, which should be placed
 in `dotspacemacs/user-config'."
+  (setq-default git-enable-magit-svn-plugin t)
+  (setq url-proxy-services '(
+                             ("no_proxy" . "work\\.com")
+                             ("http" . "proxy.inf.epost-dev.de:8080")
+                             ("https" . "proxy.inf.epost-dev.de:8080")
+                             ))
+  (setq dotspacemacs-elpa-https nil)
+  (setenv "EDITOR" "emacsclient -c")
   )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
+  (global-git-commit-mode t)
+  (define-key global-map (kbd "C-+") 'text-scale-increase)
+  (define-key global-map (kbd "C--") 'text-scale-decrease)
+  (spacemacs/set-leader-keys "oj" 'avy-goto-char)
+  (setq calendar-week-start-day 1)
+  (setq calendar-intermonth-text
+        '(propertize
+          (format "%2d"
+                  (car
+                   (calendar-iso-from-absolute
+                    (calendar-absolute-from-gregorian (list month day year)))))
+          'font-lock-face 'font-lock-constant-face))
+
+  (setq calendar-intermonth-header
+        (propertize "KW"
+                    'font-lock-face 'font-lock-keyword-face))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol t)
+ '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
+ '(package-selected-packages
+   (quote
+    (avy powerline helm-core markdown-mode dash s package-build evil flycheck-haskell company-ghc ghc helm async yaml-mode vagrant-tramp vagrant sql-indent slime shm rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv puppet-mode phpunit f phpcbf php-extras php-auto-yasnippets pandoc-mode ox-pandoc ht hindent haskell-snippets fish-mode emacs-eclim drupal-mode php-mode dockerfile-mode haskell-mode company-cabal company-auctex cmm-mode chruby bundler inf-ruby auctex adoc-mode markup-faces ensime sbt-mode noflet scala-mode2 xterm-color web-mode web-beautify tagedit slim-mode shell-pop scss-mode sass-mode org-repo-todo org-present org-pomodoro alert log4e gntp org-download multi-term macrostep livid-mode skewer-mode simple-httpd less-css-mode json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc jade-mode jabber fsm ibuffer-projectile htmlize helm-flyspell helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip flycheck eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav diff-hl company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company coffee-mode clojure-snippets clj-refactor inflections edn multiple-cursors paredit peg cider-eval-sexp-fu cider queue clojure-mode auto-yasnippet yasnippet auto-dictionary auto-compile packed ac-ispell auto-complete magit magit-popup ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle reveal-in-osx-finder restart-emacs rainbow-delimiters quelpa popwin persp-mode pcre2el pbcopy paradox page-break-lines osx-trash orgit org-plus-contrib org-bullets open-junk-file neotree move-text mmm-mode markdown-toc magit-gitflow lorem-ipsum linum-relative link-hint leuven-theme launchctl info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag google-translate golden-ratio gitconfig-mode gitattributes-mode git-timemachine git-messenger git-commit gh-md flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu define-word column-enforce-mode clean-aindent-mode buffer-move bracketed-paste auto-highlight-symbol aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))

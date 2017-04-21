@@ -4,3 +4,6 @@
 [submodule "spacemacs"]
 	path = spacemacs
 	url = https://github.com/digitalstep/spacemacs.git
+[submodule "sbt"]
+	path = sbt
+	url = git@github.com:digitalstep/dotfiles-sbt.git

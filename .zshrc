@@ -1,18 +1,22 @@
+export TERM="xterm-256color"
 ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="powerlevel9k/powerlevel9k"
-POWERLEVEL9K_MODE=''
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status vcs time)
+POWERLEVEL9K_MODE='nerdfont-complete'
+# POWERLEVEL9K_MODE='awesome-patched'
+#POWERLEVEL9K_MODE='nerdfont-complete'
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context root_indicator dir_writable dir)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time vcs time background_jobs)
+POWERLEVEL9K_SHORTEN_STRATEGY=truncate_from_right
+POWERLEVEL9K_HOME_ICON=''
+POWERLEVEL9K_HOME_SUB_ICON=''
+POWERLEVEL9K_FOLDER_ICON=''
 
-export DEFAULT_USER=gunnar
+export DEFAULT_USER=gunnar.bastkowski
 
 if [ -f ~/.private ]
 then
     source ~/.private
 fi
-
-alias zshconfig="emacsclient ~/.zshrc"
-alias ohmyzsh="emacsclient ~/.oh-my-zsh"
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -43,14 +47,35 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(brew brew-cask colored-man common-aliases emacs extract gem git gitignore gradle history history-substring-search mvn osx sbt scala screen ssh-agent teminalapp vagrant)
+plugins=(
+    aws
+    brew brew-cask bundler
+    colored-man common-aliases
+    docker docker-compose docker-machine
+    emacs extract
+    fasd
+    gem git git-flow github gitignore gpg-agent gradle
+    history history-substring-search
+    iterm
+    jira
+    mvn
+    osx
+    rake rake-fast rbenv ruby rvm
+    sbt scala screen ssh-agent
+    terminalapp terraform thefuck
+    vagrant vault
+)
 
 source $ZSH/oh-my-zsh.sh
 
-# Customize to your needs...
-export PATH=~/.bin:/usr/local/bin:$PATH:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/MacGPG2/bin:/Library/TeX/texbin
-
-pman () { man -t "$@" | open -f -a Preview; }
+pman () {
+    for name in "$@"
+    do
+        man -t $name | pstopdf -i
+        mv -f stdin.pdf ~/Documents/man-pages/$name.pdf
+        open ~/Documents/man-pages/$name.pdf
+    done
+}
 
 unalias run-help
 autoload run-help
@@ -59,5 +84,20 @@ HELPDIR=/usr/local/share/zsh/helpfiles
 source ~/.aliases
 source ~/.exports
 
-export NVM_DIR=~/.nvm
-source $(brew --prefix nvm)/nvm.sh
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+function chpwd() {
+    if [ -r $PWD/.zsh_config ]; then
+        source $PWD/.zsh_config
+    fi
+}
+
+# added by travis gem
+[ -f /Users/gunnar/.travis/travis.sh ] && source /Users/gunnar/.travis/travis.sh
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+eval "$(rbenv init -)"

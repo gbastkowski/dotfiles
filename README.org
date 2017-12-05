@@ -1,4 +1,6 @@
-# dotfiles
+* dotfiles
 
 inspired by https://github.com/mathiasbynens/dotfiles
 
+** Usage
+   run =install.sh=

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ln -sf home/.spacemacs ~
+ln -sf $(pwd)/home/.spacemacs ~

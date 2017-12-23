@@ -39,7 +39,6 @@ This function should only modify configuration layer settings."
      clojure
      (colors :variables
              colors-enable-nyan-cat-progress-bar (display-graphic-p))
-     common-lisp
      csv
      dash
      docker

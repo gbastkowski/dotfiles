@@ -685,6 +685,7 @@ before packages are loaded."
 
   ;; Language specific
   (setq markdown-command "/usr/local/bin/pandoc")
+  (setq ensime-startup-notification nil)
 
   ;; AUCTeX
   (setq TeX-auto-save t)

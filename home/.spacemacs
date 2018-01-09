@@ -453,6 +453,9 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  (set-frame-height (selected-frame) 70)
+  (set-frame-width (selected-frame) 200)
+
   (setq configuration-layer-elpa-archives '(("melpa" . "melpa.org/packages/")
                                             ("org"   . "orgmode.org/elpa/")
                                             ("gnu"   . "elpa.gnu.org/packages/")))

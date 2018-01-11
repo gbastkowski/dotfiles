@@ -1,0 +1,45 @@
+[user]
+	name = Gunnar Bastkowski
+	email = gunnar@bastkowski.name
+[core]
+	excludesfile = /Users/gunnar/.gitignore_global
+	pager = cat
+	autocrlf = input
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.localized/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[credential]
+	helper = osxkeychain
+[alias]
+	ci = commit
+	st = status
+	co = checkout
+	br = branch
+    graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+
+[branch]
+	autosetupmerge = true
+	autosetuprebase = always
+[push]
+	default = simple
+[color]
+	ui = true
+[diff]
+	renames = true
+[filter "media"]
+	clean = git media clean %f
+	smudge = git media smudge %f
+	required = true
+[man]
+	viewer = catman
+[man "catman"]
+	cmd = man -P cat
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[merge]
+	conflictStyle = diff3

@@ -82,3 +82,9 @@ Thumbs.db
 
 # IntelliJ #
 .idea/
+
+# Whatever
+.#*
+.meghanada/
+.zsh_config
+.rake_tasks

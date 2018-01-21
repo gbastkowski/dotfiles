@@ -10,3 +10,6 @@
 [submodule "password-store"]
 	path = password-store
 	url = ec2-user@ec2-35-156-252-69.eu-central-1.compute.amazonaws.com:password-store
+[submodule "powerlevel9k"]
+	path = powerlevel9k
+	url = git@github.com:bhilburn/powerlevel9k.git

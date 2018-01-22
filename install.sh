@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#
+# ZSH setup
+#
+mkdir -p $(pwd)/oh-my-zsh/custom/themes
+ln -sf $(pwd)/powerlevel9k/   $(pwd)/oh-my-zsh/custom/themes/
+ln -sf $(pwd)/oh-my-zsh       ~/.oh-my-zsh
+
 ln -sf $(pwd)/home/.spacemacs ~
 ln -sf $(pwd)/spacemacs       ~/.emacs.d
 ln -sf $(pwd)/sbt             ~/.sbt

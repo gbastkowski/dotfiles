@@ -1,1 +1,5 @@
 .private
+/sbt/repositories
+/sbt/boot/
+/sbt/preloaded/
+/sbt/target/

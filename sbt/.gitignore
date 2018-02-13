@@ -1,0 +1,5 @@
+boot/
+preloaded/
+target/
+/1.0/zinc/.sbt.cache.lock
+/1.0/plugins/idea.sbt

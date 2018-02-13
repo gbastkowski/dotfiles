@@ -1,12 +1,9 @@
 [submodule "oh-my-zsh"]
 	path = oh-my-zsh
-	url = git@github.com:digitalstep/oh-my-zsh.git
+	url = git@github.com:gbastkowski/oh-my-zsh.git
 [submodule "spacemacs"]
 	path = spacemacs
-	url = git@github.com:digitalstep/spacemacs.git
-[submodule "sbt"]
-	path = sbt
-	url = git@github.com:digitalstep/dotfiles-sbt.git
+	url = git@github.com:gbastkowski/spacemacs.git
 [submodule "password-store"]
 	path = password-store
 	url = ec2-user@ec2-35-156-252-69.eu-central-1.compute.amazonaws.com:password-store

@@ -88,3 +88,4 @@ Thumbs.db
 .meghanada/
 .zsh_config
 .rake_tasks
+*.iml

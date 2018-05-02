@@ -756,8 +756,6 @@ before packages are loaded."
   ;;               smtpmail-smtp-server "smtp.numberfour.eu"
   ;;               smtpmail-smtp-service 587)
 
-  (global-company-mode)
-
   ;; Language specific
   (setq markdown-command "/usr/local/bin/pandoc")
   (setq ensime-startup-notification nil)

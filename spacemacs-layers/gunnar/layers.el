@@ -1,2 +1,5 @@
-(configuration-layer/declare-layers '(gunnar-org
-                                      gunnar-ui))
+(configuration-layer/declare-layers
+ '(
+   gunnar-org
+   gunnar-ui
+   ))

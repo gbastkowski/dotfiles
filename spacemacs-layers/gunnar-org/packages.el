@@ -1,5 +1,4 @@
-(defconst gunnar-org-packages
-  '(org))
+(defconst gunnar-org-packages '(org))
 
 (defun gunnar-org/post-init-org ()
   (setq org-bullets-bullet-list '("●" "◆" "▴" "▸"))

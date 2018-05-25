@@ -3,3 +3,4 @@
 /sbt/boot/
 /sbt/preloaded/
 /sbt/target/
+/sbt/0.13/dependency/

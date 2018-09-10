@@ -607,6 +607,7 @@ before packages are loaded."
   (spacemacs/set-leader-keys "or" 'replace-rectangle)
 
   ;; Org/Calendar and Productivity
+  (spacemacs/set-leader-keys "aw" 'eww)
   (spacemacs/set-leader-keys "ab" 'calendar)
   (define-key global-map (kbd "C-c c") 'org-capture)
   (setq org-catch-invisible-edits 'show)
@@ -651,35 +652,35 @@ before packages are loaded."
 
   ;; org-directory
   ;; org-default-notes-file
-  ;; (setq org-directory "~/org/")
-  ;; (setq org-agenda-include-diary t)
-  ;; (setq org-default-notes-file (concat org-directory "gtd.org"))
-  ;; (setq org-babel-load-languages '((emacs-lisp . t)
-  ;;                                  (awk . t)
-  ;;                                  (ditaa . t)
-  ;;                                  (dot . t)
-  ;;                                  (java . t)
-  ;;                                  (dot . t)
-  ;;                                  (plantuml . t)
-  ;;                                  (ruby . t)
-  ;;                                  (scala . t)))
+  (setq org-directory "~/org/")
+  (setq org-agenda-include-diary t)
+  (setq org-default-notes-file (concat org-directory "gtd.org"))
+  (setq org-babel-load-languages '((emacs-lisp . t)
+                                   (awk . t)
+                                   (ditaa . t)
+                                   (dot . t)
+                                   (java . t)
+                                   (dot . t)
+                                   (plantuml . t)
+                                   (ruby . t)
+                                   (scala . t)))
 
   ;; (setq org-plantuml-jar-path
   ;;       (expand-file-name "/usr/local/Cellar/plantuml/1.2017.20/libexec/plantuml.jar"))
 
-  ;; (setq org-capture-templates '(
-  ;;                               ("i" "Inbox"          entry (file+headline org-default-notes-file "Inbox")
-  ;;                                "* TODO %^{Brief Description} %^g\n %?%i\n Added: %U\n")
-  ;;                               ("t" "Todo"           entry (file+headline org-default-notes-file "Tasks")
-  ;;                                "* TODO %?\n %i\n %a")
-  ;;                               ("r" "Reading List"   entry (file+headline org-default-notes-file "Reading List")
-  ;;                                "")
-  ;;                               ("j" "Journal"        entry (file+datetree (concat org-directory "bookmarks.org"))
-  ;;                                "")
-  ;;                               ("k" "Knowledge"      entry (file          (concat org-directory "notes.org"))
-  ;;                                "")
-  ;;                               ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
-  ;;                                "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
+  (setq org-capture-templates '(
+                                ("i" "Inbox"          entry (file+headline org-default-notes-file "Inbox")
+                                 "* TODO %^{Brief Description} %^g\n %?%i\n Added: %U\n")
+                                ("t" "todo"           entry (file+headline org-default-notes-file "Tasks")
+                                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n  %a\n")
+                                ("r" "Reading List"   entry (file+headline org-default-notes-file "Reading List")
+                                 "")
+                                ("j" "Journal"        entry (file+datetree (concat org-directory "bookmarks.org"))
+                                 "")
+                                ("k" "Knowledge"      entry (file          (concat org-directory "notes.org"))
+                                 "")
+                                ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
+                                 "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
 
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
@@ -712,13 +713,13 @@ before packages are loaded."
 
   ;; org Jenkins - custom link type to link to jenkins builds
   ;; (defun org-jenkins-open (path)
-    ;; "Visit the Jenkins project identified by PATH"
-    ;; (browse-url (concat "http://build-master.corp.numberfour.eu:8080/view/All/job/" path)))
+  ;; "Visit the Jenkins project identified by PATH"
+  ;; (browse-url (concat "http://build-master.corp.numberfour.eu:8080/view/All/job/" path)))
   ;; (org-add-link-type "jenkins" 'org-jenkins-open)
   ;; org n4github - custom link type to link to github repos
   ;; (defun org-n4gh-open (path)
-    ;; "Visit the Jenkins project identified by PATH"
-    ;; (browse-url (concat "https://github.numberfour.eu/NumberFour/" path)))
+  ;; "Visit the Jenkins project identified by PATH"
+  ;; (browse-url (concat "https://github.numberfour.eu/NumberFour/" path)))
   ;; (org-add-link-type "n4gh" 'org-n4gh-open)
 
 
@@ -751,40 +752,35 @@ before packages are loaded."
 
   ;; mu4e - Emacs as mail client
 
-  (setq mu4e-maildir (expand-file-name "~/.mails"))
+  (setq mu4e-maildir "~/.mail/gmail"
+        user-full-name "Gunnar Bastkowski"
+        user-mail-address "gunnar.bastkowski@enfore.com"
+        mu4e-inbox-folder "/Inbox"
+        mu4e-drafts-folder "/Drafts"
+        mu4e-sent-folder "/Sent"
+        mu4e-trash-folder "/Trash"
+        mu4e-refile-folder "/Archive"
+        mu4e-get-mail-command "mbsync gmail && mu index -m ~/.mail/gmail"
+        mu4e-update-interval 120 ; seconds
+        mu4e-compose-signature-auto-include nil
+        mu4e-view-show-images t
+        mu4e-view-show-addresses t
+        mu4e-enable-notifications t
+        mu4e-enable-mode-line t)
+
+  (setq-default dotspacemacs-configuration-layers
+                '((mu4e :variables
+                        mu4e-use-maildirs-extension t)))
+
+  (with-eval-after-load 'mu4e-alert
+    (mu4e-alert-set-default-style 'notifier))
 
 
   ;; don't save message to Sent Messages, GMail/IMAP will take care of this
   (setq mu4e-sent-messages-behavior 'delete)
 
-  (setq mu4e-get-mail-command "mbsync -a && mu index -m .mails")
-  (setq mu4e-account-alist
-        '(("bastkowski"
-           (mu4e-sent-messages-behavior delete)
-           (mu4e-inbox-folder "/bastkowski/Inbox")
-           (mu4e-sent-folder "/bastkowski/Sent")
-           (mu4e-drafts-folder "/bastkowski/Drafts")
-           (mu4e-trash-folder "/bastkowski/Trash")
-           (mu4e-mail-address "gunnar@bastkowski.name")
-           (user-full-name "Gunnar Bastkowski"))
-          ("digitalstep"
-           (mu4e-sent-messages-behavior delete)
-           (mu4e-sent-folder "/digitalstep/Sent")
-           (mu4e-drafts-folder "/digitalstep/Drafts")
-           (mu4e-trash-folder "/digitalstep/Trash")
-           (user-mail-address "gunnar@digitalstep.de")
-           (user-full-name "Gunnar Bastkowski")
-           )))
-  ;; (mu4e/mail-account-reset)
-
-  ;; (setq mu4e-maildir "~/.mails"
-  ;;       mu4e-refile-folder "/Archive"
-  ;;       mu4e-get-mail-command "mbsync -a"
-  ;;       mu4e-update-interval nil
-  ;;       mu4e-index-update-error-warning nil
-  ;;       mu4e-compose-signature-auto-include nil
-  ;;       mu4e-view-show-images t
-  ;;       mu4e-view-show-addresses t)
+  (setq mu4e-maildir-shortcuts
+        '(("/Inbox" . ?i)))
 
   ;; (setq user-mail-address "gunnar.bastkowski@numberfour.eu"
   ;;       user-full-name "Gunnar Bastkowski")
@@ -803,19 +799,19 @@ before packages are loaded."
                  "<!--\\|<[^/>]*[^/]>"
                  "-->\\|</[^/>]*[^/]>"
 
-                  "<!--"
-                  sgml-skip-tag-forward
-                  nil-blank-string))
+                 "<!--"
+                 sgml-skip-tag-forward
+                 nil-blank-string))
   ;; AUCTeX
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
 
   ;; Stop creating backups and lock files
   (setq create-lockfiles nil
-        backup-directory-alist '((".*" . "~/.Trash")))
+        backup-directory-alist '((".*" . "~/.Trash"))))
 
-  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  )
+(add-hook 'doc-view-mode-hook 'auto-revert-mode)
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -840,5 +836,8 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:inherit nil :stipple nil :background "gray20" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :foundry "nil" :family "PragmataProMono Nerd Font"))))
+ '(font-lock-builtin-face ((t (:foreground "dark orange" :weight bold))))
+ '(font-lock-string-face ((t (:foreground "olive drab"))))
+ '(whitespace-line ((t (:background "gray20" :foreground "medium purple")))))
 )

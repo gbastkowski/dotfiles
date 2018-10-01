@@ -15,12 +15,12 @@
                                    (ruby . t)
                                    (scala . t)))
   (setq org-plantuml-jar-path
-        (expand-file-name "/usr/local/Cellar/plantuml/1.2017.20/libexec/plantuml.jar"))
+        (expand-file-name "/usr/local/Cellar/plantuml/1.2018.10/libexec/plantuml.jar"))
   (setq org-capture-templates '(
                                 ("i" "Inbox"          entry (file+headline org-default-notes-file "Inbox")
                                  "* TODO %^{Brief Description} %^g\n %?%i\n Added: %U\n")
-                                ("t" "Todo"           entry (file+headline org-default-notes-file "Tasks")
-                                 "* TODO %?\n %i\n %a")
+                                ("t" "todo"           entry (file+headline org-default-notes-file "Tasks")
+                                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n  %a\n")
                                 ("r" "Reading List"   entry (file+headline org-default-notes-file "Reading List")
                                  "")
                                 ("j" "Journal"        entry (file+datetree (concat org-directory "bookmarks.org"))

@@ -18,7 +18,6 @@ echo
 
 echo "pushing submodules to origin ..."
 git -C oh-my-zsh push
-git -C powerlevel9k push
 git -C spacemacs push
 echo
 echo "pushing dotfiles to origin ..."

@@ -24,3 +24,9 @@ echo "pushing dotfiles to origin ..."
 git add .
 git commit -m "Update dotfiles and submodules"
 git push
+
+echo "current state:"
+git status
+
+echo
+echo "done :-)"

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 echo "updating dotfiles ..."
+echo
 
 echo "updating oh-my-zsh ..."
 git -C oh-my-zsh fetch --all
@@ -20,6 +21,7 @@ echo "pushing submodules to origin ..."
 git -C oh-my-zsh push
 git -C spacemacs push
 echo
+
 echo "pushing dotfiles to origin ..."
 git add .
 git commit -m "Update dotfiles and submodules"

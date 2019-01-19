@@ -596,6 +596,15 @@ before packages are loaded."
   (setq fci-rule-color "#555555"
         fci-rule-width 1)
 
+  ;; Umlauts
+  (define-key key-translation-map (kbd "M-a") (kbd "ä"))
+  (define-key key-translation-map (kbd "M-A") (kbd "Ä"))
+  (define-key key-translation-map (kbd "M-o") (kbd "ö"))
+  (define-key key-translation-map (kbd "M-O") (kbd "Ö"))
+  (define-key key-translation-map (kbd "M-u") (kbd "ü"))
+  (define-key key-translation-map (kbd "M-U") (kbd "Ü"))
+  (define-key key-translation-map (kbd "M-s") (kbd "ß"))
+
   ;; Readability
   (global-prettify-symbols-mode t)
   (spacemacs/set-leader-keys "tP" 'global-prettify-symbols-mode)

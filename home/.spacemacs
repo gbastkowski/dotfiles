@@ -58,11 +58,10 @@ This function should only modify configuration layer settings."
              :port "6697"
              :ssl t
              :nick "gunbas")))
-     ;; fasd
+     fasd
      git
      github
      go
-     gnus
      graphviz
      groovy
      gunnar
@@ -74,11 +73,14 @@ This function should only modify configuration layer settings."
      imenu-list
      java
      javascript
+     json
+     kotlin
      (latex :variables
             latex-build-command "LatexMk"
             latex-enable-auto-fill t
             latex-enable-folding t)
      lsp
+     major-modes
      markdown
      (mu4e :variables
            mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu/mu4e"
@@ -92,6 +94,7 @@ This function should only modify configuration layer settings."
            org-journal-dir "~/org/journal/"
            org-journal-file-format "%Y-%m-%d")
      nginx
+     notmuch
      (osx :variables
           osx-option-as 'meta
           osx-right-option-as 'meta)
@@ -99,8 +102,8 @@ This function should only modify configuration layer settings."
      pass
      php
      (plantuml :variables
-               plantuml-jar-path "/usr/local/Cellar/plantuml/current/libexec/plantuml.jar"
-               org-plantuml-jar-path "/usr/local/Cellar/plantuml/current/libexec/plantuml.jar")
+               plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"
+               org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
      puppet
      python
      (ranger :variables
@@ -138,6 +141,8 @@ This function should only modify configuration layer settings."
      vagrant
      version-control
      windows-scripts
+     xkcd
+     xclipboard
      yaml)
 
    ;; List of additional packages that will be installed without being
@@ -273,7 +278,7 @@ It should only modify the values of Spacemacs settings."
                                 (projects  . 10)
                                 (bookmarks . nil)
                                 )
-   ;; True if the home buffer should respond to resize events.
+   ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
 
    ;; Default major mode of the scratch buffer (default `text-mode')
@@ -333,7 +338,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
-   dotspacemacs-emacs-leader-key "H-m"
+   dotspacemacs-emacs-leader-key "M-m"
 
    ;; Major mode leader key is a shortcut key which is the equivalent of
    ;; pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
@@ -341,7 +346,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
    ;; (default "C-M-m")
-   dotspacemacs-major-mode-emacs-leader-key "C-H-m"
+   dotspacemacs-major-mode-emacs-leader-key "C-M-m"
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -717,8 +722,8 @@ before packages are loaded."
 
   ;; Jenkins
   (setq jenkins-api-token "c628a4d5f7afce3df56a40cba8974c54")
-  (setq jenkins-url "http://cd1-jenkins.service.cd-dev.consul:8083")
-  (setq jenkins-username "gbastkowski")
+  (setq jenkins-url "https://jenkins.smarttra.de")
+  (setq jenkins-username "gunnar")
   (setq jenkins-viewname "allout-")
   (add-to-list 'auto-mode-alist '("Jenkinsfile" . groovy-mode))
 
@@ -746,7 +751,7 @@ before packages are loaded."
 
   (setq mu4e-maildir "~/.mail/gmail"
         user-full-name "Gunnar Bastkowski"
-        user-mail-address "gunnar.bastkowski@enfore.com"
+        user-mail-address "gunnar.bastkowski@smarttra.de"
         mu4e-inbox-folder "/Inbox"
         mu4e-drafts-folder "/Drafts"
         mu4e-sent-folder "/Sent"
@@ -790,7 +795,7 @@ before packages are loaded."
   (add-hook 'emacs-lisp-mode-hook 'fci-mode)
 
   ;;; Markdown
-  (setq markdown-command "/usr/local/bin/pandoc")
+  (setq markdown-command "/usr/bin/pandoc")
 
   ;;; Scala
   (setq ensime-startup-notification nil)

@@ -5,3 +5,4 @@
 /sbt/target/
 /sbt/0.13/dependency/
 /sbt/ghpages
+/sbt/1.0/staging/

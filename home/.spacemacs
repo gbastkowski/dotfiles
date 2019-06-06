@@ -49,6 +49,9 @@ This function should only modify configuration layer settings."
      csv
      dash
      docker
+     (elfeed :variables
+             rmh-elfeed-org-files (list "~/.emacs.d/private/elfeed.org")
+             elfeed-enable-web-interface t)
      emacs-lisp
      emoji
      (erc :variables

@@ -113,7 +113,8 @@ This function should only modify configuration layer settings."
              ranger-show-preview t)
      ;; (rebox :variables
      ;;        rebox-enable-in-text-mode t)
-     restclient
+     (restclient :variables
+                 restclient-use-org t)
      (ruby :variables
            ruby-test-runner 'rspec)
      rust
@@ -655,7 +656,8 @@ before packages are loaded."
   (spacemacs/set-leader-keys "oc" 'org-capture)
   (setq org-catch-invisible-edits 'show)
 
-  (setq jiralib-url "https://jira.numberfour.eu")
+  (setq auth-sources '(password-store))
+  (setq jiralib-url "https://smarttradede.atlassian.net")
   (setq jiralib-token
         (let ((found (nth 0 (auth-source-search :max 1
                                                 :host (url-host (url-generic-parse-url jiralib-url))
@@ -704,8 +706,8 @@ before packages are loaded."
                                    (ditaa . t)
                                    (dot . t)
                                    (java . t)
-                                   (dot . t)
                                    (plantuml . t)
+                                   (restclient . t)
                                    (ruby . t)
                                    (scala . t)))
 

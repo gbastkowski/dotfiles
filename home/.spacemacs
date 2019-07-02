@@ -328,8 +328,7 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
-   ;; quickly tweak the mode-line size to make separators look not too crappy.
+   ;; Default font or prioritized list of fonts.
    dotspacemacs-default-font '("PragmataProMono Nerd Font"
                                :size 14
                                :weight normal
@@ -819,6 +818,9 @@ before packages are loaded."
 
   ;;; Markdown
   (setq markdown-command "/usr/bin/pandoc")
+
+  ;;; plantuml
+  (setq plantuml-output-type "png")
 
   ;;; Scala
   (setq ensime-startup-notification nil)

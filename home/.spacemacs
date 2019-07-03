@@ -142,6 +142,7 @@ This function should only modify configuration layer settings."
      typescript
      (typography :variables
                  typography-enable-typographic-editing nil)
+     unicode
      vagrant
      version-control
      windows-scripts

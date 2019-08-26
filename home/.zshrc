@@ -55,9 +55,12 @@ plugins=(
     emacs extract
     fasd
     gem git git-flow github gitignore gpg-agent gradle
+    helm
     history history-substring-search
     iterm
     jira
+    kubectl
+    minikube
     mvn
     osx
     rake rake-fast rbenv ruby rvm

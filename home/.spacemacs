@@ -51,7 +51,7 @@ This function should only modify configuration layer settings."
      docker
      (elfeed :variables
              rmh-elfeed-org-files (list "~/.emacs.d/private/elfeed.org")
-             elfeed-enable-web-interface t)
+             elfeed-enable-web-interface nil)
      emacs-lisp
      emoji
      (erc :variables

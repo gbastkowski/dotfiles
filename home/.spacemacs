@@ -73,7 +73,8 @@ This function should only modify configuration layer settings."
      html
      ibuffer
      imenu-list
-     java
+     (java :variables
+           java-backend 'lsp)
      javascript
      json
      kotlin

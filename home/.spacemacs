@@ -63,6 +63,7 @@ This function should only modify configuration layer settings."
      fasd
      git
      github
+     gnus
      go
      graphviz
      groovy
@@ -767,8 +768,27 @@ before packages are loaded."
   (spacemacs/set-leader-keys "ye" 'find-stderr)
   (spacemacs/set-leader-keys "yo" 'find-stdout)
 
-  ;; mu4e - Emacs as mail client
+  ;; gnus - Emacs as mail client
+  (setq gnus-secondary-select-methods
+        '(
+          (nnimap "gmail"
+                  (nnimap-address "imap.gmail.com")
+                  (nnimap-server-port 993)
+                  (nnimap-stream ssl))
+          ))
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-default-smtp-server "smt5p.gmail.com")
+  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
+        gnus-message-archive-group "[Gmaiul]/Sent Mail")
+  (setq gnus-posting-styles
+        '(((header "to" "address@outlook.com")
+           (address "address@outlook.com"))
+          ((header "to" "address@gmail.com")
+           (address "address@gmail.com"))))
+  (setq nnml-directory "~/.mail/gmail")
+  (setq message-directory "~/.mail/gmail")
 
+  ;; mu4e - Emacs as mail client
   (setq mu4e-maildir "~/.mail/gmail"
         user-full-name "Gunnar Bastkowski"
         user-mail-address "gunnar.bastkowski@smarttra.de"
@@ -852,6 +872,10 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("6beb95ba786e22f0e1e24816c95ac45da8d6dd886242eb8017e2e0374b45fe06" default)))
+ '(evil-want-Y-yank-to-eol nil)
  '(org-agenda-files (quote ("~/org/gtd.org" "~/org/bookmarks.org")))
  '(package-selected-packages
    (quote
@@ -865,10 +889,4 @@ This function is called at the very end of Spacemacs initialization."
       (sql-user "smarttrade")
       (sql-database "smarttrade")
       (sql-server "localhost"))))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 )

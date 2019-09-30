@@ -13,7 +13,7 @@
                                    (dot . t)
                                    (plantuml . t)
                                    (ruby . t)
-                                   (scala . t)))
+                                   ))
   (setq org-plantuml-jar-path
         (expand-file-name "/usr/local/Cellar/plantuml/1.2018.10/libexec/plantuml.jar"))
   (setq org-capture-templates '(

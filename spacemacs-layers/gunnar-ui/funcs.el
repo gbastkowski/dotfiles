@@ -17,3 +17,7 @@
   (interactive "cColumns:" "cLines:")
   (progn
     (message "Columns: " columns " Lines: " lines)))
+
+
+;; (set-frame-height (selected-frame) 50)
+;; (set-frame-width (selected-frame) 140)

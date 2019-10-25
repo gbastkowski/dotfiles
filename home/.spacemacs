@@ -835,6 +835,8 @@ before packages are loaded."
                  "<!--"
                  sgml-skip-tag-forward
                  nil-blank-string))
+  ;;; HTML
+  (setq web-mode-markup-indent-offset 2)
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 )

@@ -104,6 +104,7 @@ This function should only modify configuration layer settings."
           osx-right-option-as 'meta)
      pandoc
      pass
+     pdf
      php
      (plantuml :variables
                plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"

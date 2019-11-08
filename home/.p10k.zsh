@@ -34,12 +34,11 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
       # =========================[ Line #1 ]=========================
-      os_icon                 # os identifier
       dir                     # current directory
       vcs                     # git status
       # =========================[ Line #2 ]=========================
       newline
-      prompt_char             # prompt symbol
+      os_icon                 # os identifier
   )
 
   # The list of segments shown on the right. Fill it with less important segments.
@@ -195,8 +194,8 @@
 
   #################################[ os_icon: os identifier ]##################################
   # OS identifier color.
-  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255
-  # typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=0
+  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=0
+  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=244
   # Make the icon bold.
   typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='%B${P9K_CONTENT// }'
 

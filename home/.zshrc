@@ -1,17 +1,16 @@
-export TERM="xterm-256color"
 ZSH=$HOME/.oh-my-zsh
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 POWERLEVEL9K_MODE='nerdfont-complete'
-# POWERLEVEL9K_MODE='awesome-patched'
-#POWERLEVEL9K_MODE='nerdfont-complete'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context root_indicator dir_writable dir)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time vcs time background_jobs)
-POWERLEVEL9K_SHORTEN_STRATEGY=truncate_from_right
-POWERLEVEL9K_HOME_ICON=''
-POWERLEVEL9K_HOME_SUB_ICON=''
-POWERLEVEL9K_FOLDER_ICON=''
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context nodeenv virtualenv aws dir newline os_icon)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time vcs time)
+POWERLEVEL9K_PROMPT_ON_NEWLINE=false
+POWERLEVEL9K_RPROMPT_ON_NEWLINE=true
+POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
+POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
+#POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="↳ "
 
-export DEFAULT_USER=gunnar.bastkowski
+export TERM="xterm-256color"
+export DEFAULT_USER=gunnar
 
 if [ -f ~/.private ]
 then
@@ -47,27 +46,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(
-    aws
-    brew brew-cask bundler
-    colored-man common-aliases
-    docker docker-compose docker-machine
-    emacs extract
-    fasd
-    gem git git-flow github gitignore gpg-agent gradle
-    helm
-    history history-substring-search
-    iterm
-    jira
-    kubectl
-    minikube
-    mvn
-    osx
-    rake rake-fast rbenv ruby rvm
-    sbt scala screen ssh-agent
-    terminalapp terraform thefuck
-    vagrant vault
-)
+plugins=(archlinux aws common-aliases docker docker-compose dotenv emacs extract fasd gem git gitignore gpg-agent gradle helm history history-substring-search kubectl mvn sbt scala screen vagrant)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -84,25 +63,10 @@ unalias run-help
 autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles
 
-source ~/.aliases
-source ~/.exports
+# source ~/.aliases
+# source ~/.exports
+export GTAGSLABEL=pygments
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+eval "$(fasd --init auto)"
 
-function chpwd() {
-    if [ -r $PWD/.zsh_config ]; then
-        source $PWD/.zsh_config
-    fi
-}
-
-# added by travis gem
-[ -f /Users/gunnar/.travis/travis.sh ] && source /Users/gunnar/.travis/travis.sh
-
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-eval "$(rbenv init -)"
-
-source ~/.autosrc/autosrc.zsh
+eval $(thefuck --alias)

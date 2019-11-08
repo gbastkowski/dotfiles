@@ -13,3 +13,6 @@
 [submodule "autosrc"]
 	path = autosrc
 	url = git@github.com:seanyeh/autosrc.git
+[submodule "powerlevel10k"]
+	path = powerlevel10k
+	url = git@github.com:romkatv/powerlevel10k.git

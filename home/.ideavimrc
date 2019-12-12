@@ -5,6 +5,21 @@ set multiple-cursors
 set surround
 
 let mapleader = " "
+let maplocalleader = ","
+
 map <leader>gg :action GotoDefinition<CR>
 map <leader>bi :action Switcher<CR>
 
+if has('clipboard')
+  if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+  else
+    set clipboard=unnamed
+  endif
+endif
+set clipboard+=ideaput
+
+set ignorecase
+set smartcase
+set showmode
+set incsearch

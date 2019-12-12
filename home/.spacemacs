@@ -148,6 +148,7 @@ This function should only modify configuration layer settings."
      unicode-fonts
      vagrant
      version-control
+     vimscript
      windows-scripts
      xkcd
      xclipboard

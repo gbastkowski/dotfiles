@@ -88,7 +88,8 @@ This function should only modify configuration layer settings."
      markdown
      (mu4e :variables
            mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e"
-           mu4e-use-maildirs-extension t)
+           mu4e-use-maildirs-extension t
+           mu4e-enable-async-operations t)
      multiple-cursors
      (org  :variables
            org-enable-bootstrap-support t
@@ -761,7 +762,7 @@ before packages are loaded."
                   (nnimap-stream ssl))
           ))
   (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-default-smtp-server "smt5p.gmail.com")
+        smtpmail-default-smtp-server "smtp.gmail.com")
   (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
         gnus-message-archive-group "[Gmaiul]/Sent Mail")
   (setq gnus-posting-styles
@@ -773,15 +774,15 @@ before packages are loaded."
   (setq message-directory "~/.mail/gmail")
 
   ;; mu4e - Emacs as mail client
-  (setq mu4e-maildir "~/.mail/gmail"
+  (setq mu4e-maildir "~/.mail/smarttra"
         user-full-name "Gunnar Bastkowski"
-        user-mail-address "gunnar.bastkowski@smarttra.de"
+        user-mail-address "gunnar.bastkowski@ttmzero.com"
         mu4e-inbox-folder "/Inbox"
         mu4e-drafts-folder "/Drafts"
         mu4e-sent-folder "/Sent"
         mu4e-trash-folder "/Trash"
         mu4e-refile-folder "/Archive"
-        mu4e-get-mail-command "mbsync gmail && mu index -m ~/.mail/gmail"
+        mu4e-get-mail-command "mbsync smarttra"
         mu4e-update-interval 120 ; seconds
         mu4e-compose-signature-auto-include nil
         mu4e-view-show-images t
@@ -790,7 +791,7 @@ before packages are loaded."
         mu4e-enable-mode-line t)
 
   (with-eval-after-load 'mu4e-alert
-    (mu4e-alert-set-default-style 'notifier))
+    (mu4e-alert-set-default-style 'notifications))
 
 
   ;; don't save message to Sent Messages, GMail/IMAP will take care of this
@@ -798,9 +799,6 @@ before packages are loaded."
 
   (setq mu4e-maildir-shortcuts
         '(("/Inbox" . ?i)))
-
-  ;; (setq user-mail-address "gunnar.bastkowski@numberfour.eu"
-  ;;       user-full-name "Gunnar Bastkowski")
 
   ;; (setq smtpmail-default-smtp-server "smtp.numberfour.eu"
   ;;               smtpmail-smtp-server "smtp.numberfour.eu"

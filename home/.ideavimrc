@@ -1,0 +1,10 @@
+
+set easymotion
+set incsearch
+set multiple-cursors
+set surround
+
+let mapleader = " "
+map <leader>gg :action GotoDefinition<CR>
+map <leader>bi :action Switcher<CR>
+

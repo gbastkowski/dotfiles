@@ -1,0 +1,11 @@
+[user]
+	name = Gunnar Bastkowski
+	email = gunnar.bastkowski@smarttra.de
+[core]
+	excludesfile = ~/.gitignore_global
+[pull]
+	rebase = true
+[merge]
+	conflictstyle = diff3
+[push]
+	followTags = true

@@ -9,7 +9,7 @@ git -C oh-my-zsh merge upstream/master
 echo
 
 echo "updating powerlevel9k ..."
-git -C powerlevel9k pull
+git -C powerlevel10k pull
 echo
 
 echo "updating spacemacs ..."

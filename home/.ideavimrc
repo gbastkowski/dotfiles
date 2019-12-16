@@ -9,6 +9,7 @@ let maplocalleader = ","
 
 map <leader>gg :action GotoDefinition<CR>
 map <leader>bi :action Switcher<CR>
+map <leader><SPC> :action ListActions<CR>
 
 if has('clipboard')
   if has('unnamedplus')

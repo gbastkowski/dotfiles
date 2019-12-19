@@ -1,2 +1,3 @@
 .private
 /sbt/1.0/swoval-jni/
+/stow/byobu/.byobu/.ssh-agent

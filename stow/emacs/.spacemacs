@@ -726,7 +726,6 @@ before packages are loaded."
   ;; (browse-url (concat "https://github.numberfour.eu/NumberFour/" path)))
   ;; (org-add-link-type "n4gh" 'org-n4gh-open)
 
-
   ;; Jenkins
   (setq jenkins-api-token "c628a4d5f7afce3df56a40cba8974c54")
   (setq jenkins-url "https://jenkins.smarttra.de")
@@ -839,6 +838,8 @@ before packages are loaded."
   (setq web-mode-markup-indent-offset 2)
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+
+  (treemacs-resize-icons 16)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will

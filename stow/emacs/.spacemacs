@@ -375,7 +375,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts t
+   dotspacemacs-auto-resume-layouts nil
 
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -860,6 +860,7 @@ This function is called at the very end of Spacemacs initialization."
    (quote
     ("6beb95ba786e22f0e1e24816c95ac45da8d6dd886242eb8017e2e0374b45fe06" default)))
  '(evil-want-Y-yank-to-eol nil)
+ '(lsp-file-watch-threshold 2000)
  '(org-agenda-files (quote ("~/org/gtd.org" "~/org/bookmarks.org")))
  '(package-selected-packages
    (quote
@@ -872,7 +873,9 @@ This function is called at the very end of Spacemacs initialization."
        (quote postgres))
       (sql-user "smarttrade")
       (sql-database "smarttrade")
-      (sql-server "localhost"))))))
+      (sql-server "localhost")))))
+ '(treemacs-width 50)
+ '(vc-follow-symlinks t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

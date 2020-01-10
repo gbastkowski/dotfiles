@@ -99,7 +99,6 @@ This function should only modify configuration layer settings."
            org-journal-dir "~/org/journal/"
            org-journal-file-format "%Y-%m-%d")
      nginx
-     notmuch
      (osx :variables
           osx-option-as 'meta
           osx-right-option-as 'meta)
@@ -620,6 +619,8 @@ before packages are loaded."
   (setq-default fill-column 120)
   (setq fci-rule-color "#555555"
         fci-rule-width 1)
+
+  (setq-default dotspacemacs-smartparens-strict-mode t)
 
   ;; Umlauts
   ;; (define-key key-translation-map (kbd "M-a") (kbd "ä"))

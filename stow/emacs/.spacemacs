@@ -863,6 +863,7 @@ This function is called at the very end of Spacemacs initialization."
     ("6beb95ba786e22f0e1e24816c95ac45da8d6dd886242eb8017e2e0374b45fe06" default)))
  '(evil-want-Y-yank-to-eol nil)
  '(lsp-file-watch-threshold 2000)
+ '(lsp-ui-doc-use-childframe nil)
  '(org-agenda-files (quote ("~/org/gtd.org" "~/org/bookmarks.org")))
  '(package-selected-packages
    (quote

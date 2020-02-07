@@ -615,6 +615,7 @@ before packages are loaded."
   (setq blink-cursor-blinks 0
         cursor-type 'bar)
   (blink-cursor-mode 1)
+  (setq shell-default-shell 'vterm)
 
   (setq-default fill-column 120)
   (setq fci-rule-color "#555555"
@@ -651,6 +652,9 @@ before packages are loaded."
   (define-key global-map (kbd "C-:") 'avy-goto-char)
   (spacemacs/set-leader-keys "oj" 'avy-goto-char)
   (spacemacs/set-leader-keys "ok" 'avy-goto-char-2)
+
+  ;; LSP
+  (spacemacs/set-leader-keys "od" 'lsp-ui-doc-show)
 
   ;; Multiple Edits
   (spacemacs/set-leader-keys "om" 'mc/edit-lines)
@@ -863,7 +867,9 @@ This function is called at the very end of Spacemacs initialization."
     ("6beb95ba786e22f0e1e24816c95ac45da8d6dd886242eb8017e2e0374b45fe06" default)))
  '(evil-want-Y-yank-to-eol nil)
  '(lsp-file-watch-threshold 2000)
+ '(lsp-ui-doc-position (quote at-point))
  '(lsp-ui-doc-use-childframe nil)
+ '(lsp-ui-doc-use-webkit t)
  '(org-agenda-files (quote ("~/org/gtd.org" "~/org/bookmarks.org")))
  '(package-selected-packages
    (quote

@@ -131,6 +131,7 @@ This function should only modify configuration layer settings."
             shell-default-height 30
             shell-default-position 'bottom)
      shell-scripts
+     slack
      spacemacs-purpose
      (spell-checking :variables
                      spell-checking-enable-auto-dictionary t
@@ -704,6 +705,12 @@ before packages are loaded."
   (spacemacs/set-leader-keys "ajtj" 'org-jira-todo-to-jira)
   (spacemacs/set-leader-keys "ajif" 'org-jira-get-issues-by-fixversion)
 
+  (slack-register-team
+   :name "smarttra-de"
+   :default t
+   :client-id "gunnar.bastkowski@smarttra.de"
+   :token (password-store-get "slack/token")
+   :subscribed-channels '(general devops))
 
   (setq calendar-date-style 'iso)
   (setq calendar-week-start-day 1)
@@ -715,6 +722,7 @@ before packages are loaded."
                    (calendar-iso-from-absolute
                     (calendar-absolute-from-gregorian (list month day year)))))
           'font-lock-face 'font-lock-constant-face))
+
   (setq calendar-intermonth-header
         (propertize "KW"
                     'font-lock-face 'font-lock-keyword-face))

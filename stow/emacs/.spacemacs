@@ -656,6 +656,7 @@ before packages are loaded."
 
   ;; LSP
   (spacemacs/set-leader-keys "od" 'lsp-ui-doc-show)
+  (spacemacs/set-leader-keys "oi" 'helm-semantic-or-imenu)
 
   ;; Multiple Edits
   (spacemacs/set-leader-keys "om" 'mc/edit-lines)

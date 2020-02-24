@@ -31,6 +31,7 @@ remove () {
 		Device removed.
 		Removing cached YubiKey SSH keys.
 	EOF
+	/bin/su "$xuser" -c "${environment} xdg-screensaver lock"
 	/bin/su "$xuser" -c "${environment} /usr/bin/ssh-add -e /usr/lib/libykcs11.so"
 }
 

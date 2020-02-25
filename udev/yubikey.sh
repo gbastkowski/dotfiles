@@ -14,7 +14,7 @@ title=YubiKey
 
 send_notification () {
 	read -d '' message
-	/bin/su "$xuser" -c "${environment} /usr/bin/notify-send -t 2000 \"YubiKey\" \"${message}\""
+	/bin/su "$xuser" -c "${environment} notify-send -t 2000 \"YubiKey\" \"${message}\""
 }
 
 add () {
@@ -23,7 +23,8 @@ add () {
 		Adding private key from YubiKey.
 		You'll be asked to enter the PIN.
 	EOF
-	/bin/su "$xuser" -c "${environment} /usr/bin/ssh-add -s /usr/lib/libykcs11.so"
+
+	/bin/su "$xuser" -c "${environment} ssh-add -s /usr/lib/libykcs11.so"
 }
 
 remove () {
@@ -32,18 +33,20 @@ remove () {
 		Removing cached YubiKey SSH keys.
 	EOF
 	/bin/su "$xuser" -c "${environment} xdg-screensaver lock"
-	/bin/su "$xuser" -c "${environment} /usr/bin/ssh-add -e /usr/lib/libykcs11.so"
+	/bin/su "$xuser" -c "${environment} ssh-add -e /usr/lib/libykcs11.so"
 }
 
 main () {
-	if [ "$1" = "add" ]
+	if [[ "$1" = "add" ]]
 	then
-		add
+		grep -q available /tmp/yubikey || add
+		echo available > /tmp/yubikey
 	fi
 
-	if [ "$1" = "remove" ]
+	if [[ "$1" = "remove" ]]
 	then
-		remove
+		grep -q available /tmp/yubikey && remove
+		rm /tmp/yubikey
 	fi
 }
 

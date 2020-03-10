@@ -8,7 +8,7 @@ git -C oh-my-zsh fetch --all
 git -C oh-my-zsh merge upstream/master
 echo
 
-echo "updating powerlevel9k ..."
+echo "updating powerlevel10k ..."
 git -C powerlevel10k pull
 echo
 

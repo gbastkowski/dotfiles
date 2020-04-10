@@ -1,1 +1,0 @@
-["sbt.Task[scala.collection.immutable.Map[java.lang.String, scala.collection.Seq[scala.Tuple2[java.nio.file.Path, sbt.nio.FileStamp]]]]",{"2.13.1":{"hashes":[["/home/gunnar/git/dotfiles/dotfiles/udev/yubikey.scala","9a77e3dd818dbdf2cdcecba1b48550d5a3b8f08b"]],"lastModifiedTimes":[]}}]

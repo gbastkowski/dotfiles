@@ -1,9 +1,0 @@
-[0m[[0m[33mwarn[0m] [0m[0m/home/gunnar/git/dotfiles/dotfiles/udev/yubikey.scala:23:14: match may not be exhaustive.[0m
-[0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following inputs: List(_), Nil[0m
-[0m[[0m[33mwarn[0m] [0m[0m        .map { case key :: value :: _ => key -> value }[0m
-[0m[[0m[33mwarn[0m] [0m[0m             ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/gunnar/git/dotfiles/dotfiles/udev/yubikey.scala:33:27: match may not be exhaustive.[0m
-[0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following inputs: List(_), List(_, _), List(_, _, _), Nil[0m
-[0m[[0m[33mwarn[0m] [0m[0m      .head.split("\\s+").toList match {[0m
-[0m[[0m[33mwarn[0m] [0m[0m                          ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m

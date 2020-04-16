@@ -61,6 +61,7 @@ This function should only modify configuration layer settings."
              :ssl t
              :nick "gunbas")))
      fasd
+     floobits
      git
      github
      gnus

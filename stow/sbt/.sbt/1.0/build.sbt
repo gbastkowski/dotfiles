@@ -1,2 +1,2 @@
-Global / onChangedBuildSource   :=  ReloadOnSourceChanges
+// Global / onChangedBuildSource   :=  ReloadOnSourceChanges
 Global / autoStartServer        :=  false

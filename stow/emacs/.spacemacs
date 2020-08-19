@@ -137,7 +137,9 @@ This function should only modify configuration layer settings."
      (spell-checking :variables
                      spell-checking-enable-auto-dictionary t
                      spell-checking-enable-by-default nil)
-     (sql :variables sql-capitalize-keywords t)
+     (sql :variables
+          sql-capitalize-keywords nil
+          sql-backend 'lsp)
      (syntax-checking :variables)
      systemd
      terraform
@@ -168,6 +170,7 @@ This function should only modify configuration layer settings."
      all-the-icons-dired
      dictcc
      editorconfig
+     ;; exec-path-from-shell
      graphql-mode
      jenkins
      org-jira

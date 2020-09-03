@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '((restclient :variables
                  restclient-use-org t)
+     pass
      ansible
      asciidoc
      (auto-completion :variables
@@ -105,7 +106,6 @@ This function should only modify configuration layer settings."
           osx-option-as 'meta
           osx-right-option-as 'meta)
      pandoc
-     pass
      pdf
      php
      (plantuml :variables

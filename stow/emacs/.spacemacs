@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(restclient
+   '((restclient :variables
+                 restclient-use-org t)
      ansible
      asciidoc
      (auto-completion :variables
@@ -116,8 +117,6 @@ This function should only modify configuration layer settings."
              ranger-show-preview t)
      ;; (rebox :variables
      ;;        rebox-enable-in-text-mode t)
-     ;; (restclient :variables
-     ;;             restclient-use-org t)
      (ruby :variables
            ruby-test-runner 'rspec)
      rust

@@ -6,12 +6,37 @@
 # TOC links should be GitHub style anchors.
 * Table of Contents                                        :TOC_4_gh:noexport:
 - [[#description][Description]]
+  - [[#show-cases][Show Cases]]
   - [[#features][Features:]]
 - [[#install][Install]]
 - [[#key-bindings][Key bindings]]
 
 * Description
 This layer adds support for something.
+
+** Show Cases
+   #+BEGIN_SRC scala
+     for { a <- 1 to 10 }
+
+     if (a || b)
+
+     if (2 >= 1)
+  
+     if (1 == 2)
+
+     match (a) {
+       case 1 => "one"
+       case 2 => "two"
+     }
+
+     val tuple = 1 -> true
+   #+END_SRC
+   
+   #+BEGIN_SRC html
+     <!-- HTML comment -->
+     <html> <head> ... </head> </html>
+   #+END_SRC
+
 
 ** Features:
   - Autocomplete

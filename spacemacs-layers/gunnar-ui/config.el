@@ -1,4 +1,3 @@
-
 (set-frame-height (selected-frame) 70)
 (set-frame-width (selected-frame) 200)
 

@@ -933,7 +933,7 @@ This function is called at the very end of Spacemacs initialization."
       (sql-product 'postgres)
       (sql-user "smarttrade")
       (sql-database "smarttrade")
-      (sql-server "localhost"))) t)
+      (sql-server "localhost"))))
  '(treemacs-width 50)
  '(vc-follow-symlinks t))
 (custom-set-faces
@@ -941,5 +941,5 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(font-lock-builtin-face ((t (:foreground "DarkOrange3" :weight bold)))))
 )

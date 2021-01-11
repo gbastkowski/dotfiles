@@ -86,7 +86,8 @@ This function should only modify configuration layer settings."
             latex-build-command "LatexMk"
             latex-enable-auto-fill t
             latex-enable-folding t)
-     lsp
+     (lsp :variables
+          lsp-headerline-breadcrumb-enable nil)
      major-modes
      markdown
      (mu4e :variables
@@ -696,7 +697,7 @@ before packages are loaded."
 
   ;; Projects
   (setq projectile-project-search-path '("~/git/smarttra/" "~/git/gbastkowski/"))
-  
+
   ;; Cool folds
   (define-key global-map (kbd "H-.") 'evil-toggle-fold)
 

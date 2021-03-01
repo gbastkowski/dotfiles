@@ -297,9 +297,13 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `recents-by-project' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
+   ;; The exceptional case is `recents-by-project', where list-type must be a
+   ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
+   ;; number is the project limit and the second the limit on the recent files
+   ;; within a project.
    dotspacemacs-startup-lists '(
                                 (agenda             . 20)
-                                (recents-by-project . 25)
+                                (recents-by-project . (5 . 7))
                                 (recents            . 25)
                                 (projects           . 10)
                                 (bookmarks          . nil))

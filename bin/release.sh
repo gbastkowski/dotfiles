@@ -1,31 +1,45 @@
 #!/bin/sh
 
-LATEST_VERSION=$(git tag | sort -V | head -n 1)
+echo "Checking out master and pulling latest version"
+git checkout master
+git pull origin
 
 echo "Current branches:"
 echo "$(git branch -l)"
 echo
-echo "Latest version:"
-echo "$LATEST_VERSION"
 
-read -p "Which branch do you want to merge? " branch
+read -p "Which branch do you want to merge? (Leave empty for no merge)" branch
+case $version in
+    "" ) echo "No branch selected. Creating new version without a merge commit."
+         break;;
 
-# git merge --no-ff $branch
+    * )  git merge --no-ff $branch
+         break;
+esac
 
 
-read -p "Which version should be assigned? (latest: $LATEST_VERSION) " version
+while true
+do
+    read -p "Which version should be assigned? (latest: $(git tag | sort -V | head -n 1)) " version
+    case $version in
+        v[0-9]\.[0-9]\.[0-9]* ) break;;
 
-# git tag -a $version
+        * )                     echo "Please enter a tag name like v<major>.<minor>.<micro>."
+    esac
+done
+
+read -p "Please give release $version a catchy note: " message
+git tag -a -m $message $version
 
 while true
 do
     read -p "Do you want to push the new version now? " push
-    # (2) handle the input we were given
     case $push in
-        [yY]* ) echo "git push --tags"
+        [yY]* ) echo "git push --follow-tags"
                 break;;
 
-        [nN]* ) exit;;
+        [nN]* ) echo "Didn't push the new release. Please remember to push with tags (git push --tags)."
+                exit;;
 
         * )     echo "Please enter Y or N.";;
     esac

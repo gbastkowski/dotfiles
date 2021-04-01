@@ -121,8 +121,10 @@ This function should only modify configuration layer settings."
      (ruby :variables
            ruby-test-runner 'rspec)
      rust
-     (scala-lsp :variables
+     (scala :variables
             scala-auto-insert-asterisk-in-comments t
+            scala-auto-treeview t
+            scala-sbt-window-position 'bottom
             scala-enable-eldoc t
             scala-use-unicode-arrows nil)
      selectric

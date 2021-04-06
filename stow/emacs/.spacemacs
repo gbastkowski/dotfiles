@@ -87,7 +87,19 @@ This function should only modify configuration layer settings."
             latex-enable-auto-fill t
             latex-enable-folding t)
      (lsp :variables
-          lsp-headerline-breadcrumb-enable nil)
+          lsp-headerline-breadcrumb-segments '(project file symbols)
+          lsp-modeline-code-actions-enable t
+          lsp-modeline-code-actions-segments '(count icon)
+          lsp-modeline-diagnostics-enable t
+          lsp-modeline-diagnostics-scope :project
+          lsp-lens-enable t
+          lsp-navigation 'both
+          lsp-ui-doc-enable t
+          lsp-ui-doc-include-signature nil
+          lsp-ui-sideline-enable t
+          lsp-ui-sideline-show-symbol nil
+          lsp-use-lsp-ui t
+          )
      major-modes
      markdown
      (mu4e :variables
@@ -143,7 +155,8 @@ This function should only modify configuration layer settings."
      (sql :variables
           sql-capitalize-keywords nil
           sql-backend 'lsp)
-     (syntax-checking :variables)
+     (syntax-checking :variables
+                      syntax-checking-enable-tooltips t)
      systemd
      terraform
      themes-megapack
@@ -733,6 +746,10 @@ before packages are loaded."
   ;; LSP
   (spacemacs/set-leader-keys "od" 'lsp-ui-doc-show)
   (spacemacs/set-leader-keys "oi" 'helm-semantic-or-imenu)
+  (setq lsp-ui-sideline-show-hover t)
+  (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-doc-use-webkit t)
+  (setq lsp-treemacs-sync-mode t)
 
   ;; Multiple Edits
   (spacemacs/set-leader-keys "om" 'mc/edit-lines)
@@ -902,7 +919,7 @@ before packages are loaded."
   (setq plantuml-output-type "png")
 
   ;;; Scala
-  (setq-default flycheck-scalastylerc "/Users/gunnar.bastkowski/.scalastyle_config.xml")
+  (setq-default flycheck-scalastylerc "/home/gunnar/.scalastylerc.xml")
 
   ;;; XML
   (add-to-list 'hs-special-modes-alist
@@ -945,6 +962,8 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(json-reformat:indent-width 2)
  '(lsp-file-watch-threshold 2000)
+ '(lsp-headerline-breadcrumb-enable nil)
+ '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols))
  '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
  '(lsp-ui-doc-use-webkit t)

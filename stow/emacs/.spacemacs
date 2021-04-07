@@ -135,8 +135,7 @@ This function should only modify configuration layer settings."
      rust
      (scala :variables
             scala-auto-insert-asterisk-in-comments t
-            scala-auto-treeview t
-            scala-sbt-window-position 'bottom
+            scala-sbt-window-position nil
             scala-enable-eldoc t
             scala-use-unicode-arrows nil)
      selectric
@@ -909,8 +908,7 @@ before packages are loaded."
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
 
-  ;;; Emacs Listp
-  (add-hook 'emacs-lisp-mode-hook 'fci-mode)
+  ;;; Emacs Lisp
 
   ;;; Markdown
   (setq markdown-command "/usr/bin/pandoc")

@@ -172,12 +172,13 @@ This function should only modify configuration layer settings."
      xclipboard
      yaml)
 
-   ;; List of additional packages that will be installed without being
-   ;; wrapped in a layer. If you need some configuration for these
-   ;; packages, then consider creating a layer. You can also put the
-   ;; configuration in `dotspacemacs/user-config'.
-   ;; To use a local version of a package, use the `:location' property:
-   ;; '(your-package :location "~/path/to/your-package/")
+   ;; List of additional packages that will be installed without being wrapped
+   ;; in a layer (generally the packages are installed only and should still be
+   ;; loaded using load/require/use-package in the user-config section below in
+   ;; this file). If you need some configuration for these packages, then
+   ;; consider creating a layer. You can also put the configuration in
+   ;; `dotspacemacs/user-config'. To use a local version of a package, use the
+   ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
    '(
@@ -322,6 +323,9 @@ It should only modify the values of Spacemacs settings."
                                 (bookmarks          . nil))
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
+
+   ;; The minimum delay in seconds between number key presses. (default 0.4)
+   dotspacemacs-startup-buffer-multi-digit-delay 0.4
 
    ;; Default major mode for a new empty buffer. Possible values are mode
    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
@@ -514,6 +518,10 @@ It should only modify the values of Spacemacs settings."
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
 
+   ;; Show the scroll bar while scrolling. The auto hide time can be configured
+   ;; by setting this variable to a number. (default t)
+   dotspacemacs-scroll-bar-while-scrolling 1
+
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
    ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
@@ -666,7 +674,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq dotspacemacs-elpa-https nil)
   (setq ispell-program-name "aspell")
 
-  (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 
   (setenv "EDITOR" "emacsclient -c")
 

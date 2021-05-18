@@ -382,7 +382,7 @@ It should only modify the values of Spacemacs settings."
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '("PragmataProMono Liga Nerd Font"
-                               :size 10.0
+                               :size 10.5
                                :weight normal
                                :width normal)
    ;; dotspacemacs-default-font '("Source Code Pro"
@@ -1002,5 +1002,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(cursor ((t (:background "green1" :foreground "#222222"))))
- '(font-lock-builtin-face ((t (:foreground "DarkOrange3" :weight bold)))))
+ '(font-lock-builtin-face ((t (:foreground "DarkOrange3" :weight bold))))
+ '(web-mode-html-tag-face ((t (:foreground "gold1")))))
 )

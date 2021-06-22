@@ -685,7 +685,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setenv "EDITOR" "emacsclient -c")
 
   (add-to-list 'exec-path "/usr/local/bin")
-  (add-to-list 'exec-path "/Library/TeX/texbin")
 
   (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer-elpa-archives)
   )
@@ -868,57 +867,6 @@ before packages are loaded."
 
   (spacemacs/set-leader-keys "ye" 'find-stderr)
   (spacemacs/set-leader-keys "yo" 'find-stdout)
-
-  ;; gnus - Emacs as mail client
-  (setq gnus-secondary-select-methods
-        '(
-          (nnimap "gmail"
-                  (nnimap-address "imap.gmail.com")
-                  (nnimap-server-port 993)
-                  (nnimap-stream ssl))
-          ))
-  (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-default-smtp-server "smtp.gmail.com")
-  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
-        gnus-message-archive-group "[Gmaiul]/Sent Mail")
-  (setq gnus-posting-styles
-        '(((header "to" "address@outlook.com")
-           (address "address@outlook.com"))
-          ((header "to" "address@gmail.com")
-           (address "address@gmail.com"))))
-  (setq nnml-directory "~/.mail/gmail")
-  (setq message-directory "~/.mail/gmail")
-
-  ;; mu4e - Emacs as mail client
-  (setq mu4e-maildir "~/.mail/smarttra"
-        user-full-name "Gunnar Bastkowski"
-        user-mail-address "gunnar.bastkowski@ttmzero.com"
-        mu4e-inbox-folder "/Inbox"
-        mu4e-drafts-folder "/Drafts"
-        mu4e-sent-folder "/Sent"
-        mu4e-trash-folder "/Trash"
-        mu4e-refile-folder "/Archive"
-        mu4e-get-mail-command "mbsync smarttra"
-        mu4e-update-interval 120 ; seconds
-        mu4e-compose-signature-auto-include nil
-        mu4e-view-show-images t
-        mu4e-view-show-addresses t
-        mu4e-enable-notifications t
-        mu4e-enable-mode-line t)
-
-  (with-eval-after-load 'mu4e-alert
-    (mu4e-alert-set-default-style 'notifications))
-
-
-  ;; don't save message to Sent Messages, GMail/IMAP will take care of this
-  (setq mu4e-sent-messages-behavior 'delete)
-
-  (setq mu4e-maildir-shortcuts
-        '(("/Inbox" . ?i)))
-
-  ;; (setq smtpmail-default-smtp-server "smtp.numberfour.eu"
-  ;;               smtpmail-smtp-server "smtp.numberfour.eu"
-  ;;               smtpmail-smtp-service 587)
 
   ;; Stop creating backups and lock files
   (setq create-lockfiles nil

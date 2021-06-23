@@ -50,9 +50,6 @@ This function should only modify configuration layer settings."
      csv
      dash
      docker
-     (elfeed :variables
-             rmh-elfeed-org-files (list "~/.emacs.d/private/elfeed.org")
-             elfeed-enable-web-interface nil)
      emacs-lisp
      emoji
      (erc :variables
@@ -107,6 +104,7 @@ This function should only modify configuration layer settings."
            mu4e-use-maildirs-extension t
            mu4e-enable-async-operations t)
      multiple-cursors
+     nginx
      (org  :variables
            org-enable-bootstrap-support t
            org-enable-github-support t
@@ -114,7 +112,6 @@ This function should only modify configuration layer settings."
            org-enable-org-journal-support t
            org-journal-dir "~/org/journal/"
            org-journal-file-format "%Y-%m-%d")
-     nginx
      (osx :variables
           osx-option-as 'meta
           osx-right-option-as 'meta)
@@ -165,7 +162,7 @@ This function should only modify configuration layer settings."
                  typography-enable-typographic-editing nil)
      unicode-fonts
      vagrant
-     version-control
+     ;; version-control
      vimscript
      windows-scripts
      xkcd
@@ -676,7 +673,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
                                             ("org"   . "orgmode.org/elpa/")
                                             ("gnu"   . "elpa.gnu.org/packages/")))
 
-  (setq-default git-enable-magit-svn-plugin t)
   (setq dotspacemacs-elpa-https nil)
   (setq ispell-program-name "aspell")
 
@@ -686,8 +682,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
   (add-to-list 'exec-path "/usr/local/bin")
 
-  (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer-elpa-archives)
-  )
+  (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer-elpa-archives))
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
@@ -730,7 +725,7 @@ before packages are loaded."
   (setq fci-rule-color "#555555"
         fci-rule-width 1)
 
-  (setq-default dotspacemacs-smartparens-strict-mode t)
+  ;; (setq-default dotspacemacs-smartparens-strict-mode t)
 
   ;; Umlauts
   ;; (define-key key-translation-map (kbd "M-a") (kbd "ä"))
@@ -752,10 +747,10 @@ before packages are loaded."
   (spacemacs/set-leader-keys "tP" 'global-prettify-symbols-mode)
 
   ;; Magit
-  (global-git-commit-mode t)
-  (define-key global-map (kbd "C-x g") 'magit-status)
-  (eval-after-load "git-commit-mode"
-    '(remove-hook 'git-commit-mode-hook 'flyspell-mode))
+  ;; (global-git-commit-mode t)
+  ;; (define-key global-map (kbd "C-x g") 'magit-status)
+  ;; (eval-after-load "git-commit-mode"
+  ;;   '(remove-hook 'git-commit-mode-hook 'flyspell-mode))
 
   ;; Avy
   (define-key global-map (kbd "C-:") 'avy-goto-char)
@@ -781,49 +776,49 @@ before packages are loaded."
   (setq org-catch-invisible-edits 'show)
 
   (setq auth-sources '(password-store))
-  (setq jiralib-url "https://smarttradede.atlassian.net")
-  (setq jiralib-token
-        (let ((found (nth 0 (auth-source-search :max 1
-                                                :host (url-host (url-generic-parse-url jiralib-url))
-                                                :port 80
-                                                :require '(:user :secret)
-                                                :create nil)))
-              user secret)
-          (when found
-            (setq user (plist-get found :user)
-                  secret
-                  (let ((sec (plist-get found :secret)))
-                    (if (functionp sec)
-                        (funcall sec)
-                      sec)))
-            `("Authorization" . , (format "Basic %s" (base64-encode-string (concat user ":" secret)))))))
+  ;; (setq jiralib-url "https://smarttradede.atlassian.net")
+  ;; (setq jiralib-token
+  ;;       (let ((found (nth 0 (auth-source-search :max 1
+  ;;                                               :host (url-host (url-generic-parse-url jiralib-url))
+  ;;                                               :port 80
+  ;;                                               :require '(:user :secret)
+  ;;                                               :create nil)))
+  ;;             user secret)
+  ;;         (when found
+  ;;           (setq user (plist-get found :user)
+  ;;                 secret
+  ;;                 (let ((sec (plist-get found :secret)))
+  ;;                   (if (functionp sec)
+  ;;                       (funcall sec)
+  ;;                     sec)))
+  ;;           `("Authorization" . , (format "Basic %s" (base64-encode-string (concat user ":" secret)))))))
 
-  (spacemacs/set-leader-keys "ajpg" 'org-jira-get-projects)
-  (spacemacs/set-leader-keys "ajib" 'org-jira-browse-issue)
-  (spacemacs/set-leader-keys "ajig" 'org-jira-get-issues)
-  (spacemacs/set-leader-keys "ajih" 'org-jira-get-issues-headonly)
-  (spacemacs/set-leader-keys "ajiu" 'org-jira-update-issue)
-  (spacemacs/set-leader-keys "ajiw" 'org-jira-progress-issue)
-  (spacemacs/set-leader-keys "ajin" 'org-jira-progress-issue-next)
-  (spacemacs/set-leader-keys "ajia" 'org-jira-assign-issue)
-  (spacemacs/set-leader-keys "ajia" 'org-jira-assign-issue)
-  (spacemacs/set-leader-keys "ajir" 'org-jira-refresh-issue)
-  (spacemacs/set-leader-keys "ajiR" 'org-jira-refresh-issues-in-buffer)
-  (spacemacs/set-leader-keys "ajic" 'org-jira-create-issue)
-  (spacemacs/set-leader-keys "ajik" 'org-jira-copy-current-issue-key)
-  (spacemacs/set-leader-keys "ajsc" 'org-jira-create-subtask)
-  (spacemacs/set-leader-keys "ajsg" 'org-jira-get-subtasks)
-  (spacemacs/set-leader-keys "ajcu" 'org-jira-update-comment)
-  (spacemacs/set-leader-keys "ajwu" 'org-jira-update-worklogs-from-org-clocks)
-  (spacemacs/set-leader-keys "ajtj" 'org-jira-todo-to-jira)
-  (spacemacs/set-leader-keys "ajif" 'org-jira-get-issues-by-fixversion)
+  ;; (spacemacs/set-leader-keys "ajpg" 'org-jira-get-projects)
+  ;; (spacemacs/set-leader-keys "ajib" 'org-jira-browse-issue)
+  ;; (spacemacs/set-leader-keys "ajig" 'org-jira-get-issues)
+  ;; (spacemacs/set-leader-keys "ajih" 'org-jira-get-issues-headonly)
+  ;; (spacemacs/set-leader-keys "ajiu" 'org-jira-update-issue)
+  ;; (spacemacs/set-leader-keys "ajiw" 'org-jira-progress-issue)
+  ;; (spacemacs/set-leader-keys "ajin" 'org-jira-progress-issue-next)
+  ;; (spacemacs/set-leader-keys "ajia" 'org-jira-assign-issue)
+  ;; (spacemacs/set-leader-keys "ajia" 'org-jira-assign-issue)
+  ;; (spacemacs/set-leader-keys "ajir" 'org-jira-refresh-issue)
+  ;; (spacemacs/set-leader-keys "ajiR" 'org-jira-refresh-issues-in-buffer)
+  ;; (spacemacs/set-leader-keys "ajic" 'org-jira-create-issue)
+  ;; (spacemacs/set-leader-keys "ajik" 'org-jira-copy-current-issue-key)
+  ;; (spacemacs/set-leader-keys "ajsc" 'org-jira-create-subtask)
+  ;; (spacemacs/set-leader-keys "ajsg" 'org-jira-get-subtasks)
+  ;; (spacemacs/set-leader-keys "ajcu" 'org-jira-update-comment)
+  ;; (spacemacs/set-leader-keys "ajwu" 'org-jira-update-worklogs-from-org-clocks)
+  ;; (spacemacs/set-leader-keys "ajtj" 'org-jira-todo-to-jira)
+  ;; (spacemacs/set-leader-keys "ajif" 'org-jira-get-issues-by-fixversion)
 
-  (slack-register-team
-   :name "smarttra-de"
-   :default t
-   :client-id "gunnar.bastkowski@smarttra.de"
-   :token (password-store-get "slack/token")
-   :subscribed-channels '(general devops))
+  ;; (slack-register-team
+  ;;  :name "smarttra-de"
+  ;;  :default t
+  ;;  :client-id "gunnar.bastkowski@smarttra.de"
+  ;;  :token (password-store-get "slack/token")
+  ;;  :subscribed-channels '(general devops))
 
   (setq calendar-date-style 'iso)
   (setq calendar-week-start-day 1)
@@ -842,31 +837,11 @@ before packages are loaded."
 
 
   ;; Jenkins
-  (setq jenkins-api-token "c628a4d5f7afce3df56a40cba8974c54")
-  (setq jenkins-url "https://jenkins.smarttra.de")
-  (setq jenkins-username "gunnar")
-  (setq jenkins-viewname "allout-")
-  (add-to-list 'auto-mode-alist '("Jenkinsfile" . groovy-mode))
-
-  ;; Cool helpers
-  (defun find-stderr ()
-    "Finds ~/Downloads/stderr"
-    (interactive)
-    (let ((value (find-file-noselect "~/Downloads/stderr" nil nil nil)))
-      (if (listp value)
-          (mapcar 'switch-to-buffer (nreverse value))
-        (switch-to-buffer value))))
-
-  (defun find-stdout ()
-    "Finds ~/Downloads/stdout"
-    (interactive)
-    (let ((value (find-file-noselect "~/Downloads/stdout" nil nil nil)))
-      (if (listp value)
-          (mapcar 'switch-to-buffer (nreverse value))
-        (switch-to-buffer value))))
-
-  (spacemacs/set-leader-keys "ye" 'find-stderr)
-  (spacemacs/set-leader-keys "yo" 'find-stdout)
+  ;; (setq jenkins-api-token "c628a4d5f7afce3df56a40cba8974c54")
+  ;; (setq jenkins-url "https://jenkins.smarttra.de")
+  ;; (setq jenkins-username "gunnar")
+  ;; (setq jenkins-viewname "allout-")
+  ;; (add-to-list 'auto-mode-alist '("Jenkinsfile" . groovy-mode))
 
   ;; Stop creating backups and lock files
   (setq create-lockfiles nil

@@ -918,9 +918,10 @@ This function is called at the very end of Spacemacs initialization."
       (sql-product 'postgres)
       (sql-user "smarttrade")
       (sql-database "smarttrade")
-      (sql-server "localhost"))))
+      (sql-server "localhost"))) t)
  '(treemacs-width 50)
- '(vc-follow-symlinks t))
+ '(vc-follow-symlinks t)
+ '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

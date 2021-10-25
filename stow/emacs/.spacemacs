@@ -86,6 +86,7 @@ This function should only modify configuration layer settings."
             latex-enable-auto-fill t
             latex-enable-folding t)
      (lsp :variables
+          lsp-headerline-breadcrumb-enable nil
           lsp-headerline-breadcrumb-segments '(project file symbols)
           lsp-modeline-code-actions-enable t
           lsp-modeline-code-actions-segments '(count icon)

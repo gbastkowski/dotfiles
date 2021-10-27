@@ -82,9 +82,12 @@ This function should only modify configuration layer settings."
      json
      kotlin
      (latex :variables
+            latex-backend 'lsp
             latex-build-command "LatexMk"
+            latex-build-engine 'xetex
             latex-enable-auto-fill t
-            latex-enable-folding t)
+            latex-enable-folding t
+            latex-enable-magic t)
      (lsp :variables
           lsp-headerline-breadcrumb-enable nil
           lsp-headerline-breadcrumb-segments '(project file symbols)
@@ -816,12 +819,12 @@ before packages are loaded."
   ;; (spacemacs/set-leader-keys "ajtj" 'org-jira-todo-to-jira)
   ;; (spacemacs/set-leader-keys "ajif" 'org-jira-get-issues-by-fixversion)
 
-  ;; (slack-register-team
-  ;;  :name "smarttra-de"
-  ;;  :default t
-  ;;  :client-id "gunnar.bastkowski@smarttra.de"
-  ;;  :token (password-store-get "slack/token")
-  ;;  :subscribed-channels '(general devops))
+  (slack-register-team
+   :name "smarttra-de"
+   :default t
+   :client-id "gunnar.bastkowski@smarttra.de"
+   :token (password-store-get "slack/token")
+   :subscribed-channels '(general devops))
 
   (setq calendar-date-style 'iso)
   (setq calendar-week-start-day 1)

@@ -82,4 +82,4 @@ eval $(thefuck --alias)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export PATH=~/.bin:~/go/bin:$PATH
-
+export PATH="$PATH:/home/gunnar/.local/share/coursier/bin"

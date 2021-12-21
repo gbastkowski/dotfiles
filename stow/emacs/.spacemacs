@@ -68,7 +68,9 @@ This function should only modify configuration layer settings."
      gnus
      go
      graphviz
-     groovy
+     (groovy :variables
+             groovy-backend 'lsp
+             groovy-lsp-jar-path "/usr/share/java/groovy-language-server/groovy-language-server-all.jar")
      gunnar
      haskell
      (helm :variables
@@ -173,7 +175,7 @@ This function should only modify configuration layer settings."
      windows-scripts
      xkcd
      xclipboard
-     yaml)
+     (yaml :variables yaml-enable-lsp t))
 
    ;; List of additional packages that will be installed without being wrapped
    ;; in a layer (generally the packages are installed only and should still be

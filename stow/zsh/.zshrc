@@ -53,7 +53,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(archlinux aws common-aliases docker docker-compose dotenv emacs extract fasd gem git gitignore gpg-agent gradle helm history history-substring-search kubectl mvn sbt scala screen vagrant)
+plugins=(archlinux aws common-aliases docker docker-compose dotenv emacs extract fasd gem git gitignore gpg-agent helm history history-substring-search kubectl mvn sbt scala screen)
 
 source $ZSH/oh-my-zsh.sh
 

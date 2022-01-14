@@ -79,7 +79,7 @@ eval "$(fasd --init auto)"
 eval $(thefuck --alias)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export PATH=~/.bin:~/go/bin:$PATH
 export PATH="$PATH:/home/gunnar/.local/share/coursier/bin"

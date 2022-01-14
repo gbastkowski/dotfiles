@@ -885,9 +885,12 @@ before packages are loaded."
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
-  (setq sql-connection-alist
-        '((citi-prod (sql-product 'postgres)
-                     (sql-database "dbadmin:DSinM8qokQTtF9rRKdShSYwAHBJHt9to@prd-citidb.prd.us-east-1.ttmzero.com/smarttrade"))))
+  (defun log-file-mode ()
+    (when (and (stringp buffer-file-name)
+               (string-match "\\.log\\'" buffer-file-name))
+      auto-revert-tail-mode))
+
+  (add-hook 'find-file-hook 'log-file-mode)
 
   (treemacs-resize-icons 16)
 )

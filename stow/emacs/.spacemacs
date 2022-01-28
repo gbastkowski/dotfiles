@@ -932,6 +932,7 @@ This function is called at the very end of Spacemacs initialization."
       (sql-database "smarttrade")
       (sql-server "localhost"))))
  '(treemacs-width 50)
+ '(truncate-partial-width-windows t)
  '(vc-follow-symlinks t)
  '(warning-suppress-types '((comp))))
 (custom-set-faces

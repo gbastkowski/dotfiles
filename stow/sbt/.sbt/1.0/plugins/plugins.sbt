@@ -1,4 +1,4 @@
 addSbtPlugin("com.scalapenos"       % "sbt-prompt"              % "1.0.2")
 addSbtPlugin("com.timushev.sbt"     % "sbt-updates"             % "0.6.0")
 addDependencyTreePlugin
-addSbtPlugin("ch.epfl.scala"        % "sbt-bloop"               % "1.4.12-18-a8c876fa")
+addSbtPlugin("ch.epfl.scala"        % "sbt-bloop"               % "1.4.13")

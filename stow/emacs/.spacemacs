@@ -32,8 +32,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '((restclient :variables
-                 restclient-use-org t)
+   '(
      pass
      ansible
      asciidoc
@@ -135,6 +134,8 @@ This function should only modify configuration layer settings."
              ranger-show-preview t)
      ;; (rebox :variables
      ;;        rebox-enable-in-text-mode t)
+     (restclient :variables
+                 restclient-use-org t)
      (ruby :variables
            ruby-test-runner 'rspec)
      rust
@@ -393,7 +394,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("PragmataPro Mono Liga"
+   dotspacemacs-default-font '("MesloLGS NF"
                                :size 14.0
                                :weight normal
                                :width normal)

@@ -53,7 +53,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(archlinux aws common-aliases docker docker-compose dotenv emacs extract fasd gem git gitignore gpg-agent helm history history-substring-search kubectl mvn sbt scala screen)
+plugins=(1password aws brew common-aliases docker docker-compose dotenv emacs extract fasd gem git git-lfs gitignore gpg-agent helm history history-substring-search kubectl macos mvn sbt scala screen)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -82,4 +82,12 @@ eval $(thefuck --alias)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export PATH=~/.bin:~/go/bin:$PATH
-export PATH="$PATH:/home/gunnar/.local/share/coursier/bin"
+export PATH="$PATH:/Users/gunnar.bastkowski/Library/Application Support/Coursier/bin"
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)

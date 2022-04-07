@@ -1,0 +1,3 @@
+.+~          # emacs backup files
+.~undo-tree~ # emacs undo-tree files
+\#.*\#       # emacs autosave files

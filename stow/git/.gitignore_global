@@ -61,3 +61,4 @@ TODOs.org
 /project/metals.sbt
 /.bsp/
 /TAGS
+*.~undo-tree~

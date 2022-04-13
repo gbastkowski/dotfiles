@@ -400,7 +400,7 @@ It should only modify the values of Spacemacs settings."
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '("MesloLGS NF"
-                               :size 14.0
+                               :size 13.0
                                :weight normal
                                :width normal)
 
@@ -746,17 +746,29 @@ before packages are loaded."
 
   ;; (setq-default dotspacemacs-smartparens-strict-mode t)
 
+  (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding (Chinese/Japanese/Korean characters)
+  (set-language-environment 'utf-8)
+  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
+  (setq locale-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-selection-coding-system
+   (if (eq system-type 'windows-nt)
+       'utf-16-le  ;; https://rufflewind.com/2014-07-20/pasting-unicode-in-emacs-on-windows
+     'utf-8))
+  (prefer-coding-system 'utf-8)
+
   ;; Umlauts
-  ;; (define-key key-translation-map (kbd "M-a") (kbd "ä"))
-  ;; (define-key key-translation-map (kbd "M-A") (kbd "Ä"))
-  ;; (define-key key-translation-map (kbd "M-o") (kbd "ö"))
-  ;; (define-key key-translation-map (kbd "M-O") (kbd "Ö"))
-  ;; (define-key key-translation-map (kbd "M-u") (kbd "ü"))
-  ;; (define-key key-translation-map (kbd "M-U") (kbd "Ü"))
-  ;; (define-key key-translation-map (kbd "M-s") (kbd "ß"))
+  (define-key key-translation-map (kbd "M-a") (kbd "ä"))
+  (define-key key-translation-map (kbd "M-A") (kbd "Ä"))
+  (define-key key-translation-map (kbd "M-o") (kbd "ö"))
+  (define-key key-translation-map (kbd "M-O") (kbd "Ö"))
+  (define-key key-translation-map (kbd "M-u") (kbd "ü"))
+  (define-key key-translation-map (kbd "M-U") (kbd "Ü"))
+  (define-key key-translation-map (kbd "M-s") (kbd "ß"))
 
   ;; Projects
-  (setq projectile-project-search-path '("~/git/smarttra/" "~/git/gbastkowski/"))
+  (setq projectile-project-search-path '("~/git/mobimeo/" "~/git/gbastkowski/"))
 
   ;; Cool folds
   (define-key global-map (kbd "H-.") 'evil-toggle-fold)
@@ -832,12 +844,12 @@ before packages are loaded."
   ;; (spacemacs/set-leader-keys "ajtj" 'org-jira-todo-to-jira)
   ;; (spacemacs/set-leader-keys "ajif" 'org-jira-get-issues-by-fixversion)
 
-  (slack-register-team
-   :name "smarttra-de"
-   :default t
-   :client-id "gunnar.bastkowski@smarttra.de"
-   :token (password-store-get "slack/token")
-   :subscribed-channels '(general devops))
+  ;; (slack-register-team
+  ;;  :name "mobimeo"
+  ;;  :default t
+  ;;  :client-id "gunnar.bastkowski@mobimeo.com"
+  ;;  :token (password-store-get "slack/token")
+  ;;  :subscribed-channels '(general devops))
 
   (setq calendar-date-style 'iso)
   (setq calendar-week-start-day 1)
@@ -880,7 +892,7 @@ before packages are loaded."
   (setq plantuml-output-type "png")
 
   ;;; Scala
-  (setq-default flycheck-scalastylerc "/home/gunnar/.scalastylerc.xml")
+  (setq-default flycheck-scalastylerc "/Users/gunnar.bastkowski/.scalastylerc.xml")
 
   ;;; XML
   (add-to-list 'hs-special-modes-alist

@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+echo "updating brew ..."
+brew update && brew upgrade
+
 echo "updating dotfiles ..."
 echo
 
 echo "updating oh-my-zsh ..."
 git -C oh-my-zsh fetch --all
-git -C oh-my-zsh merge upstream/master
+EDITOR=vim git -C oh-my-zsh merge upstream/master
 echo
 
 echo "updating powerlevel10k ..."
@@ -14,7 +17,7 @@ echo
 
 echo "updating spacemacs ..."
 git -C spacemacs fetch --all
-git -C spacemacs merge upstream/develop
+EDITOR=vim git -C spacemacs merge upstream/develop
 echo
 
 echo "pushing submodules to origin ..."
@@ -24,7 +27,7 @@ echo
 
 echo "pushing dotfiles to origin ..."
 git add .
-git commit -m "Update dotfiles and submodules"
+gEDITOR=vim git commit -m "Update dotfiles and submodules"
 git push
 
 echo "current state:"

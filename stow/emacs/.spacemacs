@@ -112,6 +112,7 @@ This function should only modify configuration layer settings."
      ;;       mu4e-enable-async-operations t)
      multiple-cursors
      nginx
+     node
      (org  :variables
            org-enable-bootstrap-support t
            org-enable-github-support t

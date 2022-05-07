@@ -91,3 +91,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+
+alias aga='aws-google-auth -k --bg-response js_enabled -p'
+alias aga-all='aga default && aga dev-admin && aga stg-admin && aga prd'

@@ -812,43 +812,6 @@ before packages are loaded."
   (setq org-catch-invisible-edits 'show)
 
   (setq auth-sources '(password-store))
-  ;; (setq jiralib-url "https://smarttradede.atlassian.net")
-  ;; (setq jiralib-token
-  ;;       (let ((found (nth 0 (auth-source-search :max 1
-  ;;                                               :host (url-host (url-generic-parse-url jiralib-url))
-  ;;                                               :port 80
-  ;;                                               :require '(:user :secret)
-  ;;                                               :create nil)))
-  ;;             user secret)
-  ;;         (when found
-  ;;           (setq user (plist-get found :user)
-  ;;                 secret
-  ;;                 (let ((sec (plist-get found :secret)))
-  ;;                   (if (functionp sec)
-  ;;                       (funcall sec)
-  ;;                     sec)))
-  ;;           `("Authorization" . , (format "Basic %s" (base64-encode-string (concat user ":" secret)))))))
-
-  ;; (spacemacs/set-leader-keys "ajpg" 'org-jira-get-projects)
-  ;; (spacemacs/set-leader-keys "ajib" 'org-jira-browse-issue)
-  ;; (spacemacs/set-leader-keys "ajig" 'org-jira-get-issues)
-  ;; (spacemacs/set-leader-keys "ajih" 'org-jira-get-issues-headonly)
-  ;; (spacemacs/set-leader-keys "ajiu" 'org-jira-update-issue)
-  ;; (spacemacs/set-leader-keys "ajiw" 'org-jira-progress-issue)
-  ;; (spacemacs/set-leader-keys "ajin" 'org-jira-progress-issue-next)
-  ;; (spacemacs/set-leader-keys "ajia" 'org-jira-assign-issue)
-  ;; (spacemacs/set-leader-keys "ajia" 'org-jira-assign-issue)
-  ;; (spacemacs/set-leader-keys "ajir" 'org-jira-refresh-issue)
-  ;; (spacemacs/set-leader-keys "ajiR" 'org-jira-refresh-issues-in-buffer)
-  ;; (spacemacs/set-leader-keys "ajic" 'org-jira-create-issue)
-  ;; (spacemacs/set-leader-keys "ajik" 'org-jira-copy-current-issue-key)
-  ;; (spacemacs/set-leader-keys "ajsc" 'org-jira-create-subtask)
-  ;; (spacemacs/set-leader-keys "ajsg" 'org-jira-get-subtasks)
-  ;; (spacemacs/set-leader-keys "ajcu" 'org-jira-update-comment)
-  ;; (spacemacs/set-leader-keys "ajwu" 'org-jira-update-worklogs-from-org-clocks)
-  ;; (spacemacs/set-leader-keys "ajtj" 'org-jira-todo-to-jira)
-  ;; (spacemacs/set-leader-keys "ajif" 'org-jira-get-issues-by-fixversion)
-
   ;; (slack-register-team
   ;;  :name "mobimeo"
   ;;  :default t
@@ -871,13 +834,6 @@ before packages are loaded."
         (propertize "KW"
                     'font-lock-face 'font-lock-keyword-face))
 
-
-  ;; Jenkins
-  ;; (setq jenkins-api-token "c628a4d5f7afce3df56a40cba8974c54")
-  ;; (setq jenkins-url "https://jenkins.smarttra.de")
-  ;; (setq jenkins-username "gunnar")
-  ;; (setq jenkins-viewname "allout-")
-  ;; (add-to-list 'auto-mode-alist '("Jenkinsfile" . groovy-mode))
 
   ;; Stop creating backups and lock files
   (setq create-lockfiles nil

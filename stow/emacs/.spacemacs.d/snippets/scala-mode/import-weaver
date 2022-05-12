@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: import weaver
+# key: iw
+# --
+import weaver._

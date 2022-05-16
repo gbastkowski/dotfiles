@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: import cats
+# key: cats
+# --
+import cats.effect._
+import cats.implicits._

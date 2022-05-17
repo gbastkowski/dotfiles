@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: logger
+# key: logger
+# --
+<logger name="" level="INFO">
+  <appender-ref ref="STDOUT"/>
+</logger>

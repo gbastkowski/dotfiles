@@ -43,6 +43,7 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-idle-delay 0.0
                       auto-completion-minimum-prefix-length 1)
+     bibtex
      c-c++
      chrome
      clojure
@@ -114,16 +115,26 @@ This function should only modify configuration layer settings."
      nginx
      node
      (org  :variables
+           org-enable-appear-support t
+           org-enable-asciidoc-support t
            org-enable-bootstrap-support t
+           org-enable-epub-support t
            org-enable-github-support t
+           org-enable-jira-support t
+           jiralib-url "https://jira.mobimeo.com"
+           org-enable-notifications t
            org-enable-reveal-js-support t
+           org-enable-org-brain-support t
            org-enable-org-journal-support t
+           org-enable-sticky-header t
            org-journal-dir "~/org/journal/"
-           org-journal-file-format "%Y-%m-%d")
+           org-journal-file-format "%Y-%m-%d"
+           org-start-notification-daemon-on-startup t)
      (osx :variables
           osx-option-as 'meta
           osx-right-option-as 'meta)
      pandoc
+     pass
      pdf
      php
      (plantuml :variables
@@ -810,6 +821,10 @@ before packages are loaded."
   (spacemacs/set-leader-keys "ab" 'calendar)
   (spacemacs/set-leader-keys "oc" 'org-capture)
   (setq org-catch-invisible-edits 'show)
+
+  (setq bibtex-completion-bibliography '("~/Documents/references.bib")
+        bibtex-completion-library-path "~/Documents/"
+        bibtex-completion-notes-path "~/Documents/notes.org")
 
   (setq auth-sources '(password-store))
   ;; (slack-register-team

@@ -1,7 +1,7 @@
 (defconst gunnar-org-packages '(org))
 
 (defun gunnar-org/post-init-org ()
-  (setq org-bullets-bullet-list '("●" "◆" "▴" "▸"))
+  (setq org-bullets-bullet-list '("x" "◆" "▴" "▸"))
   (setq org-directory "~/org/")
   (setq org-agenda-include-diary t)
   (setq org-default-notes-file (concat org-directory "gtd.org"))

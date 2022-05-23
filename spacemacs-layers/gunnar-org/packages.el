@@ -16,6 +16,10 @@
                                    ))
   (setq org-plantuml-jar-path
         (expand-file-name "/usr/local/Cellar/plantuml/1.2018.10/libexec/plantuml.jar"))
+
+  (defun gunnar/daily-note ()
+    (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
+
   (setq org-capture-templates '(
                                 ("i" "Inbox"          entry (file+headline org-default-notes-file "Inbox")
                                  "* TODO %^{Brief Description} %^g\n %?%i\n Added: %U\n")
@@ -27,6 +31,8 @@
                                  "")
                                 ("k" "Knowledge"      entry (file          (concat org-directory "notes.org"))
                                  "")
+                                ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
+                                 "** %(org-cliplink-capture)%?\n" :unnarrowed t)
                                 ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
                                  "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
 

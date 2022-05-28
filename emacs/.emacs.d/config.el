@@ -55,6 +55,12 @@ pairs. For example,
 
 (prefer-coding-system 'utf-8)
 
+(use-package darcula-theme
+  :ensure t
+  :config
+  (set-frame-font "MesloLGS NF")
+  (load-theme 'darcula t))
+
 (use-package evil
   :ensure t
   :config
@@ -96,6 +102,10 @@ pairs. For example,
   :evil-keys ("SPC")
   :override-minor-modes t
   :override-mode-name gumacs-leader-override-mode)
+
+(package-install 'which-key)
+(require 'which-key)
+(which-key-mode)
 
 (use-package helm
   :straight t
@@ -181,8 +191,17 @@ pairs. For example,
     (error
      (make-frame-invisible nil 1))))
 
-  (gumacs/set-leader-keys
-   "qs" 'save-buffers-kill-emacs
-   "qq" 'gumacs/prompt-kill-emacs
-   "qQ" 'kill-emacs
-   "qf" 'gumacs/frame-killer)
+;; (gumacs/set-leader-keys
+ ;; "qs" 'save-buffers-kill-emacs
+ ;; "qq" 'gumacs/prompt-kill-emacs
+ ;; "qQ" 'kill-emacs
+ ;; "qf" 'gumacs/frame-killer)
+
+(setq gumacs-quit-map (make-sparse-keymap))
+(define-key  gumacs-default-map  "<SPC>"  (cons "M-x"              'helm-M-x))
+(define-key  gumacs-default-map  "q"    (cons "quit"              gumacs-quit-map))
+(define-key  gumacs-quit-map     "q"    (cons "prompt and quit"  'gumacs/prompt-kill-emacs))
+
+(setq gumacs-files-map (make-sparse-keymap))
+(define-key  gumacs-default-map  "f"  (cons "files"             gumacs-files-map))
+(define-key  gumacs-files-map    "f"  (cons "open file"        'helm-find-files))

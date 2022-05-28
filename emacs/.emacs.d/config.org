@@ -1,0 +1,276 @@
+#+TITLE: GuMacs Configuration
+#+AUTHOR: Gunnar Bastkowski
+#+EMAIL: gunnar@bastkowski.name
+#+OPTIONS: num:nil
+
+* Bootstrap
+** Basic Settings
+#+begin_src emacs-lisp
+  (defconst emacs-start-time (current-time))
+
+  (setq gc-cons-threshold   402653184
+        gc-cons-percentage  0.6
+        message-log-max     16384)
+#+end_src
+
+** Basic Functions
+*** Host System
+#+begin_src emacs-lisp
+  (defun gumacs/mac-p () (eq system-type 'darwin))
+  (defun gumacs/linux-p () (eq system-type 'gnu/linux))
+  (defun gumacs/mswindows-p () (eq system-type 'windows-nt))
+
+  (defun gumacs/window-system-mac-p ()
+    ;; ns is returned instead of mac on Emacs 25+
+    (memq (window-system) '(mac ns)))
+#+end_src
+
+*** Key Bindings
+#+begin_src emacs-lisp
+  (defun gumacs/set-leader-keys (key def &rest bindings)
+    "Add KEY and DEF as key bindings under the leader key.
+  KEY should be a string suitable for passing to `kbd', and it
+  should not include the leaders. DEF is most likely a quoted
+  command. See `define-key' for more information about the possible
+  choices for DEF. This function simply uses `define-key' to add
+  the bindings.
+
+  For convenience, this function will accept additional KEY DEF
+  pairs. For example,
+
+  \(gumacs/set-leader-keys
+     \"a\" 'command1
+     \"C-c\" 'command2
+     \"bb\" 'command3\)"
+    (while key
+      (define-key gumacs-default-map (kbd key) def)
+      (setq key (pop bindings) def (pop bindings))))
+#+end_src
+
+** Package Management
+*** Setup Package Archives
+#+begin_src emacs-lisp
+  (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+#+end_src
+
+*** Install straight
+#+begin_src emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+#+end_src
+
+*** Install use-package
+#+begin_src emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (eval-and-compile
+    (require 'use-package))
+#+end_src
+
+
+* Editor Settings
+** General Settings
+#+begin_src emacs-lisp
+  (prefer-coding-system 'utf-8)
+#+end_src
+
+** Appearance
+#+begin_src emacs-lisp
+  (use-package darcula-theme
+    :ensure t
+    :config
+    (set-frame-font "MesloLGS NF")
+    (load-theme 'darcula t))
+#+end_src
+
+** evil and bind-map
+*** evil
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :config
+
+    (evil-mode 1)
+    (use-package evil-leader
+      :ensure t
+      :config
+      (global-evil-leader-mode t)
+      (evil-leader/set-leader "<SPC>")
+      (evil-leader/set-key
+        "s s" 'swiper
+        "d x w" 'delete-trailing-whitespace))
+
+    (use-package evil-surround
+      :ensure t
+      :config (global-evil-surround-mode))
+
+    (use-package evil-indent-textobject
+      :ensure t)
+
+    (use-package evil-org
+      :ensure t
+      :config
+      (evil-org-set-key-theme
+       '(textobjects insert navigation additional shift todo heading))
+      (add-hook 'org-mode-hook (lambda () (evil-org-mode))))
+
+    (use-package powerline-evil
+      :ensure t
+      :config
+      (powerline-evil-vim-color-theme)))
+#+end_src
+
+*** bind-map
+#+begin_src emacs-lisp
+  (package-install 'bind-map)
+  (require 'bind-map)
+  (bind-map gumacs-default-map
+    :prefix-cmd gumacs-cmds
+    :keys ("M-m")
+    :evil-keys ("SPC")
+    :override-minor-modes t
+    :override-mode-name gumacs-leader-override-mode)
+#+end_src
+
+*** [[https://github.com/justbur/emacs-which-key][which-key]] 
+#+begin_src emacs-lisp
+  (package-install 'which-key)
+  (require 'which-key)
+  (which-key-mode)
+#+end_src
+
+** Helm
+#+begin_src emacs-lisp
+  (use-package helm
+    :straight t
+    :config
+    (progn
+      (use-package helm-ag
+        :straight t)
+      (use-package helm-descbinds
+        :straight t)
+      (use-package helm-org
+        :straight t)
+      (use-package helm-projectile
+        :straight t)
+      (use-package helm-swoop
+        :straight t)
+      (use-package helm-xref
+        :straight t)
+      (use-package imenu
+        :straight t)
+      (use-package projectile
+        :straight t)
+      (helm-mode)
+      (helm-descbinds-mode)
+      (require 'helm-config)
+      (setq helm-input-idle-delay                     0.01
+            helm-reuse-last-window-split-state        t
+            helm-always-two-windows                   t
+            helm-split-window-inside-p                nil
+            helm-commands-using-frame                 '(completion-at-point
+                                                        helm-apropos
+                                                        helm-eshell-prompts helm-imenu
+                                                        helm-imenu-in-all-buffers)
+            helm-actions-inherit-frame-settings       t
+            helm-use-frame-when-more-than-two-windows t
+            helm-use-frame-when-dedicated-window      t
+            helm-frame-background-color               "DarkSlateGray"
+            helm-show-action-window-other-window      'left
+            helm-allow-mouse                          t
+            helm-move-to-line-cycle-in-source         t
+            helm-autoresize-max-height                80 ; it is %.
+            helm-autoresize-min-height                20 ; it is %.
+            helm-debug-root-directory                 "/home/thierry/tmp/helm-debug"
+            helm-follow-mode-persistent               t
+            helm-candidate-number-limit               500
+            helm-visible-mark-prefix                  "✓")
+      (set-face-foreground 'helm-mark-prefix "Gold1")
+      (add-to-list 'helm-sources-using-default-as-input 'helm-source-info-bash)
+
+      ;; use helm to switch last(/previous) visited buffers with C(-S)-tab
+      (define-key helm-map (kbd "<C-tab>") 'helm-follow-action-forward)
+      (define-key helm-map (kbd "<C-iso-lefttab>") 'helm-follow-action-backward)
+      ;; alter helm-bookmark key bindings to be simpler
+      (defun simpler-helm-bookmark-keybindings ()
+        (define-key helm-bookmark-map (kbd "C-d") 'helm-bookmark-run-delete)
+        (define-key helm-bookmark-map (kbd "C-e") 'helm-bookmark-run-edit)
+        (define-key helm-bookmark-map
+          (kbd "C-f") 'helm-bookmark-toggle-filename)
+        (define-key helm-bookmark-map
+          (kbd "S-<return>") 'helm-bookmark-run-jump-other-window)
+        (define-key helm-bookmark-map (kbd "C-/") 'helm-bookmark-help))
+      (with-eval-after-load 'helm-bookmark
+        (simpler-helm-bookmark-keybindings))))
+
+#+end_src
+
+
+* Version Control
+#+begin_src emacs-lisp
+  (use-package magit
+    :straight t)
+#+end_src
+
+
+* Key Bindings
+|-----+-----+-----------------+---------------------------|
+| Key | Key | Description     | target                    |
+|-----+-----+-----------------+---------------------------|
+| q   |     | quit            | gumacs-quit-map           |
+|     | q   | prompt and quit | 'gumacs/prompt-kill-emacs |
+|-----+-----+-----------------+---------------------------|
+| f   |     | files           | gumars-files-maps         |
+|     | f   | open file       | 'helm-find-files          |
+|-----+-----+-----------------+---------------------------|
+** Emacs
+#+begin_src emacs-lisp
+  (defun gumacs/prompt-kill-emacs ()
+    "Prompt to save changed buffers and exit Spacemacs"
+    (interactive)
+    (save-some-buffers nil t)
+    (kill-emacs))
+
+  (defun gumacs/kill-emacs ()
+    "Lose all changes and exit Spacemacs"
+    (interactive)
+    (kill-emacs))
+
+  (defun gumacs/frame-killer ()
+    "Kill server buffer and hide the main Emacs window"
+    (interactive)
+    (condition-case nil
+        (delete-frame nil 1)
+      (error
+       (make-frame-invisible nil 1))))
+
+  ;; (gumacs/set-leader-keys
+   ;; "qs" 'save-buffers-kill-emacs
+   ;; "qq" 'gumacs/prompt-kill-emacs
+   ;; "qQ" 'kill-emacs
+   ;; "qf" 'gumacs/frame-killer)
+
+  (setq gumacs-quit-map (make-sparse-keymap))
+  (define-key  gumacs-default-map  "<SPC>"  (cons "M-x"              'helm-M-x))
+  (define-key  gumacs-default-map  "q"    (cons "quit"              gumacs-quit-map))
+  (define-key  gumacs-quit-map     "q"    (cons "prompt and quit"  'gumacs/prompt-kill-emacs))
+#+end_src
+
+** Files
+#+begin_src emacs-lisp
+  (setq gumacs-files-map (make-sparse-keymap))
+  (define-key  gumacs-default-map  "f"  (cons "files"             gumacs-files-map))
+  (define-key  gumacs-files-map    "f"  (cons "open file"        'helm-find-files))
+#+end_src

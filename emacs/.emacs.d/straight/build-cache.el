@@ -3,7 +3,7 @@
 
 "28.1"
 
-#s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data ("straight" ("2022-05-24 01:18:41" ("emacs") (:type git :host github :repo "raxod502/straight.el" :files ("straight*.el") :branch "master" :package "straight" :local-repo "straight.el")) "org-elpa" ("2022-05-24 01:18:41" nil (:local-repo nil :package "org-elpa" :type git)) "melpa" ("2022-05-24 01:18:41" nil (:type git :host github :repo "melpa/melpa" :build nil :package "melpa" :local-repo "melpa")) "gnu-elpa-mirror" ("2022-05-24 01:18:41" nil (:type git :host github :repo "emacs-straight/gnu-elpa-mirror" :build nil :package "gnu-elpa-mirror" :local-repo "gnu-elpa-mirror")) "el-get" ("2022-05-24 01:18:41" nil (:type git :host github :repo "dimitri/el-get" :build nil :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :flavor melpa :package "el-get" :local-repo "el-get")) "emacsmirror-mirror" ("2022-05-24 01:18:41" nil (:type git :host github :repo "emacs-straight/emacsmirror-mirror" :build nil :package "emacsmirror-mirror" :local-repo "emacsmirror-mirror")) "helm" ("2022-05-24 01:18:43" ("helm-core" "popup") (:type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm" :package "helm" :local-repo "helm")) "helm-core" ("2022-05-24 01:18:42" ("emacs" "async") (:flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :package "helm-core" :local-repo "helm" :type git :repo "emacs-helm/helm" :host github)) "async" ("2022-05-24 01:18:42" ("emacs") (:type git :flavor melpa :host github :repo "jwiegley/emacs-async" :package "async" :local-repo "emacs-async")) "popup" ("2022-05-24 01:18:42" ("emacs") (:type git :flavor melpa :host github :repo "auto-complete/popup-el" :package "popup" :local-repo "popup-el")) "magit" ("2022-05-24 01:18:43" ("emacs" "compat" "dash" "git-commit" "magit-section" "transient" "with-editor") (:type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit" :package "magit" :local-repo "magit")) "compat" ("2022-05-24 01:18:43" ("emacs" "nadvice") (:type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git")) :package "compat" :local-repo "compat")) "dash" ("2022-05-24 01:18:43" ("emacs") (:type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el" :package "dash" :local-repo "dash.el")) "git-commit" ("2022-05-24 01:18:43" ("emacs" "compat" "transient" "with-editor") (:flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :package "git-commit" :local-repo "magit" :type git :repo "magit/magit" :host github)) "transient" ("2022-05-24 01:18:43" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient" :package "transient" :local-repo "transient")) "with-editor" ("2022-05-24 01:18:43" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor" :package "with-editor" :local-repo "with-editor")) "magit-section" ("2022-05-24 01:18:43" ("emacs" "compat" "dash") (:flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :package "magit-section" :local-repo "magit" :type git :repo "magit/magit" :host github)) "helm-ag" ("2022-05-24 01:18:43" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-ag" :package "helm-ag" :local-repo "helm-ag")) "helm-descbinds" ("2022-05-24 01:18:43" ("helm") (:type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds" :package "helm-descbinds" :local-repo "helm-descbinds")) "helm-org" ("2022-05-24 01:18:43" ("helm" "emacs") (:type git :flavor melpa :host github :repo "emacs-helm/helm-org" :package "helm-org" :local-repo "helm-org")) "helm-projectile" ("2022-05-24 01:18:43" ("helm" "projectile" "cl-lib") (:type git :flavor melpa :host github :repo "bbatsov/helm-projectile" :package "helm-projectile" :local-repo "helm-projectile")) "projectile" ("2022-05-24 01:18:43" ("emacs") (:type git :flavor melpa :host github :repo "bbatsov/projectile" :package "projectile" :local-repo "projectile")) "helm-swoop" ("2022-05-24 01:18:43" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop" :package "helm-swoop" :local-repo "helm-swoop")) "helm-xref" ("2022-05-24 01:18:43" ("emacs" "helm") (:type git :flavor melpa :host github :repo "brotzeit/helm-xref" :package "helm-xref" :local-repo "helm-xref"))))
+#s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data ("straight" ("2022-05-25 00:57:19" ("emacs") (:type git :host github :repo "raxod502/straight.el" :files ("straight*.el") :branch "master" :package "straight" :local-repo "straight.el")) "org-elpa" ("2022-05-25 00:57:19" nil (:local-repo nil :package "org-elpa" :type git)) "melpa" ("2022-05-25 00:57:19" nil (:type git :host github :repo "melpa/melpa" :build nil :package "melpa" :local-repo "melpa")) "gnu-elpa-mirror" ("2022-05-25 00:57:19" nil (:type git :host github :repo "emacs-straight/gnu-elpa-mirror" :build nil :package "gnu-elpa-mirror" :local-repo "gnu-elpa-mirror")) "el-get" ("2022-05-25 00:57:19" nil (:type git :host github :repo "dimitri/el-get" :build nil :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :flavor melpa :package "el-get" :local-repo "el-get")) "emacsmirror-mirror" ("2022-05-25 00:57:19" nil (:type git :host github :repo "emacs-straight/emacsmirror-mirror" :build nil :package "emacsmirror-mirror" :local-repo "emacsmirror-mirror")) "helm" ("2022-05-25 00:57:19" ("helm-core" "popup") (:type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm" :package "helm" :local-repo "helm")) "helm-core" ("2022-05-25 00:57:19" ("emacs" "async") (:flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :package "helm-core" :local-repo "helm" :type git :repo "emacs-helm/helm" :host github)) "async" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :host github :repo "jwiegley/emacs-async" :package "async" :local-repo "emacs-async")) "popup" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :host github :repo "auto-complete/popup-el" :package "popup" :local-repo "popup-el")) "helm-ag" ("2022-05-25 00:57:19" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-ag" :package "helm-ag" :local-repo "helm-ag")) "helm-descbinds" ("2022-05-25 00:57:19" ("helm") (:type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds" :package "helm-descbinds" :local-repo "helm-descbinds")) "helm-org" ("2022-05-25 00:57:19" ("helm" "emacs") (:type git :flavor melpa :host github :repo "emacs-helm/helm-org" :package "helm-org" :local-repo "helm-org")) "helm-projectile" ("2022-05-25 00:57:19" ("helm" "projectile" "cl-lib") (:type git :flavor melpa :host github :repo "bbatsov/helm-projectile" :package "helm-projectile" :local-repo "helm-projectile")) "projectile" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :host github :repo "bbatsov/projectile" :package "projectile" :local-repo "projectile")) "helm-swoop" ("2022-05-25 00:57:19" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop" :package "helm-swoop" :local-repo "helm-swoop")) "helm-xref" ("2022-05-25 00:57:19" ("emacs" "helm") (:type git :flavor melpa :host github :repo "brotzeit/helm-xref" :package "helm-xref" :local-repo "helm-xref")) "magit" ("2022-05-25 00:57:19" ("emacs" "compat" "dash" "git-commit" "magit-section" "transient" "with-editor") (:type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit" :package "magit" :local-repo "magit")) "compat" ("2022-05-25 00:57:19" ("emacs" "nadvice") (:type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git")) :package "compat" :local-repo "compat")) "dash" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el" :package "dash" :local-repo "dash.el")) "git-commit" ("2022-05-25 00:57:19" ("emacs" "compat" "transient" "with-editor") (:flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :package "git-commit" :local-repo "magit" :type git :repo "magit/magit" :host github)) "transient" ("2022-05-25 00:57:19" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient" :package "transient" :local-repo "transient")) "with-editor" ("2022-05-25 00:57:19" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor" :package "with-editor" :local-repo "with-editor")) "magit-section" ("2022-05-25 00:57:19" ("emacs" "compat" "dash") (:flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :package "magit-section" :local-repo "magit" :type git :repo "magit/magit" :host github))))
 
 #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data ("straight" ((straight-x straight-autoloads straight) (autoload 'straight-remove-unused-repos "straight" "Remove unused repositories from the repos directory.
 A repo is considered \"unused\" if it was not explicitly requested via
@@ -642,195 +642,7 @@ disable it.
 
 You can get help on each command by persistent action.
 
-(fn ARG)" t nil) (register-definition-prefixes "helm-command" '("helm-")) (autoload 'helm-configuration "helm-core" "Customize Helm." t nil) (autoload 'helm-define-multi-key "helm-core" "In KEYMAP, define key sequence KEY for function list FUNCTIONS.
-Each function runs sequentially for each KEY press.
-If DELAY is specified, switch back to initial function of FUNCTIONS list
-after DELAY seconds.
-The functions in FUNCTIONS list take no args.
-E.g.
-    (defun foo ()
-      (interactive)
-      (message \"Run foo\"))
-    (defun bar ()
-      (interactive)
-      (message \"Run bar\"))
-    (defun baz ()
-      (interactive)
-      (message \"Run baz\"))
-
-(helm-define-multi-key global-map (kbd \"<f5> q\") '(foo bar baz) 2)
-
-Each time \"<f5> q\" is pressed, the next function is executed.
-Waiting more than 2 seconds between key presses switches back to
-executing the first function on the next hit.
-
-(fn KEYMAP KEY FUNCTIONS &optional DELAY)" nil nil) (autoload 'helm-multi-key-defun "helm-core" "Define NAME as a multi-key command running FUNS.
-After DELAY seconds, the FUNS list is reinitialized.
-See `helm-define-multi-key'.
-
-(fn NAME DOCSTRING FUNS &optional DELAY)" nil t) (function-put 'helm-multi-key-defun 'lisp-indent-function '2) (autoload 'helm-define-key-with-subkeys "helm-core" "Define in MAP a KEY and SUBKEY to COMMAND.
-
-This allows typing KEY to call COMMAND the first time and
-type only SUBKEY on subsequent calls.
-
-Arg MAP is the keymap to use, SUBKEY is the initial short
-key binding to call COMMAND.
-
-Arg OTHER-SUBKEYS is an alist specifying other short key bindings
-to use once started, e.g.:
-
-    (helm-define-key-with-subkeys global-map
-       (kbd \"C-x v n\") ?n 'git-gutter:next-hunk
-       '((?p . git-gutter:previous-hunk)))
-
-In this example, `C-x v n' will run `git-gutter:next-hunk'
-subsequent \"n\" will run this command again and subsequent \"p\"
-will run `git-gutter:previous-hunk'.
-
-If specified PROMPT can be displayed in minibuffer to describe
-SUBKEY and OTHER-SUBKEYS.  Arg EXIT-FN specifies a function to run
-on exit.
-
-For any other key pressed, run their assigned command as defined
-in MAP and then exit the loop running EXIT-FN, if specified.
-
-If DELAY an integer is specified exit after DELAY seconds.
-
-NOTE: SUBKEY and OTHER-SUBKEYS bindings support only char syntax
-and vectors, so don't use strings to define them.
-
-(fn MAP KEY SUBKEY COMMAND &optional OTHER-SUBKEYS PROMPT EXIT-FN DELAY)" nil nil) (function-put 'helm-define-key-with-subkeys 'lisp-indent-function '1) (autoload 'helm-debug-open-last-log "helm-core" "Open Helm log file or buffer of last Helm session." t nil) (autoload 'helm "helm-core" "Main function to execute helm sources.
-
-PLIST is a list like
-
-(:key1 val1 :key2 val2 ...)
-
- or
-
-(&optional sources input prompt resume preselect
-            buffer keymap default history allow-nest).
-
-** Keywords
-
-Keywords supported:
-
-- :sources
-- :input
-- :prompt
-- :resume
-- :preselect
-- :buffer
-- :keymap
-- :default
-- :history
-- :allow-nest
-
-Extra LOCAL-VARS keywords are supported, see the \"** Other
-keywords\" section below.
-
-Basic keywords are the following:
-
-*** :sources
-
-One of the following:
-
-- List of sources
-- Symbol whose value is a list of sources
-- Alist representing a Helm source.
-  - In this case the source has no name and is referenced in
-    `helm-sources' as a whole alist.
-
-*** :input
-
-Initial input of minibuffer (temporary value of `helm-pattern')
-
-*** :prompt
-
-Minibuffer prompt. Default value is `helm--prompt'.
-
-*** :resume
-
-If t, allow resumption of the previous session of this Helm
-command, skipping initialization.
-
-If 'noresume, this instance of `helm' cannot be resumed.
-
-*** :preselect
-
-Initially selected candidate (string or regexp).
-
-*** :buffer
-
-Buffer name for this Helm session. `helm-buffer' will take this value.
-
-*** :keymap
-
-[Obsolete]
-
-Keymap used at the start of this Helm session.
-
-It is overridden by keymaps specified in sources, and is kept
-only for backward compatibility.
-
-Keymaps should be specified in sources using the :keymap slot
-instead. See `helm-source'.
-
-This keymap is not restored by `helm-resume'.
-
-*** :default
-
-Default value inserted into the minibuffer with
-\\<minibuffer-local-map>\\[next-history-element].
-
-It can be a string or a list of strings, in this case
-\\<minibuffer-local-map>\\[next-history-element] cycles through
-the list items, starting with the first.
-
-If nil, `thing-at-point' is used.
-
-If `helm-maybe-use-default-as-input' is non-nil, display is
-updated using this value if this value matches, otherwise it is
-ignored. If :input is specified, it takes precedence on :default.
-
-*** :history
-
-Minibuffer input, by default, is pushed to `minibuffer-history'.
-
-When an argument HISTORY is provided, input is pushed to
-HISTORY. HISTORY should be a valid symbol.
-
-*** :allow-nest
-
-Allow running this Helm command in a running Helm session.
-
-** Other keywords
-
-Other keywords are interpreted as local variables of this Helm
-session. The `helm-' prefix can be omitted. For example,
-
-(helm :sources 'helm-source-buffers-list
-       :buffer \"*helm buffers*\"
-       :candidate-number-limit 10)
-
-Starts a Helm session with the variable
-`helm-candidate-number-limit' set to 10.
-
-** Backward compatibility
-
-For backward compatibility, positional parameters are
-supported:
-
-(helm sources input prompt resume preselect
-       buffer keymap default history allow-nest)
-
-However, the use of non-keyword args is deprecated.
-
-(fn &key SOURCES INPUT PROMPT RESUME PRESELECT BUFFER KEYMAP DEFAULT HISTORY ALLOW-NEST OTHER-LOCAL-VARS)" nil nil) (autoload 'helm-cycle-resume "helm-core" "Cycle in `helm-buffers' list and resume when waiting more than 1.2s." t nil) (autoload 'helm-other-buffer "helm-core" "Simplified Helm interface with other `helm-buffer'.
-Call `helm' only with SOURCES and BUFFER as args.
-
-(fn SOURCES BUFFER)" nil nil) (register-definition-prefixes "helm-core" '("helm-" "with-helm-")) (autoload 'helm-dabbrev "helm-dabbrev" "Preconfigured helm for dynamic abbreviations.
-
-(fn)" t nil) (register-definition-prefixes "helm-dabbrev" '("helm-dabbrev-")) (autoload 'helm-lisp-completion-at-point "helm-elisp" "Preconfigured Helm for Lisp symbol completion at point." t nil) (autoload 'helm-complete-file-name-at-point "helm-elisp" "Preconfigured Helm to complete file name at point.
+(fn ARG)" t nil) (register-definition-prefixes "helm-command" '("helm-")) (autoload 'helm-dabbrev "helm-dabbrev" "Preconfigured helm for dynamic abbreviations." t nil) (register-definition-prefixes "helm-dabbrev" '("helm-dabbrev-")) (autoload 'helm-lisp-completion-at-point "helm-elisp" "Preconfigured Helm for Lisp symbol completion at point." t nil) (autoload 'helm-complete-file-name-at-point "helm-elisp" "Preconfigured Helm to complete file name at point.
 
 (fn &optional FORCE)" t nil) (autoload 'helm-lisp-indent "helm-elisp" nil t nil) (autoload 'helm-lisp-completion-or-file-name-at-point "helm-elisp" "Preconfigured Helm to complete Lisp symbol or filename at point.
 Filename completion happens if string start after or between a
@@ -993,7 +805,7 @@ REFRESH is useful when new Info files are installed.  If
 `helm-default-info-index-list' has not been customized, the new
 Info files are made available.
 
-(fn &optional REFRESH)" t nil) (autoload 'helm-info-at-point "helm-info" "Preconfigured `helm' for searching info at point." t nil) (register-definition-prefixes "helm-info" '("helm-")) (register-definition-prefixes "helm-lib" '("helm-" "with-helm-")) (autoload 'helm-projects-find-files "helm-locate" "Find files with locate in `helm-locate-project-list'.
+(fn &optional REFRESH)" t nil) (autoload 'helm-info-at-point "helm-info" "Preconfigured `helm' for searching info at point." t nil) (register-definition-prefixes "helm-info" '("helm-")) (autoload 'helm-projects-find-files "helm-locate" "Find files with locate in `helm-locate-project-list'.
 With a prefix arg refresh the database in each project.
 
 (fn UPDATE)" t nil) (autoload 'helm-locate "helm-locate" "Preconfigured `helm' for Locate.
@@ -1162,7 +974,7 @@ in `helm-current-prefix-arg', otherwise if prefix args were given before
 That means you can pass prefix args before or after calling a command
 that use `helm-comp-read'.  See `helm-M-x' for example.
 
-(fn PROMPT COLLECTION &key TEST INITIAL-INPUT DEFAULT PRESELECT (BUFFER \"*Helm Completions*\") MUST-MATCH FUZZY REVERSE-HISTORY (REQUIRES-PATTERN 0) (HISTORY nil shistory) RAW-HISTORY INPUT-HISTORY (CASE-FOLD helm-comp-read-case-fold-search) (PERSISTENT-ACTION nil) (PERSISTENT-HELP \"DoNothing\") (MODE-LINE helm-comp-read-mode-line) HELP-MESSAGE (KEYMAP helm-comp-read-map) (NAME \"Helm Completions\") HEADER-NAME CANDIDATES-IN-BUFFER DIACRITICS MATCH-PART MATCH-DYNAMIC EXEC-WHEN-ONLY-ONE QUIT-WHEN-NO-CAND (VOLATILE t) SORT FC-TRANSFORMER HIST-FC-TRANSFORMER (MARKED-CANDIDATES helm-comp-read-use-marked) NOMARK (ALISTP t) (CANDIDATE-NUMBER-LIMIT helm-candidate-number-limit) MULTILINE ALLOW-NEST COERCE (GROUP \\='helm))" nil nil) (autoload 'helm-read-file-name "helm-mode" "Read a file name with helm completion.
+(fn PROMPT COLLECTION &key TEST INITIAL-INPUT DEFAULT PRESELECT (BUFFER \"*Helm Completions*\") MUST-MATCH FUZZY REVERSE-HISTORY (REQUIRES-PATTERN 0) (HISTORY nil SHISTORY) RAW-HISTORY INPUT-HISTORY (CASE-FOLD helm-comp-read-case-fold-search) (PERSISTENT-ACTION nil) (PERSISTENT-HELP \"DoNothing\") (MODE-LINE helm-comp-read-mode-line) HELP-MESSAGE (KEYMAP helm-comp-read-map) (NAME \"Helm Completions\") HEADER-NAME CANDIDATES-IN-BUFFER DIACRITICS MATCH-PART MATCH-DYNAMIC EXEC-WHEN-ONLY-ONE QUIT-WHEN-NO-CAND (VOLATILE t) SORT FC-TRANSFORMER HIST-FC-TRANSFORMER (MARKED-CANDIDATES helm-comp-read-use-marked) NOMARK (ALISTP t) (CANDIDATE-NUMBER-LIMIT helm-candidate-number-limit) MULTILINE ALLOW-NEST COERCE (GROUP \\='helm))" nil nil) (autoload 'helm-read-file-name "helm-mode" "Read a file name with helm completion.
 
 It is helm `read-file-name' emulation.
 
@@ -1231,7 +1043,7 @@ using `ido-mode', add the commands where you want to use ido to
 
 Note: This mode is incompatible with Emacs23.
 
-(fn &optional ARG)" t nil) (register-definition-prefixes "helm-mode" '("helm-")) (register-definition-prefixes "helm-multi-match" '("helm-m")) (autoload 'helm-browse-url-firefox "helm-net" "Same as `browse-url-firefox' but detach from Emacs.
+(fn &optional ARG)" t nil) (register-definition-prefixes "helm-mode" '("helm-")) (autoload 'helm-browse-url-firefox "helm-net" "Same as `browse-url-firefox' but detach from Emacs.
 
 So when you quit Emacs you can keep your Firefox session open and
 not be prompted to kill the Firefox process.
@@ -1298,7 +1110,7 @@ If `semantic-mode' is active in the current buffer, then use
 semantic for generating tags, otherwise fall back to `imenu'.
 Fill in the symbol at point by default.
 
-(fn ARG)" t nil) (register-definition-prefixes "helm-semantic" '("helm-s")) (defalias 'helm-shell-prompts 'helm-comint-prompts) (defalias 'helm-shell-prompts-all 'helm-comint-prompts-all) (register-definition-prefixes "helm-source" '("helm-")) (defvar helm-top-poll-mode nil "Non-nil if Helm-Top-Poll mode is enabled.
+(fn ARG)" t nil) (register-definition-prefixes "helm-semantic" '("helm-s")) (defalias 'helm-shell-prompts 'helm-comint-prompts) (defalias 'helm-shell-prompts-all 'helm-comint-prompts-all) (defvar helm-top-poll-mode nil "Non-nil if Helm-Top-Poll mode is enabled.
 See the `helm-top-poll-mode' command
 for a description of this minor mode.
 Setting this variable directly does not take effect;
@@ -1351,7 +1163,481 @@ evaluate `(default-value \\='helm-popup-tip-mode)'.
 The mode's hook is called both when the mode is enabled and when
 it is disabled.
 
-(fn &optional ARG)" t nil) (register-definition-prefixes "helm-utils" '("helm-" "with-helm-display-marked-candidates")) (register-definition-prefixes "helm-x-files" '("helm-")) (provide 'helm-autoloads)) "compat" ((compat-27 compat-26 compat-font-lock compat-macs compat-tests compat-28 compat compat-help compat-autoloads compat-25 \.dir-locals compat-24) (register-definition-prefixes "compat-help" '("compat---describe")) (register-definition-prefixes "compat-macs" '("compat-")) (register-definition-prefixes "compat-tests" '("compat-")) (provide 'compat-autoloads)) "dash" ((dash dash-autoloads) (autoload 'dash-fontify-mode "dash" "Toggle fontification of Dash special variables.
+(fn &optional ARG)" t nil) (register-definition-prefixes "helm-utils" '("helm-" "with-helm-display-marked-candidates")) (register-definition-prefixes "helm-x-files" '("helm-")) (provide 'helm-autoloads)) "helm-ag" ((helm-ag-autoloads helm-ag) (autoload 'helm-ag-pop-stack "helm-ag" "Not documented." t nil) (autoload 'helm-ag-clear-stack "helm-ag" "Not documented." t nil) (autoload 'helm-ag-this-file "helm-ag" "Do ag with in this file with QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-ag "helm-ag" "Do ag with in BASEDIR and with QUERY.
+
+(fn &optional BASEDIR QUERY)" t nil) (autoload 'helm-do-ag-this-file "helm-ag" "Not documented, QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-do-ag "helm-ag" "Not documented, BASEDIR, TARGETS, DEFAULT-INPUT.
+
+(fn &optional BASEDIR TARGETS DEFAULT-INPUT)" t nil) (autoload 'helm-ag-project-root "helm-ag" "Not documented, QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-do-ag-project-root "helm-ag" "Not documented, QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-ag-buffers "helm-ag" "Not documented, QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-do-ag-buffers "helm-ag" "Not documented, QUERY.
+
+(fn &optional QUERY)" t nil) (register-definition-prefixes "helm-ag" '("helm-")) (provide 'helm-ag-autoloads)) "helm-descbinds" ((helm-descbinds helm-descbinds-autoloads) (defvar helm-descbinds-mode nil "Non-nil if Helm-Descbinds mode is enabled.
+See the `helm-descbinds-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `helm-descbinds-mode'.") (custom-autoload 'helm-descbinds-mode "helm-descbinds" nil) (autoload 'helm-descbinds-mode "helm-descbinds" "Use `helm' for `describe-bindings'.
+
+This is a minor mode.  If called interactively, toggle the
+`Helm-Descbinds mode' mode.  If the prefix argument is positive,
+enable the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='helm-descbinds-mode)'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+(fn &optional ARG)" t nil) (autoload 'helm-descbinds-install "helm-descbinds" "Use `helm-descbinds' as a replacement of `describe-bindings'." t nil) (autoload 'helm-descbinds-uninstall "helm-descbinds" "Restore original `describe-bindings'." t nil) (autoload 'helm-descbinds "helm-descbinds" "A convenient helm version of `describe-bindings'.
+
+Turning on `helm-descbinds-mode' is the recommended way to
+install this command to replace `describe-bindings'.
+
+You complete against a list of keys + command pairs presented in
+a similar way as `describe-bindings' does, split into sections
+defined by the types of the key bindings (minor and major modes,
+global bindings, etc).
+
+The default action executes a command as if the binding had been
+entered, or narrows the commands according to a prefix key,
+respectively.
+
+The persistent action pops up a help buffer for the selected
+command without quitting.
+
+For key translation maps, the default actions are not very
+useful, yet they are listed for completeness.
+
+(fn &optional PREFIX BUFFER)" t nil) (register-definition-prefixes "helm-descbinds" '("helm-descbind")) (provide 'helm-descbinds-autoloads)) "helm-org" ((helm-org helm-org-autoloads) (require 'helm-easymenu) (easy-menu-add-item nil '("Tools" "Helm") '("Org" ["Org headlines in org agenda files" helm-org-agenda-files-headings t] ["Org headlines in buffer" helm-org-in-buffer-headings t]) "Elpa") (autoload 'helm-org-agenda-files-headings "helm-org" "Preconfigured helm for org files headings.
+
+(fn &optional ARG)" t nil) (autoload 'helm-org-in-buffer-headings "helm-org" "Preconfigured helm for org buffer headings.
+
+(fn &optional ARG)" t nil) (autoload 'helm-org-parent-headings "helm-org" "Preconfigured helm for org headings that are parents of the current heading.
+
+(fn &optional ARG)" t nil) (autoload 'helm-org-capture-templates "helm-org" "Preconfigured helm for org templates." t nil) (autoload 'helm-org-completing-read-tags "helm-org" "Completing read function for Org tags.
+
+This function is used as a `completing-read' function in
+`helm-completing-read-handlers-alist' by `org-set-tags' and
+`org-capture'.
+
+NOTE: Org tag completion will work only if you disable org fast tag
+selection, see (info \"(org) setting tags\").
+
+(fn PROMPT COLLECTION PRED REQ INITIAL HIST DEF INHERIT-INPUT-METHOD NAME BUFFER)" nil nil) (register-definition-prefixes "helm-org" '("helm-")) (provide 'helm-org-autoloads)) "projectile" ((projectile-autoloads projectile) (autoload 'projectile-version "projectile" "Get the Projectile version as string.
+
+If called interactively or if SHOW-VERSION is non-nil, show the
+version in the echo area and the messages buffer.
+
+The returned string includes both, the version from package.el
+and the library version, if both a present and different.
+
+If the version number could not be determined, signal an error,
+if called interactively, or if SHOW-VERSION is non-nil, otherwise
+just return nil.
+
+(fn &optional SHOW-VERSION)" t nil) (autoload 'projectile-invalidate-cache "projectile" "Remove the current project's files from `projectile-projects-cache'.
+
+With a prefix argument PROMPT prompts for the name of the project whose cache
+to invalidate.
+
+(fn PROMPT)" t nil) (autoload 'projectile-purge-file-from-cache "projectile" "Purge FILE from the cache of the current project.
+
+(fn FILE)" t nil) (autoload 'projectile-purge-dir-from-cache "projectile" "Purge DIR from the cache of the current project.
+
+(fn DIR)" t nil) (autoload 'projectile-cache-current-file "projectile" "Add the currently visited file to the cache." t nil) (autoload 'projectile-discover-projects-in-directory "projectile" "Discover any projects in DIRECTORY and add them to the projectile cache.
+
+If DEPTH is non-nil recursively descend exactly DEPTH levels below DIRECTORY and
+discover projects there.
+
+(fn DIRECTORY &optional DEPTH)" t nil) (autoload 'projectile-discover-projects-in-search-path "projectile" "Discover projects in `projectile-project-search-path'.
+Invoked automatically when `projectile-mode' is enabled." t nil) (autoload 'projectile-switch-to-buffer "projectile" "Switch to a project buffer." t nil) (autoload 'projectile-switch-to-buffer-other-window "projectile" "Switch to a project buffer and show it in another window." t nil) (autoload 'projectile-switch-to-buffer-other-frame "projectile" "Switch to a project buffer and show it in another frame." t nil) (autoload 'projectile-display-buffer "projectile" "Display a project buffer in another window without selecting it." t nil) (autoload 'projectile-project-buffers-other-buffer "projectile" "Switch to the most recently selected buffer project buffer.
+Only buffers not visible in windows are returned." t nil) (autoload 'projectile-multi-occur "projectile" "Do a `multi-occur' in the project's buffers.
+With a prefix argument, show NLINES of context.
+
+(fn &optional NLINES)" t nil) (autoload 'projectile-find-other-file "projectile" "Switch between files with the same name but different extensions.
+With FLEX-MATCHING, match any file that contains the base name of current file.
+Other file extensions can be customized with the variable
+`projectile-other-file-alist'.
+
+(fn &optional FLEX-MATCHING)" t nil) (autoload 'projectile-find-other-file-other-window "projectile" "Switch between files with different extensions in other window.
+Switch between files with the same name but different extensions in other
+window.  With FLEX-MATCHING, match any file that contains the base name of
+current file.  Other file extensions can be customized with the variable
+`projectile-other-file-alist'.
+
+(fn &optional FLEX-MATCHING)" t nil) (autoload 'projectile-find-other-file-other-frame "projectile" "Switch between files with different extensions in other frame.
+Switch between files with the same name but different extensions in other frame.
+With FLEX-MATCHING, match any file that contains the base name of current
+file.  Other file extensions can be customized with the variable
+`projectile-other-file-alist'.
+
+(fn &optional FLEX-MATCHING)" t nil) (autoload 'projectile-find-file-dwim "projectile" "Jump to a project's files using completion based on context.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+If point is on a filename, Projectile first tries to search for that
+file in project:
+
+- If it finds just a file, it switches to that file instantly.  This works
+even if the filename is incomplete, but there's only a single file in the
+current project that matches the filename at point.  For example, if
+there's only a single file named \"projectile/projectile.el\" but the
+current filename is \"projectile/proj\" (incomplete),
+`projectile-find-file-dwim' still switches to \"projectile/projectile.el\"
+immediately because this is the only filename that matches.
+
+- If it finds a list of files, the list is displayed for selecting.  A list
+of files is displayed when a filename appears more than one in the project
+or the filename at point is a prefix of more than two files in a project.
+For example, if `projectile-find-file-dwim' is executed on a filepath like
+\"projectile/\", it lists the content of that directory.  If it is executed
+on a partial filename like \"projectile/a\", a list of files with character
+'a' in that directory is presented.
+
+- If it finds nothing, display a list of all files in project for selecting.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-dwim-other-window "projectile" "Jump to a project's files using completion based on context in other window.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+If point is on a filename, Projectile first tries to search for that
+file in project:
+
+- If it finds just a file, it switches to that file instantly.  This works
+even if the filename is incomplete, but there's only a single file in the
+current project that matches the filename at point.  For example, if
+there's only a single file named \"projectile/projectile.el\" but the
+current filename is \"projectile/proj\" (incomplete),
+`projectile-find-file-dwim-other-window' still switches to
+\"projectile/projectile.el\" immediately because this is the only filename
+that matches.
+
+- If it finds a list of files, the list is displayed for selecting.  A list
+of files is displayed when a filename appears more than one in the project
+or the filename at point is a prefix of more than two files in a project.
+For example, if `projectile-find-file-dwim-other-window' is executed on a
+filepath like \"projectile/\", it lists the content of that directory.  If
+it is executed on a partial filename like \"projectile/a\", a list of files
+with character 'a' in that directory is presented.
+
+- If it finds nothing, display a list of all files in project for selecting.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-dwim-other-frame "projectile" "Jump to a project's files using completion based on context in other frame.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+If point is on a filename, Projectile first tries to search for that
+file in project:
+
+- If it finds just a file, it switches to that file instantly.  This works
+even if the filename is incomplete, but there's only a single file in the
+current project that matches the filename at point.  For example, if
+there's only a single file named \"projectile/projectile.el\" but the
+current filename is \"projectile/proj\" (incomplete),
+`projectile-find-file-dwim-other-frame' still switches to
+\"projectile/projectile.el\" immediately because this is the only filename
+that matches.
+
+- If it finds a list of files, the list is displayed for selecting.  A list
+of files is displayed when a filename appears more than one in the project
+or the filename at point is a prefix of more than two files in a project.
+For example, if `projectile-find-file-dwim-other-frame' is executed on a
+filepath like \"projectile/\", it lists the content of that directory.  If
+it is executed on a partial filename like \"projectile/a\", a list of files
+with character 'a' in that directory is presented.
+
+- If it finds nothing, display a list of all files in project for selecting.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file "projectile" "Jump to a project's file using completion.
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-other-window "projectile" "Jump to a project's file using completion and show it in another window.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-other-frame "projectile" "Jump to a project's file using completion and show it in another frame.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-toggle-project-read-only "projectile" "Toggle project read only." t nil) (autoload 'projectile-find-dir "projectile" "Jump to a project's directory using completion.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-dir-other-window "projectile" "Jump to a project's directory in other window using completion.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-dir-other-frame "projectile" "Jump to a project's directory in other frame using completion.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-test-file "projectile" "Jump to a project's test file using completion.
+
+With a prefix arg INVALIDATE-CACHE invalidates the cache first.
+
+(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-related-file-other-window "projectile" "Open related file in other window." t nil) (autoload 'projectile-find-related-file-other-frame "projectile" "Open related file in other frame." t nil) (autoload 'projectile-find-related-file "projectile" "Open related file." t nil) (autoload 'projectile-related-files-fn-groups "projectile" "Generate a related-files-fn which relates as KIND for files in each of GROUPS.
+
+(fn KIND GROUPS)" nil nil) (autoload 'projectile-related-files-fn-extensions "projectile" "Generate a related-files-fn which relates as KIND for files having EXTENSIONS.
+
+(fn KIND EXTENSIONS)" nil nil) (autoload 'projectile-related-files-fn-test-with-prefix "projectile" "Generate a related-files-fn which relates tests and impl.
+Use files with EXTENSION based on TEST-PREFIX.
+
+(fn EXTENSION TEST-PREFIX)" nil nil) (autoload 'projectile-related-files-fn-test-with-suffix "projectile" "Generate a related-files-fn which relates tests and impl.
+Use files with EXTENSION based on TEST-SUFFIX.
+
+(fn EXTENSION TEST-SUFFIX)" nil nil) (autoload 'projectile-project-info "projectile" "Display info for current project." t nil) (autoload 'projectile-find-implementation-or-test-other-window "projectile" "Open matching implementation or test file in other window.
+
+See the documentation of `projectile--find-matching-file' and
+`projectile--find-matching-test' for how implementation and test files
+are determined." t nil) (autoload 'projectile-find-implementation-or-test-other-frame "projectile" "Open matching implementation or test file in other frame.
+
+See the documentation of `projectile--find-matching-file' and
+`projectile--find-matching-test' for how implementation and test files
+are determined." t nil) (autoload 'projectile-toggle-between-implementation-and-test "projectile" "Toggle between an implementation file and its test file.
+
+
+See the documentation of `projectile--find-matching-file' and
+`projectile--find-matching-test' for how implementation and test files
+are determined." t nil) (autoload 'projectile-grep "projectile" "Perform rgrep in the project.
+
+With a prefix ARG asks for files (globbing-aware) which to grep in.
+With prefix ARG of `-' (such as `M--'), default the files (without prompt),
+to `projectile-grep-default-files'.
+
+With REGEXP given, don't query the user for a regexp.
+
+(fn &optional REGEXP ARG)" t nil) (autoload 'projectile-ag "projectile" "Run an ag search with SEARCH-TERM in the project.
+
+With an optional prefix argument ARG SEARCH-TERM is interpreted as a
+regular expression.
+
+(fn SEARCH-TERM &optional ARG)" t nil) (autoload 'projectile-ripgrep "projectile" "Run a ripgrep (rg) search with `SEARCH-TERM' at current project root.
+
+With an optional prefix argument ARG SEARCH-TERM is interpreted as a
+regular expression.
+
+This command depends on of the Emacs packages ripgrep or rg being
+installed to work.
+
+(fn SEARCH-TERM &optional ARG)" t nil) (autoload 'projectile-regenerate-tags "projectile" "Regenerate the project's [e|g]tags." t nil) (autoload 'projectile-find-tag "projectile" "Find tag in project." t nil) (autoload 'projectile-run-command-in-root "projectile" "Invoke `execute-extended-command' in the project's root." t nil) (autoload 'projectile-run-shell-command-in-root "projectile" "Invoke `shell-command' in the project's root.
+
+(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER)" t nil) (autoload 'projectile-run-async-shell-command-in-root "projectile" "Invoke `async-shell-command' in the project's root.
+
+(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER)" t nil) (autoload 'projectile-run-gdb "projectile" "Invoke `gdb' in the project's root." t nil) (autoload 'projectile-run-shell "projectile" "Invoke `shell' in the project's root.
+
+Switch to the project specific shell buffer if it already exists.
+
+Use a prefix argument ARG to indicate creation of a new process instead.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-run-eshell "projectile" "Invoke `eshell' in the project's root.
+
+Switch to the project specific eshell buffer if it already exists.
+
+Use a prefix argument ARG to indicate creation of a new process instead.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-run-ielm "projectile" "Invoke `ielm' in the project's root.
+
+Switch to the project specific ielm buffer if it already exists.
+
+Use a prefix argument ARG to indicate creation of a new process instead.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-run-term "projectile" "Invoke `term' in the project's root.
+
+Switch to the project specific term buffer if it already exists.
+
+Use a prefix argument ARG to indicate creation of a new process instead.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-run-vterm "projectile" "Invoke `vterm' in the project's root.
+
+Switch to the project specific term buffer if it already exists.
+
+Use a prefix argument ARG to indicate creation of a new process instead.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-replace "projectile" "Replace literal string in project using non-regexp `tags-query-replace'.
+
+With a prefix argument ARG prompts you for a directory on which
+to run the replacement.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-replace-regexp "projectile" "Replace a regexp in the project using `tags-query-replace'.
+
+With a prefix argument ARG prompts you for a directory on which
+to run the replacement.
+
+(fn &optional ARG)" t nil) (autoload 'projectile-kill-buffers "projectile" "Kill project buffers.
+
+The buffer are killed according to the value of
+`projectile-kill-buffers-filter'." t nil) (autoload 'projectile-save-project-buffers "projectile" "Save all project buffers." t nil) (autoload 'projectile-dired "projectile" "Open `dired' at the root of the project." t nil) (autoload 'projectile-dired-other-window "projectile" "Open `dired'  at the root of the project in another window." t nil) (autoload 'projectile-dired-other-frame "projectile" "Open `dired' at the root of the project in another frame." t nil) (autoload 'projectile-vc "projectile" "Open `vc-dir' at the root of the project.
+
+For git projects `magit-status-internal' is used if available.
+For hg projects `monky-status' is used if available.
+
+If PROJECT-ROOT is given, it is opened instead of the project
+root directory of the current buffer file.  If interactively
+called with a prefix argument, the user is prompted for a project
+directory to open.
+
+(fn &optional PROJECT-ROOT)" t nil) (autoload 'projectile-recentf "projectile" "Show a list of recently visited files in a project." t nil) (autoload 'projectile-configure-project "projectile" "Run project configure command.
+
+Normally you'll be prompted for a compilation command, unless
+variable `compilation-read-command'.  You can force the prompt
+with a prefix ARG.
+
+(fn ARG)" t nil) (autoload 'projectile-compile-project "projectile" "Run project compilation command.
+
+Normally you'll be prompted for a compilation command, unless
+variable `compilation-read-command'.  You can force the prompt
+with a prefix ARG.
+
+(fn ARG)" t nil) (autoload 'projectile-test-project "projectile" "Run project test command.
+
+Normally you'll be prompted for a compilation command, unless
+variable `compilation-read-command'.  You can force the prompt
+with a prefix ARG.
+
+(fn ARG)" t nil) (autoload 'projectile-install-project "projectile" "Run project install command.
+
+Normally you'll be prompted for a compilation command, unless
+variable `compilation-read-command'.  You can force the prompt
+with a prefix ARG.
+
+(fn ARG)" t nil) (autoload 'projectile-package-project "projectile" "Run project package command.
+
+Normally you'll be prompted for a compilation command, unless
+variable `compilation-read-command'.  You can force the prompt
+with a prefix ARG.
+
+(fn ARG)" t nil) (autoload 'projectile-run-project "projectile" "Run project run command.
+
+Normally you'll be prompted for a compilation command, unless
+variable `compilation-read-command'.  You can force the prompt
+with a prefix ARG.
+
+(fn ARG)" t nil) (autoload 'projectile-repeat-last-command "projectile" "Run last projectile external command.
+
+External commands are: `projectile-configure-project',
+`projectile-compile-project', `projectile-test-project',
+`projectile-install-project', `projectile-package-project',
+and `projectile-run-project'.
+
+If the prefix argument SHOW_PROMPT is non nil, the command can be edited.
+
+(fn SHOW-PROMPT)" t nil) (autoload 'projectile-switch-project "projectile" "Switch to a project we have visited before.
+Invokes the command referenced by `projectile-switch-project-action' on switch.
+With a prefix ARG invokes `projectile-commander' instead of
+`projectile-switch-project-action.'
+
+(fn &optional ARG)" t nil) (autoload 'projectile-switch-open-project "projectile" "Switch to a project we have currently opened.
+Invokes the command referenced by `projectile-switch-project-action' on switch.
+With a prefix ARG invokes `projectile-commander' instead of
+`projectile-switch-project-action.'
+
+(fn &optional ARG)" t nil) (autoload 'projectile-find-file-in-directory "projectile" "Jump to a file in a (maybe regular) DIRECTORY.
+
+This command will first prompt for the directory the file is in.
+
+(fn &optional DIRECTORY)" t nil) (autoload 'projectile-find-file-in-known-projects "projectile" "Jump to a file in any of the known projects." t nil) (autoload 'projectile-cleanup-known-projects "projectile" "Remove known projects that don't exist anymore." t nil) (autoload 'projectile-clear-known-projects "projectile" "Clear both `projectile-known-projects' and `projectile-known-projects-file'." t nil) (autoload 'projectile-reset-known-projects "projectile" "Clear known projects and rediscover." t nil) (autoload 'projectile-remove-known-project "projectile" "Remove PROJECT from the list of known projects.
+
+(fn &optional PROJECT)" t nil) (autoload 'projectile-remove-current-project-from-known-projects "projectile" "Remove the current project from the list of known projects." t nil) (autoload 'projectile-add-known-project "projectile" "Add PROJECT-ROOT to the list of known projects.
+
+(fn PROJECT-ROOT)" t nil) (autoload 'projectile-ibuffer "projectile" "Open an IBuffer window showing all buffers in the current project.
+
+Let user choose another project when PROMPT-FOR-PROJECT is supplied.
+
+(fn PROMPT-FOR-PROJECT)" t nil) (autoload 'projectile-commander "projectile" "Execute a Projectile command with a single letter.
+The user is prompted for a single character indicating the action to invoke.
+The `?' character describes then
+available actions.
+
+See `def-projectile-commander-method' for defining new methods." t nil) (autoload 'projectile-browse-dirty-projects "projectile" "Browse dirty version controlled projects.
+
+With a prefix argument, or if CACHED is non-nil, try to use the cached
+dirty project list.
+
+(fn &optional CACHED)" t nil) (autoload 'projectile-edit-dir-locals "projectile" "Edit or create a .dir-locals.el file of the project." t nil) (defvar projectile-mode nil "Non-nil if Projectile mode is enabled.
+See the `projectile-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `projectile-mode'.") (custom-autoload 'projectile-mode "projectile" nil) (autoload 'projectile-mode "projectile" "Minor mode to assist project management and navigation.
+
+When called interactively, toggle `projectile-mode'.  With prefix
+ARG, enable `projectile-mode' if ARG is positive, otherwise disable
+it.
+
+When called from Lisp, enable `projectile-mode' if ARG is omitted,
+nil or positive.  If ARG is `toggle', toggle `projectile-mode'.
+Otherwise behave as if called interactively.
+
+\\{projectile-mode-map}
+
+(fn &optional ARG)" t nil) (define-obsolete-function-alias 'projectile-global-mode 'projectile-mode "1.0") (register-definition-prefixes "projectile" '("??" "compilation-find-file-projectile-find-compilation-buffer" "def-projectile-commander-method" "delete-file-projectile-remove-from-cache" "projectile-")) (provide 'projectile-autoloads)) "helm-projectile" ((helm-projectile helm-projectile-autoloads) (defvar helm-projectile-fuzzy-match t "Enable fuzzy matching for Helm Projectile commands.
+This needs to be set before loading helm-projectile.el.") (custom-autoload 'helm-projectile-fuzzy-match "helm-projectile" t) (autoload 'helm-projectile-find-file-dwim "helm-projectile" "Find file at point based on context." t nil) (autoload 'helm-projectile-find-other-file "helm-projectile" "Switch between files with the same name but different extensions using Helm.
+With FLEX-MATCHING, match any file that contains the base name of current file.
+Other file extensions can be customized with the variable `projectile-other-file-alist'.
+
+(fn &optional FLEX-MATCHING)" t nil) (autoload 'helm-projectile-on "helm-projectile" "Turn on `helm-projectile' key bindings." t nil) (autoload 'helm-projectile-off "helm-projectile" "Turn off `helm-projectile' key bindings." t nil) (autoload 'helm-projectile-grep "helm-projectile" "Helm version of `projectile-grep'.
+DIR is the project root, if not set then current directory is used
+
+(fn &optional DIR)" t nil) (autoload 'helm-projectile-ack "helm-projectile" "Helm version of projectile-ack.
+
+(fn &optional DIR)" t nil) (autoload 'helm-projectile-ag "helm-projectile" "Helm version of `projectile-ag'.
+
+(fn &optional OPTIONS)" t nil) (autoload 'helm-projectile-rg "helm-projectile" "Projectile version of `helm-rg'." t nil) (autoload 'helm-projectile-toggle "helm-projectile" "Toggle Helm version of Projectile commands.
+
+(fn TOGGLE)" nil nil) (autoload 'helm-projectile "helm-projectile" "Use projectile with Helm instead of ido.
+
+With a prefix ARG invalidates the cache first.
+If invoked outside of a project, displays a list of known projects to jump.
+
+(fn &optional ARG)" t nil) (eval-after-load 'projectile '(progn (define-key projectile-command-map (kbd "h") #'helm-projectile))) (register-definition-prefixes "helm-projectile" '("helm-")) (provide 'helm-projectile-autoloads)) "helm-swoop" ((helm-swoop-autoloads helm-swoop) (autoload 'helm-swoop-back-to-last-point "helm-swoop" "Go back to last position where `helm-swoop' was called.
+If CANCEL is non-nil, store `helm-swoop-last-point'.
+
+(fn &optional CANCEL)" t nil) (autoload 'helm-swoop "helm-swoop" "List the all lines to another buffer, which is able to squeeze by
+ any words you input. At the same time, the original buffer's cursor
+ is jumping line to line according to moving up and down the list.
+
+(fn &key QUERY SOURCE (MULTILINE current-prefix-arg))" t nil) (autoload 'helm-swoop-from-isearch "helm-swoop" "Invoke `helm-swoop' from isearch." t nil) (autoload 'helm-multi-swoop "helm-swoop" "Multi swoop for QUERY in BUFLIST.
+
+Usage:
+  \\[execute-extended-command] helm-multi-swoop
+  1. Select any buffers by [C-SPC] or [M-SPC]
+  2. Press [RET] to start `helm-multi-swoop'
+
+\\[universal-argument] \\[execute-extended-command] helm-multi-swoop
+If you have done helm-multi-swoop before, you can skip select buffers step.
+Last selected buffers will be applied to helm-multi-swoop.
+
+(fn &optional QUERY BUFLIST)" t nil) (autoload 'helm-multi-swoop-all "helm-swoop" "Apply all buffers to helm-multi-swoop for QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-multi-swoop-org "helm-swoop" "Applie all `org-mode' buffers to helm-multi-swoop for QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-multi-swoop-current-mode "helm-swoop" "Applie all buffers of the same mode as the current buffer to helm-multi-swoop for QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-multi-swoop-projectile "helm-swoop" "Apply all opened buffers of the current project to helm-multi-swoop for QUERY.
+
+(fn &optional QUERY)" t nil) (autoload 'helm-swoop-without-pre-input "helm-swoop" "Start helm-swoop without pre input query." t nil) (autoload 'helm-swoop-symble-pre-input "helm-swoop" "Start helm-swoop without pre input query." t nil) (autoload 'helm-multi-swoop-edit "helm-swoop" "Multi swoop edit." t nil) (register-definition-prefixes "helm-swoop" '("get-buffers-matching-mode" "helm-")) (provide 'helm-swoop-autoloads)) "helm-xref" ((helm-xref helm-xref-autoloads) (autoload 'helm-xref-show-xrefs "helm-xref" "Function to display XREFS.
+
+Needs to be set the value of `xref-show-xrefs-function'.
+
+(fn XREFS ALIST)" nil nil) (autoload 'helm-xref-show-xrefs-27 "helm-xref" "Function to display XREFS.
+
+Needs to be set the value of `xref-show-xrefs-function'.
+
+(fn FETCHER ALIST)" nil nil) (autoload 'helm-xref-show-defs-27 "helm-xref" "Function to display list of definitions.
+
+(fn FETCHER ALIST)" nil nil) (if (< emacs-major-version 27) (setq xref-show-xrefs-function 'helm-xref-show-xrefs) (progn (setq xref-show-xrefs-function 'helm-xref-show-xrefs-27) (setq xref-show-definitions-function 'helm-xref-show-defs-27))) (register-definition-prefixes "helm-xref" '("helm-xref-")) (provide 'helm-xref-autoloads)) "compat" ((compat-27 compat-26 compat-font-lock compat-macs compat-tests compat-28 compat compat-help compat-autoloads compat-25 \.dir-locals compat-24) (register-definition-prefixes "compat-help" '("compat---describe")) (register-definition-prefixes "compat-macs" '("compat-")) (register-definition-prefixes "compat-tests" '("compat-")) (provide 'compat-autoloads)) "dash" ((dash dash-autoloads) (autoload 'dash-fontify-mode "dash" "Toggle fontification of Dash special variables.
 
 This is a minor mode.  If called interactively, toggle the
 `Dash-Fontify mode' mode.  If the prefix argument is positive,
@@ -2853,483 +3139,9 @@ a Git repository." nil nil) (register-definition-prefixes "magit-wip" '("magit-"
 
 (fn PATH BRANCH START-POINT &optional FORCE)" t nil) (autoload 'magit-worktree-move "magit-worktree" "Move WORKTREE to PATH.
 
-(fn WORKTREE PATH)" t nil) (register-definition-prefixes "magit-worktree" '("magit-")) (provide 'magit-autoloads)) "helm-ag" ((helm-ag-autoloads helm-ag) (autoload 'helm-ag-pop-stack "helm-ag" "Not documented." t nil) (autoload 'helm-ag-clear-stack "helm-ag" "Not documented." t nil) (autoload 'helm-ag-this-file "helm-ag" "Do ag with in this file with QUERY.
+(fn WORKTREE PATH)" t nil) (register-definition-prefixes "magit-worktree" '("magit-")) (provide 'magit-autoloads))))
 
-(fn &optional QUERY)" t nil) (autoload 'helm-ag "helm-ag" "Do ag with in BASEDIR and with QUERY.
-
-(fn &optional BASEDIR QUERY)" t nil) (autoload 'helm-do-ag-this-file "helm-ag" "Not documented, QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-do-ag "helm-ag" "Not documented, BASEDIR, TARGETS, DEFAULT-INPUT.
-
-(fn &optional BASEDIR TARGETS DEFAULT-INPUT)" t nil) (autoload 'helm-ag-project-root "helm-ag" "Not documented, QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-do-ag-project-root "helm-ag" "Not documented, QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-ag-buffers "helm-ag" "Not documented, QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-do-ag-buffers "helm-ag" "Not documented, QUERY.
-
-(fn &optional QUERY)" t nil) (register-definition-prefixes "helm-ag" '("helm-")) (provide 'helm-ag-autoloads)) "helm-descbinds" ((helm-descbinds helm-descbinds-autoloads) (defvar helm-descbinds-mode nil "Non-nil if Helm-Descbinds mode is enabled.
-See the `helm-descbinds-mode' command
-for a description of this minor mode.
-Setting this variable directly does not take effect;
-either customize it (see the info node `Easy Customization')
-or call the function `helm-descbinds-mode'.") (custom-autoload 'helm-descbinds-mode "helm-descbinds" nil) (autoload 'helm-descbinds-mode "helm-descbinds" "Use `helm' for `describe-bindings'.
-
-This is a minor mode.  If called interactively, toggle the
-`Helm-Descbinds mode' mode.  If the prefix argument is positive,
-enable the mode, and if it is zero or negative, disable the mode.
-
-If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
-the mode if ARG is nil, omitted, or is a positive number.
-Disable the mode if ARG is a negative number.
-
-To check whether the minor mode is enabled in the current buffer,
-evaluate `(default-value \\='helm-descbinds-mode)'.
-
-The mode's hook is called both when the mode is enabled and when
-it is disabled.
-
-(fn &optional ARG)" t nil) (autoload 'helm-descbinds-install "helm-descbinds" "Use `helm-descbinds' as a replacement of `describe-bindings'." t nil) (autoload 'helm-descbinds-uninstall "helm-descbinds" "Restore original `describe-bindings'." t nil) (autoload 'helm-descbinds "helm-descbinds" "A convenient helm version of `describe-bindings'.
-
-Turning on `helm-descbinds-mode' is the recommended way to
-install this command to replace `describe-bindings'.
-
-You complete against a list of keys + command pairs presented in
-a similar way as `describe-bindings' does, split into sections
-defined by the types of the key bindings (minor and major modes,
-global bindings, etc).
-
-The default action executes a command as if the binding had been
-entered, or narrows the commands according to a prefix key,
-respectively.
-
-The persistent action pops up a help buffer for the selected
-command without quitting.
-
-For key translation maps, the default actions are not very
-useful, yet they are listed for completeness.
-
-(fn &optional PREFIX BUFFER)" t nil) (register-definition-prefixes "helm-descbinds" '("helm-descbind")) (provide 'helm-descbinds-autoloads)) "helm-org" ((helm-org helm-org-autoloads) (require 'helm-easymenu) (easy-menu-add-item nil '("Tools" "Helm") '("Org" ["Org headlines in org agenda files" helm-org-agenda-files-headings t] ["Org headlines in buffer" helm-org-in-buffer-headings t]) "Elpa") (autoload 'helm-org-agenda-files-headings "helm-org" "Preconfigured helm for org files headings.
-
-(fn &optional ARG)" t nil) (autoload 'helm-org-in-buffer-headings "helm-org" "Preconfigured helm for org buffer headings.
-
-(fn &optional ARG)" t nil) (autoload 'helm-org-parent-headings "helm-org" "Preconfigured helm for org headings that are parents of the current heading.
-
-(fn &optional ARG)" t nil) (autoload 'helm-org-capture-templates "helm-org" "Preconfigured helm for org templates." t nil) (autoload 'helm-org-completing-read-tags "helm-org" "Completing read function for Org tags.
-
-This function is used as a `completing-read' function in
-`helm-completing-read-handlers-alist' by `org-set-tags' and
-`org-capture'.
-
-NOTE: Org tag completion will work only if you disable org fast tag
-selection, see (info \"(org) setting tags\").
-
-(fn PROMPT COLLECTION PRED REQ INITIAL HIST DEF INHERIT-INPUT-METHOD NAME BUFFER)" nil nil) (register-definition-prefixes "helm-org" '("helm-")) (provide 'helm-org-autoloads)) "projectile" ((projectile-autoloads projectile) (autoload 'projectile-version "projectile" "Get the Projectile version as string.
-
-If called interactively or if SHOW-VERSION is non-nil, show the
-version in the echo area and the messages buffer.
-
-The returned string includes both, the version from package.el
-and the library version, if both a present and different.
-
-If the version number could not be determined, signal an error,
-if called interactively, or if SHOW-VERSION is non-nil, otherwise
-just return nil.
-
-(fn &optional SHOW-VERSION)" t nil) (autoload 'projectile-invalidate-cache "projectile" "Remove the current project's files from `projectile-projects-cache'.
-
-With a prefix argument PROMPT prompts for the name of the project whose cache
-to invalidate.
-
-(fn PROMPT)" t nil) (autoload 'projectile-purge-file-from-cache "projectile" "Purge FILE from the cache of the current project.
-
-(fn FILE)" t nil) (autoload 'projectile-purge-dir-from-cache "projectile" "Purge DIR from the cache of the current project.
-
-(fn DIR)" t nil) (autoload 'projectile-cache-current-file "projectile" "Add the currently visited file to the cache." t nil) (autoload 'projectile-discover-projects-in-directory "projectile" "Discover any projects in DIRECTORY and add them to the projectile cache.
-
-If DEPTH is non-nil recursively descend exactly DEPTH levels below DIRECTORY and
-discover projects there.
-
-(fn DIRECTORY &optional DEPTH)" t nil) (autoload 'projectile-discover-projects-in-search-path "projectile" "Discover projects in `projectile-project-search-path'.
-Invoked automatically when `projectile-mode' is enabled." t nil) (autoload 'projectile-switch-to-buffer "projectile" "Switch to a project buffer." t nil) (autoload 'projectile-switch-to-buffer-other-window "projectile" "Switch to a project buffer and show it in another window." t nil) (autoload 'projectile-switch-to-buffer-other-frame "projectile" "Switch to a project buffer and show it in another frame." t nil) (autoload 'projectile-display-buffer "projectile" "Display a project buffer in another window without selecting it." t nil) (autoload 'projectile-project-buffers-other-buffer "projectile" "Switch to the most recently selected buffer project buffer.
-Only buffers not visible in windows are returned." t nil) (autoload 'projectile-multi-occur "projectile" "Do a `multi-occur' in the project's buffers.
-With a prefix argument, show NLINES of context.
-
-(fn &optional NLINES)" t nil) (autoload 'projectile-find-other-file "projectile" "Switch between files with the same name but different extensions.
-With FLEX-MATCHING, match any file that contains the base name of current file.
-Other file extensions can be customized with the variable
-`projectile-other-file-alist'.
-
-(fn &optional FLEX-MATCHING)" t nil) (autoload 'projectile-find-other-file-other-window "projectile" "Switch between files with different extensions in other window.
-Switch between files with the same name but different extensions in other
-window.  With FLEX-MATCHING, match any file that contains the base name of
-current file.  Other file extensions can be customized with the variable
-`projectile-other-file-alist'.
-
-(fn &optional FLEX-MATCHING)" t nil) (autoload 'projectile-find-other-file-other-frame "projectile" "Switch between files with different extensions in other frame.
-Switch between files with the same name but different extensions in other frame.
-With FLEX-MATCHING, match any file that contains the base name of current
-file.  Other file extensions can be customized with the variable
-`projectile-other-file-alist'.
-
-(fn &optional FLEX-MATCHING)" t nil) (autoload 'projectile-find-file-dwim "projectile" "Jump to a project's files using completion based on context.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-If point is on a filename, Projectile first tries to search for that
-file in project:
-
-- If it finds just a file, it switches to that file instantly.  This works
-even if the filename is incomplete, but there's only a single file in the
-current project that matches the filename at point.  For example, if
-there's only a single file named \"projectile/projectile.el\" but the
-current filename is \"projectile/proj\" (incomplete),
-`projectile-find-file-dwim' still switches to \"projectile/projectile.el\"
-immediately because this is the only filename that matches.
-
-- If it finds a list of files, the list is displayed for selecting.  A list
-of files is displayed when a filename appears more than one in the project
-or the filename at point is a prefix of more than two files in a project.
-For example, if `projectile-find-file-dwim' is executed on a filepath like
-\"projectile/\", it lists the content of that directory.  If it is executed
-on a partial filename like \"projectile/a\", a list of files with character
-'a' in that directory is presented.
-
-- If it finds nothing, display a list of all files in project for selecting.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-dwim-other-window "projectile" "Jump to a project's files using completion based on context in other window.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-If point is on a filename, Projectile first tries to search for that
-file in project:
-
-- If it finds just a file, it switches to that file instantly.  This works
-even if the filename is incomplete, but there's only a single file in the
-current project that matches the filename at point.  For example, if
-there's only a single file named \"projectile/projectile.el\" but the
-current filename is \"projectile/proj\" (incomplete),
-`projectile-find-file-dwim-other-window' still switches to
-\"projectile/projectile.el\" immediately because this is the only filename
-that matches.
-
-- If it finds a list of files, the list is displayed for selecting.  A list
-of files is displayed when a filename appears more than one in the project
-or the filename at point is a prefix of more than two files in a project.
-For example, if `projectile-find-file-dwim-other-window' is executed on a
-filepath like \"projectile/\", it lists the content of that directory.  If
-it is executed on a partial filename like \"projectile/a\", a list of files
-with character 'a' in that directory is presented.
-
-- If it finds nothing, display a list of all files in project for selecting.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-dwim-other-frame "projectile" "Jump to a project's files using completion based on context in other frame.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-If point is on a filename, Projectile first tries to search for that
-file in project:
-
-- If it finds just a file, it switches to that file instantly.  This works
-even if the filename is incomplete, but there's only a single file in the
-current project that matches the filename at point.  For example, if
-there's only a single file named \"projectile/projectile.el\" but the
-current filename is \"projectile/proj\" (incomplete),
-`projectile-find-file-dwim-other-frame' still switches to
-\"projectile/projectile.el\" immediately because this is the only filename
-that matches.
-
-- If it finds a list of files, the list is displayed for selecting.  A list
-of files is displayed when a filename appears more than one in the project
-or the filename at point is a prefix of more than two files in a project.
-For example, if `projectile-find-file-dwim-other-frame' is executed on a
-filepath like \"projectile/\", it lists the content of that directory.  If
-it is executed on a partial filename like \"projectile/a\", a list of files
-with character 'a' in that directory is presented.
-
-- If it finds nothing, display a list of all files in project for selecting.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file "projectile" "Jump to a project's file using completion.
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-other-window "projectile" "Jump to a project's file using completion and show it in another window.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-file-other-frame "projectile" "Jump to a project's file using completion and show it in another frame.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-toggle-project-read-only "projectile" "Toggle project read only." t nil) (autoload 'projectile-find-dir "projectile" "Jump to a project's directory using completion.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-dir-other-window "projectile" "Jump to a project's directory in other window using completion.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-dir-other-frame "projectile" "Jump to a project's directory in other frame using completion.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-test-file "projectile" "Jump to a project's test file using completion.
-
-With a prefix arg INVALIDATE-CACHE invalidates the cache first.
-
-(fn &optional INVALIDATE-CACHE)" t nil) (autoload 'projectile-find-related-file-other-window "projectile" "Open related file in other window." t nil) (autoload 'projectile-find-related-file-other-frame "projectile" "Open related file in other frame." t nil) (autoload 'projectile-find-related-file "projectile" "Open related file." t nil) (autoload 'projectile-related-files-fn-groups "projectile" "Generate a related-files-fn which relates as KIND for files in each of GROUPS.
-
-(fn KIND GROUPS)" nil nil) (autoload 'projectile-related-files-fn-extensions "projectile" "Generate a related-files-fn which relates as KIND for files having EXTENSIONS.
-
-(fn KIND EXTENSIONS)" nil nil) (autoload 'projectile-related-files-fn-test-with-prefix "projectile" "Generate a related-files-fn which relates tests and impl.
-Use files with EXTENSION based on TEST-PREFIX.
-
-(fn EXTENSION TEST-PREFIX)" nil nil) (autoload 'projectile-related-files-fn-test-with-suffix "projectile" "Generate a related-files-fn which relates tests and impl.
-Use files with EXTENSION based on TEST-SUFFIX.
-
-(fn EXTENSION TEST-SUFFIX)" nil nil) (autoload 'projectile-project-info "projectile" "Display info for current project." t nil) (autoload 'projectile-find-implementation-or-test-other-window "projectile" "Open matching implementation or test file in other window.
-
-See the documentation of `projectile--find-matching-file' and
-`projectile--find-matching-test' for how implementation and test files
-are determined." t nil) (autoload 'projectile-find-implementation-or-test-other-frame "projectile" "Open matching implementation or test file in other frame.
-
-See the documentation of `projectile--find-matching-file' and
-`projectile--find-matching-test' for how implementation and test files
-are determined." t nil) (autoload 'projectile-toggle-between-implementation-and-test "projectile" "Toggle between an implementation file and its test file.
-
-
-See the documentation of `projectile--find-matching-file' and
-`projectile--find-matching-test' for how implementation and test files
-are determined." t nil) (autoload 'projectile-grep "projectile" "Perform rgrep in the project.
-
-With a prefix ARG asks for files (globbing-aware) which to grep in.
-With prefix ARG of `-' (such as `M--'), default the files (without prompt),
-to `projectile-grep-default-files'.
-
-With REGEXP given, don't query the user for a regexp.
-
-(fn &optional REGEXP ARG)" t nil) (autoload 'projectile-ag "projectile" "Run an ag search with SEARCH-TERM in the project.
-
-With an optional prefix argument ARG SEARCH-TERM is interpreted as a
-regular expression.
-
-(fn SEARCH-TERM &optional ARG)" t nil) (autoload 'projectile-ripgrep "projectile" "Run a ripgrep (rg) search with `SEARCH-TERM' at current project root.
-
-With an optional prefix argument ARG SEARCH-TERM is interpreted as a
-regular expression.
-
-This command depends on of the Emacs packages ripgrep or rg being
-installed to work.
-
-(fn SEARCH-TERM &optional ARG)" t nil) (autoload 'projectile-regenerate-tags "projectile" "Regenerate the project's [e|g]tags." t nil) (autoload 'projectile-find-tag "projectile" "Find tag in project." t nil) (autoload 'projectile-run-command-in-root "projectile" "Invoke `execute-extended-command' in the project's root." t nil) (autoload 'projectile-run-shell-command-in-root "projectile" "Invoke `shell-command' in the project's root.
-
-(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER)" t nil) (autoload 'projectile-run-async-shell-command-in-root "projectile" "Invoke `async-shell-command' in the project's root.
-
-(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER)" t nil) (autoload 'projectile-run-gdb "projectile" "Invoke `gdb' in the project's root." t nil) (autoload 'projectile-run-shell "projectile" "Invoke `shell' in the project's root.
-
-Switch to the project specific shell buffer if it already exists.
-
-Use a prefix argument ARG to indicate creation of a new process instead.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-run-eshell "projectile" "Invoke `eshell' in the project's root.
-
-Switch to the project specific eshell buffer if it already exists.
-
-Use a prefix argument ARG to indicate creation of a new process instead.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-run-ielm "projectile" "Invoke `ielm' in the project's root.
-
-Switch to the project specific ielm buffer if it already exists.
-
-Use a prefix argument ARG to indicate creation of a new process instead.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-run-term "projectile" "Invoke `term' in the project's root.
-
-Switch to the project specific term buffer if it already exists.
-
-Use a prefix argument ARG to indicate creation of a new process instead.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-run-vterm "projectile" "Invoke `vterm' in the project's root.
-
-Switch to the project specific term buffer if it already exists.
-
-Use a prefix argument ARG to indicate creation of a new process instead.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-replace "projectile" "Replace literal string in project using non-regexp `tags-query-replace'.
-
-With a prefix argument ARG prompts you for a directory on which
-to run the replacement.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-replace-regexp "projectile" "Replace a regexp in the project using `tags-query-replace'.
-
-With a prefix argument ARG prompts you for a directory on which
-to run the replacement.
-
-(fn &optional ARG)" t nil) (autoload 'projectile-kill-buffers "projectile" "Kill project buffers.
-
-The buffer are killed according to the value of
-`projectile-kill-buffers-filter'." t nil) (autoload 'projectile-save-project-buffers "projectile" "Save all project buffers." t nil) (autoload 'projectile-dired "projectile" "Open `dired' at the root of the project." t nil) (autoload 'projectile-dired-other-window "projectile" "Open `dired'  at the root of the project in another window." t nil) (autoload 'projectile-dired-other-frame "projectile" "Open `dired' at the root of the project in another frame." t nil) (autoload 'projectile-vc "projectile" "Open `vc-dir' at the root of the project.
-
-For git projects `magit-status-internal' is used if available.
-For hg projects `monky-status' is used if available.
-
-If PROJECT-ROOT is given, it is opened instead of the project
-root directory of the current buffer file.  If interactively
-called with a prefix argument, the user is prompted for a project
-directory to open.
-
-(fn &optional PROJECT-ROOT)" t nil) (autoload 'projectile-recentf "projectile" "Show a list of recently visited files in a project." t nil) (autoload 'projectile-configure-project "projectile" "Run project configure command.
-
-Normally you'll be prompted for a compilation command, unless
-variable `compilation-read-command'.  You can force the prompt
-with a prefix ARG.
-
-(fn ARG)" t nil) (autoload 'projectile-compile-project "projectile" "Run project compilation command.
-
-Normally you'll be prompted for a compilation command, unless
-variable `compilation-read-command'.  You can force the prompt
-with a prefix ARG.
-
-(fn ARG)" t nil) (autoload 'projectile-test-project "projectile" "Run project test command.
-
-Normally you'll be prompted for a compilation command, unless
-variable `compilation-read-command'.  You can force the prompt
-with a prefix ARG.
-
-(fn ARG)" t nil) (autoload 'projectile-install-project "projectile" "Run project install command.
-
-Normally you'll be prompted for a compilation command, unless
-variable `compilation-read-command'.  You can force the prompt
-with a prefix ARG.
-
-(fn ARG)" t nil) (autoload 'projectile-package-project "projectile" "Run project package command.
-
-Normally you'll be prompted for a compilation command, unless
-variable `compilation-read-command'.  You can force the prompt
-with a prefix ARG.
-
-(fn ARG)" t nil) (autoload 'projectile-run-project "projectile" "Run project run command.
-
-Normally you'll be prompted for a compilation command, unless
-variable `compilation-read-command'.  You can force the prompt
-with a prefix ARG.
-
-(fn ARG)" t nil) (autoload 'projectile-repeat-last-command "projectile" "Run last projectile external command.
-
-External commands are: `projectile-configure-project',
-`projectile-compile-project', `projectile-test-project',
-`projectile-install-project', `projectile-package-project',
-and `projectile-run-project'.
-
-If the prefix argument SHOW_PROMPT is non nil, the command can be edited.
-
-(fn SHOW-PROMPT)" t nil) (autoload 'projectile-switch-project "projectile" "Switch to a project we have visited before.
-Invokes the command referenced by `projectile-switch-project-action' on switch.
-With a prefix ARG invokes `projectile-commander' instead of
-`projectile-switch-project-action.'
-
-(fn &optional ARG)" t nil) (autoload 'projectile-switch-open-project "projectile" "Switch to a project we have currently opened.
-Invokes the command referenced by `projectile-switch-project-action' on switch.
-With a prefix ARG invokes `projectile-commander' instead of
-`projectile-switch-project-action.'
-
-(fn &optional ARG)" t nil) (autoload 'projectile-find-file-in-directory "projectile" "Jump to a file in a (maybe regular) DIRECTORY.
-
-This command will first prompt for the directory the file is in.
-
-(fn &optional DIRECTORY)" t nil) (autoload 'projectile-find-file-in-known-projects "projectile" "Jump to a file in any of the known projects." t nil) (autoload 'projectile-cleanup-known-projects "projectile" "Remove known projects that don't exist anymore." t nil) (autoload 'projectile-clear-known-projects "projectile" "Clear both `projectile-known-projects' and `projectile-known-projects-file'." t nil) (autoload 'projectile-reset-known-projects "projectile" "Clear known projects and rediscover." t nil) (autoload 'projectile-remove-known-project "projectile" "Remove PROJECT from the list of known projects.
-
-(fn &optional PROJECT)" t nil) (autoload 'projectile-remove-current-project-from-known-projects "projectile" "Remove the current project from the list of known projects." t nil) (autoload 'projectile-add-known-project "projectile" "Add PROJECT-ROOT to the list of known projects.
-
-(fn PROJECT-ROOT)" t nil) (autoload 'projectile-ibuffer "projectile" "Open an IBuffer window showing all buffers in the current project.
-
-Let user choose another project when PROMPT-FOR-PROJECT is supplied.
-
-(fn PROMPT-FOR-PROJECT)" t nil) (autoload 'projectile-commander "projectile" "Execute a Projectile command with a single letter.
-The user is prompted for a single character indicating the action to invoke.
-The `?' character describes then
-available actions.
-
-See `def-projectile-commander-method' for defining new methods." t nil) (autoload 'projectile-browse-dirty-projects "projectile" "Browse dirty version controlled projects.
-
-With a prefix argument, or if CACHED is non-nil, try to use the cached
-dirty project list.
-
-(fn &optional CACHED)" t nil) (autoload 'projectile-edit-dir-locals "projectile" "Edit or create a .dir-locals.el file of the project." t nil) (defvar projectile-mode nil "Non-nil if Projectile mode is enabled.
-See the `projectile-mode' command
-for a description of this minor mode.
-Setting this variable directly does not take effect;
-either customize it (see the info node `Easy Customization')
-or call the function `projectile-mode'.") (custom-autoload 'projectile-mode "projectile" nil) (autoload 'projectile-mode "projectile" "Minor mode to assist project management and navigation.
-
-When called interactively, toggle `projectile-mode'.  With prefix
-ARG, enable `projectile-mode' if ARG is positive, otherwise disable
-it.
-
-When called from Lisp, enable `projectile-mode' if ARG is omitted,
-nil or positive.  If ARG is `toggle', toggle `projectile-mode'.
-Otherwise behave as if called interactively.
-
-\\{projectile-mode-map}
-
-(fn &optional ARG)" t nil) (define-obsolete-function-alias 'projectile-global-mode 'projectile-mode "1.0") (register-definition-prefixes "projectile" '("??" "compilation-find-file-projectile-find-compilation-buffer" "def-projectile-commander-method" "delete-file-projectile-remove-from-cache" "projectile-")) (provide 'projectile-autoloads)) "helm-projectile" ((helm-projectile helm-projectile-autoloads) (defvar helm-projectile-fuzzy-match t "Enable fuzzy matching for Helm Projectile commands.
-This needs to be set before loading helm-projectile.el.") (custom-autoload 'helm-projectile-fuzzy-match "helm-projectile" t) (autoload 'helm-projectile-find-file-dwim "helm-projectile" "Find file at point based on context." t nil) (autoload 'helm-projectile-find-other-file "helm-projectile" "Switch between files with the same name but different extensions using Helm.
-With FLEX-MATCHING, match any file that contains the base name of current file.
-Other file extensions can be customized with the variable `projectile-other-file-alist'.
-
-(fn &optional FLEX-MATCHING)" t nil) (autoload 'helm-projectile-on "helm-projectile" "Turn on `helm-projectile' key bindings." t nil) (autoload 'helm-projectile-off "helm-projectile" "Turn off `helm-projectile' key bindings." t nil) (autoload 'helm-projectile-grep "helm-projectile" "Helm version of `projectile-grep'.
-DIR is the project root, if not set then current directory is used
-
-(fn &optional DIR)" t nil) (autoload 'helm-projectile-ack "helm-projectile" "Helm version of projectile-ack.
-
-(fn &optional DIR)" t nil) (autoload 'helm-projectile-ag "helm-projectile" "Helm version of `projectile-ag'.
-
-(fn &optional OPTIONS)" t nil) (autoload 'helm-projectile-rg "helm-projectile" "Projectile version of `helm-rg'." t nil) (autoload 'helm-projectile-toggle "helm-projectile" "Toggle Helm version of Projectile commands.
-
-(fn TOGGLE)" nil nil) (autoload 'helm-projectile "helm-projectile" "Use projectile with Helm instead of ido.
-
-With a prefix ARG invalidates the cache first.
-If invoked outside of a project, displays a list of known projects to jump.
-
-(fn &optional ARG)" t nil) (eval-after-load 'projectile '(progn (define-key projectile-command-map (kbd "h") #'helm-projectile))) (register-definition-prefixes "helm-projectile" '("helm-")) (provide 'helm-projectile-autoloads)) "helm-swoop" ((helm-swoop-autoloads helm-swoop) (autoload 'helm-swoop-back-to-last-point "helm-swoop" "Go back to last position where `helm-swoop' was called.
-If CANCEL is non-nil, store `helm-swoop-last-point'.
-
-(fn &optional CANCEL)" t nil) (autoload 'helm-swoop "helm-swoop" "List the all lines to another buffer, which is able to squeeze by
- any words you input. At the same time, the original buffer's cursor
- is jumping line to line according to moving up and down the list.
-
-(fn &key QUERY SOURCE (MULTILINE current-prefix-arg))" t nil) (autoload 'helm-swoop-from-isearch "helm-swoop" "Invoke `helm-swoop' from isearch." t nil) (autoload 'helm-multi-swoop "helm-swoop" "Multi swoop for QUERY in BUFLIST.
-
-Usage:
-  \\[execute-extended-command] helm-multi-swoop
-  1. Select any buffers by [C-SPC] or [M-SPC]
-  2. Press [RET] to start `helm-multi-swoop'
-
-\\[universal-argument] \\[execute-extended-command] helm-multi-swoop
-If you have done helm-multi-swoop before, you can skip select buffers step.
-Last selected buffers will be applied to helm-multi-swoop.
-
-(fn &optional QUERY BUFLIST)" t nil) (autoload 'helm-multi-swoop-all "helm-swoop" "Apply all buffers to helm-multi-swoop for QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-multi-swoop-org "helm-swoop" "Applie all `org-mode' buffers to helm-multi-swoop for QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-multi-swoop-current-mode "helm-swoop" "Applie all buffers of the same mode as the current buffer to helm-multi-swoop for QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-multi-swoop-projectile "helm-swoop" "Apply all opened buffers of the current project to helm-multi-swoop for QUERY.
-
-(fn &optional QUERY)" t nil) (autoload 'helm-swoop-without-pre-input "helm-swoop" "Start helm-swoop without pre input query." t nil) (autoload 'helm-swoop-symble-pre-input "helm-swoop" "Start helm-swoop without pre input query." t nil) (autoload 'helm-multi-swoop-edit "helm-swoop" "Multi swoop edit." t nil) (register-definition-prefixes "helm-swoop" '("get-buffers-matching-mode" "helm-")) (provide 'helm-swoop-autoloads)) "helm-xref" ((helm-xref helm-xref-autoloads) (autoload 'helm-xref-show-xrefs "helm-xref" "Function to display XREFS.
-
-Needs to be set the value of `xref-show-xrefs-function'.
-
-(fn XREFS ALIST)" nil nil) (autoload 'helm-xref-show-xrefs-27 "helm-xref" "Function to display XREFS.
-
-Needs to be set the value of `xref-show-xrefs-function'.
-
-(fn FETCHER ALIST)" nil nil) (autoload 'helm-xref-show-defs-27 "helm-xref" "Function to display list of definitions.
-
-(fn FETCHER ALIST)" nil nil) (if (< emacs-major-version 27) (setq xref-show-xrefs-function 'helm-xref-show-xrefs) (progn (setq xref-show-xrefs-function 'helm-xref-show-xrefs-27) (setq xref-show-definitions-function 'helm-xref-show-defs-27))) (register-definition-prefixes "helm-xref" '("helm-xref-")) (provide 'helm-xref-autoloads))))
-
-#s(hash-table size 65 test eq rehash-size 1.5 rehash-threshold 0.8125 data (org-elpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 11 "melpa" nil "gnu-elpa-mirror" nil "el-get" nil "emacsmirror-mirror" nil "straight" nil "helm" nil "helm-core" nil "async" nil "popup" nil "magit" nil "compat" nil "dash" nil "git-commit" nil "transient" nil "with-editor" nil "magit-section" nil "helm-ag" nil "helm-descbinds" nil "helm-org" nil "helm-projectile" nil "projectile" nil "cl-lib" nil "helm-swoop" nil "helm-xref" nil "imenu" nil)) melpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "gnu-elpa-mirror" nil "el-get" (el-get :type git :flavor melpa :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :host github :repo "dimitri/el-get") "emacsmirror-mirror" nil "straight" nil "helm" (helm :type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm") "helm-core" (helm-core :type git :flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :host github :repo "emacs-helm/helm") "async" (async :type git :flavor melpa :host github :repo "jwiegley/emacs-async") "popup" (popup :type git :flavor melpa :host github :repo "auto-complete/popup-el") "magit" (magit :type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit") "compat" nil "dash" (dash :type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el") "git-commit" (git-commit :type git :flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :host github :repo "magit/magit") "transient" (transient :type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient") "with-editor" (with-editor :type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor") "magit-section" (magit-section :type git :flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :host github :repo "magit/magit") "helm-ag" (helm-ag :type git :flavor melpa :host github :repo "emacsorphanage/helm-ag") "helm-descbinds" (helm-descbinds :type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds") "helm-org" (helm-org :type git :flavor melpa :host github :repo "emacs-helm/helm-org") "helm-projectile" (helm-projectile :type git :flavor melpa :host github :repo "bbatsov/helm-projectile") "projectile" (projectile :type git :flavor melpa :host github :repo "bbatsov/projectile") "cl-lib" nil "helm-swoop" (helm-swoop :type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop") "helm-xref" (helm-xref :type git :flavor melpa :host github :repo "brotzeit/helm-xref") "imenu" nil)) gnu-elpa-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 3 "emacsmirror-mirror" nil "straight" nil "compat" (compat :type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git"))) "cl-lib" nil "imenu" nil)) el-get #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 1 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil)) emacsmirror-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "straight" (straight :type git :host github :repo "emacsmirror/straight") "cl-lib" nil "imenu" nil))))
+#s(hash-table size 65 test eq rehash-size 1.5 rehash-threshold 0.8125 data (org-elpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 11 "melpa" nil "gnu-elpa-mirror" nil "el-get" nil "emacsmirror-mirror" nil "straight" nil "helm" nil "helm-core" nil "async" nil "popup" nil "helm-ag" nil "helm-descbinds" nil "helm-org" nil "helm-projectile" nil "projectile" nil "cl-lib" nil "helm-swoop" nil "helm-xref" nil "imenu" nil "magit" nil "compat" nil "dash" nil "git-commit" nil "transient" nil "with-editor" nil "magit-section" nil)) melpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "gnu-elpa-mirror" nil "el-get" (el-get :type git :flavor melpa :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :host github :repo "dimitri/el-get") "emacsmirror-mirror" nil "straight" nil "helm" (helm :type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm") "helm-core" (helm-core :type git :flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :host github :repo "emacs-helm/helm") "async" (async :type git :flavor melpa :host github :repo "jwiegley/emacs-async") "popup" (popup :type git :flavor melpa :host github :repo "auto-complete/popup-el") "helm-ag" (helm-ag :type git :flavor melpa :host github :repo "emacsorphanage/helm-ag") "helm-descbinds" (helm-descbinds :type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds") "helm-org" (helm-org :type git :flavor melpa :host github :repo "emacs-helm/helm-org") "helm-projectile" (helm-projectile :type git :flavor melpa :host github :repo "bbatsov/helm-projectile") "projectile" (projectile :type git :flavor melpa :host github :repo "bbatsov/projectile") "cl-lib" nil "helm-swoop" (helm-swoop :type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop") "helm-xref" (helm-xref :type git :flavor melpa :host github :repo "brotzeit/helm-xref") "imenu" nil "magit" (magit :type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit") "compat" nil "dash" (dash :type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el") "git-commit" (git-commit :type git :flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :host github :repo "magit/magit") "transient" (transient :type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient") "with-editor" (with-editor :type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor") "magit-section" (magit-section :type git :flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :host github :repo "magit/magit"))) gnu-elpa-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 3 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil "compat" (compat :type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git"))))) el-get #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 1 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil)) emacsmirror-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "straight" (straight :type git :host github :repo "emacsmirror/straight") "cl-lib" nil "imenu" nil))))
 
 ("org-elpa" "melpa" "gnu-elpa-mirror" "el-get" "emacsmirror-mirror" "straight" "emacs" "helm" "helm-core" "async" "popup" "helm-ag" "helm-descbinds" "helm-org" "helm-projectile" "projectile" "cl-lib" "helm-swoop" "helm-xref" "imenu" "magit" "compat" "nadvice" "dash" "git-commit" "transient" "with-editor" "magit-section")
 

@@ -64,7 +64,6 @@ This function should only modify configuration layer settings."
      fasd
      floobits
      git
-     github
      gnus
      go
      graphviz
@@ -141,7 +140,6 @@ This function should only modify configuration layer settings."
                plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"
                org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
      puppet
-     python
      (ranger :variables
              ranger-show-preview t)
      ;; (rebox :variables
@@ -159,9 +157,10 @@ This function should only modify configuration layer settings."
      selectric
      semantic
      (shell :variables
-            shell-default-shell 'multiterm
+            shell-default-shell 'eshell
             shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-position 'bottom
+            shell-enable-smart-eshell t)
      shell-scripts
      slack
      spacemacs-editing
@@ -181,7 +180,9 @@ This function should only modify configuration layer settings."
      typescript
      (typography :variables
                  typography-enable-typographic-editing nil)
-     unicode-fonts
+     (unicode-fonts :variables
+                    unicode-fonts-force-multi-color-on-mac t
+                    unicode-fonts-enable-ligatures t)
      vagrant
      ;; version-control
      vimscript
@@ -381,7 +382,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(gunnar
+   dotspacemacs-themes '(darcula
+                         gunnar
                          tangotango
                          sanityinc-tomorrow-night
                          alect-black
@@ -412,8 +414,8 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("MesloLGS NF"
-                               :size 13.0
+   dotspacemacs-default-font '("Iosevka"       ;;"MesloLGS NF"
+                               :size 14.0
                                :weight normal
                                :width normal)
 

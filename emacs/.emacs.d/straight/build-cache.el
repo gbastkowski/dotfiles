@@ -3,7 +3,7 @@
 
 "28.1"
 
-#s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data ("straight" ("2022-05-25 00:57:19" ("emacs") (:type git :host github :repo "raxod502/straight.el" :files ("straight*.el") :branch "master" :package "straight" :local-repo "straight.el")) "org-elpa" ("2022-05-25 00:57:19" nil (:local-repo nil :package "org-elpa" :type git)) "melpa" ("2022-05-25 00:57:19" nil (:type git :host github :repo "melpa/melpa" :build nil :package "melpa" :local-repo "melpa")) "gnu-elpa-mirror" ("2022-05-25 00:57:19" nil (:type git :host github :repo "emacs-straight/gnu-elpa-mirror" :build nil :package "gnu-elpa-mirror" :local-repo "gnu-elpa-mirror")) "el-get" ("2022-05-25 00:57:19" nil (:type git :host github :repo "dimitri/el-get" :build nil :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :flavor melpa :package "el-get" :local-repo "el-get")) "emacsmirror-mirror" ("2022-05-25 00:57:19" nil (:type git :host github :repo "emacs-straight/emacsmirror-mirror" :build nil :package "emacsmirror-mirror" :local-repo "emacsmirror-mirror")) "helm" ("2022-05-25 00:57:19" ("helm-core" "popup") (:type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm" :package "helm" :local-repo "helm")) "helm-core" ("2022-05-25 00:57:19" ("emacs" "async") (:flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :package "helm-core" :local-repo "helm" :type git :repo "emacs-helm/helm" :host github)) "async" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :host github :repo "jwiegley/emacs-async" :package "async" :local-repo "emacs-async")) "popup" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :host github :repo "auto-complete/popup-el" :package "popup" :local-repo "popup-el")) "helm-ag" ("2022-05-25 00:57:19" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-ag" :package "helm-ag" :local-repo "helm-ag")) "helm-descbinds" ("2022-05-25 00:57:19" ("helm") (:type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds" :package "helm-descbinds" :local-repo "helm-descbinds")) "helm-org" ("2022-05-25 00:57:19" ("helm" "emacs") (:type git :flavor melpa :host github :repo "emacs-helm/helm-org" :package "helm-org" :local-repo "helm-org")) "helm-projectile" ("2022-05-25 00:57:19" ("helm" "projectile" "cl-lib") (:type git :flavor melpa :host github :repo "bbatsov/helm-projectile" :package "helm-projectile" :local-repo "helm-projectile")) "projectile" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :host github :repo "bbatsov/projectile" :package "projectile" :local-repo "projectile")) "helm-swoop" ("2022-05-25 00:57:19" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop" :package "helm-swoop" :local-repo "helm-swoop")) "helm-xref" ("2022-05-25 00:57:19" ("emacs" "helm") (:type git :flavor melpa :host github :repo "brotzeit/helm-xref" :package "helm-xref" :local-repo "helm-xref")) "magit" ("2022-05-25 00:57:19" ("emacs" "compat" "dash" "git-commit" "magit-section" "transient" "with-editor") (:type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit" :package "magit" :local-repo "magit")) "compat" ("2022-05-25 00:57:19" ("emacs" "nadvice") (:type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git")) :package "compat" :local-repo "compat")) "dash" ("2022-05-25 00:57:19" ("emacs") (:type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el" :package "dash" :local-repo "dash.el")) "git-commit" ("2022-05-25 00:57:19" ("emacs" "compat" "transient" "with-editor") (:flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :package "git-commit" :local-repo "magit" :type git :repo "magit/magit" :host github)) "transient" ("2022-05-25 00:57:19" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient" :package "transient" :local-repo "transient")) "with-editor" ("2022-05-25 00:57:19" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor" :package "with-editor" :local-repo "with-editor")) "magit-section" ("2022-05-25 00:57:19" ("emacs" "compat" "dash") (:flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :package "magit-section" :local-repo "magit" :type git :repo "magit/magit" :host github))))
+#s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data ("straight" ("2022-05-31 12:59:04" ("emacs") (:type git :host github :repo "raxod502/straight.el" :files ("straight*.el") :branch "master" :package "straight" :local-repo "straight.el")) "org-elpa" ("2022-05-31 12:59:04" nil (:local-repo nil :package "org-elpa" :type git)) "melpa" ("2022-05-31 12:59:04" nil (:type git :host github :repo "melpa/melpa" :build nil :package "melpa" :local-repo "melpa")) "gnu-elpa-mirror" ("2022-05-31 12:59:04" nil (:type git :host github :repo "emacs-straight/gnu-elpa-mirror" :build nil :package "gnu-elpa-mirror" :local-repo "gnu-elpa-mirror")) "el-get" ("2022-05-31 12:59:04" nil (:type git :host github :repo "dimitri/el-get" :build nil :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :flavor melpa :package "el-get" :local-repo "el-get")) "emacsmirror-mirror" ("2022-05-31 12:59:04" nil (:type git :host github :repo "emacs-straight/emacsmirror-mirror" :build nil :package "emacsmirror-mirror" :local-repo "emacsmirror-mirror")) "helm" ("2022-05-31 12:59:04" ("helm-core" "popup") (:type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm" :package "helm" :local-repo "helm")) "helm-core" ("2022-05-31 12:59:04" ("emacs" "async") (:flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :package "helm-core" :local-repo "helm" :type git :repo "emacs-helm/helm" :host github)) "async" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :host github :repo "jwiegley/emacs-async" :package "async" :local-repo "emacs-async")) "popup" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :host github :repo "auto-complete/popup-el" :package "popup" :local-repo "popup-el")) "helm-ag" ("2022-05-31 12:59:04" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-ag" :package "helm-ag" :local-repo "helm-ag")) "helm-descbinds" ("2022-05-31 12:59:04" ("helm") (:type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds" :package "helm-descbinds" :local-repo "helm-descbinds")) "helm-org" ("2022-05-31 12:59:04" ("helm" "emacs") (:type git :flavor melpa :host github :repo "emacs-helm/helm-org" :package "helm-org" :local-repo "helm-org")) "helm-projectile" ("2022-05-31 12:59:04" ("helm" "projectile" "cl-lib") (:type git :flavor melpa :host github :repo "bbatsov/helm-projectile" :package "helm-projectile" :local-repo "helm-projectile")) "projectile" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :host github :repo "bbatsov/projectile" :package "projectile" :local-repo "projectile")) "helm-swoop" ("2022-05-31 12:59:04" ("emacs" "helm") (:type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop" :package "helm-swoop" :local-repo "helm-swoop")) "helm-xref" ("2022-05-31 12:59:04" ("emacs" "helm") (:type git :flavor melpa :host github :repo "brotzeit/helm-xref" :package "helm-xref" :local-repo "helm-xref")) "magit" ("2022-05-31 12:59:04" ("emacs" "compat" "dash" "git-commit" "magit-section" "transient" "with-editor") (:type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit" :package "magit" :local-repo "magit")) "compat" ("2022-05-31 12:59:04" ("emacs" "nadvice") (:type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git")) :package "compat" :local-repo "compat")) "dash" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el" :package "dash" :local-repo "dash.el")) "git-commit" ("2022-05-31 12:59:04" ("emacs" "compat" "transient" "with-editor") (:flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :package "git-commit" :local-repo "magit" :type git :repo "magit/magit" :host github)) "transient" ("2022-05-31 12:59:04" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient" :package "transient" :local-repo "transient")) "with-editor" ("2022-05-31 12:59:04" ("emacs" "compat") (:type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor" :package "with-editor" :local-repo "with-editor")) "magit-section" ("2022-05-31 12:59:04" ("emacs" "compat" "dash") (:flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :package "magit-section" :local-repo "magit" :type git :repo "magit/magit" :host github)) "helm-mode-manager" ("2022-05-31 12:59:04" ("helm") (:type git :flavor melpa :host github :repo "istib/helm-mode-manager" :package "helm-mode-manager" :local-repo "helm-mode-manager")) "persp-mode" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :host github :repo "Bad-ptr/persp-mode.el" :package "persp-mode" :local-repo "persp-mode.el")) "popwin" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :host github :repo "emacsorphanage/popwin" :package "popwin" :local-repo "popwin")) "use-package" ("2022-05-31 12:59:04" ("emacs" "bind-key") (:type git :flavor melpa :files (:defaults (:exclude "bind-key.el" "bind-chord.el" "use-package-chords.el" "use-package-ensure-system-package.el") "use-package-pkg.el") :host github :repo "jwiegley/use-package" :package "use-package" :local-repo "use-package")) "bind-key" ("2022-05-31 12:59:04" nil (:flavor melpa :files ("bind-key.el" "bind-key-pkg.el") :package "bind-key" :local-repo "use-package" :type git :repo "jwiegley/use-package" :host github)) "el-patch" ("2022-05-31 12:59:04" nil (:type git :host github :repo "mickeynp/ligature.el" :flavor melpa :package "el-patch" :local-repo "ligature.el")) "uf-patch" ("2022-05-31 12:59:04" nil (:type git :host github :repo "rolandwalker/unicode-fonts" :package "uf-patch" :local-repo "unicode-fonts")) "fu-patch" ("2022-05-31 12:59:04" nil (:type git :host github :repo "rolandwalker/font-utils" :package "fu-patch" :local-repo "font-utils")) "uu-patch" ("2022-05-31 12:59:04" nil (:type git :host github :repo "rolandwalker/ucs-utils" :package "uu-patch" :local-repo "ucs-utils")) "lu-patch" ("2022-05-31 12:59:04" nil (:type git :host github :repo "rolandwalker/list-utils" :package "lu-patch" :local-repo "list-utils")) "anzu" ("2022-05-31 12:59:04" ("emacs") (:type git :flavor melpa :host github :repo "emacsorphanage/anzu" :package "anzu" :local-repo "anzu")) "doom-modeline" ("2022-05-31 12:43:15" ("emacs" "shrink-path" "dash") (:type git :flavor melpa :host github :repo "seagle0128/doom-modeline" :package "doom-modeline" :local-repo "doom-modeline")) "shrink-path" ("2022-05-31 12:43:15" ("emacs" "s" "dash" "f") (:type git :flavor melpa :host gitlab :repo "bennya/shrink-path.el" :package "shrink-path" :local-repo "shrink-path.el")) "s" ("2022-05-31 12:43:14" nil (:type git :flavor melpa :host github :repo "magnars/s.el" :package "s" :local-repo "s.el")) "f" ("2022-05-31 12:43:14" ("s" "dash") (:type git :flavor melpa :host github :repo "rejeep/f.el" :package "f" :local-repo "f.el")) "vp-patch" ("2022-05-31 12:59:04" nil (:type git :host github :repo "milkypostman/powerline" :package "vp-patch" :local-repo "powerline"))))
 
 #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data ("straight" ((straight-x straight-autoloads straight) (autoload 'straight-remove-unused-repos "straight" "Remove unused repositories from the repos directory.
 A repo is considered \"unused\" if it was not explicitly requested via
@@ -3139,10 +3139,1004 @@ a Git repository." nil nil) (register-definition-prefixes "magit-wip" '("magit-"
 
 (fn PATH BRANCH START-POINT &optional FORCE)" t nil) (autoload 'magit-worktree-move "magit-worktree" "Move WORKTREE to PATH.
 
-(fn WORKTREE PATH)" t nil) (register-definition-prefixes "magit-worktree" '("magit-")) (provide 'magit-autoloads))))
+(fn WORKTREE PATH)" t nil) (register-definition-prefixes "magit-worktree" '("magit-")) (provide 'magit-autoloads)) "helm-mode-manager" ((helm-mode-manager-autoloads helm-mode-manager) (autoload 'helm-enable-minor-mode "helm-mode-manager" "Return a `helm' selection of all available minor modes.
+Selecting a target will activate the minor mode. The persistent
+action is to show help about the selected minor mode." t nil) (autoload 'helm-disable-minor-mode "helm-mode-manager" "Return a `helm' selection of active minor modes. Selecting a
+target will deactivate the minor mode. The persistent action is
+to show help about the selected minor mode." t nil) (autoload 'helm-switch-major-mode "helm-mode-manager" "Return a `helm' selection of all available major modes.
+Selecting a target will activate the major mode. The persistent
+action is to show help about the selected major mode." t nil) (register-definition-prefixes "helm-mode-manager" '("helm-mode-manager-")) (provide 'helm-mode-manager-autoloads)) "persp-mode" ((persp-mode persp-mode-autoloads) (autoload 'persp-def-auto-persp "persp-mode" "
 
-#s(hash-table size 65 test eq rehash-size 1.5 rehash-threshold 0.8125 data (org-elpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 11 "melpa" nil "gnu-elpa-mirror" nil "el-get" nil "emacsmirror-mirror" nil "straight" nil "helm" nil "helm-core" nil "async" nil "popup" nil "helm-ag" nil "helm-descbinds" nil "helm-org" nil "helm-projectile" nil "projectile" nil "cl-lib" nil "helm-swoop" nil "helm-xref" nil "imenu" nil "magit" nil "compat" nil "dash" nil "git-commit" nil "transient" nil "with-editor" nil "magit-section" nil)) melpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "gnu-elpa-mirror" nil "el-get" (el-get :type git :flavor melpa :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :host github :repo "dimitri/el-get") "emacsmirror-mirror" nil "straight" nil "helm" (helm :type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm") "helm-core" (helm-core :type git :flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :host github :repo "emacs-helm/helm") "async" (async :type git :flavor melpa :host github :repo "jwiegley/emacs-async") "popup" (popup :type git :flavor melpa :host github :repo "auto-complete/popup-el") "helm-ag" (helm-ag :type git :flavor melpa :host github :repo "emacsorphanage/helm-ag") "helm-descbinds" (helm-descbinds :type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds") "helm-org" (helm-org :type git :flavor melpa :host github :repo "emacs-helm/helm-org") "helm-projectile" (helm-projectile :type git :flavor melpa :host github :repo "bbatsov/helm-projectile") "projectile" (projectile :type git :flavor melpa :host github :repo "bbatsov/projectile") "cl-lib" nil "helm-swoop" (helm-swoop :type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop") "helm-xref" (helm-xref :type git :flavor melpa :host github :repo "brotzeit/helm-xref") "imenu" nil "magit" (magit :type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit") "compat" nil "dash" (dash :type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el") "git-commit" (git-commit :type git :flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :host github :repo "magit/magit") "transient" (transient :type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient") "with-editor" (with-editor :type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor") "magit-section" (magit-section :type git :flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :host github :repo "magit/magit"))) gnu-elpa-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 3 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil "compat" (compat :type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git"))))) el-get #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 1 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil)) emacsmirror-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "straight" (straight :type git :host github :repo "emacsmirror/straight") "cl-lib" nil "imenu" nil))))
+(fn NAME &rest KEYARGS &key BUFFER-NAME FILE-NAME MODE MODE-NAME MINOR-MODE MINOR-MODE-NAME PREDICATE HOOKS DYN-ENV GET-NAME GET-BUFFER GET-PERSP SWITCH PARAMETERS NOAUTO WEAK USER-DATA ON-MATCH AFTER-MATCH DONT-PICK-UP-BUFFERS DELETE)" nil nil) (define-obsolete-function-alias 'def-auto-persp 'persp-def-auto-persp "persp-mode 2.9.6") (autoload 'persp-def-buffer-save/load "persp-mode" "
 
-("org-elpa" "melpa" "gnu-elpa-mirror" "el-get" "emacsmirror-mirror" "straight" "emacs" "helm" "helm-core" "async" "popup" "helm-ag" "helm-descbinds" "helm-org" "helm-projectile" "projectile" "cl-lib" "helm-swoop" "helm-xref" "imenu" "magit" "compat" "nadvice" "dash" "git-commit" "transient" "with-editor" "magit-section")
+(fn &rest KEYARGS &key BUFFER-NAME FILE-NAME MODE MODE-NAME MINOR-MODE MINOR-MODE-NAME PREDICATE TAG-SYMBOL SAVE-VARS SAVE-FUNCTION LOAD-FUNCTION AFTER-LOAD-FUNCTION MODE-RESTORE-FUNCTION APPEND)" nil nil) (define-obsolete-function-alias 'def-persp-buffer-save/load 'persp-def-buffer-save/load "persp-mode 2.9.6") (defvar persp-mode nil "Non-nil if Persp mode is enabled.
+See the `persp-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `persp-mode'.") (custom-autoload 'persp-mode "persp-mode" nil) (autoload 'persp-mode "persp-mode" "Toggle the persp-mode.
+When active, keeps track of multiple 'perspectives',
+named collections of buffers and window configurations.
+Here is a keymap of this minor mode:
+\\{persp-mode-map}
+
+This is a minor mode.  If called interactively, toggle the `Persp
+mode' mode.  If the prefix argument is positive, enable the mode,
+and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='persp-mode)'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+(fn &optional ARG)" t nil) (register-definition-prefixes "persp-mode" '("*persp-" "clear-window-persp" "def-" "get-" "ido-toggle-persp-filter" "persp" "safe-persp-" "set-" "window-persp-set-p" "with-persp-ido-hooks")) (provide 'persp-mode-autoloads)) "popwin" ((popwin-autoloads popwin) (autoload 'popwin:popup-buffer "popwin" "Show BUFFER in a popup window and return the popup window. If
+NOSELECT is non-nil, the popup window will not be selected. If
+STICK is non-nil, the popup window will be stuck. If TAIL is
+non-nil, the popup window will show the last contents. Calling
+`popwin:popup-buffer' during `popwin:popup-buffer' is allowed. In
+that case, the buffer of the popup window will be replaced with
+BUFFER.
+
+(fn BUFFER &key (WIDTH popwin:popup-window-width) (HEIGHT popwin:popup-window-height) (POSITION popwin:popup-window-position) NOSELECT DEDICATED STICK TAIL)" t nil) (autoload 'popwin:display-buffer "popwin" "Display BUFFER-OR-NAME, if possible, in a popup window, or as usual.
+This function can be used as a value of
+`display-buffer-function'.
+
+(fn BUFFER-OR-NAME &optional NOT-THIS-WINDOW)" t nil) (autoload 'popwin:pop-to-buffer "popwin" "Same as `pop-to-buffer' except that this function will use `popwin:display-buffer-1' instead of `display-buffer'.  BUFFER,
+OTHER-WINDOW amd NORECORD are the same arguments.
+
+(fn BUFFER &optional OTHER-WINDOW NORECORD)" t nil) (autoload 'popwin:universal-display "popwin" "Call the following command interactively with letting `popwin:special-display-config' be `popwin:universal-display-config'.
+This will be useful when displaying buffers in popup windows temporarily." t nil) (autoload 'popwin:one-window "popwin" "Delete other window than the popup window. C-g restores the original window configuration." t nil) (autoload 'popwin:popup-buffer-tail "popwin" "Same as `popwin:popup-buffer' except that the buffer will be `recenter'ed at the bottom.
+
+(fn &rest SAME-AS-POPWIN:POPUP-BUFFER)" t nil) (autoload 'popwin:find-file "popwin" "Edit file FILENAME with popup window by `popwin:popup-buffer'.
+
+(fn FILENAME &optional WILDCARDS)" t nil) (autoload 'popwin:find-file-tail "popwin" "Edit file FILENAME with popup window by `popwin:popup-buffer-tail'.
+
+(fn FILE &optional WILDCARD)" t nil) (autoload 'popwin:messages "popwin" "Display *Messages* buffer in a popup window." t nil) (defvar popwin-mode nil "Non-nil if Popwin mode is enabled.
+See the `popwin-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `popwin-mode'.") (custom-autoload 'popwin-mode "popwin" nil) (autoload 'popwin-mode "popwin" "Minor mode for `popwin-mode'.
+
+This is a minor mode.  If called interactively, toggle the
+`Popwin mode' mode.  If the prefix argument is positive, enable
+the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='popwin-mode)'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+(fn &optional ARG)" t nil) (register-definition-prefixes "popwin" '("popwin:")) (provide 'popwin-autoloads)) "bind-key" ((bind-key-autoloads bind-key) (autoload 'bind-key "bind-key" "Bind KEY-NAME to COMMAND in KEYMAP (`global-map' if not passed).
+
+KEY-NAME may be a vector, in which case it is passed straight to
+`define-key'. Or it may be a string to be interpreted as
+spelled-out keystrokes, e.g., \"C-c C-z\". See documentation of
+`edmacro-mode' for details.
+
+COMMAND must be an interactive function or lambda form.
+
+KEYMAP, if present, should be a keymap variable or symbol.
+For example:
+
+  (bind-key \"M-h\" #'some-interactive-function my-mode-map)
+
+  (bind-key \"M-h\" #'some-interactive-function 'my-mode-map)
+
+If PREDICATE is non-nil, it is a form evaluated to determine when
+a key should be bound. It must return non-nil in such cases.
+Emacs can evaluate this form at any time that it does redisplay
+or operates on menu data structures, so you should write it so it
+can safely be called at any time.
+
+(fn KEY-NAME COMMAND &optional KEYMAP PREDICATE)" nil t) (autoload 'unbind-key "bind-key" "Unbind the given KEY-NAME, within the KEYMAP (if specified).
+See `bind-key' for more details.
+
+(fn KEY-NAME &optional KEYMAP)" nil t) (autoload 'bind-key* "bind-key" "Similar to `bind-key', but overrides any mode-specific bindings.
+
+(fn KEY-NAME COMMAND &optional PREDICATE)" nil t) (autoload 'bind-keys "bind-key" "Bind multiple keys at once.
+
+Accepts keyword arguments:
+:map MAP               - a keymap into which the keybindings should be
+                         added
+:prefix KEY            - prefix key for these bindings
+:prefix-map MAP        - name of the prefix map that should be created
+                         for these bindings
+:prefix-docstring STR  - docstring for the prefix-map variable
+:menu-name NAME        - optional menu string for prefix map
+:filter FORM           - optional form to determine when bindings apply
+
+The rest of the arguments are conses of keybinding string and a
+function symbol (unquoted).
+
+(fn &rest ARGS)" nil t) (autoload 'bind-keys* "bind-key" "
+
+(fn &rest ARGS)" nil t) (autoload 'describe-personal-keybindings "bind-key" "Display all the personal keybindings defined by `bind-key'." t nil) (register-definition-prefixes "bind-key" '("bind-key" "compare-keybindings" "get-binding-description" "override-global-m" "personal-keybindings")) (provide 'bind-key-autoloads)) "use-package" ((use-package-diminish use-package use-package-lint use-package-delight use-package-jump use-package-autoloads use-package-core use-package-ensure use-package-bind-key) (autoload 'use-package-autoload-keymap "use-package-bind-key" "Loads PACKAGE and then binds the key sequence used to invoke
+this function to KEYMAP-SYMBOL. It then simulates pressing the
+same key sequence a again, so that the next key pressed is routed
+to the newly loaded keymap.
+
+This function supports use-package's :bind-keymap keyword. It
+works by binding the given key sequence to an invocation of this
+function for a particular keymap. The keymap is expected to be
+defined by the package. In this way, loading the package is
+deferred until the prefix key sequence is pressed.
+
+(fn KEYMAP-SYMBOL PACKAGE OVERRIDE)" nil nil) (autoload 'use-package-normalize-binder "use-package-bind-key" "
+
+(fn NAME KEYWORD ARGS)" nil nil) (defalias 'use-package-normalize/:bind 'use-package-normalize-binder) (defalias 'use-package-normalize/:bind* 'use-package-normalize-binder) (defalias 'use-package-autoloads/:bind 'use-package-autoloads-mode) (defalias 'use-package-autoloads/:bind* 'use-package-autoloads-mode) (autoload 'use-package-handler/:bind "use-package-bind-key" "
+
+(fn NAME KEYWORD ARGS REST STATE &optional BIND-MACRO)" nil nil) (defalias 'use-package-normalize/:bind-keymap 'use-package-normalize-binder) (defalias 'use-package-normalize/:bind-keymap* 'use-package-normalize-binder) (autoload 'use-package-handler/:bind-keymap "use-package-bind-key" "
+
+(fn NAME KEYWORD ARGS REST STATE &optional OVERRIDE)" nil nil) (autoload 'use-package-handler/:bind-keymap* "use-package-bind-key" "
+
+(fn NAME KEYWORD ARG REST STATE)" nil nil) (register-definition-prefixes "use-package-bind-key" '("use-package-handler/:bind*")) (autoload 'use-package "use-package-core" "Declare an Emacs package by specifying a group of configuration options.
+
+For full documentation, please see the README file that came with
+this file.  Usage:
+
+  (use-package package-name
+     [:keyword [option]]...)
+
+:init            Code to run before PACKAGE-NAME has been loaded.
+:config          Code to run after PACKAGE-NAME has been loaded.  Note that
+                 if loading is deferred for any reason, this code does not
+                 execute until the lazy load has occurred.
+:preface         Code to be run before everything except `:disabled'; this
+                 can be used to define functions for use in `:if', or that
+                 should be seen by the byte-compiler.
+
+:mode            Form to be added to `auto-mode-alist'.
+:magic           Form to be added to `magic-mode-alist'.
+:magic-fallback  Form to be added to `magic-fallback-mode-alist'.
+:interpreter     Form to be added to `interpreter-mode-alist'.
+
+:commands        Define autoloads for commands that will be defined by the
+                 package.  This is useful if the package is being lazily
+                 loaded, and you wish to conditionally call functions in your
+                 `:init' block that are defined in the package.
+:hook            Specify hook(s) to attach this package to.
+
+:bind            Bind keys, and define autoloads for the bound commands.
+:bind*           Bind keys, and define autoloads for the bound commands,
+                 *overriding all minor mode bindings*.
+:bind-keymap     Bind a key prefix to an auto-loaded keymap defined in the
+                 package.  This is like `:bind', but for keymaps.
+:bind-keymap*    Like `:bind-keymap', but overrides all minor mode bindings
+
+:defer           Defer loading of a package -- this is implied when using
+                 `:commands', `:bind', `:bind*', `:mode', `:magic', `:hook',
+                 `:magic-fallback', or `:interpreter'.  This can be an integer,
+                 to force loading after N seconds of idle time, if the package
+                 has not already been loaded.
+:after           Delay the use-package declaration until after the named modules
+                 have loaded. Once load, it will be as though the use-package
+                 declaration (without `:after') had been seen at that moment.
+:demand          Prevent the automatic deferred loading introduced by constructs
+                 such as `:bind' (see `:defer' for the complete list).
+
+:if EXPR         Initialize and load only if EXPR evaluates to a non-nil value.
+:disabled        The package is ignored completely if this keyword is present.
+:defines         Declare certain variables to silence the byte-compiler.
+:functions       Declare certain functions to silence the byte-compiler.
+:load-path       Add to the `load-path' before attempting to load the package.
+:diminish        Support for diminish.el (if installed).
+:delight         Support for delight.el (if installed).
+:custom          Call `custom-set' or `set-default' with each variable
+                 definition without modifying the Emacs `custom-file'.
+                 (compare with `custom-set-variables').
+:custom-face     Call `customize-set-faces' with each face definition.
+:ensure          Loads the package using package.el if necessary.
+:pin             Pin the package to an archive.
+
+(fn NAME &rest ARGS)" nil t) (function-put 'use-package 'lisp-indent-function '1) (register-definition-prefixes "use-package-core" '("use-package-")) (autoload 'use-package-normalize/:delight "use-package-delight" "Normalize arguments to delight.
+
+(fn NAME KEYWORD ARGS)" nil nil) (autoload 'use-package-handler/:delight "use-package-delight" "
+
+(fn NAME KEYWORD ARGS REST STATE)" nil nil) (register-definition-prefixes "use-package-delight" '("use-package-normalize-delight")) (autoload 'use-package-normalize/:diminish "use-package-diminish" "
+
+(fn NAME KEYWORD ARGS)" nil nil) (autoload 'use-package-handler/:diminish "use-package-diminish" "
+
+(fn NAME KEYWORD ARG REST STATE)" nil nil) (register-definition-prefixes "use-package-diminish" '("use-package-normalize-diminish")) (autoload 'use-package-normalize/:ensure "use-package-ensure" "
+
+(fn NAME KEYWORD ARGS)" nil nil) (autoload 'use-package-handler/:ensure "use-package-ensure" "
+
+(fn NAME KEYWORD ENSURE REST STATE)" nil nil) (register-definition-prefixes "use-package-ensure" '("use-package-")) (autoload 'use-package-jump-to-package-form "use-package-jump" "Attempt to find and jump to the `use-package' form that loaded
+PACKAGE. This will only find the form if that form actually
+required PACKAGE. If PACKAGE was previously required then this
+function will jump to the file that originally required PACKAGE
+instead.
+
+(fn PACKAGE)" t nil) (register-definition-prefixes "use-package-jump" '("use-package-find-require")) (autoload 'use-package-lint "use-package-lint" "Check for errors in use-package declarations.
+For example, if the module's `:if' condition is met, but even
+with the specified `:load-path' the module cannot be found." t nil) (register-definition-prefixes "use-package-lint" '("use-package-lint-declaration")) (provide 'use-package-autoloads)) "el-patch" ((el-patch-autoloads ligature) (autoload 'ligature-set-ligatures "ligature" "Replace LIGATURES in MODES.
+
+Converts a list of LIGATURES, where each element is either a cons
+cell of `(STR-CHAR . REGEXP)' or a string to ligate, for all
+modes in MODES.  As there is no easy way of computing which
+ligatures were already defined, this function will replace any
+existing ligature definitions in `ligature-composition-table'
+with LIGATURES for MODES.
+
+
+Some ligatures are variable-length, such as arrows and borders,
+and need a regular expression to accurately represent the range
+of characters needed to ligate them.  In that case, you must use a
+cons cell of `(STR-CHAR . REGEXP)' where `STR-CHR' is the first
+character in the ligature and `REGEXP' is a regular expression
+that matches the _rest_ of the ligature range.
+
+For examples, see the commentary in `ligature.el'.
+
+(fn MODES LIGATURES)" nil nil) (autoload 'ligature-generate-ligatures "ligature" "Ligate the current buffer using its major mode to determine ligature set.
+
+The ligature generator traverses `ligature-composition-table' and
+applies every ligature definition from every mode that matches
+either t (indicating that a ligature mapping always applies);
+or a major mode or list of major mode symbols that are
+`derived-mode-p' of the current buffer's major mode.
+
+The changes are then made buffer-local." t nil) (autoload 'ligature-mode "ligature" "Enables typographic ligatures.
+
+This is a minor mode.  If called interactively, toggle the
+`Ligature mode' mode.  If the prefix argument is positive, enable
+the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `ligature-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+(fn &optional ARG)" t nil) (put 'global-ligature-mode 'globalized-minor-mode t) (defvar global-ligature-mode nil "Non-nil if Global Ligature mode is enabled.
+See the `global-ligature-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-ligature-mode'.") (custom-autoload 'global-ligature-mode "ligature" nil) (autoload 'global-ligature-mode "ligature" "Toggle Ligature mode in all buffers.
+With prefix ARG, enable Global Ligature mode if ARG is positive;
+otherwise, disable it.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.
+Enable the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+Ligature mode is enabled in all buffers where `ligature-mode-turn-on'
+would do it.
+
+See `ligature-mode' for more information on Ligature mode.
+
+(fn &optional ARG)" t nil) (register-definition-prefixes "ligature" '("ligature-")) (provide 'el-patch-autoloads)) "uf-patch" ((uf-patch-autoloads unicode-fonts) (let ((loads (get 'unicode-fonts 'custom-loads))) (if (member '"unicode-fonts" loads) nil (put 'unicode-fonts 'custom-loads (cons '"unicode-fonts" loads)))) (let ((loads (get 'unicode-fonts-tweaks 'custom-loads))) (if (member '"unicode-fonts" loads) nil (put 'unicode-fonts-tweaks 'custom-loads (cons '"unicode-fonts" loads)))) (let ((loads (get 'unicode-fonts-debug 'custom-loads))) (if (member '"unicode-fonts" loads) nil (put 'unicode-fonts-debug 'custom-loads (cons '"unicode-fonts" loads)))) (autoload 'unicode-fonts-first-existing-font "unicode-fonts" "Return the (normalized) first existing font name from FONT-NAMES.
+
+FONT-NAMES is a list, with each element typically in Fontconfig
+font-name format.
+
+The font existence-check is lazy; fonts after the first hit are
+not checked.
+
+(fn FONT-NAMES)" nil nil) (autoload 'unicode-fonts-font-exists-p "unicode-fonts" "Run `font-utils-exists-p' with a limited scope.
+
+The scope is defined by `unicode-fonts-restrict-to-fonts'.
+
+FONT-NAME, POINT-SIZE, and STRICT are as documented at
+`font-utils-exists-p'.
+
+(fn FONT-NAME &optional POINT-SIZE STRICT)" nil nil) (autoload 'unicode-fonts-read-block-name "unicode-fonts" "Read a Unicode block name using `completing-read'.
+
+Spaces are replaced with underscores in completion values, but
+are removed from the return value.
+
+Use `ido-completing-read' if IDO is set.
+
+(fn &optional IDO)" nil nil) (autoload 'unicode-fonts-setup "unicode-fonts" "Set up Unicode fonts for FONTSET-NAMES.
+
+Optional FONTSET-NAMES must be a list of strings.  Fontset names
+which do not currently exist will be ignored.  The default value
+is `unicode-fonts-fontset-names'.
+
+Optional REGENERATE requests that the disk cache be invalidated
+and regenerated.
+
+(fn &optional FONTSET-NAMES REGENERATE)" t nil) (register-definition-prefixes "unicode-fonts" '("persistent-softest-" "unicode-")) (provide 'uf-patch-autoloads)) "fu-patch" ((fu-patch-autoloads font-utils) (let ((loads (get 'font-utils 'custom-loads))) (if (member '"font-utils" loads) nil (put 'font-utils 'custom-loads (cons '"font-utils" loads)))) (autoload 'font-utils-client-hostname "font-utils" "Guess the client hostname, respecting $SSH_CONNECTION." nil nil) (autoload 'font-utils-name-from-xlfd "font-utils" "Return the font-family name from XLFD, a string.
+
+This function accounts for the fact that the XLFD
+delimiter, \"-\", is a legal character within fields.
+
+(fn XLFD)" nil nil) (autoload 'font-utils-parse-name "font-utils" "Parse FONT-NAME which may contain fontconfig-style specifications.
+
+Returns two-element list.  The car is the font family name as a string.
+The cadr is the specifications as a normalized and sorted list.
+
+(fn FONT-NAME)" nil nil) (autoload 'font-utils-normalize-name "font-utils" "Normalize FONT-NAME which may contain fontconfig-style specifications.
+
+(fn FONT-NAME)" nil nil) (autoload 'font-utils-lenient-name-equal "font-utils" "Leniently match two strings, FONT-NAME-A and FONT-NAME-B.
+
+(fn FONT-NAME-A FONT-NAME-B)" nil nil) (autoload 'font-utils-is-qualified-variant "font-utils" "Whether FONT-NAME-1 and FONT-NAME-2 are different variants of the same font.
+
+Qualifications are fontconfig-style specifications added to a
+font name, such as \":width=condensed\".
+
+To return t, the font families must be identical, and the
+qualifications must differ.  If FONT-NAME-1 and FONT-NAME-2 are
+identical, returns nil.
+
+(fn FONT-NAME-1 FONT-NAME-2)" nil nil) (autoload 'font-utils-list-names "font-utils" "Return a list of all font names on the current system." nil nil) (autoload 'font-utils-read-name "font-utils" "Read a font name using `completing-read'.
+
+Underscores are removed from the return value.
+
+Uses `ido-completing-read' if optional IDO is set.
+
+(fn &optional IDO)" nil nil) (autoload 'font-utils-exists-p "font-utils" "Test whether FONT-NAME (a string or font object) exists.
+
+FONT-NAME is a string, typically in Fontconfig font-name format.
+A font-spec, font-vector, or font-object are accepted, though
+the behavior for the latter two is not well defined.
+
+Returns a matching font vector.
+
+When POINT-SIZE is set, check for a specific font size.  Size may
+also be given at the end of a string FONT-NAME, eg \"Monaco-12\".
+
+When optional STRICT is given, FONT-NAME must will not be
+leniently modified before passing to `font-info'.
+
+Optional SCOPE is a list of font names, within which FONT-NAME
+must (leniently) match.
+
+(fn FONT-NAME &optional POINT-SIZE STRICT SCOPE)" nil nil) (autoload 'font-utils-first-existing-font "font-utils" "Return the (normalized) first existing font name from FONT-NAMES.
+
+FONT-NAMES is a list, with each element typically in Fontconfig
+font-name format.
+
+The font existence-check is lazy; fonts after the first hit are
+not checked.
+
+If NO-NORMALIZE is given, the return value is exactly as the
+member of FONT-NAMES.  Otherwise, the family name is extracted
+from the XLFD returned by `font-info'.
+
+(fn FONT-NAMES &optional NO-NORMALIZE)" nil nil) (register-definition-prefixes "font-utils" '("font-" "persistent-softest-")) (provide 'fu-patch-autoloads)) "uu-patch" ((uu-patch-autoloads ucs-utils ucs-utils-6\.0-delta) (let ((loads (get 'ucs-utils 'custom-loads))) (if (member '"ucs-utils" loads) nil (put 'ucs-utils 'custom-loads (cons '"ucs-utils" loads)))) (autoload 'ucs-utils-pretty-name "ucs-utils" "Return a prettified UCS name for CHAR.
+
+Based on `get-char-code-property'.  The result has been
+title-cased for readability, and will not match into the
+`ucs-utils-names' alist until it has been upcased.
+`ucs-utils-char' can be used on the title-cased name.
+
+Returns a hexified string if no name is found.  If NO-HEX is
+non-nil, then a nil value will be returned when no name is
+found.
+
+(fn CHAR &optional NO-HEX)" nil nil) (autoload 'ucs-utils-all-prettified-names "ucs-utils" "All prettified UCS names, cached in list `ucs-utils-all-prettified-names'.
+
+When optional PROGRESS is given, show progress when generating
+cache.
+
+When optional REGENERATE is given, re-generate cache.
+
+(fn &optional PROGRESS REGENERATE)" nil nil) (autoload 'ucs-utils-char "ucs-utils" "Return the character corresponding to NAME, a UCS name.
+
+NAME is matched leniently by `ucs-utils--lookup'.
+
+Returns FALLBACK if NAME does not exist or is not displayable
+according to TEST.  FALLBACK may be either a UCS name or
+character, or one of the special symbols described in the next
+paragraph.
+
+If FALLBACK is nil or 'drop, returns nil on failure.  If FALLBACK
+is 'error, throws an error on failure.
+
+TEST is an optional predicate which characters must pass.  A
+useful value is 'char-displayable-p, which is available as
+the abbreviation 'cdp, unless you have otherwise defined that
+symbol.
+
+When NAME is a character, it passes through unchanged, unless
+TEST is set, in which case it must pass TEST.
+
+(fn NAME &optional FALLBACK TEST)" nil nil) (autoload 'ucs-utils-first-existing-char "ucs-utils" "Return the first existing character from SEQUENCE of character names.
+
+TEST is an optional predicate which characters must pass.  A
+useful value is 'char-displayable-p, which is available as
+the abbreviation 'cdp, unless you have otherwise defined that
+symbol.
+
+(fn SEQUENCE &optional TEST)" nil nil) (autoload 'ucs-utils-vector "ucs-utils" "Return a vector corresponding to SEQUENCE of UCS names or characters.
+
+If SEQUENCE is a single string or character, it will be coerced
+to a list of length 1.  Each name in SEQUENCE is matched
+leniently by `ucs-utils--lookup'.
+
+FALLBACK should be a sequence of equal length to SEQUENCE, (or
+one of the special symbols described in the next paragraph).  For
+any element of SEQUENCE which does not exist or is not
+displayable according to TEST, that element degrades to the
+corresponding element of FALLBACK.
+
+When FALLBACK is nil, characters which do not exist or are
+undisplayable will be given as nils in the return value.  When
+FALLBACK is 'drop, such characters will be silently dropped from
+the return value.  When FALLBACK is 'error, such characters cause
+an error to be thrown.
+
+To allow fallbacks of arbitrary length, give FALLBACK as a vector-
+of-vectors, with outer length equal to the length of sequence.  The
+inner vectors may contain a sequence of characters, a literal
+string, or nil.  Eg
+
+   (ucs-utils-vector '(\"Middle Dot\" \"Ampersand\" \"Horizontal Ellipsis\")
+                     '[?.           [?a ?n ?d]  [\"...\"]              ])
+
+or
+
+   (ucs-utils-vector \"Horizontal Ellipsis\" '[[\"...\"]])
+
+TEST is an optional predicate which characters must pass.  A
+useful value is 'char-displayable-p, which is available as
+the abbreviation 'cdp, unless you have otherwise defined that
+symbol.
+
+If NO-FLATTEN is non-nil, then a vector-of-vectors may be returned
+if multi-character fallbacks were used as in the example above.
+
+(fn SEQUENCE &optional FALLBACK TEST NO-FLATTEN)" nil nil) (autoload 'ucs-utils-string "ucs-utils" "Return a string corresponding to SEQUENCE of UCS names or characters.
+
+If SEQUENCE is a single string, it will be coerced to a list of
+length 1.  Each name in SEQUENCE is matched leniently by
+`ucs-utils--lookup'.
+
+FALLBACK should be a sequence of equal length to SEQUENCE, (or
+one of the special symbols described in the next paragraph).  For
+any element of SEQUENCE which does not exist or is not
+displayable according to TEST, that element degrades to the
+corresponding element of FALLBACK.
+
+When FALLBACK is nil or 'drop, characters which do not exist or
+are undisplayable will be silently dropped from the return value.
+When FALLBACK is 'error, such characters cause an error to be
+thrown.
+
+TEST is an optional predicate which characters must pass.  A
+useful value is 'char-displayable-p, which is available as
+the abbreviation 'cdp, unless you have otherwise defined that
+symbol.
+
+(fn SEQUENCE &optional FALLBACK TEST)" nil nil) (autoload 'ucs-utils-intact-string "ucs-utils" "Return a string corresponding to SEQUENCE of UCS names or characters.
+
+This function differs from `ucs-utils-string' in that FALLBACK is
+a non-optional single string, to be used unless every member of
+SEQUENCE exists and passes TEST.  FALLBACK may not be nil, 'error,
+or 'drop as in `ucs-utils-string'.
+
+If SEQUENCE is a single string, it will be coerced to a list of
+length 1.  Each name in SEQUENCE is matched leniently by
+`ucs-utils--lookup'.
+
+TEST is an optional predicate which characters must pass.  A
+useful value is 'char-displayable-p, which is available as
+the abbreviation 'cdp, unless you have otherwise defined that
+symbol.
+
+(fn SEQUENCE FALLBACK &optional TEST)" nil nil) (autoload 'ucs-utils-subst-char-in-region "ucs-utils" "From START to END, replace FROM-CHAR with TO-CHAR each time it occurs.
+
+If optional arg NO-UNDO is non-nil, don't record this change for
+undo and don't mark the buffer as really changed.
+
+Characters may be of differing byte-lengths.
+
+The character at the position END is not included, matching the
+behavior of `subst-char-in-region'.
+
+This function is slower than `subst-char-in-region'.
+
+(fn START END FROM-CHAR TO-CHAR &optional NO-UNDO)" nil nil) (autoload 'ucs-utils-read-char-by-name "ucs-utils" "Read a character by its Unicode name or hex number string.
+
+A wrapper for `read-char-by-name', with the option to use
+`ido-completing-read'.
+
+PROMPT is displayed, and a string that represents a character by
+its name is read.
+
+When IDO is set, several seconds are required on the first
+run as all completion candidates are pre-generated.
+
+(fn PROMPT &optional IDO)" nil nil) (autoload 'ucs-utils-eval "ucs-utils" "Display a string UCS name for the character at POS.
+
+POS defaults to the current point.
+
+If `transient-mark-mode' is enabled and there is an active
+region, return a list of strings UCS names, one for each
+character in the region.  If called from Lisp with an
+explicit POS, ignores the region.
+
+If called with universal prefix ARG, display the result
+in a separate buffer.  If called with two universal
+prefix ARGs, replace the current character or region with
+its UCS name translation.
+
+(fn &optional POS ARG)" t nil) (autoload 'ucs-utils-ucs-insert "ucs-utils" "Insert CHARACTER in COUNT copies, where CHARACTER is a Unicode code point.
+
+Works like `ucs-insert', with the following differences
+
+    * Uses `ido-completing-read' at the interactive prompt
+
+    * If `transient-mark-mode' is enabled, and the region contains
+      a valid UCS character name, that value is used as the
+      character name and the region is replaced.
+
+    * A UCS character name string may be passed for CHARACTER.
+
+INHERIT is as documented at `ucs-insert'.
+
+(fn CHARACTER &optional COUNT INHERIT)" t nil) (autoload 'ucs-utils-install-aliases "ucs-utils" "Install aliases outside the \"ucs-utils-\" namespace.
+
+The following aliases will be installed:
+
+    `ucs-char'                  for   `ucs-utils-char'
+    `ucs-first-existing-char'   for   `ucs-utils-first-existing-char'
+    `ucs-string'                for   `ucs-utils-string'
+    `ucs-intact-string'         for   `ucs-utils-intact-string'
+    `ucs-vector'                for   `ucs-utils-vector'
+    `ucs-pretty-name'           for   `ucs-utils-pretty-name'
+    `ucs-eval'                  for   `ucs-utils-eval'" t nil) (register-definition-prefixes "ucs-utils" '("character-name-history" "persistent-soft" "ucs-utils-")) (provide 'uu-patch-autoloads)) "lu-patch" ((lu-patch-autoloads list-utils) (let ((loads (get 'list-utils 'custom-loads))) (if (member '"list-utils" loads) nil (put 'list-utils 'custom-loads (cons '"list-utils" loads)))) (require 'cl) (cl-defstruct tconc head tail) (autoload 'tconc-list "list-utils" "Efficiently append LIST to TC.
+
+TC is a data structure created by `make-tconc'.
+
+(fn TC LIST)" nil nil) (autoload 'tconc "list-utils" "Efficiently append ARGS to TC.
+
+TC is a data structure created by `make-tconc'
+
+Without ARGS, return the list held by TC.
+
+(fn TC &rest ARGS)" nil nil) (autoload 'list-utils-cons-cell-p "list-utils" "Return non-nil if CELL holds a cons cell rather than a proper list.
+
+A proper list is defined as a series of cons cells in which the
+cdr slot of each cons holds a pointer to the next element of the
+list, and the cdr slot in the final cons holds nil.
+
+A plain cons cell, for the purpose of this function, is a single
+cons in which the cdr holds data rather than a pointer to the
+next cons cell, eg
+
+    '(1 . 2)
+
+In addition, a list which is not nil-terminated is not a proper
+list and will be recognized by this function as a cons cell.
+Such a list is printed using dot notation for the last two
+elements, eg
+
+    '(1 2 3 4 . 5)
+
+Such improper lists are produced by `list*'.
+
+(fn CELL)" nil nil) (autoload 'list-utils-make-proper-copy "list-utils" "Copy a cons cell or improper LIST into a proper list.
+
+If optional TREE is non-nil, traverse LIST, making proper
+copies of any improper lists contained within.
+
+Optional RECUR-INTERNAL is for internal use only.
+
+Improper lists consist of proper lists consed to a final
+element, and are produced by `list*'.
+
+(fn LIST &optional TREE RECUR-INTERNAL)" nil nil) (autoload 'list-utils-make-proper-inplace "list-utils" "Make a cons cell or improper LIST into a proper list.
+
+Improper lists consist of proper lists consed to a final
+element, and are produced by `list*'.
+
+If optional TREE is non-nil, traverse LIST, making any
+improper lists contained within into proper lists.
+
+Optional RECUR-INTERNAL is for internal use only.
+
+Modifies LIST and returns the modified value.
+
+(fn LIST &optional TREE RECUR-INTERNAL)" nil nil) (autoload 'list-utils-make-improper-copy "list-utils" "Copy a proper LIST into an improper list.
+
+Improper lists consist of proper lists consed to a final
+element, and are produced by `list*'.
+
+If optional TREE is non-nil, traverse LIST, making proper
+copies of any improper lists contained within.
+
+Optional RECUR-INTERNAL is for internal use only.
+
+(fn LIST &optional TREE RECUR-INTERNAL)" nil nil) (autoload 'list-utils-make-improper-inplace "list-utils" "Make proper LIST into an improper list.
+
+Improper lists consist of proper lists consed to a final
+element, and are produced by `list*'.
+
+If optional TREE is non-nil, traverse LIST, making any
+proper lists contained within into improper lists.
+
+Optional RECUR-INTERNAL is for internal use only.
+
+Modifies LIST and returns the modified value.
+
+(fn LIST &optional TREE RECUR-INTERNAL)" nil nil) (autoload 'list-utils-linear-subseq "list-utils" "Return the linear elements from a partially cyclic LIST.
+
+If there is no cycle in LIST, return LIST.  If all elements of
+LIST are included in a cycle, return nil.
+
+As an optimization, CYCLE-LENGTH may be specified if the length
+of the cyclic portion is already known.  Otherwise it will be
+calculated from LIST.
+
+(fn LIST &optional CYCLE-LENGTH)" nil nil) (autoload 'list-utils-cyclic-subseq "list-utils" "Return any cyclic elements from LIST as a circular list.
+
+The first element of the cyclic structure is not guaranteed to be
+first element of the return value unless FROM-START is non-nil.
+
+To linearize the return value, use `list-utils-make-linear-inplace'.
+
+If there is no cycle in LIST, return nil.
+
+(fn LIST &optional FROM-START)" nil nil) (autoload 'list-utils-cyclic-length "list-utils" "Return the number of cyclic elements in LIST.
+
+If some portion of LIST is linear, only the cyclic
+elements will be counted.
+
+If LIST is completely linear, return 0.
+
+(fn LIST)" nil nil) (autoload 'list-utils-cyclic-p "list-utils" "Return non-nil if LIST contains any cyclic structures.
+
+If optional PERFECT is set, only return non-nil if LIST is a
+perfect non-branching cycle in which the last element points
+to the first.
+
+(fn LIST &optional PERFECT)" nil nil) (autoload 'list-utils-linear-p "list-utils" "Return non-nil if LIST is linear (no cyclic structure).
+
+(fn LIST)" nil nil) (defalias 'list-utils-improper-p 'list-utils-cons-cell-p) (autoload 'list-utils-safe-length "list-utils" "Return the number of elements in LIST.
+
+LIST may be linear or cyclic.
+
+If LIST is not really a list, returns 0.
+
+If LIST is an improper list, return the number of proper list
+elements, like `safe-length'.
+
+(fn LIST)" nil nil) (autoload 'list-utils-flat-length "list-utils" "Count simple elements from the beginning of LIST.
+
+Stop counting when a cons is reached.  nil is not a cons,
+and is considered to be a \"simple\" element.
+
+If the car of LIST is a cons, return 0.
+
+(fn LIST)" nil nil) (autoload 'list-utils-make-linear-copy "list-utils" "Return a linearized copy of LIST, which may be cyclic.
+
+If optional TREE is non-nil, traverse LIST, substituting
+linearized copies of any cyclic lists contained within.
+
+(fn LIST &optional TREE)" nil nil) (autoload 'list-utils-make-linear-inplace "list-utils" "Linearize LIST, which may be cyclic.
+
+Modifies LIST and returns the modified value.
+
+If optional TREE is non-nil, traverse LIST, linearizing any
+cyclic lists contained within.
+
+(fn LIST &optional TREE)" nil nil) (autoload 'list-utils-safe-equal "list-utils" "Compare LIST-1 and LIST-2, which may be cyclic lists.
+
+LIST-1 and LIST-2 may also contain cyclic lists, which are
+each traversed and compared.  This function will not infloop
+when cyclic lists are encountered.
+
+Non-nil is returned only if the leaves of LIST-1 and LIST-2 are
+`equal' and the structure is identical.
+
+Optional TEST specifies a test, defaulting to `equal'.
+
+If LIST-1 and LIST-2 are not actually lists, they are still
+compared according to TEST.
+
+(fn LIST-1 LIST-2 &optional TEST)" nil nil) (autoload 'list-utils-depth "list-utils" "Find the depth of LIST, which may contain other lists.
+
+If LIST is not a list or is an empty list, returns a depth
+of 0.
+
+If LIST is a cons cell or a list which does not contain other
+lists, returns a depth of 1.
+
+(fn LIST)" nil nil) (autoload 'list-utils-flatten "list-utils" "Return a flattened copy of LIST, which may contain other lists.
+
+This function flattens cons cells as lists, and
+flattens circular list structures.
+
+(fn LIST)" nil nil) (autoload 'list-utils-insert-before "list-utils" "Look in LIST for ELEMENT and insert NEW-ELEMENT before it.
+
+Optional TEST sets the test used for a matching element, and
+defaults to `equal'.
+
+LIST is modified and the new value is returned.
+
+(fn LIST ELEMENT NEW-ELEMENT &optional TEST)" nil nil) (autoload 'list-utils-insert-after "list-utils" "Look in LIST for ELEMENT and insert NEW-ELEMENT after it.
+
+Optional TEST sets the test used for a matching element, and
+defaults to `equal'.
+
+LIST is modified and the new value is returned.
+
+(fn LIST ELEMENT NEW-ELEMENT &optional TEST)" nil nil) (autoload 'list-utils-insert-before-pos "list-utils" "Look in LIST for position POS, and insert NEW-ELEMENT before.
+
+POS is zero-indexed.
+
+LIST is modified and the new value is returned.
+
+(fn LIST POS NEW-ELEMENT)" nil nil) (autoload 'list-utils-insert-after-pos "list-utils" "Look in LIST for position POS, and insert NEW-ELEMENT after.
+
+LIST is modified and the new value is returned.
+
+(fn LIST POS NEW-ELEMENT)" nil nil) (autoload 'list-utils-and "list-utils" "Return the elements of LIST1 which are present in LIST2.
+
+This is similar to `cl-intersection' (or `intersection') from
+the cl library, except that `list-utils-and' preserves order,
+does not uniquify the results, and exhibits more predictable
+performance for large lists.
+
+Order will follow LIST1.  Duplicates may be present in the result
+as in LIST1.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+the list to be hashed (LIST2 unless FLIP is set).
+
+When optional FLIP is set, the sense of the comparison is
+reversed.  When FLIP is set, LIST2 will be the guide for the
+order of the result, and will determine whether duplicates may
+be returned.  Since this function preserves duplicates, setting
+FLIP can change the number of elements in the result.
+
+Performance: `list-utils-and' and friends use a general-purpose
+hashing approach.  `intersection' and friends use pure iteration.
+Iteration can be much faster in a few special cases, especially
+when the number of elements is small.  In other scenarios,
+iteration can be much slower.  Hashing has no worst-case
+performance scenario, although it uses much more memory.  For
+heavy-duty list operations, performance may be improved by
+`let'ing `gc-cons-threshold' to a high value around sections that
+make frequent use of this function.
+
+(fn LIST1 LIST2 &optional TEST HINT FLIP)" nil nil) (autoload 'list-utils-not "list-utils" "Return the elements of LIST1 which are not present in LIST2.
+
+This is similar to `cl-set-difference' (or `set-difference') from
+the cl library, except that `list-utils-not' preserves order and
+exhibits more predictable performance for large lists.  Order will
+follow LIST1.  Duplicates may be present as in LIST1.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+the list to be hashed (LIST2 unless FLIP is set).
+
+When optional FLIP is set, the sense of the comparison is
+reversed, returning elements of LIST2 which are not present in
+LIST1.  When FLIP is set, LIST2 will be the guide for the order
+of the result, and will determine whether duplicates may be
+returned.
+
+Performance: see notes under `list-utils-and'.
+
+(fn LIST1 LIST2 &optional TEST HINT FLIP)" nil nil) (autoload 'list-utils-xor "list-utils" "Return elements which are only present in either LIST1 or LIST2.
+
+This is similar to `cl-set-exclusive-or' (or `set-exclusive-or')
+from the cl library, except that `list-utils-xor' preserves order,
+and exhibits more predictable performance for large lists.  Order
+will follow LIST1, then LIST2.  Duplicates may be present as in
+LIST1 or LIST2.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+the list to be hashed (LIST2 unless FLIP is set).
+
+When optional FLIP is set, the sense of the comparison is
+reversed, causing order and duplicates to follow LIST2, then
+LIST1.
+
+Performance: see notes under `list-utils-and'.
+
+(fn LIST1 LIST2 &optional TEST HINT FLIP)" nil nil) (autoload 'list-utils-uniq "list-utils" "Return a uniquified copy of LIST, preserving order.
+
+This is similar to `cl-remove-duplicates' (or `remove-duplicates')
+from the cl library, except that `list-utils-uniq' preserves order,
+and exhibits more predictable performance for large lists.  Order
+will follow LIST.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+LIST.
+
+Performance: see notes under `list-utils-and'.
+
+(fn LIST &optional TEST HINT)" nil nil) (autoload 'list-utils-dupes "list-utils" "Return only duplicated elements from LIST, preserving order.
+
+Duplicated elements may still exist in the result: this function
+removes singlets.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+LIST.
+
+Performance: see notes under `list-utils-and'.
+
+(fn LIST &optional TEST HINT)" nil nil) (autoload 'list-utils-singlets "list-utils" "Return only singlet elements from LIST, preserving order.
+
+Duplicated elements may not exist in the result.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+LIST.
+
+Performance: see notes under `list-utils-and'.
+
+(fn LIST &optional TEST HINT)" nil nil) (autoload 'list-utils-partition-dupes "list-utils" "Partition LIST into duplicates and singlets, preserving order.
+
+The return value is an alist with two keys: 'dupes and 'singlets.
+The two values of the alist are lists which, if combined, comprise
+a complete copy of the elements of LIST.
+
+Duplicated elements may still exist in the 'dupes partition.
+
+TEST is an optional comparison function in the form of a
+hash-table-test.  The default is `equal'.  Other valid values
+include `eq' (built-in), `eql' (built-in), `list-utils-htt-='
+(numeric), `list-utils-htt-case-fold-equal' (case-insensitive).
+See `define-hash-table-test' to define your own tests.
+
+HINT is an optional micro-optimization, predicting the size of
+LIST.
+
+Performance: see notes under `list-utils-and'.
+
+(fn LIST &optional TEST HINT)" nil nil) (autoload 'list-utils-alist-or-flat-length "list-utils" "Count simple or cons-cell elements from the beginning of LIST.
+
+Stop counting when a proper list of non-zero length is reached.
+
+If the car of LIST is a list, return 0.
+
+(fn LIST)" nil nil) (autoload 'list-utils-alist-flatten "list-utils" "Flatten LIST, which may contain other lists.  Do not flatten cons cells.
+
+It is not guaranteed that the result contains *only* cons cells.
+The result could contain other data types present in LIST.
+
+This function simply avoids flattening single conses or improper
+lists where the last two elements would be expressed as a dotted
+pair.
+
+(fn LIST)" nil nil) (autoload 'list-utils-plist-reverse "list-utils" "Return reversed copy of property-list PLIST, maintaining pair associations.
+
+(fn PLIST)" nil nil) (autoload 'list-utils-plist-del "list-utils" "Delete from PLIST the property PROP and its associated value.
+
+When PROP is not present in PLIST, there is no effect.
+
+The new plist is returned; use `(setq x (list-utils-plist-del x prop))'
+to be sure to use the new value.
+
+This functionality overlaps with the undocumented `cl-do-remf'.
+
+(fn PLIST PROP)" nil nil) (register-definition-prefixes "list-utils" '("list-utils-htt-")) (provide 'lu-patch-autoloads)) "anzu" ((anzu-autoloads anzu) (autoload 'anzu-mode "anzu" "minor-mode which display search information in mode-line.
+
+This is a minor mode.  If called interactively, toggle the `Anzu mode'
+mode.  If the prefix argument is positive, enable the mode, and if it
+is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the
+mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `anzu-mode'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+(fn &optional ARG)" t nil) (put 'global-anzu-mode 'globalized-minor-mode t) (defvar global-anzu-mode nil "Non-nil if Global Anzu mode is enabled.
+See the `global-anzu-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-anzu-mode'.") (custom-autoload 'global-anzu-mode "anzu" nil) (autoload 'global-anzu-mode "anzu" "Toggle Anzu mode in all buffers.
+With prefix ARG, enable Global Anzu mode if ARG is positive; otherwise, disable it.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.
+Enable the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+Anzu mode is enabled in all buffers where `anzu--turn-on' would do it.
+
+See `anzu-mode' for more information on Anzu mode.
+
+(fn &optional ARG)" t nil) (autoload 'anzu-query-replace-at-cursor "anzu" "Replace symbol at cursor with to-string." t nil) (autoload 'anzu-query-replace-at-cursor-thing "anzu" "Replace symbol at cursor within `anzu-replace-at-cursor-thing' area." t nil) (autoload 'anzu-query-replace "anzu" "anzu version of `query-replace'.
+
+(fn ARG)" t nil) (autoload 'anzu-query-replace-regexp "anzu" "anzu version of `query-replace-regexp'.
+
+(fn ARG)" t nil) (autoload 'anzu-replace-at-cursor-thing "anzu" "anzu-query-replace-at-cursor-thing without query." t nil) (autoload 'anzu-isearch-query-replace "anzu" "anzu version of `isearch-query-replace'.
+
+(fn ARG)" t nil) (autoload 'anzu-isearch-query-replace-regexp "anzu" "anzu version of `isearch-query-replace-regexp'.
+
+(fn ARG)" t nil) (register-definition-prefixes "anzu" '("anzu")) (provide 'anzu-autoloads)) "s" ((s s-autoloads) (register-definition-prefixes "s" '("s-")) (provide 's-autoloads)) "f" ((f f-autoloads) (register-definition-prefixes "f" '("f-")) (provide 'f-autoloads)) "shrink-path" ((shrink-path shrink-path-autoloads) (register-definition-prefixes "shrink-path" '("shrink-path-")) (provide 'shrink-path-autoloads)) "doom-modeline" ((doom-modeline doom-modeline-autoloads doom-modeline-core doom-modeline-segments doom-modeline-env) (autoload 'doom-modeline-init "doom-modeline" "Initialize doom mode-line." nil nil) (autoload 'doom-modeline-set-main-modeline "doom-modeline" "Set main mode-line.
+If DEFAULT is non-nil, set the default mode-line for all buffers.
+
+(fn &optional DEFAULT)" nil nil) (autoload 'doom-modeline-set-minimal-modeline "doom-modeline" "Set minimal mode-line." nil nil) (autoload 'doom-modeline-set-special-modeline "doom-modeline" "Set special mode-line." nil nil) (autoload 'doom-modeline-set-project-modeline "doom-modeline" "Set project mode-line." nil nil) (autoload 'doom-modeline-set-dashboard-modeline "doom-modeline" "Set dashboard mode-line." nil nil) (autoload 'doom-modeline-set-vcs-modeline "doom-modeline" "Set vcs mode-line." nil nil) (autoload 'doom-modeline-set-info-modeline "doom-modeline" "Set Info mode-line." nil nil) (autoload 'doom-modeline-set-package-modeline "doom-modeline" "Set package mode-line." nil nil) (autoload 'doom-modeline-set-media-modeline "doom-modeline" "Set media mode-line." nil nil) (autoload 'doom-modeline-set-message-modeline "doom-modeline" "Set message mode-line." nil nil) (autoload 'doom-modeline-set-pdf-modeline "doom-modeline" "Set pdf mode-line." nil nil) (autoload 'doom-modeline-set-org-src-modeline "doom-modeline" "Set org-src mode-line." nil nil) (autoload 'doom-modeline-set-helm-modeline "doom-modeline" "Set helm mode-line.
+
+(fn &rest _)" nil nil) (autoload 'doom-modeline-set-timemachine-modeline "doom-modeline" "Set timemachine mode-line." nil nil) (defvar doom-modeline-mode nil "Non-nil if Doom-Modeline mode is enabled.
+See the `doom-modeline-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `doom-modeline-mode'.") (custom-autoload 'doom-modeline-mode "doom-modeline" nil) (autoload 'doom-modeline-mode "doom-modeline" "Toggle doom-modeline on or off.
+
+This is a minor mode.  If called interactively, toggle the
+`Doom-Modeline mode' mode.  If the prefix argument is positive,
+enable the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='doom-modeline-mode)'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+(fn &optional ARG)" t nil) (register-definition-prefixes "doom-modeline" '("doom-modeline-mode-map")) (register-definition-prefixes "doom-modeline-core" '("doom-modeline")) (autoload 'doom-modeline-env-setup-python "doom-modeline-env") (autoload 'doom-modeline-env-setup-ruby "doom-modeline-env") (autoload 'doom-modeline-env-setup-perl "doom-modeline-env") (autoload 'doom-modeline-env-setup-go "doom-modeline-env") (autoload 'doom-modeline-env-setup-elixir "doom-modeline-env") (autoload 'doom-modeline-env-setup-rust "doom-modeline-env") (register-definition-prefixes "doom-modeline-env" '("doom-modeline-")) (register-definition-prefixes "doom-modeline-segments" '("doom-modeline-")) (provide 'doom-modeline-autoloads)) "vp-patch" ((vp-patch-autoloads powerline powerline-themes powerline-separators) (autoload 'powerline-hud "powerline" "Return XPM of relative buffer location using FACE1 and FACE2 of optional WIDTH.
+
+(fn FACE1 FACE2 &optional WIDTH)" nil nil) (autoload 'powerline-mouse "powerline" "Return mouse handler for CLICK-GROUP given CLICK-TYPE and STRING.
+
+(fn CLICK-GROUP CLICK-TYPE STRING)" nil nil) (autoload 'powerline-concat "powerline" "Concatonate STRINGS and pad sides by spaces.
+
+(fn &rest STRINGS)" nil nil) (autoload 'defpowerline "powerline" "Create function NAME by wrapping BODY with powerline padding an propetization.
+
+(fn NAME BODY)" nil t) (autoload 'powerline-raw "powerline" "Render STR as mode-line data using FACE and optionally PAD import.
+PAD can be left (`l') or right (`r').
+
+(fn STR &optional FACE PAD)" nil nil) (autoload 'powerline-fill "powerline" "Return empty space using FACE and leaving RESERVE space on the right.
+
+(fn FACE RESERVE)" nil nil) (autoload 'powerline-major-mode "powerline") (autoload 'powerline-minor-modes "powerline") (autoload 'powerline-narrow "powerline") (autoload 'powerline-vc "powerline") (autoload 'powerline-encoding "powerline") (autoload 'powerline-buffer-size "powerline") (autoload 'powerline-buffer-id "powerline") (autoload 'powerline-process "powerline") (autoload 'powerline-selected-window-active "powerline") (register-definition-prefixes "powerline" '("pl/" "powerline-")) (register-definition-prefixes "powerline-separators" '("pl/" "powerline-image-apple-rgb")) (autoload 'powerline-default-theme "powerline-themes" "Setup the default mode-line." t nil) (autoload 'powerline-center-theme "powerline-themes" "Setup a mode-line with major and minor modes centered." t nil) (autoload 'powerline-vim-theme "powerline-themes" "Setup a Vim-like mode-line." t nil) (autoload 'powerline-nano-theme "powerline-themes" "Setup a nano-like mode-line." t nil) (register-definition-prefixes "powerline-themes" '("powerline-")) (provide 'vp-patch-autoloads))))
+
+#s(hash-table size 65 test eq rehash-size 1.5 rehash-threshold 0.8125 data (org-elpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 11 "melpa" nil "gnu-elpa-mirror" nil "el-get" nil "emacsmirror-mirror" nil "straight" nil "helm" nil "helm-core" nil "async" nil "popup" nil "helm-ag" nil "helm-descbinds" nil "helm-org" nil "helm-projectile" nil "projectile" nil "cl-lib" nil "helm-swoop" nil "helm-xref" nil "imenu" nil "magit" nil "compat" nil "dash" nil "git-commit" nil "transient" nil "with-editor" nil "magit-section" nil "helm-mode-manager" nil "persp-mode" nil "popwin" nil "use-package" nil "bind-key" nil "el-patch" nil "uf-patch" nil "fu-patch" nil "uu-patch" nil "lu-patch" nil "anzu" nil "doom-modeline" nil "shrink-path" nil "s" nil "f" nil "vp-patch" nil)) melpa #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "gnu-elpa-mirror" nil "el-get" (el-get :type git :flavor melpa :files ("*.el" ("recipes" "recipes/el-get.rcp") "methods" "el-get-pkg.el") :host github :repo "dimitri/el-get") "emacsmirror-mirror" nil "straight" nil "helm" (helm :type git :flavor melpa :files ("*.el" "emacs-helm.sh" (:exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") :host github :repo "emacs-helm/helm") "helm-core" (helm-core :type git :flavor melpa :files ("helm-core.el" "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core-pkg.el") :host github :repo "emacs-helm/helm") "async" (async :type git :flavor melpa :host github :repo "jwiegley/emacs-async") "popup" (popup :type git :flavor melpa :host github :repo "auto-complete/popup-el") "helm-ag" (helm-ag :type git :flavor melpa :host github :repo "emacsorphanage/helm-ag") "helm-descbinds" (helm-descbinds :type git :flavor melpa :host github :repo "emacs-helm/helm-descbinds") "helm-org" (helm-org :type git :flavor melpa :host github :repo "emacs-helm/helm-org") "helm-projectile" (helm-projectile :type git :flavor melpa :host github :repo "bbatsov/helm-projectile") "projectile" (projectile :type git :flavor melpa :host github :repo "bbatsov/projectile") "cl-lib" nil "helm-swoop" (helm-swoop :type git :flavor melpa :host github :repo "emacsorphanage/helm-swoop") "helm-xref" (helm-xref :type git :flavor melpa :host github :repo "brotzeit/helm-xref") "imenu" nil "magit" (magit :type git :flavor melpa :files ("lisp/magit" "lisp/magit*.el" "lisp/git-rebase.el" "docs/magit.texi" "docs/AUTHORS.md" "LICENSE" (:exclude "lisp/magit-libgit.el" "lisp/magit-libgit-pkg.el" "lisp/magit-section.el" "lisp/magit-section-pkg.el") "Documentation/magit.texi" "Documentation/AUTHORS.md" "magit-pkg.el") :host github :repo "magit/magit") "compat" nil "dash" (dash :type git :flavor melpa :files ("dash.el" "dash.texi" "dash-pkg.el") :host github :repo "magnars/dash.el") "git-commit" (git-commit :type git :flavor melpa :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el" "git-commit-pkg.el") :host github :repo "magit/magit") "transient" (transient :type git :flavor melpa :files ("lisp/transient.el" "docs/transient.texi" "transient-pkg.el") :host github :repo "magit/transient") "with-editor" (with-editor :type git :flavor melpa :files ("lisp/with-editor.el" "docs/with-editor.texi" "with-editor.el" "with-editor.texi" "with-editor-pkg.el") :host github :repo "magit/with-editor") "magit-section" (magit-section :type git :flavor melpa :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el" "docs/magit-section.texi" "Documentation/magit-section.texi" "magit-section-pkg.el") :host github :repo "magit/magit") "helm-mode-manager" (helm-mode-manager :type git :flavor melpa :host github :repo "istib/helm-mode-manager") "persp-mode" (persp-mode :type git :flavor melpa :host github :repo "Bad-ptr/persp-mode.el") "popwin" (popwin :type git :flavor melpa :host github :repo "emacsorphanage/popwin") "use-package" (use-package :type git :flavor melpa :files (:defaults (:exclude "bind-key.el" "bind-chord.el" "use-package-chords.el" "use-package-ensure-system-package.el") "use-package-pkg.el") :host github :repo "jwiegley/use-package") "bind-key" (bind-key :type git :flavor melpa :files ("bind-key.el" "bind-key-pkg.el") :host github :repo "jwiegley/use-package") "el-patch" (el-patch :type git :flavor melpa :host github :repo "radian-software/el-patch") "uf-patch" nil "fu-patch" nil "uu-patch" nil "lu-patch" nil "anzu" (anzu :type git :flavor melpa :host github :repo "emacsorphanage/anzu") "doom-modeline" (doom-modeline :type git :flavor melpa :host github :repo "seagle0128/doom-modeline") "shrink-path" (shrink-path :type git :flavor melpa :host gitlab :repo "bennya/shrink-path.el") "s" (s :type git :flavor melpa :host github :repo "magnars/s.el") "f" (f :type git :flavor melpa :host github :repo "rejeep/f.el") "vp-patch" nil)) gnu-elpa-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 3 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil "compat" (compat :type git :host github :repo "emacs-straight/compat" :files ("*" (:exclude ".git"))) "uf-patch" nil "fu-patch" nil "uu-patch" nil "lu-patch" nil "vp-patch" nil)) el-get #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 1 "emacsmirror-mirror" nil "straight" nil "cl-lib" nil "imenu" nil "uf-patch" nil "fu-patch" nil "uu-patch" nil "lu-patch" nil "vp-patch" nil)) emacsmirror-mirror #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8125 data (version 2 "straight" (straight :type git :host github :repo "emacsmirror/straight") "cl-lib" nil "imenu" nil "uf-patch" nil "fu-patch" nil "uu-patch" nil "lu-patch" nil "vp-patch" nil))))
+
+("org-elpa" "melpa" "gnu-elpa-mirror" "el-get" "emacsmirror-mirror" "straight" "emacs" "use-package" "bind-key" "uu-patch" "lu-patch" "fu-patch" "uf-patch" "el-patch" "vp-patch" "helm" "helm-core" "async" "popup" "helm-ag" "helm-descbinds" "helm-mode-manager" "helm-org" "helm-projectile" "projectile" "cl-lib" "helm-swoop" "helm-xref" "imenu" "persp-mode" "popwin" "anzu" "magit" "compat" "nadvice" "dash" "git-commit" "transient" "with-editor" "magit-section")
 
 t

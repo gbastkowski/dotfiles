@@ -36,24 +36,44 @@ pairs. For example,
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (require 'use-package))
+(straight-use-package 'use-package)
 
 (prefer-coding-system 'utf-8)
+
+(use-package ucs-utils
+  :straight (uu-patch :type git :host github :repo "rolandwalker/ucs-utils"))
+
+(use-package list-utils
+  :straight (lu-patch :type git :host github :repo "rolandwalker/list-utils"))
+
+(use-package font-utils
+  :straight (fu-patch :type git :host github :repo "rolandwalker/font-utils"))
+
+(use-package unicode-fonts
+  :straight (uf-patch :type git :host github :repo "rolandwalker/unicode-fonts")
+  :init
+  (progn
+    (when (eq window-system 'ns)
+      (setq unicode-fonts-skip-font-groups '(decorative low-quality-glyphs))))
+:config
+(unicode-fonts-setup))
+
+(use-package persistent-soft
+  :defer t)
+
+(use-package ligature
+  :straight (el-patch :type git :host github :repo "mickeynp/ligature.el"))
 
 (use-package darcula-theme
   :ensure t
@@ -61,19 +81,19 @@ pairs. For example,
   (set-frame-font "MesloLGS NF")
   (load-theme 'darcula t))
 
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :hook (after-init . doom-modeline-mode))
+
+(use-package vim-powerline
+  :straight (vp-patch :type git :host github :repo "milkypostman/powerline")
+  :ensure t
+  :hook (after-init . powerline-default-theme))
+
 (use-package evil
   :ensure t
   :config
-
   (evil-mode 1)
-  (use-package evil-leader
-    :ensure t
-    :config
-    (global-evil-leader-mode t)
-    (evil-leader/set-leader "<SPC>")
-    (evil-leader/set-key
-      "s s" 'swiper
-      "d x w" 'delete-trailing-whitespace))
 
   (use-package evil-surround
     :ensure t
@@ -86,7 +106,7 @@ pairs. For example,
     :ensure t
     :config
     (evil-org-set-key-theme
-     '(textobjects insert navigation additional shift todo heading))
+    '(textobjects insert navigation additional shift todo heading))
     (add-hook 'org-mode-hook (lambda () (evil-org-mode))))
 
   (use-package powerline-evil
@@ -111,9 +131,16 @@ pairs. For example,
   :straight t
   :config
   (progn
+    (use-package ace-jump-helm-line
+      :defer (or idle-time t)
+      :init
+      (with-eval-after-load 'helm
+        (define-key helm-map (kbd "C-q") 'ace-jump-helm-line)))
     (use-package helm-ag
       :straight t)
     (use-package helm-descbinds
+      :straight t)
+    (use-package helm-mode-manager
       :straight t)
     (use-package helm-org
       :straight t)
@@ -125,6 +152,13 @@ pairs. For example,
       :straight t)
     (use-package imenu
       :straight t)
+    (use-package persp-mode
+      :straight t)
+    (use-package popwin
+      :straight t
+      :init
+      ;; (popwin-mode 1)
+      )
     (use-package projectile
       :straight t)
     (helm-mode)
@@ -147,7 +181,7 @@ pairs. For example,
           helm-move-to-line-cycle-in-source         t
           helm-autoresize-max-height                80 ; it is %.
           helm-autoresize-min-height                20 ; it is %.
-          helm-debug-root-directory                 "/home/thierry/tmp/helm-debug"
+          helm-debug-root-directory                 "/Users/gunnar.bastkowski/tmp/helm-debug"
           helm-follow-mode-persistent               t
           helm-candidate-number-limit               500
           helm-visible-mark-prefix                  "✓")
@@ -169,6 +203,11 @@ pairs. For example,
     (with-eval-after-load 'helm-bookmark
       (simpler-helm-bookmark-keybindings))))
 
+(use-package anzu
+  :straight t)
+
+(global-anzu-mode +1)
+
 (use-package magit
   :straight t)
 
@@ -189,19 +228,57 @@ pairs. For example,
   (condition-case nil
       (delete-frame nil 1)
     (error
-     (make-frame-invisible nil 1))))
+    (make-frame-invisible nil 1))))
 
 ;; (gumacs/set-leader-keys
- ;; "qs" 'save-buffers-kill-emacs
- ;; "qq" 'gumacs/prompt-kill-emacs
- ;; "qQ" 'kill-emacs
- ;; "qf" 'gumacs/frame-killer)
+;; "qs" 'save-buffers-kill-emacs
+;; "qq" 'gumacs/prompt-kill-emacs
+;; "qQ" 'kill-emacs
+;; "qf" 'gumacs/frame-killer)
 
-(setq gumacs-quit-map (make-sparse-keymap))
-(define-key  gumacs-default-map  "<SPC>"  (cons "M-x"              'helm-M-x))
-(define-key  gumacs-default-map  "q"    (cons "quit"              gumacs-quit-map))
-(define-key  gumacs-quit-map     "q"    (cons "prompt and quit"  'gumacs/prompt-kill-emacs))
+(define-key  gumacs-default-map  (kbd "SPC")    (cons "M-x"                     'helm-M-x))
 
 (setq gumacs-files-map (make-sparse-keymap))
-(define-key  gumacs-default-map  "f"  (cons "files"             gumacs-files-map))
-(define-key  gumacs-files-map    "f"  (cons "open file"        'helm-find-files))
+(define-key  gumacs-default-map  "f"        (cons "Files"                    gumacs-files-map))
+(define-key  gumacs-files-map    "f"        (cons "open file"               'helm-find-files))
+(define-key  gumacs-files-map    "r"        (cons "recent files"            'helm-recentf))
+
+(setq gumacs-buffers-map (make-sparse-keymap))
+(define-key  gumacs-default-map  "b"        (cons "Buffers"                  gumacs-buffers-map))
+(define-key  gumacs-buffers-map  "."        (cons "buffer transient state"  'spacemacs/buffer-transient-state/body))
+(define-key  gumacs-buffers-map  "b"        (cons "list buffers"            'helm-mini))
+
+(setq gumacs-help-map (make-sparse-keymap))
+(define-key  gumacs-default-map  "h"        (cons "Help"                     gumacs-help-map))
+(define-key  gumacs-help-map     "k"        (cons "show top level"          'which-key-show-top-level))
+(define-key  gumacs-help-map     "RET"      (cons "helm-enable-minor-mode"  'helm-enable-minor-mode))
+(define-key  gumacs-help-map     "<return>" (cons "helm-enable-minor-mode"  'helm-enable-minor-mode))
+
+(setq gumacs-describe-map (make-sparse-keymap))
+(define-key  gumacs-help-map     "d"        (cons "describe"                 gumacs-describe-map))
+(define-key  gumacs-describe-map "k"        (cons "key"                     'describe-key))
+
+(setq gumacs-quit-map (make-sparse-keymap))
+(define-key  gumacs-default-map  "q"    (cons "Quit"                         gumacs-quit-map))
+(define-key  gumacs-quit-map     "q"    (cons "prompt and quit"             'gumacs/prompt-kill-emacs))
+
+(setq gumacs-toggles-map (make-sparse-keymap))
+(define-key  gumacs-default-map  "t"    (cons "Toggles"                      gumacs-toggles-map))
+(define-key  gumacs-toggles-map  "l"    (cons "truncate lines"              'toggle-truncate-lines))
+
+(setq gumacs-windows-map (make-sparse-keymap))
+
+;; from https://gist.github.com/3402786
+(defun gumacs/toggle-maximize-buffer ()
+  "Maximize buffer"
+  (interactive)
+  (save-excursion
+    (if (and (= 1 (length (window-list)))
+            (assoc ?_ register-alist))
+        (jump-to-register ?_)
+      (progn
+        (window-configuration-to-register ?_)
+        (delete-other-windows)))))
+
+(define-key  gumacs-default-map  "w"    (cons "Windows"                      gumacs-windows-map))
+(define-key  gumacs-windows-map  "m"    (cons "maximize buffer"             'gumacs/toggle-maximize-buffer))

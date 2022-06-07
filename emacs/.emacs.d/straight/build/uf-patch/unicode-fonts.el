@@ -1,1 +1,0 @@
-/Users/gunnar.bastkowski/git/gbastkowski/dotfiles/emacs/.emacs.d/straight/repos/unicode-fonts/unicode-fonts.el

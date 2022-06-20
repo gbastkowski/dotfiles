@@ -157,7 +157,7 @@ This function should only modify configuration layer settings."
      selectric
      semantic
      (shell :variables
-            shell-default-shell 'eshell
+            shell-default-shell 'multi-term
             shell-default-height 30
             shell-default-position 'bottom
             shell-enable-smart-eshell t)

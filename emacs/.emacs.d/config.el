@@ -75,6 +75,73 @@ pairs. For example,
 (use-package ligature
   :straight (el-patch :type git :host github :repo "mickeynp/ligature.el"))
 
+;; (use-package ace-link
+;;   :commands spacemacs/ace-buffer-links
+;;   :init
+;;   (progn
+;;     (define-key spacemacs-buffer-mode-map "o" 'spacemacs/ace-buffer-links)
+;;     (with-eval-after-load 'info
+;;       (define-key Info-mode-map "o" 'ace-link-info))
+;;     (with-eval-after-load 'help-mode
+;;       (define-key help-mode-map "o" 'ace-link-help))
+;;     (with-eval-after-load 'woman
+;;       (define-key woman-mode-map "o" 'link-hint-open-link))
+;;     (with-eval-after-load 'eww
+;;       (define-key eww-link-keymap "o" 'ace-link-eww)
+;;       (define-key eww-mode-map "o" 'ace-link-eww))))
+
+(use-package ace-window
+  :straight t
+  :defer t
+  :init
+  (progn
+    ;; (spacemacs/set-leader-keys
+      ;; "bD" 'spacemacs/ace-kill-this-buffer
+      ;; FIXME: Needs new binding.
+      ;; "wC" 'spacemacs/ace-center-window
+      ;; "wD" 'spacemacs/ace-delete-window
+      ;; "wM" 'ace-swap-window
+      ;; "wW" 'ace-window)
+    ;; set ace-window keys to home-row
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    )
+  )
+
+(use-package winum
+  :ensure t)
+
+(defun split-window-below-and-focus ()
+  "Split the window vertically and focus the new window."
+  (interactive)
+  (split-window-below)
+  (windmove-down))
+
+(defun split-window-right-and-focus ()
+  "Split the window horizontally and focus the new window."
+  (interactive)
+  (split-window-right)
+  (windmove-right))
+
+(defun gumacs/maximize-horizontally ()
+  "Delete all windows to the left and right of the current window."
+  (interactive)
+  (require 'windmove)
+  (save-excursion
+    (while (condition-case nil (windmove-left) (error nil))
+      (delete-window))
+    (while (condition-case nil (windmove-right) (error nil))
+      (delete-window))))
+
+(defun gumacs/maximize-vertically ()
+  "Delete all windows above and below the current window."
+  (interactive)
+  (require 'windmove)
+  (save-excursion
+    (while (condition-case nil (windmove-up) (error nil))
+      (delete-window))
+    (while (condition-case nil (windmove-down) (error nil))
+      (delete-window))))
+
 (use-package darcula-theme
   :ensure t
   :config
@@ -280,5 +347,14 @@ pairs. For example,
         (window-configuration-to-register ?_)
         (delete-other-windows)))))
 
-(define-key  gumacs-default-map  "w"    (cons "Windows"                      gumacs-windows-map))
-(define-key  gumacs-windows-map  "m"    (cons "maximize buffer"             'gumacs/toggle-maximize-buffer))
+(define-key  gumacs-default-map  "w"    (cons "Windows"                        gumacs-windows-map))
+(define-key  gumacs-windows-map  "d"    (cons "delete window"                 'delete-window))
+(define-key  gumacs-windows-map  "m"    (cons "maximize buffer"               'gumacs/toggle-maximize-buffer))
+(define-key  gumacs-windows-map  "w"    (cons "other window"                  'other-window))
+(define-key  gumacs-windows-map  "W"    (cons "select window"                 'ace-window))
+(define-key  gumacs-windows-map  "v"    (cons "split window right"            'split-window-right))
+(define-key  gumacs-windows-map  "V"    (cons "split window right and focus"  'split-window-right-and-focus))
+(define-key  gumacs-windows-map  "s"    (cons "split window below"            'split-window-below))
+(define-key  gumacs-windows-map  "S"    (cons "split window below and focus"  'split-window-below-and-focus))
+(define-key  gumacs-windows-map  "_"    (cons "maximize horizontally"         'gumacs/maximize-horizontally))
+(define-key  gumacs-windows-map  "|"    (cons "split window right and focus"  'gumacs/maximize-vertically))

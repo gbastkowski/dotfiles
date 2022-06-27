@@ -213,7 +213,8 @@ This function should only modify configuration layer settings."
      (scalaz-unicode-input-method :location
                                   (recipe
                                   :fetcher github
-                                  :repo "folone/emacs-scalaz-unicode-input-method")))
+                                  :repo "folone/emacs-scalaz-unicode-input-method"))
+     smithy-mode)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()

@@ -82,7 +82,6 @@ eval $(thefuck --alias)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export PATH=~/.bin:~/go/bin:$PATH
-export PATH="$PATH:/Users/gunnar.bastkowski/Library/Application Support/Coursier/bin"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 

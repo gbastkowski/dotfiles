@@ -32,6 +32,13 @@
 
 (spacemacs/set-leader-keys "of" 'aj-toggle-fold)
 
+(defun gunnar-open-terminal-right ()
+  (interactive)
+  (progn
+    (split-window-right-and-focus)
+    (spacemacs/projectile-shell)))
+
+(spacemacs/set-leader-keys "ot" 'gunnar-open-terminal-right)
 
 ;; (set-frame-height (selected-frame) 50)
 ;; (set-frame-width (selected-frame) 140)

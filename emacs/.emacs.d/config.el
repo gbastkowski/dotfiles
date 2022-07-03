@@ -49,6 +49,50 @@ pairs. For example,
 
 (straight-use-package 'use-package)
 
+(defvar gumacs-buffer-mode-map
+  (let ((map (make-sparse-keymap)))
+    ;; (define-key map (kbd "0") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "1") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "2") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "3") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "4") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "5") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "6") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "7") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "8") 'spacemacs-buffer/jump-to-number-startup-list-line)
+    ;; (define-key map (kbd "9") 'spacemacs-buffer/jump-to-number-startup-list-line)
+
+    ;; (define-key map [down-mouse-1] 'wid get-button-click)
+    (define-key map (kbd "RET") 'gumacs-buffer/return)
+
+    (define-key map [tab] 'widget-forward)
+    (define-key map (kbd "J") 'widget-forward)
+    (define-key map (kbd "C-i") 'widget-forward)
+
+    (define-key map [backtab] 'widget-backward)
+    (define-key map (kbd "K") 'widget-backward)
+
+    ;; (define-key map (kbd "C-r") 'spacemacs-buffer/refresh)
+    (define-key map "q" 'quit-window)
+    map)
+  "Keymap for spacemacs-buffer mode.")
+
+(define-derived-mode gumacs-buffer-mode special-mode "Gumacs buffer"
+  "Gumacs major mode for startup screen."
+  :group 'spacemacs
+  :syntax-table nil
+  :abbrev-table nil
+  (buffer-disable-undo)
+  (page-break-lines-mode +1)
+  (with-eval-after-load 'evil
+    (progn
+      (evil-set-initial-state 'gumacs-buffer-mode 'motion)
+      (evil-make-overriding-map gumacs-buffer-mode-map 'motion)))
+  (suppress-keymap gumacs-buffer-mode-map t)
+  (set-keymap-parent gumacs-buffer-mode-map nil)
+  (setq-local buffer-read-only t
+              truncate-lines t))
+
 (prefer-coding-system 'utf-8)
 
 (use-package ucs-utils
@@ -156,6 +200,35 @@ pairs. For example,
   :straight (vp-patch :type git :host github :repo "milkypostman/powerline")
   :ensure t
   :hook (after-init . powerline-default-theme))
+
+(use-package zoom-frm
+  :commands (zoom-frm-unzoom
+             zoom-frm-out
+             zoom-frm-in)
+  :init
+  (progn
+    (spacemacs|define-transient-state zoom-frm
+      :title "Zoom Frame Transient State"
+      :doc "
+[_+_/_=_/_k_] zoom frame in   [_m_] max frame
+[_-_/___/_j_] zoom frame out  [_f_] fullscreen
+[_0_]^^^^     reset zoom      [_q_] quit"
+      :bindings
+      ("+" spacemacs/zoom-frm-in)
+      ("=" spacemacs/zoom-frm-in)
+      ("k" spacemacs/zoom-frm-in)
+      ("-" spacemacs/zoom-frm-out)
+      ("_" spacemacs/zoom-frm-out)
+      ("j" spacemacs/zoom-frm-out)
+      ("0" spacemacs/zoom-frm-unzoom)
+      ("f" spacemacs/toggle-frame-fullscreen-non-native)
+      ("m" spacemacs/toggle-maximize-frame)
+      ("q" nil :exit t))
+    (spacemacs/set-leader-keys "zf" 'spacemacs/zoom-frm-transient-state/body)
+
+    ;; Font size, either with ctrl + mouse wheel
+    (global-set-key (kbd "<C-wheel-up>") 'spacemacs/zoom-frm-in)
+    (global-set-key (kbd "<C-wheel-down>") 'spacemacs/zoom-frm-out)))
 
 (use-package evil
   :ensure t

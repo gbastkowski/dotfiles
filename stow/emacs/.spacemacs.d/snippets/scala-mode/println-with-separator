@@ -3,5 +3,7 @@
 # key: p=
 # --
 println("========")
-println(err)
+println(
+`(yas-selected-text)`
+)
 println("========")

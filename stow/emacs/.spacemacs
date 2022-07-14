@@ -789,9 +789,6 @@ before packages are loaded."
   ;; Projects
   (setq projectile-project-search-path '("~/git/mobimeo/" "~/git/gbastkowski/"))
 
-  ;; Cool folds
-  (define-key global-map (kbd "H-.") 'evil-toggle-fold)
-
   ;; Readability
   (global-prettify-symbols-mode t)
   (spacemacs/set-leader-keys "tP" 'global-prettify-symbols-mode)

@@ -152,8 +152,7 @@ This function should only modify configuration layer settings."
      (scala :variables
             scala-auto-insert-asterisk-in-comments t
             scala-sbt-window-position nil
-            scala-enable-eldoc t
-            scala-use-unicode-arrows nil)
+            scala-enable-gtags t)
      selectric
      semantic
      (shell :variables

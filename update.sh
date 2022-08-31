@@ -6,8 +6,11 @@ softwareupdate -l
 echo "updating brew ..."
 brew update && brew upgrade
 
+echo "updating cs"
+cs update
+
 echo "updating sdkman"
-sdk upgrade
+sdk selfupdate && sdk upgrade
 
 echo "updating dotfiles ..."
 echo

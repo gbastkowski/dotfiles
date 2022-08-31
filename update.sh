@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 
+echo "updating MacOS"
+softwareupdate -l
+
 echo "updating brew ..."
 brew update && brew upgrade
+
+echo "updating sdkman"
+sdk upgrade
 
 echo "updating dotfiles ..."
 echo

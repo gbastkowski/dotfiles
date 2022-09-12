@@ -17,3 +17,5 @@
 	smudge = git-lfs smudge -- %f
 [github]
 	user = gbastkowski
+[advice]
+	detachedHead = false

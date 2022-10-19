@@ -74,7 +74,7 @@ This function should only modify configuration layer settings."
      haskell
      (helm :variables
            helm-position 'bottom
-           helm-use-fuzzy 'source)
+           helm-use-fuzzy 'always)
      html
      ibuffer
      imenu-list
@@ -180,9 +180,9 @@ This function should only modify configuration layer settings."
      typescript
      (typography :variables
                  typography-enable-typographic-editing nil)
-     ;; (unicode-fonts :variables
-     ;;                unicode-fonts-force-multi-color-on-mac t
-     ;;                unicode-fonts-enable-ligatures t)
+     (unicode-fonts :variables
+                    unicode-fonts-force-multi-color-on-mac t
+                    unicode-fonts-enable-ligatures t)
      vagrant
      ;; version-control
      vimscript

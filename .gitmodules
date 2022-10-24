@@ -16,3 +16,6 @@
 [submodule "powerlevel10k"]
 	path = powerlevel10k
 	url = git@github.com:romkatv/powerlevel10k.git
+[submodule "doomemacs"]
+	path = doomemacs
+	url = git@github.com:gbastkowski/doomemacs.git

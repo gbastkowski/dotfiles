@@ -138,8 +138,8 @@ This function should only modify configuration layer settings."
      pdf
      php
      (plantuml :variables
-               plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"
-               org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
+               plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2022.13/libexec/plantuml.jar"
+               org-plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2022.13/libexec/plantuml.jar")
      puppet
      (ranger :variables
              ranger-show-preview t)

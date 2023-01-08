@@ -1,4 +1,0 @@
-[debug] [dotfiles-test] Classpath dependencies List()
-[debug] [dotfiles-test] Dependencies from configurations List(dotfiles)
-[debug] Bloop wrote the configuration of project 'dotfiles-test' to '/home/gunnar/git/dotfiles/dotfiles/.bloop/dotfiles-test.json'
-[success] Generated .bloop/dotfiles-test.json

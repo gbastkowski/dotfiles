@@ -16,7 +16,7 @@
   But it is also possible to adjust it for usage with different Linux distributions.
   Even a parallel setup and synchronization between a Linux and a MacOS system proved maintainable in the past.
 
-* Usage
+* Installation
 ** Setup package manager and install
   Setup [[https://brew.sh/][homebrew]] and install:
     - awk
@@ -53,10 +53,28 @@
 
   If possible a ~brew list~ on the old machine should be used to get a list of all installed packages
 
+* Usage
+  Run ~./update.sh~ from time to time
+
 * Essential Tools
+** [[https://www.gnu.org/software/stow/][GNU Stow]]
+  Manages placement of symlinks in the user's home directory.
+
+  Basic usage (assuming cwd is the dotfiles root):
+  #+BEGIN_SRC
+    stow --dir=stow --target=$HOME -nv byobu
+  #+END_SRC
+  This simulates the installation of the byobu settings.
+
+  To finally install the package
+  #+BEGIN_SRC
+    stow --dir=stow --target=$HOME byobu
+  #+END_SRC
+
 ** AWS
 
 * Optional But Helpful And Fun Tools
+  - byobu
   - thefuck
   - fasd
   - jq

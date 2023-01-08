@@ -101,3 +101,5 @@ export SDKMAN_DIR="$HOME/.sdkman"
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - zsh)"
 
+eval "$(op completion zsh)"; compdef _op op
+

@@ -16,3 +16,4 @@ ln -sf $(pwd)/oh-my-zsh        ~/.oh-my-zsh
 
 git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
 git clone keybase://private/gbastkowski/password-store ../password-store
+

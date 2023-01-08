@@ -1,6 +1,79 @@
 * dotfiles
+  inspired by https://github.com/mathiasbynens/dotfiles
 
-inspired by https://github.com/mathiasbynens/dotfiles
+  A simple setup to automate and document the setup of my development machine
+  as much as reasonable.
 
-** Usage
-   run =install.sh=
+  Full automation doesn't make a lot of sense as it is a lot of work,
+  needs to be adjusted every now and then,
+  and won't be used much more often than every few years.
+  The invested time just doesn't justify.
+
+  But at least this framework gives some tools to recreate a development setup
+  on a new machine with not too much effort.
+
+  Currently this repo is optimized for macs.
+  But it is also possible to adjust it for usage with different Linux distributions.
+  Even a parallel setup and synchronization between a Linux and a MacOS system proved maintainable in the past.
+
+* Usage
+** Setup package manager and install
+  Setup [[https://brew.sh/][homebrew]] and install:
+    - awk
+    - aws-console
+    - aws-google-auth
+    - aws-iam-authenticator
+    - awscli
+    - bash
+    - bash-completion
+    - bash-language-server
+    - cmake
+    - coreutils
+    - emacs-plus@29
+    - gettext
+    - git
+    - git-lfs
+    - gnu-getopt
+    - gnupg
+    - graphviz
+    - kubectx
+    - kubernetes-cli
+    - make
+    - markdown
+    - node
+    - nvm
+    - pandoc
+    - plantuml
+    - rbenv
+    - scalastyle
+    - sops
+    - stow
+    - the_silver_searcher
+    - wget
+
+  If possible a ~brew list~ on the old machine should be used to get a list of all installed packages
+
+* Essential Tools
+** AWS
+
+* Optional But Helpful And Fun Tools
+  - thefuck
+  - fasd
+  - jq
+  - pass
+  - watch
+
+* stow
+  https://www.gnu.org/software/stow/
+* brew
+* sdkman
+  https://sdkman.io/
+
+* Tools
+** ssh
+** aws
+** kubectl + kubectx + kubens
+
+* Not Yet Documented
+** TODO gnupg
+** TODO password-store

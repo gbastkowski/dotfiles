@@ -3,3 +3,4 @@
 /stow/byobu/.byobu/.ssh-agent
 /stow/sbt/.sbt/1.0/swoval-jni/*.so
 /stow/sbt/.sbt/1.0/swoval-jni/*.pid
+/README.html

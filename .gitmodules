@@ -2,7 +2,7 @@
 	path = oh-my-zsh
 	url = git@github.com:gbastkowski/oh-my-zsh.git
 [submodule "spacemacs"]
-	path = spacemacs
+	path = stow/emacs/.emacs.d
 	url = git@github.com:gbastkowski/spacemacs.git
 [submodule "password-store"]
 	path = password-store

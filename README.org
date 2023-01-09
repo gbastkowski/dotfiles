@@ -68,7 +68,7 @@
 
   Basic usage (assuming cwd is the dotfiles root):
   #+BEGIN_SRC
-    stow --dir=stow --target=$HOME -nv byobu
+    stow --target=$HOME -nv byobu
   #+END_SRC
   This simulates the installation of the byobu settings.
 

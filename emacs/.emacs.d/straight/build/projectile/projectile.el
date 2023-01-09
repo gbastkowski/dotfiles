@@ -1,1 +1,0 @@
-/Users/gunnar.bastkowski/git/gbastkowski/dotfiles/emacs/.emacs.d/straight/repos/projectile/projectile.el

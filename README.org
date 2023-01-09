@@ -16,9 +16,15 @@
   But it is also possible to adjust it for usage with different Linux distributions.
   Even a parallel setup and synchronization between a Linux and a MacOS system proved maintainable in the past.
 
+* Concepts
+  - The dotfiles are stored in git. They can be checked out to any folder on the target workstation.
+  - Via symlinks the dotfiles are "activated".
+  - Management of symlinks is handled via [[https://www.gnu.org/software/stow/][GNU Stow]].
+  - Complex configuration setups from 3rd parties are managed via [[https://git-scm.com/book/en/v2/Git-Tools-Submodules][git submodules]].
+
 * Installation
 ** Setup package manager and install
-  Setup [[https://brew.sh/][homebrew]] and install:
+  On MacOS we use [[https://brew.sh/][homebrew]] and install:
     - awk
     - aws-console
     - aws-google-auth

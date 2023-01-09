@@ -4,11 +4,12 @@ STOW_PACKAGES=(
     byobu
     emacs
     idea
+    sbt
 )
 
 for package in ${STOW_PACKAGES[@]}
 do
-    stow -t $HOME -nvR $package
+    stow -t $HOME -v $package
 done
 
 #

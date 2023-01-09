@@ -5,6 +5,8 @@ STOW_PACKAGES=(
     emacs
     idea
     sbt
+    tmux
+    zsh
 )
 
 for package in ${STOW_PACKAGES[@]}

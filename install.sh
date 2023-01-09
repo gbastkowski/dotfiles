@@ -1,10 +1,14 @@
 #!/bin/bash
 
-STOW_PACKAGES=(byobu emacs)
+STOW_PACKAGES=(
+    byobu
+    emacs
+    idea
+)
 
-for package in $STOW_PACKAGES
+for package in ${STOW_PACKAGES[@]}
 do
-    stow -t $HOME -vR $package
+    stow -t $HOME -nvR $package
 done
 
 #

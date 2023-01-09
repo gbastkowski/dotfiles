@@ -5,13 +5,19 @@ STOW_PACKAGES=(
     emacs
     idea
     sbt
+    screen
     tmux
+    wget
     zsh
 )
 
+# Setup stow first
+stow -t $HOME -Rv stow
+
+# Then continue with the other packages
 for package in ${STOW_PACKAGES[@]}
 do
-    stow -t $HOME -v $package
+    stow -t $HOME -Rv $package
 done
 
 #

@@ -42,6 +42,7 @@
     - gnu-getopt
     - gnupg
     - graphviz
+    - helm
     - kubectx
     - kubernetes-cli
     - make
@@ -56,6 +57,7 @@
     - stow
     - the_silver_searcher
     - wget
+    - yaml-language-server
 
   If possible a ~brew list~ on the old machine should be used to get a list of all installed packages
 

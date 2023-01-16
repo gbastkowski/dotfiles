@@ -95,7 +95,7 @@ alias aga='aws-google-auth -k --bg-response js_enabled -p'
 alias aga-all='aga default && aga dev-admin && aga stg-admin && aga prd'
 
 if [ -f ~/.bashrc ]
-then 
+then
     . ~/.bashrc
 fi
 

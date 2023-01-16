@@ -16,8 +16,8 @@ echo "updating dotfiles ..."
 echo
 
 echo "updating oh-my-zsh ..."
-git -C oh-my-zsh fetch --all
-EDITOR=vim git -C oh-my-zsh merge upstream/master
+git -C zsh/.oh-my-zsh fetch --all
+EDITOR=vim git -C zsh/.oh-my-zsh merge upstream/master
 echo
 
 echo "updating powerlevel10k ..."

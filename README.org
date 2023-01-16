@@ -55,6 +55,7 @@
     - scalastyle
     - sops
     - stow
+    - terraform-ls
     - the_silver_searcher
     - wget
     - yaml-language-server

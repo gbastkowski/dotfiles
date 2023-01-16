@@ -25,13 +25,13 @@ git -C powerlevel10k pull
 echo
 
 echo "updating spacemacs ..."
-git -C emacs/.spacemacs.d fetch --all
-EDITOR=vim git -C emacs/.spacemacs.d merge upstream/develop
+git -C emacs/.emacs.d fetch --all
+EDITOR=vim git -C emacs/.emacs.d merge upstream/develop
 echo
 
 echo "pushing submodules to origin ..."
 git -C zsh/.oh-my-zsh push
-git -C emacs/.spacemacs.d push
+git -C emacs/.emacs.d push
 echo
 
 echo "pushing dotfiles to origin ..."

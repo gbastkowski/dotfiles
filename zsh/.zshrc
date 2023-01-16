@@ -94,9 +94,9 @@ export NVM_DIR="$HOME/.nvm"
 alias aga='aws-google-auth -k --bg-response js_enabled -p'
 alias aga-all='aga default && aga dev-admin && aga stg-admin && aga prd'
 
-if [ -f ~/.bash_profile ]
+if [ -f ~/.bashrc ]
 then 
-    . ~/.bash_profile
+    . ~/.bashrc
 fi
 
 export PATH="$HOME/.rbenv/bin:$PATH"

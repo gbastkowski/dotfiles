@@ -1,6 +1,7 @@
 #!/bin/bash
 
 STOW_PACKAGES=(
+    bash
     byobu
     emacs
     idea

@@ -135,8 +135,14 @@ This function should only modify configuration layer settings."
      pdf
      php
      (plantuml :variables
-               plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2022.13/libexec/plantuml.jar"
-               org-plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2022.13/libexec/plantuml.jar")
+               plantuml-jar-path
+               (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
+                                 "libexec"
+                                 "plantuml.jar")
+               org-plantuml-jar-path
+               (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
+                                 "libexec"
+                                 "plantuml.jar"))
      protobuf
      puppet
      python

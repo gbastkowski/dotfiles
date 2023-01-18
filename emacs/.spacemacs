@@ -134,15 +134,7 @@ This function should only modify configuration layer settings."
      pass
      pdf
      php
-     (plantuml :variables
-               plantuml-jar-path
-               (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
-                                 "libexec"
-                                 "plantuml.jar")
-               org-plantuml-jar-path
-               (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
-                                 "libexec"
-                                 "plantuml.jar"))
+     plantuml
      protobuf
      puppet
      python

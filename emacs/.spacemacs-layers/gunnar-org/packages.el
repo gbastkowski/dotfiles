@@ -14,9 +14,6 @@
                                    (plantuml . t)
                                    (ruby . t)
                                    ))
-  (setq org-plantuml-jar-path
-        (expand-file-name "/usr/local/Cellar/plantuml/1.2018.10/libexec/plantuml.jar"))
-
   (defun gunnar/daily-note ()
     (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
 
@@ -50,13 +47,27 @@
 
   (setq org-mobile-directory "~/org/")
 
+  (setq plantuml-jar-path
+        (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
+                          "libexec"
+                          "plantuml.jar"))
+  (setq org-plantuml-jar-path
+        (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
+                          "libexec"
+                          "plantuml.jar"))
+
+  (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
+                    "libexec"
+                    "plantuml.jar")
 
   (defun org-insert-src-block (src-code-type)
     "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
     (interactive (let ((src-code-types
                         '(
+                          "gunnar-test"
                           "C" "C++" "R" "clojure" "css" "ditaa" "dot" "emacs-lisp" "gnuplot" "haskell" "http"
-                          "java" "js" "latex" "lisp" "org" "plantuml" "python" "ruby" "sass" "sh" "sql" "sqlite")))
+                          "java" "js" "latex" "lisp" "org" "plantuml" "python" "ruby"
+                          "sass" "scala" "sh" "sql" "sqlite")))
                    (list (ido-completing-read "Source code type: " src-code-types))))
     (progn (newline-and-indent)
            (insert (format "#+BEGIN_SRC %s\n" src-code-type))

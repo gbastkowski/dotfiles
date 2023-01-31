@@ -208,6 +208,7 @@ This function should only modify configuration layer settings."
      graphql-mode
      jenkins
      org-jira
+     osm
      (scalaz-unicode-input-method :location
                                   (recipe
                                   :fetcher github

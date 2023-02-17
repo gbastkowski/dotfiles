@@ -964,5 +964,6 @@ This function is called at the very end of Spacemacs initialization."
  '(cursor ((t (:background "green1" :foreground "#222222"))))
  '(font-lock-builtin-face ((t (:foreground "DarkOrange3" :weight bold))))
  '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
+ '(smerge-base ((t (:extend t :background "#333399"))))
  '(web-mode-html-tag-face ((t (:foreground "gold1")))))
 )

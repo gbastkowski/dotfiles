@@ -1,11 +1,12 @@
+Plug 'easymotion/vim-easymotion'
 
 set easymotion
 set incsearch
 set multiple-cursors
 set surround
 
-let mapleader = " "
-let maplocalleader = ","
+let mapleader=' '
+let maplocalleader=','
 
 map <leader>gg :action GotoDefinition<CR>
 map <leader>bi :action Switcher<CR>
@@ -24,3 +25,6 @@ set ignorecase
 set smartcase
 set showmode
 set incsearch
+
+nnoremap <Space> :action LeaderAction<cr>
+vnoremap <Space> :action LeaderAction<cr>

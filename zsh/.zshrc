@@ -54,7 +54,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(1password aws brew common-aliases docker docker-compose dotenv emacs extract fasd gem git git-lfs gitignore gpg-agent helm history history-substring-search kubectl macos mvn sbt scala sdk screen)
+plugins=(1password autoenv aws brew common-aliases docker docker-compose dotenv emacs extract fasd gem git git-lfs gitignore gpg-agent helm history history-substring-search kubectl macos mvn sbt scala sdk screen)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -104,7 +104,6 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - zsh)"
 
 eval "$(op completion zsh)"; compdef _op op
-
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!

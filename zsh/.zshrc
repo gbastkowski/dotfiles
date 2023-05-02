@@ -120,3 +120,4 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+source /Users/gunnar.bastkowski/.config/op/plugins.sh

@@ -1,3 +1,3 @@
 Global / onChangedBuildSource   :=  ReloadOnSourceChanges
-// Global / autoStartServer        :=  false
 Global / semanticdbEnabled      :=  true
+Global / semanticdbVersion := "4.7.8"

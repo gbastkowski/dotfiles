@@ -1,0 +1,29 @@
+params=None
+data: {
+  "Page": "PasswordSeparationSignIn",
+  "": "",
+  "gxf": "AFoagUWp0sBHWkROn-O5t5iMjHPYB_IiXA:1689948400612",
+  "continue": "https://accounts.google.com/o/saml2/initsso?idpid=C00op6bxz&spid=141873643682&forceauthn=false&from_login=1&as=wHncUdP4wn2RLkIvLymN2-UggDIBh03QiDtPQGXgUJw",
+  "faa": "1",
+  "followup": "https://accounts.google.com/o/saml2/initsso?idpid=C00op6bxz&spid=141873643682&forceauthn=false&from_login=1&as=wHncUdP4wn2RLkIvLymN2-UggDIBh03QiDtPQGXgUJw",
+  "ifkv": "AeDOFXi45HcwUypH2FmxtuQXPvPwj2HcdhrBjjOWnLS60g0lDZGWPIH9rssG-HkqDpfZrUrnNAehcQ",
+  "ltmpl": "popup",
+  "oauth": "1",
+  "sarp": "1",
+  "scc": "1",
+  "ProfileInformation": "",
+  "SessionState": "AEThLlyKrlg6t3dQL87kBKtWbcPAHy12fXRRo7gblC3pBzdv4L70b42vM5W4TQ_c17CA8g-oRqKbCVPeQMs2lsjH20ArRzlGbHijEPPXxu5IW6FPFwwffDnL6smht3GPjB2Qc0XzRVIGI4q4prFojbrOQQz-kVAvKC68zZ_LS81tS9-9vZk3tH0-i07ygsFmQfP1Xu8HEDKr",
+  "flowName": "WEB_SETUP_GLIF",
+  "_utf8": "\u2603",
+  "bgresponse": "js_enabled",
+  "Email": "gunnar.bastkowski@mobimeo.com",
+  "signIn": "Weiter",
+  "GALX": "G8YPee9pqvU",
+  "identifiertoken": "AAWk9lSt41FYWnQLHTKmEHEp1BZSCKWdXl-BM-BnT2KaIptuK_c_sUXIPikBE-f0NeeKC3CodDzAoVXw2GDOc7XyyRb4bF57juBBrJ-WUSZKJMPlevQ87PBN87Eg8nBZLajvAqkwQQq-U_RJZDIk16wZ3q2LSQkT6xgtcQBkWyhSdkuFi9XYPKk",
+  "identifiertoken_audio": "",
+  "identifier-captcha-input": "aicinglewi",
+  "Passwd": "<PASSWORD>",
+  "checkedDomains": "youtube",
+  "checkConnection": "youtube:574:1"
+}
+json: null

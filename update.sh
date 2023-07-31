@@ -36,7 +36,7 @@ echo
 
 echo "pushing dotfiles to origin ..."
 git add .
-gEDITOR=vim git commit -m "Update dotfiles and submodules"
+EDITOR=vim git commit -m "Update dotfiles and submodules"
 git push
 
 echo "current state:"

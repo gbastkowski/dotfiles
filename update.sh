@@ -12,6 +12,12 @@ cs update
 echo "updating sdkman"
 sdk selfupdate && sdk upgrade
 
+echo "updating pip stuff"
+for i in $(pip list -o | awk 'NR > 2 {print $1}')
+do
+    pip install -U $i
+done
+
 echo "updating dotfiles ..."
 echo
 

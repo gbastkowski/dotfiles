@@ -7,6 +7,7 @@ STOW_PACKAGES=(
     idea
     sbt
     screen
+    skhd
     tmux
     wget
     yabai

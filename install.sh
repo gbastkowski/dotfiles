@@ -9,6 +9,7 @@ STOW_PACKAGES=(
     screen
     tmux
     wget
+    yabai
     zsh
 )
 

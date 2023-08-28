@@ -7,3 +7,4 @@ export JAVA_HOME="/Users/gunnar.bastkowski/Library/Caches/Coursier/arc/https/git
 # >>> coursier install directory >>>
 export PATH="$PATH:/Users/gunnar.bastkowski/Library/Application Support/Coursier/bin"
 # <<< coursier install directory <<<
+source /opt/homebrew/opt/autoenv/activate.sh

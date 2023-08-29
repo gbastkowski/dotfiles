@@ -39,7 +39,8 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-idle-delay 0.0
-                      auto-completion-minimum-prefix-length 1)
+                      auto-completion-minimum-prefix-length 1
+                      =auto-completion-use-company-box t)
      bibtex
      c-c++
      chrome
@@ -203,8 +204,9 @@ This function should only modify configuration layer settings."
      all-the-icons
      all-the-icons-dired
      atomic-chrome
-     (openai :location (recipe :fetcher github :repo "emacs-openai/openai"))
-     (chatgpt :location (recipe :fetcher github :repo "emacs-openai/chatgpt"))
+     (openai  :location  (recipe :fetcher github :repo "emacs-openai/openai"))
+     (chatgpt :location  (recipe :fetcher github :repo "emacs-openai/chatgpt"))
+     (codeium :location  (recipe :fetcher github :repo "Exafunction/codeium.el"))
      dictcc
      editorconfig
      ;; exec-path-from-shell
@@ -776,6 +778,8 @@ before packages are loaded."
   (setq fci-rule-color "#555555"
         fci-rule-width 1)
 
+  (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+
   ;; (setq-default dotspacemacs-smartparens-strict-mode t)
 
   (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding (Chinese/Japanese/Korean characters)
@@ -922,17 +926,18 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(codeium/metadata/api_key "6cc64736-d534-4b0a-8688-dd85680a195b")
  '(custom-safe-themes
    '("6beb95ba786e22f0e1e24816c95ac45da8d6dd886242eb8017e2e0374b45fe06" default))
  '(evil-want-Y-yank-to-eol nil)
  '(json-reformat:indent-width 2)
  '(lsp-file-watch-threshold 2000)
- '(lsp-headerline-breadcrumb-enable nil)
+ '(lsp-headerline-breadcrumb-enable nil t)
  '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols) t)
  '(lsp-metals-bloop-sbt-already-installed t)
  '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
- '(lsp-ui-doc-use-webkit t)
+ '(lsp-ui-doc-use-webkit t t)
  '(org-agenda-files '("~/org/gtd.org" "~/org/bookmarks.org"))
  '(org-pomodoro-finished-sound
    "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")

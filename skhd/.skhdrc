@@ -115,4 +115,4 @@
 # cmd - m : open -na /Applications/mpv.app $(pbpaste)
 
 # open emacs
-cmd - e : emacs $(pbpaste) 
+# cmd - e : emacs $(pbpaste) 

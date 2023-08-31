@@ -828,6 +828,7 @@ before packages are loaded."
   (setq lsp-ui-sideline-show-code-actions t)
   (setq lsp-ui-doc-use-webkit t)
   (setq lsp-treemacs-sync-mode t)
+  (setq lsp-modeline-diagnostics-scope :project)
 
   ;; Multiple Edits
   (spacemacs/set-leader-keys "om" 'mc/edit-lines)

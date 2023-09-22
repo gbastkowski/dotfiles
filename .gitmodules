@@ -19,7 +19,3 @@
 [submodule "doomemacs"]
 	path = doomemacs
 	url = git@github.com:gbastkowski/doomemacs.git
-[submodule "emacs-application-framework"]
-	path = emacs-application-framework
-	url = https://github.com/emacs-eaf/emacs-application-framework.git
-	branch = master

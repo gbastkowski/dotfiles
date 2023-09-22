@@ -50,7 +50,6 @@ This function should only modify configuration layer settings."
      csv
      dash
      docker
-     eaf
      emacs-lisp
      emoji
      (erc :variables

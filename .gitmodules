@@ -19,3 +19,7 @@
 [submodule "doomemacs"]
 	path = doomemacs
 	url = git@github.com:gbastkowski/doomemacs.git
+[submodule "reveal.js"]
+	path = reveal.js
+	url = git@github.com:gbastkowski/reveal.js.git
+	branch = master

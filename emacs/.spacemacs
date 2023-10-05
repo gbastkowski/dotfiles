@@ -726,6 +726,10 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq dotspacemacs-elpa-https nil)
   (setq ispell-program-name "aspell")
 
+  (setq org-re-reveal-title-slide nil)
+  (setq org-re-reveal-transition "fade")
+  (setq org-re-reveal-hlevel 2)
+
   ;; (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 
   (setenv "EDITOR" "emacsclient -c")

@@ -35,6 +35,11 @@ git -C emacs/.emacs.d fetch --all
 EDITOR=vim git -C emacs/.emacs.d merge upstream/develop
 echo
 
+echo "updating reveal.js ..."
+git -C reveal.js fetch --all
+EDITOR=vim git -C reveal.js merge upstream/master
+echo
+
 echo "pushing submodules to origin ..."
 git -C zsh/.oh-my-zsh push
 git -C emacs/.emacs.d push

@@ -88,6 +88,11 @@ This function should only modify configuration layer settings."
             latex-enable-auto-fill t
             latex-enable-folding t
             latex-enable-magic t)
+     (lua :variables
+          lua-backend 'lsp
+          lua-lsp-server 'lua-language-server
+          lsp-clients-lua-language-server-bin "/opt/homebrew/bin/lua-language-server"
+          lsp-clients-lua-language-server-main-location "/opt/homebrew/Cellar/lua-language-server/3.7.0/libexec/main.lua")
      (lsp :variables
           lsp-headerline-breadcrumb-enable nil
           lsp-headerline-breadcrumb-segments '(project file symbols)

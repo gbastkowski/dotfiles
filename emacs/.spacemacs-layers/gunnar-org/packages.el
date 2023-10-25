@@ -23,7 +23,7 @@
   (setq org-bullets-bullet-list '("x" "◆" "▴" "▸"))
   (setq org-directory "~/org/")
   (setq org-agenda-include-diary t)
-  (setq org-default-notes-file (concat org-directory "gtd.org"))
+  (setq org-default-notes-file (concat org-directory "inbox.org"))
   (setq org-babel-load-languages '((emacs-lisp . t)
                                    (awk . t)
                                    (ditaa . t)
@@ -37,8 +37,10 @@
     (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
 
   (setq org-capture-templates '(
-                                ("i" "Inbox"          entry (file+headline org-default-notes-file "Inbox")
-                                 "* TODO %^{Brief Description} %^g\n %?%i\n Added: %U\n")
+                                ("i" "Inbox"          entry (file "~/org/inbox.org")
+                                 "* TODO %^{Description}%?%i\n   %U\n")
+                                ("T" "Tickler"        entry (file "~/org/tickler.org")
+                                 "* %^{Description}%?%i\n   %U\n")
                                 ("t" "todo"           entry (file+headline org-default-notes-file "Tasks")
                                  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n  %a\n")
                                 ("r" "Reading List"   entry (file+headline org-default-notes-file "Reading List")
@@ -51,6 +53,10 @@
                                  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
                                 ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
                                  "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
+  (setq org-refile-targets '(("~/org/gtd.org"     :maxlevel . 3)
+                             ("~/org/someday.org" :level    . 1)
+                             ("~/org/tickler.org" :level    . 1)))
+  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)

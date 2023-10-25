@@ -944,13 +944,14 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(json-reformat:indent-width 2)
  '(lsp-file-watch-threshold 2000)
- '(lsp-headerline-breadcrumb-enable nil t)
+ '(lsp-headerline-breadcrumb-enable nil)
  '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols) t)
  '(lsp-metals-bloop-sbt-already-installed t)
  '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
- '(lsp-ui-doc-use-webkit t t)
- '(org-agenda-files '("~/org/gtd.org" "~/org/bookmarks.org"))
+ '(lsp-ui-doc-use-webkit t)
+ '(org-agenda-files
+   '("~/org/tickler.org" "/Users/gunnar.bastkowski/org/gtd.org" "/Users/gunnar.bastkowski/org/bookmarks.org"))
  '(org-pomodoro-finished-sound
    "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
  '(org-pomodoro-start-sound

@@ -23,3 +23,7 @@
 	path = reveal.js
 	url = git@github.com:gbastkowski/reveal.js.git
 	branch = master
+[submodule "zsh-vi-mode"]
+	path = zsh-vi-mode
+	url = https://github.com/jeffreytse/zsh-vi-mode
+	branch = master

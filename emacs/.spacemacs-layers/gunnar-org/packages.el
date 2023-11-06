@@ -37,9 +37,9 @@
     (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
 
   (setq org-capture-templates '(
-                                ("i" "Inbox"          entry (file "~/org/inbox.org")
+                                ("i" "Inbox"          entry (file+headline "~/org/inbox.org" "Inbox")
                                  "* TODO %^{Description}%?%i\n   %U\n")
-                                ("T" "Tickler"        entry (file "~/org/tickler.org")
+                                ("T" "Tickler"        entry (file+headline "~/org/tickler.org" "Please Tickle")
                                  "* %^{Description}%?%i\n   %U\n")
                                 ("t" "todo"           entry (file+headline org-default-notes-file "Tasks")
                                  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n  %a\n")
@@ -53,6 +53,7 @@
                                  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
                                 ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
                                  "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
+
   (setq org-refile-targets '(("~/org/gtd.org"     :maxlevel . 3)
                              ("~/org/someday.org" :level    . 1)
                              ("~/org/tickler.org" :level    . 1)))

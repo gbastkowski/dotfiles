@@ -943,7 +943,7 @@ This function is called at the very end of Spacemacs initialization."
    '("6beb95ba786e22f0e1e24816c95ac45da8d6dd886242eb8017e2e0374b45fe06" default))
  '(evil-want-Y-yank-to-eol nil)
  '(json-reformat:indent-width 2)
- '(lsp-file-watch-threshold 2000)
+ '(lsp-file-watch-threshold 4000)
  '(lsp-headerline-breadcrumb-enable nil)
  '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols) t)
  '(lsp-metals-bloop-sbt-already-installed t)

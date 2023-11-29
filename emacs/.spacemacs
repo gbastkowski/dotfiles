@@ -969,11 +969,7 @@ This function is called at the very end of Spacemacs initialization."
      (javascript-backend . tern)
      (javascript-backend . lsp)))
  '(sql-connection-alist
-   '(("postgres-smarttrade-localhost"
-      (sql-product 'postgres)
-      (sql-user "smarttrade")
-      (sql-database "smarttrade")
-      (sql-server "localhost"))))
+   '())
  '(treemacs-width 50)
  '(truncate-partial-width-windows t)
  '(vc-follow-symlinks t)

@@ -947,7 +947,6 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-file-watch-threshold 4000)
  '(lsp-headerline-breadcrumb-enable nil)
  '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols) t)
- '(lsp-metals-bloop-sbt-already-installed t)
  '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
  '(lsp-ui-doc-use-webkit t)

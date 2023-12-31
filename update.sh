@@ -30,6 +30,10 @@ echo "updating powerlevel10k ..."
 git -C powerlevel10k pull
 echo
 
+echo "updating zsh-vi-mode ..."
+git -C zsh-vi-mode pull
+echo
+
 echo "updating spacemacs ..."
 git -C emacs/.emacs.d fetch --all
 EDITOR=vim git -C emacs/.emacs.d merge upstream/develop

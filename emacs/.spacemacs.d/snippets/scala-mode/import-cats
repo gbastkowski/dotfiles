@@ -2,5 +2,6 @@
 # name: import cats
 # key: cats
 # --
-import cats.effect._
-import cats.implicits._
+import cats.*
+import cats.effect.*
+import cats.implicits.*

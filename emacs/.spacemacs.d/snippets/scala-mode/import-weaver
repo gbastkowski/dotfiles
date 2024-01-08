@@ -2,4 +2,4 @@
 # name: import weaver
 # key: iw
 # --
-import weaver._
+import weaver.*

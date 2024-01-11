@@ -40,7 +40,6 @@ tramp
 !gradle-wrapper.jar
 *.rar
 *.tar
-*.zip
 
 *.log
 *.sqlite

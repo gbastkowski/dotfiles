@@ -103,6 +103,12 @@ then
     . ~/.bashrc
 fi
 
+export ANDROID_HOME=/Users/gunnar.bastkowski/Library/Android/sdk/
+export PATH="$ANDROID_HOME/tools/bin:$PATH"
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - zsh)"
 

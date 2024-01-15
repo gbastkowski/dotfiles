@@ -7,8 +7,7 @@
         mail-user-agent                 'mu4e-user-agent
         mu4e-get-mail-command           "offlineimap"         ;; allow for updating mail using 'U' in the main view:
         starttls-use-gnutls             t
-        )
-  (setq message-send-mail-function      'smtpmail-send-it
+        message-send-mail-function      'smtpmail-send-it
         message-kill-buffer-on-exit     t
         ;; Stop creating backups and lock files
         create-lockfiles                nil
@@ -19,9 +18,10 @@
         mu4e-enable-mode-line           nil
         mu4e-update-interval            nil ; seconds
 
-        mu4e-maildir-shortcuts  '((:maildir "/INBOX"              :key ?i)
-                                  (:maildir "/[Gmail].Sent Mail"  :key ?s)
-                                  (:maildir "/[Gmail].All Mail"   :key ?a))
+        ;; mu4e-maildir-shortcuts  '()
+        mu4e-maildir-shortcuts  '((:maildir "/gunnar.bastkowski@mobimeo.com/INBOX"              :key ?i)
+                                  (:maildir "/gunnar.bastkowski@mobimeo.com/[Gmail].Sent Mail"  :key ?s)
+                                  (:maildir "/gunnar.bastkowski@mobimeo.com/[Gmail].All Mail"   :key ?a))
 
         ;; ':favorite t' i.e, use this one for the modeline
         mu4e-bookmarks          '((:name "Inbox"                 :query "maildir:/inbox"                   :key ?i   :favorite t)
@@ -29,24 +29,24 @@
                                   (:name "Today's messages"      :query "date:today..now"                  :key 116)
                                   (:name "Last 7 days"           :query "date:7d..now"                     :key 119  :hide-unread t)
                                   (:name "Messages with images"  :query "mime:image/*"                     :key 112))
-        )
-  (setq mu4e-contexts
+        mu4e-contexts
         `(,(make-mu4e-context
-            :name "gunnar.bastkowski@gmail.com"
+            :name "Gmail"
             :enter-func (lambda () (mu4e-message "Entering Gmail context"))
             :leave-func (lambda () (mu4e-message "Leaving Gmail context"))
             ;; we match based on the contact-fields of the message
             :match-func (lambda (msg)
                           (when msg
-                            (mu4e-message-contact-field-matches msg :to "gunnar.bastkowski@gmail.com")))
+                            (string-prefix-p "/gunnar.bastkowski@gmail.com" (mu4e-message-field msg :maildir))))
             :vars '((user-mail-address              . "gunnar.bastkowski@gmail.com")
                     (user-full-name	                . "Gunnar Bastkowski")
                     (message-user-organization      . "Home")
                     (mu4e-compose-signature         (concat "Gunnar Bastkowski"))
 
-                    (mu4e-drafts-folder             . "/[Gmail].Drafts")
-                    (mu4e-sent-folder               . "/[Gmail].Sent Mail")
-                    (mu4e-trash-folder              . "/[Gmail].Trash")
+                    (mu4e-drafts-folder             . "/gunnar.bastkowski@gmail.com/[Gmail].Drafts")
+                    (mu4e-refile-folder             . "/gunnar.bastkowski@gmail.com/[Gmail].All Mail")
+                    (mu4e-sent-folder               . "/gunnar.bastkowski@gmail.com/[Gmail].Sent Mail")
+                    (mu4e-trash-folder              . "/gunnar.bastkowski@gmail.com/[Gmail].Trash")
                     (mu4e-sent-messages-behavior    . 'delete)
 
                     (smtpmail-starttls-credentials  . '(("smtp.gmail.com" 587 nil nil)))
@@ -54,7 +54,33 @@
                     (smtpmail-default-smtp-server   . "smtp.gmail.com")
                     (smtpmail-smtp-server           . "smtp.gmail.com")
                     (smtpmail-smtp-service          . 587)
-                  ))))
+                  ))
+          ,(make-mu4e-context
+            :name "Mobimeo"
+            :enter-func (lambda () (mu4e-message "Entering Mobimeo context"))
+            :leave-func (lambda () (mu4e-message "Leaving Mobimeo context"))
+            ;; we match based on the contact-fields of the message
+            :match-func (lambda (msg)
+                          (when msg
+                            (string-prefix-p "/gunnar.bastkowski@mobimeo.com" (mu4e-message-field msg :maildir))))
+            :vars '((user-mail-address              . "gunnar.bastkowski@mobimeo.com")
+                    (user-full-name	                . "Gunnar Bastkowski")
+                    (message-user-organization      . "Home")
+                    (mu4e-compose-signature         (concat "Gunnar Bastkowski"))
+
+                    (mu4e-drafts-folder             . "/gunnar.bastkowski@mobimeo.com/[Gmail].Drafts")
+                    (mu4e-refile-folder             . "/gunnar.bastkowski@mobimeo.com/[Gmail].All Mail")
+                    (mu4e-sent-folder               . "/gunnar.bastkowski@mobimeo.com/[Gmail].Sent Mail")
+                    (mu4e-trash-folder              . "/gunnar.bastkowski@mobimeo.com/[Gmail].Trash")
+                    (mu4e-sent-messages-behavior    . 'delete)
+
+                    (smtpmail-starttls-credentials  . '(("smtp.gmail.com" 587 nil nil)))
+                    (smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 "gunnar.bastkowski@mobimeo.com" nil)))
+                    (smtpmail-default-smtp-server   . "smtp.gmail.com")
+                    (smtpmail-smtp-server           . "smtp.gmail.com")
+                    (smtpmail-smtp-service          . 587)
+                  ))
+          ))
   )
 
 

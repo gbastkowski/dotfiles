@@ -5,6 +5,8 @@ STOW_PACKAGES=(
     byobu
     emacs
     idea
+    mbsync
+    offlineimap
     sbt
     screen
     skhd

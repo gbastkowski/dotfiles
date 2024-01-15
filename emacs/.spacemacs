@@ -879,8 +879,6 @@ before packages are loaded."
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
 
-  ;;; Emacs Lisp
-
   ;;; Markdown
   ;; (setq markdown-command "/usr/bin/pandoc")
 

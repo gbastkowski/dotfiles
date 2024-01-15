@@ -5,33 +5,10 @@
         mu4e-use-maildirs-extension     t
         mu4e-enable-async-operations    t
         mail-user-agent                 'mu4e-user-agent
-        ;; allow for updating mail using 'U' in the main view:
-        mu4e-get-mail-command           "offlineimap"
+        mu4e-get-mail-command           "offlineimap"         ;; allow for updating mail using 'U' in the main view:
         starttls-use-gnutls             t
         )
-  (setq
-        ;; mu4e-drafts-folder              "/[Gmail].Drafts"
-        ;; mu4e-sent-folder                "/[Gmail].Sent Mail"
-        ;; mu4e-trash-folder               "/[Gmail].Trash"
-        ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-        ;; mu4e-sent-messages-behavior     'delete
-        ;; mu4e-maildir-shortcuts          '((:maildir "/INBOX"              :key ?i)
-        ;;                                   (:maildir "/[Gmail].Sent Mail"  :key ?s)
-        ;;                                   (:maildir "/[Gmail].Trash"      :key ?T)
-        ;;                                   (:maildir "/[Gmail].All Mail"   :key ?a))
-
-        ;; user-mail-address               "gunnar.bastkowski@gmail.com"
-        ;; user-full-name                  "Gunnar Bastkowski"
-        ;; mu4e-compose-signature          (concat "Gunnar Bastkowski")
-
-
-        ;; smtpmail-starttls-credentials   '(("smtp.gmail.com" 587 nil nil))
-        ;; smtpmail-auth-credentials       '(("smtp.gmail.com" 587 "gunnar.bastkowski@gmail.com" nil))
-        ;; smtpmail-default-smtp-server    "smtp.gmail.com"
-        ;; smtpmail-smtp-server            "smtp.gmail.com"
-        ;; smtpmail-smtp-service           587
-
-        message-send-mail-function      'smtpmail-send-it
+  (setq message-send-mail-function      'smtpmail-send-it
         message-kill-buffer-on-exit     t
         ;; Stop creating backups and lock files
         create-lockfiles                nil
@@ -41,8 +18,18 @@
         mu4e-enable-notifications       nil
         mu4e-enable-mode-line           nil
         mu4e-update-interval            nil ; seconds
-        )
 
+        mu4e-maildir-shortcuts  '((:maildir "/INBOX"              :key ?i)
+                                  (:maildir "/[Gmail].Sent Mail"  :key ?s)
+                                  (:maildir "/[Gmail].All Mail"   :key ?a))
+
+        ;; ':favorite t' i.e, use this one for the modeline
+        mu4e-bookmarks          '((:name "Inbox"                 :query "maildir:/inbox"                   :key ?i   :favorite t)
+                                  (:name "Unread messages"       :query "flag:unread AND NOT flag:trashed" :key 117)
+                                  (:name "Today's messages"      :query "date:today..now"                  :key 116)
+                                  (:name "Last 7 days"           :query "date:7d..now"                     :key 119  :hide-unread t)
+                                  (:name "Messages with images"  :query "mime:image/*"                     :key 112))
+        )
   (setq mu4e-contexts
         `(,(make-mu4e-context
             :name "gunnar.bastkowski@gmail.com"
@@ -61,36 +48,13 @@
                     (mu4e-sent-folder               . "/[Gmail].Sent Mail")
                     (mu4e-trash-folder              . "/[Gmail].Trash")
                     (mu4e-sent-messages-behavior    . 'delete)
-                    (mu4e-maildir-shortcuts         . '((:maildir "/INBOX"              :key ?i)
-                                                        (:maildir "/[Gmail].Sent Mail"  :key ?s)
-                                                        (:maildir "/[Gmail].Trash"      :key ?T)
-                                                        (:maildir "/[Gmail].All Mail"   :key ?a)))
-
-                    ;; ':favorite t' i.e, use this one for the modeline
-                    (mu4e-bookmarks                 . '((:name "Inbox"                 :query "maildir:/inbox"                   :key ?i   :favorite t)
-                                                        (:name "Unread messages"       :query "flag:unread AND NOT flag:trashed" :key 117)
-                                                        (:name "Today's messages"      :query "date:today..now"                  :key 116)
-                                                        (:name "Last 7 days"           :query "date:7d..now"                     :key 119  :hide-unread t)
-                                                        (:name "Messages with images"  :query "mime:image/*"                     :key 112)))
 
                     (smtpmail-starttls-credentials  . '(("smtp.gmail.com" 587 nil nil)))
                     (smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 "gunnar.bastkowski@gmail.com" nil)))
                     (smtpmail-default-smtp-server   . "smtp.gmail.com")
                     (smtpmail-smtp-server           . "smtp.gmail.com")
                     (smtpmail-smtp-service          . 587)
-                  ))
-          ,(make-mu4e-context
-            :name "gunnar.bastkowski@mobimeo.com"
-            :enter-func (lambda () (mu4e-message "Entering Mobimeo context"))
-            :leave-func (lambda () (mu4e-message "Leaving Mobimeo context"))
-            ;; we match based on the contact-fields of the message
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches msg :to "gunnar.bastkowski@mobimeo.com")))
-            :vars '((user-mail-address	        . "gunnar.bastkowski@mobimeo.com"  )
-                    (user-full-name	            . "Gunnar Bastkowski" )
-                    (message-user-organization  . "Mobimeo" )
-                    (mu4e-compose-signature     (concat "Gunnar Bastkowski"))))))
+                  ))))
   )
 
 

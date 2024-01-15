@@ -110,10 +110,10 @@ This function should only modify configuration layer settings."
           )
      major-modes
      (markdown :variables markdown-live-preview-engine 'vmd)
-     ;; (mu4e :variables
-     ;;       mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e"
-     ;;       mu4e-use-maildirs-extension t
-     ;;       mu4e-enable-async-operations t)
+     (mu4e :variables
+           mu4e-installation-path "/opt/homebrew/Cellar/mu/1.10.8/share/emacs/site-lisp/mu/mu4e/"
+           mu4e-use-maildirs-extension t
+           mu4e-enable-async-operations t)
      multiple-cursors
      nginx
      node
@@ -922,6 +922,9 @@ before packages are loaded."
   (add-hook 'find-file-hook 'log-file-mode)
 
   (treemacs-resize-icons 16)
+
+  (setq edit-server-url-major-mode-alist '(("github\\.com" . org-mode)))
+  (add-hook 'edit-server-done-hook (lambda () (shell-command "open -a \"Google Chrome\"")))
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -951,7 +954,7 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-ui-doc-use-childframe nil)
  '(lsp-ui-doc-use-webkit t)
  '(org-agenda-files
-   '("/Users/gunnar.bastkowski/org/tickler.org" "/Users/gunnar.bastkowski/org/gtd.org"))
+   '("/Users/gunnar.bastkowski/org/tickler.org" "/Users/gunnar.bastkowski/org/projects.org"))
  '(org-pomodoro-finished-sound
    "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
  '(org-pomodoro-start-sound

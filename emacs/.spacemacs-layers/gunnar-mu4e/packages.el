@@ -18,10 +18,10 @@
         mu4e-enable-mode-line           nil
         mu4e-update-interval            nil ; seconds
 
-        ;; mu4e-maildir-shortcuts  '()
-        mu4e-maildir-shortcuts  '((:maildir "/gunnar.bastkowski@mobimeo.com/INBOX"              :key ?i)
-                                  (:maildir "/gunnar.bastkowski@mobimeo.com/[Gmail].Sent Mail"  :key ?s)
-                                  (:maildir "/gunnar.bastkowski@mobimeo.com/[Gmail].All Mail"   :key ?a))
+        mu4e-maildir-shortcuts          '()
+        ;; mu4e-maildir-shortcuts          '((:maildir "/gunnar.bastkowski@mobimeo.com/INBOX"              :key ?i)
+        ;;                                   (:maildir "/gunnar.bastkowski@mobimeo.com/[Gmail].Sent Mail"  :key ?s)
+        ;;                                   (:maildir "/gunnar.bastkowski@mobimeo.com/[Gmail].All Mail"   :key ?a))
 
         ;; ':favorite t' i.e, use this one for the modeline
         mu4e-bookmarks          '((:name "Inbox"                 :query "maildir:/inbox"                   :key ?i   :favorite t)

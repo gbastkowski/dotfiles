@@ -1,4 +1,4 @@
-(defconst gunnar-org-packages '(org))
+(defconst gunnar-org-packages '(org, org-caldav))
 
 (defun gunnar-org/init-osm ()
   (use-package osm
@@ -18,6 +18,15 @@
   ;; Load Org link support
   (with-eval-after-load 'org
     (require 'osm-ol))))
+
+(defun gunnar-org/init-org-caldav ()
+  (use-package org-caldav
+    :init
+    (setq org-caldav-url "https://cloud.bastkowski.name/remote.php/dav/calendars/gunnar")
+    (setq org-caldav-calendar-id "personal")
+    (setq org-caldav-inbox "~/org/calendars/gunnar.org")
+    (setq org-caldav-files '("~/org/calendars/gunnar.org"))))
+
 
 (defun gunnar-org/post-init-org ()
   (setq org-bullets-bullet-list '("x" "◆" "▴" "▸"))
@@ -45,24 +54,45 @@
                                  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n  %a\n")
                                 ("r" "Reading List"   entry (file+headline org-default-notes-file "Reading List")
                                  "")
-                                ("j" "Journal"        entry (file+datetree (concat org-directory "bookmarks.org"))
-                                 "")
-                                ("k" "Knowledge"      entry (file          (concat org-directory "notes.org"))
-                                 "")
                                 ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
                                  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
                                 ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
                                  "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
 
-  (setq org-refile-targets '(("~/org/gtd.org"     :maxlevel . 3)
-                             ("~/org/someday.org" :level    . 1)
-                             ("~/org/tickler.org" :level    . 1)))
-  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-refile-targets '(("~/org/projects.org"     :maxlevel . 3)
+                             ("~/org/someday.org"      :maxlevel . 3)
+                             ("~/org/bookmarks.org"    :maxlevel . 5)
+                             ("~/org/tickler.org"      :level    . 1)))
+  (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 
   (setq org-agenda-custom-commands
-        '(("E" "Errands" tags-todo "@errands"
+        '(("n" "Agenda and next items" ((agenda)
+                                        (todo "NEXT"
+                                              ((org-agenda-sorting-strategy '(priority-down))
+                                               (org-agenda-overriding-header "Next Actions")
+                                               (org-agenda-todo-keyword-format "")
+                                               ))
+                                        (todo "WAITING"
+                                              ((org-agenda-sorting-strategy '(priority-down))
+                                               (org-agenda-overriding-header "Waiting For")
+                                               (org-agenda-todo-keyword-format "")
+                                               )))
+           ((org-agenda-span 'day)))
+
+          ("m" "Mobimeo Agenda"        ((agenda)
+                                        (tags-todo "@mobimeo+TODO=\"TODO\""
+                                                   ((org-agenda-overriding-header "TODO Items")))))
+
+          ("E" "Errands"               tags-todo "@errands"
            ((org-agenda-overriding-header "Errands")
-            (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+            (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+          ))
+
+  (setq org-agenda-prefix-format
+        '((agenda . " %i %-20:c%?-12t% s")
+          (todo . " %i %-20:c")
+          (tags . " %i %-20:c")
+          (search . " %i %-20:c")))
 
   (defun my-org-agenda-skip-all-siblings-but-first ()
     "Skip all but the first non-done entry."
@@ -124,7 +154,7 @@
                               (flyspell-mode 1)
                               ;; C-TAB for expanding
                               (local-set-key (kbd "C-<tab>")
-                                             'yas/expand-from-trigger-key)
+                                             'yas-expand-from-trigger-key)
                               ;; keybinding for editing source code blocks
                               (local-set-key (kbd "C-c s e")
                                              'org-edit-src-code)

@@ -2,7 +2,5 @@
 from subprocess import check_output
 
 def get_pass(account):
-    return check_output(
-        "op read \"op://private/" + account + "/password\"",
-        shell=True
-    ).splitlines()[0]
+    return check_output("pass show " + account, shell=True).splitlines()[0]
+

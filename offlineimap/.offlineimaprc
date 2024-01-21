@@ -1,5 +1,5 @@
 [general]
-accounts        = Gmail-mine, Gmail-mobimeo
+accounts        = Gmail-mine, Gmail-mobimeo, bastkowski
 maxsyncaccounts = 3
 pythonfile      = ~/.offlineimap.py
 
@@ -15,22 +15,40 @@ remoterepository = Gmailserver-mobimeo
 synclabels = yes
 labelsheader = X-Keywords
 
+[Account bastkowski]
+localrepository = bastkowskilocal
+remoterepository = bastkowskiserver
+synclabels = yes
+labelsheader = X-Keywords
+
 [Repository Gmailserver-mine]
 type = Gmail
 remoteuser = gunnar.bastkowski@gmail.com
-remotepasseval = get_pass("gmail application password gunnar.bastkowski")
+remotepasseval = get_pass("private/gmail/application-password")
 sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
+
+[Repository Gmailserver-mobimeo]
+type = Gmail
+remoteuser = gunnar.bastkowski@mobimeo.com
+remotepasseval = get_pass("mobimeo/gmail/application-password")
+sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
+
+[Repository bastkowskiserver]
+type = IMAP
+remotehost = w00d23c2.kasserver.com
+remoteusereval = get_pass("private/bastkowski.name/imap-user")
+remotepasseval = get_pass("private/bastkowski.name/imap-pass")
+sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
+ssl = yes
 
 [Repository Gmaillocal-mine]
 type = GmailMaildir
 localfolders = ~/.mail/gunnar.bastkowski@gmail.com
 
-[Repository Gmailserver-mobimeo]
-type = Gmail
-remoteuser = gunnar.bastkowski@mobimeo.com
-remotepasseval = get_pass("gmail application password mobimeo")
-sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
-
 [Repository Gmaillocal-mobimeo]
 type = GmailMaildir
 localfolders = ~/.mail/gunnar.bastkowski@mobimeo.com
+
+[Repository bastkowskilocal]
+type = Maildir
+localfolders = ~/.mail/gunnar@bastkowski.name

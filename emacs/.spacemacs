@@ -951,13 +951,13 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(json-reformat:indent-width 2)
  '(lsp-file-watch-threshold 4000)
- '(lsp-headerline-breadcrumb-enable nil t)
+ '(lsp-headerline-breadcrumb-enable nil)
  '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols) t)
  '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
- '(lsp-ui-doc-use-webkit t t)
+ '(lsp-ui-doc-use-webkit t)
  '(org-agenda-files
-   '("/Users/gunnar.bastkowski/org/tickler.org" "/Users/gunnar.bastkowski/org/projects.org" "/Users/gunnar.bastkowski/git/gbastkowski/org/journal/2024/01/21.org"))
+   '("/Users/gunnar.bastkowski/org/tickler.org" "/Users/gunnar.bastkowski/org/projects.org" "/Users/gunnar.bastkowski/git/gbastkowski/org/journal/2024/01/22.org"))
  '(org-pomodoro-finished-sound
    "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
  '(org-pomodoro-start-sound

@@ -1,0 +1,20 @@
+* github
+  https://github.com/gbastkowski/dotfiles
+* stow
+  https://www.gnu.org/software/stow/
+* brew
+* sdkman
+  https://sdkman.io/
+
+* Tools
+** ssh
+** aws
+** kubectl + kubectx + kubens
+** fasd
+** thefuck
+
+- Aim is to keep setup in a recoverable way
+
+
+* TODO gnupg
+* TODO password-store

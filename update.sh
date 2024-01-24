@@ -36,7 +36,12 @@ echo
 
 echo "updating spacemacs ..."
 git -C emacs/.emacs.d fetch --all
+EDITOR=vim git -C emacs/.emacs.d checkout develop
 EDITOR=vim git -C emacs/.emacs.d merge upstream/develop
+EDITOR=vim git -C emacs/.emacs.d push
+EDITOR=vim git -C emacs/.emacs.d checkout gunnar
+EDITOR=vim git -C emacs/.emacs.d merge develop
+EDITOR=vim git -C emacs/.emacs.d push
 echo
 
 echo "updating reveal.js ..."

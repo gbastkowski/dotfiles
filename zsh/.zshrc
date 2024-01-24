@@ -96,7 +96,7 @@ export NVM_DIR="$HOME/.nvm"
 # export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 
 alias aga='aws-google-auth -k --bg-response js_enabled -p'
-alias aga-all='aga default && aga dev-admin && aga stg-admin && aga prd'
+alias aga-all='aga default && aga dev-admin && aga stg-admin && aga prd && aga prd-admin'
 
 if [ -f ~/.bashrc ]
 then

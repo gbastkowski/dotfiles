@@ -66,26 +66,37 @@
   (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 
   (setq org-agenda-custom-commands
-        '(("n" "Agenda and next items" ((agenda)
+        '(("a" "Agenda and next items" ((agenda)
+                                        (tags-todo "CATEGORY=\"inbox\""
+                                              ((org-agenda-sorting-strategy '(priority-down))
+                                               (org-agenda-overriding-header "Inbox")
+                                               (org-agenda-todo-keyword-format "")))
                                         (todo "NEXT"
                                               ((org-agenda-sorting-strategy '(priority-down))
                                                (org-agenda-overriding-header "Next Actions")
-                                               (org-agenda-todo-keyword-format "")
-                                               ))
+                                               (org-agenda-todo-keyword-format "")))
                                         (todo "WAITING"
                                               ((org-agenda-sorting-strategy '(priority-down))
                                                (org-agenda-overriding-header "Waiting For")
-                                               (org-agenda-todo-keyword-format "")
-                                               )))
+                                               (org-agenda-todo-keyword-format ""))))
            ((org-agenda-span 'day)))
 
-          ("m" "Mobimeo Agenda"        ((agenda)
+          ("b" "Mobimeo Agenda"        ((agenda)
+                                        (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                                   ((org-agenda-sorting-strategy '(priority-down))
+                                                    (org-agenda-overriding-header "Next Actions")
+                                                    (org-agenda-todo-keyword-format "")))
+                                        (tags-todo "@mobimeo+TODO=\"WAITING\""
+                                                   ((org-agenda-sorting-strategy '(priority-down))
+                                                    (org-agenda-overriding-header "Waiting For")
+                                                    (org-agenda-todo-keyword-format "")))
                                         (tags-todo "@mobimeo+TODO=\"TODO\""
-                                                   ((org-agenda-overriding-header "TODO Items")))))
+                                                   ((org-agenda-overriding-header "TODO Items")
+                                                    (org-agenda-todo-keyword-format ""))))
+           ((org-agenda-span 'day)))
 
-          ("E" "Errands"               tags-todo "@errands"
-           ((org-agenda-overriding-header "Errands")
-            (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+          ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
+           ((org-agenda-overriding-header "Inbox")))
           ))
 
   (setq org-agenda-prefix-format

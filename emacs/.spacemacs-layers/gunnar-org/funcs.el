@@ -22,9 +22,15 @@
                                            :files ("~/org/sports.org" "~/org/play.org")
                                            :inbox "~/org/fromstuff.org")))
 
-(defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "n"))
+(defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "a"))
+(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
 (defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
 
-(spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary)
 (spacemacs/set-leader-keys "Ga" 'gunnar/org-agenda-show-today)
+(spacemacs/set-leader-keys "Gb" 'gunnar/org-agenda-show-today-mobimeo)
+(spacemacs/set-leader-keys "Gc" 'gunnar/org-agenda-show-inbox)
+
 (spacemacs/set-leader-keys "Gi" 'gunnar/org-capture-inbox)
+
+(spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary)

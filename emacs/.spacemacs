@@ -955,9 +955,9 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-headerline-breadcrumb-segments '(project path-up-to-project symbols) t)
  '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
- '(lsp-ui-doc-use-webkit t t)
+ '(lsp-ui-doc-use-webkit t)
  '(org-agenda-files
-   '("/Users/gunnar.bastkowski/org/tickler.org" "/Users/gunnar.bastkowski/org/projects.org" "/Users/gunnar.bastkowski/git/gbastkowski/org/journal/2024/01/23.org"))
+   '("/Users/gunnar.bastkowski/org/inbox-galaxy.org" "/Users/gunnar.bastkowski/org/inbox-s7.org" "/Users/gunnar.bastkowski/org/inbox-yesomeo.org" "/Users/gunnar.bastkowski/org/tickler.org" "/Users/gunnar.bastkowski/org/projects.org" "/Users/gunnar.bastkowski/git/gbastkowski/org/journal/2024/01/24.org"))
  '(org-pomodoro-finished-sound
    "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
  '(org-pomodoro-start-sound

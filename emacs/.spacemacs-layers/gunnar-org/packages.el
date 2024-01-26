@@ -46,7 +46,7 @@
     (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
 
   (setq org-capture-templates '(
-                                ("i" "Inbox"          entry (file+headline "~/org/inbox.org" "Inbox")
+                                ("i" "Inbox"          entry (file+headline "~/org/inbox-yesomeo.org" "Inbox")
                                  "* TODO %^{Description}%?%i\n   %U\n")
                                 ("T" "Tickler"        entry (file+headline "~/org/tickler.org" "Please Tickle")
                                  "* %^{Description}%?%i\n   %U\n")

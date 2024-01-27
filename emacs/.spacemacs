@@ -397,8 +397,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(darcula
-                         gunnar
+   dotspacemacs-themes '(gunnar
+                         darcula
                          tangotango
                          sanityinc-tomorrow-night
                          alect-black
@@ -429,8 +429,8 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("Iosevka"       ;;"MesloLGS NF"
-                               :size 14.0
+   dotspacemacs-default-font '("MesloLGS NF"       ;;"MesloLGS NF"
+                               :size 13.0
                                :weight normal
                                :width normal)
 
@@ -989,9 +989,5 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(cursor ((t (:background "green1" :foreground "#222222"))))
- '(font-lock-builtin-face ((t (:foreground "DarkOrange3" :weight bold))))
- '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
- '(smerge-base ((t (:extend t :background "#333399"))))
- '(web-mode-html-tag-face ((t (:foreground "gold1")))))
+ )
 )

@@ -429,7 +429,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("MesloLGS NF"       ;;"MesloLGS NF"
+   dotspacemacs-default-font '("Iosevka"       ;;"MesloLGS NF"
                                :size 13.0
                                :weight normal
                                :width normal)
@@ -782,14 +782,12 @@ before packages are loaded."
   ;;    "?=" "?." "??" "/*" "/=" "</" "/>" "//" "__"
   ;;    "//"))
 
-  (setq blink-cursor-blinks 0
-        cursor-type 'bar)
+  (setq blink-cursor-blinks 0 cursor-type 'bar)
   (blink-cursor-mode 1)
   (setq shell-default-shell 'vterm)
 
   (setq-default fill-column 120)
-  (setq fci-rule-color "#555555"
-        fci-rule-width 1)
+  (setq fci-rule-color "#555555" fci-rule-width 1)
 
   (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
 
@@ -989,5 +987,20 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(highlight ((t (:background "gray23"))))
+ '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
+ '(iedit-occurrence ((t (:inherit highlight :underline "orange1"))))
+ '(link ((t (:underline "sky blue"))))
+ '(markdown-header-face ((t (:inherit outline-1 :weight bold))))
+ '(markdown-url-face ((t (:inherit link))))
+ '(org-drawer ((t (:foreground "sky blue" :height 0.8))))
+ '(org-property-value ((t (:slant italic))))
+ '(org-special-keyword ((t (:foreground "gray60" :slant italic :height 0.8))))
+ '(org-todo ((t (:foreground "DarkOrange3" :weight bold))))
+ '(outline-1 ((t (:foreground "DarkOliveGreen3" :weight bold))))
+ '(outline-2 ((t (:weight bold))))
+ '(outline-3 ((t (:slant italic))))
+ '(outline-7 ((t nil)))
+ '(shadow ((t (:foreground "grey40"))))
+ '(smerge-base ((t (:extend t :background "#333399")))))
 )

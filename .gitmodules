@@ -27,6 +27,6 @@
 [submodule "emacs/.emacs.spacemacs"]
 	path = emacs/.emacs.spacemacs
 	url = git@github.com:gbastkowski/spacemacs.git
-[submodule "emacs/emacs/.emacs.doom"]
-	path = emacs/emacs/.emacs.doom
+[submodule "emacs/.emacs.doom"]
+	path = emacs/.emacs.doom
 	url = git@github.com:gbastkowski/doomemacs.git

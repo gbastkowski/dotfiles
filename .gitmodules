@@ -14,7 +14,7 @@
 	path = powerlevel10k
 	url = git@github.com:romkatv/powerlevel10k.git
 [submodule "doomemacs"]
-	path = doomemacs
+	path = emacs/.emacs.doom
 	url = git@github.com:gbastkowski/doomemacs.git
 [submodule "reveal.js"]
 	path = reveal.js

@@ -1,9 +1,6 @@
 [submodule "oh-my-zsh"]
 	path = zsh/.oh-my-zsh
 	url = git@github.com:gbastkowski/oh-my-zsh.git
-[submodule "spacemacs"]
-	path = emacs/.emacs.d
-	url = git@github.com:gbastkowski/spacemacs.git
 [submodule "password-store"]
 	path = password-store
 	url = ec2-user@ec2-35-156-252-69.eu-central-1.compute.amazonaws.com:password-store
@@ -27,6 +24,9 @@
 	path = zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode
 	branch = master
-[submodule "chemacs2"]
-	path = chemacs2
+[submodule "emacs/.emacs.d"]
+	path = emacs/.emacs.d
 	url = git@github.com:gbastkowski/chemacs2.git
+[submodule "emacs/.emacs.spacemacs"]
+	path = emacs/.emacs.spacemacs
+	url = git@github.com:gbastkowski/spacemacs.git

@@ -27,3 +27,6 @@
 	path = zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode
 	branch = master
+[submodule "chemacs2"]
+	path = chemacs2
+	url = git@github.com:gbastkowski/chemacs2.git

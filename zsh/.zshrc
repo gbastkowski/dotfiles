@@ -103,6 +103,8 @@ then
     . ~/.bashrc
 fi
 
+export PATH=$PATH:~/.emacs.doom/bin
+
 export ANDROID_HOME=/Users/gunnar.bastkowski/Library/Android/sdk/
 export PATH="$ANDROID_HOME/tools/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"

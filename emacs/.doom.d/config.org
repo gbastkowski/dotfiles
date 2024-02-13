@@ -1,0 +1,287 @@
+* Header
+#+begin_src emacs-lisp
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+#+end_src
+
+
+* User Settings
+Some functionality uses this to identify you, e.g. GPG configuration, email
+clients, file templates and snippets. It is optional.
+#+begin_src emacs-lisp
+(setq user-full-name "Gunnar Bastkowski"
+      user-mail-address "gunnar@bastkowski.name")
+#+end_src
+
+
+* Appearance
+There are two ways to load a theme. Both assume the theme is installed and
+available. You can either set `doom-theme' or manually load a theme with the
+`load-theme' function. This is the default:
+#+begin_src emacs-lisp
+(setq doom-theme 'doom-one)
+#+end_src
+
+Doom exposes five (optional) variables for controlling fonts in Doom:
+- `doom-font' -- the primary font to use
+- `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+- `doom-big-font' -- used for `doom-big-font-mode'; use this for
+  presentations or streaming.
+- `doom-symbol-font' -- for symbols
+- `doom-serif-font' -- for the `fixed-pitch-serif' face
+
+See ~C-h v doom-font~ for documentation and more examples of what they
+accept. For example:
+,#+begin_src emacs-lisp
+;; (setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+#+end_src
+
+If you or Emacs can't find your font, use 'M-x describe-font' to look them up,
+~M-x eval-region~ to execute elisp code, and 'M-x doom/reload-font'
+to refresh your font settings.
+If Emacs still can't find your font, it likely wasn't installed correctly.
+Font issues are rarely Doom issues!
+
+
+This determines the style of line numbers in effect. If set to `nil', line
+numbers are disabled. For relative line numbers, set this to `relative'.
+
+#+begin_src emacs-lisp
+(setq display-line-numbers-type t)
+#+end_src
+
+
+* Org Mode
+** Agenda
+*** Keybindings
+#+begin_src emacs-lisp
+(defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "a"))
+(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
+
+;; (spacemacs/set-leader-keys "Ga" 'gunnar/org-agenda-show-today)
+;; (spacemacs/set-leader-keys "Gb" 'gunnar/org-agenda-show-today-mobimeo)
+;; (spacemacs/set-leader-keys "Gc" 'gunnar/org-agenda-show-inbox)
+
+;; (spacemacs/set-leader-keys "Gi" 'gunnar/org-capture-inbox)
+
+;; (spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary) ;
+#+end_src
+
+*** Settings
+#+begin_src emacs-lisp
+(setq org-agenda-custom-commands
+        '(("a" "Agenda and next items" ((agenda)
+                                        (tags-todo "CATEGORY=\"inbox\""
+                                              ((org-agenda-sorting-strategy '(priority-down))
+                                               (org-agenda-overriding-header "Inbox")
+                                               (org-agenda-todo-keyword-format "")))
+                                        (todo "NEXT"
+                                              ((org-agenda-sorting-strategy '(priority-down))
+                                               (org-agenda-overriding-header "Next Actions")
+                                               (org-agenda-todo-keyword-format "")))
+                                        (todo "WAITING"
+                                              ((org-agenda-sorting-strategy '(priority-down))
+                                               (org-agenda-overriding-header "Waiting For")
+                                               (org-agenda-todo-keyword-format ""))))
+           ((org-agenda-span 'day)))
+
+          ("b" "Mobimeo Agenda"        ((agenda)
+                                        (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                                   ((org-agenda-sorting-strategy '(priority-down))
+                                                    (org-agenda-overriding-header "Next Actions")
+                                                    (org-agenda-todo-keyword-format "")))
+                                        (tags-todo "@mobimeo+TODO=\"WAITING\""
+                                                   ((org-agenda-sorting-strategy '(priority-down))
+                                                    (org-agenda-overriding-header "Waiting For")
+                                                    (org-agenda-todo-keyword-format "")))
+                                        (tags-todo "@mobimeo+TODO=\"TODO\""
+                                                   ((org-agenda-overriding-header "TODO Items")
+                                                    (org-agenda-todo-keyword-format ""))))
+           ((org-agenda-span 'day)))
+
+          ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
+           ((org-agenda-overriding-header "Inbox")))
+          ))
+
+(setq org-agenda-prefix-format    '((agenda . " %i %-20:c%?-12t% s")
+                                    (todo . " %i %-20:c")
+                                    (tags . " %i %-20:c")
+                                    (search . " %i %-20:c")))
+
+(setq org-agenda-include-diary      t)
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (let (should-skip-entry)
+    (unless (org-current-is-todo) (setq should-skip-entry t))
+    (save-excursion
+      (while (and (not should-skip-entry) (org-goto-sibling t))
+        (when (org-current-is-todo)
+          (setq should-skip-entry t))))
+    (when should-skip-entry (or (outline-next-heading) (goto-char (point-max))))))
+
+(defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
+#+end_src
+
+** Babel
+#+begin_src emacs-lisp
+  (setq org-babel-load-languages  '((emacs-lisp . t)
+                                    (awk . t)
+                                    (ditaa . t)
+                                    (dot . t)
+                                    (java . t)
+                                    (dot . t)
+                                    (plantuml . t)
+                                    (ruby . t)))
+#+end_src
+
+** General
+*** Settings
+#+begin_src emacs-lisp
+(setq org-bullets-bullet-list      '("x" "◆" "▴" "▸"))
+(setq org-clock-persist            'history)
+(org-clock-persistence-insinuate)
+
+(setq org-directory                 "~/org/")
+(setq org-mobile-directory          "~/org/")
+(setq org-todo-keywords            '((sequence "TODO(t)" "NEXT(n)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun org-insert-src-block (src-code-type)
+  "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
+  (interactive (let ((src-code-types
+                      '(
+                        "gunnar-test"
+                        "C" "C++" "R" "clojure" "css" "ditaa" "dot" "emacs-lisp" "gnuplot" "haskell" "http"
+                        "java" "js" "latex" "lisp" "org" "plantuml" "python" "ruby"
+                        "sass" "scala" "sh" "sql" "sqlite")))
+                 (list (ido-completing-read "Source code type: " src-code-types))))
+  (progn (newline-and-indent)
+         (insert (format "#+BEGIN_SRC %s\n" src-code-type))
+         (newline-and-indent)
+         (insert "#+END_SRC\n")
+         (previous-line 2)
+         (org-edit-src-code)))
+#+end_src
+
+** Calendar
+*** Settings
+#+begin_src emacs-lisp
+(setq org-caldav-url                "https://cloud.bastkowski.name/remote.php/dav/calendars/gunnar")
+(setq org-caldav-calendar-id        "personal")
+(setq org-caldav-calendars          '((:calendar-id "work@whatever" :files ("~/org/work.org")
+                                                    :inbox "~/org/fromwork.org")
+                                      (:calendar-id "stuff@mystuff"
+                                                    :files ("~/org/sports.org" "~/org/play.org")
+                                                    :inbox "~/org/fromstuff.org")))
+(setq org-caldav-inbox              "~/org/calendars/gunnar.org")
+(setq org-caldav-files             '("~/org/calendars/gunnar.org"))
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun gunnar/all-calendars-to-diary ()
+  (interactive)
+  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
+        (ical-filename (make-temp-file "google-calendar.ics")))
+    (progn
+      (gunnar/some-calendar-to-diary (password-store-get "mobimeo/calendar/url"))
+      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url"))
+      )))
+
+(defun gunnar/some-calendar-to-diary (calendar-url)
+  (let ((ical-filename (make-temp-file "calendar.ics")))
+    (progn
+      (url-copy-file calendar-url ical-filename t)
+      (set-buffer (find-file-noselect ical-filename))
+      (icalendar-import-buffer diary-file t)
+      (kill-buffer)
+      'ok)))
+#+end_src
+
+** Capture
+#+begin_src emacs-lisp
+(setq org-default-notes-file        (concat org-directory "inbox-yesomeo.org"))
+
+(setq org-capture-templates       '(("i" "Inbox"          entry (file "")
+                                     "* TODO %^{Description}%?%i\n  %U\n"     :immediate-finish t)
+                                    ("l" "Bookmarks"      entry (file "")
+                                     "** %(org-cliplink-capture)%?\n  %U\n"   :immediate-finish t)
+                                    ("s" "Step"           entry (clock)
+                                     "* %^{Description}%?%i\n   %U\n")
+                                    ;; ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
+                                    ;;  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
+                                    ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
+                                     "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
+
+(setq org-refile-targets          '(("~/org/projects.org"                     :maxlevel . 3)
+                                    ("~/org/someday.org"                      :maxlevel . 3)
+                                    ("~/org/bookmarks.org"                    :maxlevel . 5)
+                                    ("~/org/tickler.org"                      :level    . 1)))
+#+end_src
+
+** Journal
+*** Settings
+#+begin_src emacs-lisp
+(setq diary-file                    (concat org-directory "diary"))
+(setq timeclock-file                (concat org-directory "timeclock"))
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun gunnar/daily-note ()         (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
+#+end_src
+
+
+** TODO
+(add-hook 'org-mode-hook '(lambda ()
+                        ;; turn on flyspell-mode by default
+                        (flyspell-mode 1)
+                        ;; C-TAB for expanding
+                        (local-set-key (kbd "C-<tab>")
+                                        'yas-expand-from-trigger-key)
+                        ;; keybinding for editing source code blocks
+                        (local-set-key (kbd "C-c s e")
+                                        'org-edit-src-code)
+                        ;; keybinding for inserting code blocks
+                        (local-set-key (kbd "C-c s i")
+                                        'org-insert-src-block)))
+
+
+* Documentation
+Whenever you reconfigure a package, make sure to wrap your config in an
+`after!' block, otherwise Doom's defaults may override your settings. E.g.
+
+  (after! PACKAGE
+    (setq x y))
+
+The exceptions to this rule:
+- Setting file/directory variables (like `org-directory')
+- Setting variables which explicitly tell you to set them before their
+  package is loaded (see 'C-h v VARIABLE' to look up their documentation).
+- Setting doom variables (which start with 'doom-' or '+').
+
+Here are some additional functions/macros that will help you configure Doom.
+- `load!' for loading external *.el files relative to this one
+- `use-package!' for configuring packages
+- `after!' for running code after a package has loaded
+- `add-load-path!' for adding directories to the `load-path', relative to
+  this file. Emacs searches the `load-path' when you load packages with
+  `require' or `use-package'.
+- `map!' for binding new keys
+
+To get information about any of these functions/macros, move the cursor over
+the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+This will open documentation for it, including demos of how they are used.
+Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+etc).
+
+You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+they are implemented.

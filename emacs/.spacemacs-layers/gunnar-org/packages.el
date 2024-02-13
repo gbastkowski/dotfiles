@@ -121,12 +121,6 @@
   (setq diary-file     (concat org-directory "diary"))
   (setq timeclock-file (concat org-directory "timeclock"))
 
-  (setq org-feed-alist '(
-                         ("Slashdot"
-                          "http://rss.slashdot.org/Slashdot/slashdot"
-                          (concat org-directory "feeds.org")
-                          "Slashdot Entries")))
-
   (setq org-mobile-directory "~/org/")
 
   (setq plantuml-jar-path
@@ -137,10 +131,6 @@
         (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
                           "libexec"
                           "plantuml.jar"))
-
-  (file-name-concat (file-name-parent-directory (file-name-directory (file-chase-links "/opt/homebrew/bin/plantuml")))
-                    "libexec"
-                    "plantuml.jar")
 
   (defun org-insert-src-block (src-code-type)
     "Insert a `SRC-CODE-TYPE' type source code block in org-mode."

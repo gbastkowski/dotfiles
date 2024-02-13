@@ -622,7 +622,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, start an Emacs server if one is not already running.
    ;; (default nil)
-   dotspacemacs-enable-server t
+   dotspacemacs-enable-server nil
 
    ;; Set the emacs server socket location.
    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -866,6 +866,9 @@ before packages are loaded."
   ;;  :client-id "gunnar.bastkowski@mobimeo.com"
   ;;  :token (password-store-get "slack/token")
   ;;  :subscribed-channels '(general devops))
+
+  (setq openai-key (password-store-get "private/openai/emacs-api-key"))
+  (setq openai-user "gunnar.bastkowski@gmail.com")
 
   (setq calendar-date-style 'iso)
   (setq calendar-week-start-day 1)

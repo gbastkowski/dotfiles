@@ -4,23 +4,32 @@
 #+end_src
 
 
-* User Settings
+* General Settings
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
-(setq user-full-name "Gunnar Bastkowski"
-      user-mail-address "gunnar@bastkowski.name")
+(setq! fill-column                120)
+(global-display-fill-column-indicator-mode)
+
+(setq! tab-width                  8)
+
+(setq! user-full-name             "Gunnar Bastkowski"
+       user-mail-address          "gunnar@bastkowski.name")
+
+(setq! which-key-use-C-h-commands t)
 #+end_src
 
 
 * Appearance
-There are two ways to load a theme. Both assume the theme is installed and
-available. You can either set `doom-theme' or manually load a theme with the
-`load-theme' function. This is the default:
+** Theme
+There are two ways to load a theme. Both assume the theme is installed and available.
+You can either set `doom-theme' or manually load a theme with the `load-theme' function.
+This is the default:
 #+begin_src emacs-lisp
-(setq doom-theme 'doom-one)
+(setq doom-theme 'gunnar)
 #+end_src
 
+** Font
 Doom exposes five (optional) variables for controlling fonts in Doom:
 - `doom-font' -- the primary font to use
 - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
@@ -29,26 +38,61 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 - `doom-symbol-font' -- for symbols
 - `doom-serif-font' -- for the `fixed-pitch-serif' face
 
-See ~C-h v doom-font~ for documentation and more examples of what they
-accept. For example:
-,#+begin_src emacs-lisp
-;; (setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "Iosevka" :size 13))
 #+end_src
 
 If you or Emacs can't find your font, use 'M-x describe-font' to look them up,
 ~M-x eval-region~ to execute elisp code, and 'M-x doom/reload-font'
 to refresh your font settings.
+
 If Emacs still can't find your font, it likely wasn't installed correctly.
 Font issues are rarely Doom issues!
 
-
+** Line Numbers
 This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 
 #+begin_src emacs-lisp
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type     t
+      display-line-numbers-width    4)
 #+end_src
+
+
+* Editing
+** Duplicate
+*** Functions
+from https://www.emacswiki.org/emacs/CopyingWholeLines
+#+BEGIN_SRC emacs-lisp
+(defun duplicate-line-or-region (&optional n)
+  "Duplicate current line, or region if active.
+    With argument N, make N copies.
+    With negative N, comment out original line and use the absolute value."
+  (interactive "*p")
+  (let ((use-region (use-region-p)))
+    (save-excursion
+      (let ((text (if use-region
+                      (buffer-substring (region-beginning) (region-end))
+                    (prog1 (thing-at-point 'line)
+                      (end-of-line)
+                      (if (< 0 (forward-line 1)) ;Go to beginning of next line, or make a new one
+                          (newline))))))
+        (dotimes (i (abs (or n 1)))     ;Insert N times, or once if not specified
+          (insert text))))
+    (if use-region nil                  ;Only if we're working with a line (not a region)
+      (let ((pos (- (point) (line-beginning-position)))) ;Save column
+        (if (> 0 n)                             ;Comment out original with negative arg
+            (comment-region (line-beginning-position) (line-end-position)))
+        (forward-line 1)
+        (forward-char pos)))))
+#+END_SRC
+
+*** Keybindings
+
+#+BEGIN_SRC emacs-lisp
+(map! :leader :desc "Duplicate line or region" :n "id" #'duplicate-line-or-region)
+#+END_SRC
+
 
 
 * Org Mode
@@ -60,9 +104,9 @@ numbers are disabled. For relative line numbers, set this to `relative'.
 (defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
 (defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
 
-;; (spacemacs/set-leader-keys "Ga" 'gunnar/org-agenda-show-today)
-;; (spacemacs/set-leader-keys "Gb" 'gunnar/org-agenda-show-today-mobimeo)
-;; (spacemacs/set-leader-keys "Gc" 'gunnar/org-agenda-show-inbox)
+(map! :leader :desc "Show agenda for today"         :n "oa1" #'gunnar/org-agenda-show-today)
+(map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
+(map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
 
 ;; (spacemacs/set-leader-keys "Gi" 'gunnar/org-capture-inbox)
 
@@ -139,6 +183,12 @@ numbers are disabled. For relative line numbers, set this to `relative'.
                                     (plantuml . t)
                                     (ruby . t)))
 #+end_src
+** Brain
+#+BEGIN_SRC emacs-lisp
+(setq! org-brain-include-file-entries t)
+#+END_SRC
+
+
 
 ** General
 *** Settings
@@ -253,6 +303,35 @@ numbers are disabled. For relative line numbers, set this to `relative'.
                         ;; keybinding for inserting code blocks
                         (local-set-key (kbd "C-c s i")
                                         'org-insert-src-block)))
+
+
+
+
+
+
+* Projects
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+(map! :leader :desc "Run vterm in project" :n "$" #'projectile-run-vterm)
+#+END_SRC
+
+** Functions
+#+BEGIN_SRC emacs-lisp
+(defun split-window-right-and-focus ()
+  "Split the window horizontally and focus the new window."
+  (interactive)
+  (split-window-right)
+  (windmove-right)
+  (when (and (boundp 'golden-ratio-mode)
+             (symbol-value golden-ratio-mode))
+    (golden-ratio)))
+
+(defun gunnar-open-terminal-right ()
+  (interactive)
+  (progn
+    (split-window-right-and-focus)
+    (projectile-run-vterm)))
+#+END_SRC
 
 
 * Documentation

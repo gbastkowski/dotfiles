@@ -4,31 +4,88 @@
 #+end_src
 
 
+* Open Tasks
+** Packages
+*** TODO all-the-icons
+*** TODO all-the-icons-dired
+*** TODO atomic-chrome
+*** TODO (openai  :location  (recipe :fetcher github :repo "emacs-openai/openai"))
+*** TODO (chatgpt :location  (recipe :fetcher github :repo "emacs-openai/chatgpt"))
+*** TODO (codeium :location  (recipe :fetcher github :repo "Exafunction/codeium.el"))
+*** TODO dictcc
+*** TODO editorconfig
+*** TODO graphql-mode
+*** TODO helm-posframe
+*** TODO org-jira
+*** TODO osm
+*** TODO (scalaz-unicode-input-method :location (recipe :fetcher github :repo "folone/emacs-scalaz-unicode-input-method"))
+*** TODO smithy-mode
+** auto-completion
+*** TODO auto-completion-complete-with-key-sequence "jk"
+*** TODO auto-completion-enable-help-tooltip 'manual
+*** TODO auto-completion-enable-sort-by-usage t
+*** TODO auto-completion-enable-snippets-in-popup t
+*** TODO auto-completion-idle-delay 0.0
+*** TODO auto-completion-minimum-prefix-length 1
+*** TODO auto-completion-private-snippets-directory (expand-file-name "snippets" user-emacs-directory)
+*** TODO auto-completion-use-company-box t)
+
+*** TODO (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+
+
 * General Settings
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
-(setq! fill-column                120)
+(setq! auth-sources                       '(password-store))
+
+(setq! fill-column                        120
+       fci-rule-color                     "#555555"
+       fci-rule-width                     1)
 (global-display-fill-column-indicator-mode)
 
-(setq! tab-width                  8)
+(setq! tab-width                          8)
 
-(setq! user-full-name             "Gunnar Bastkowski"
-       user-mail-address          "gunnar@bastkowski.name")
+(setq! user-full-name                     "Gunnar Bastkowski"
+       user-mail-address                  "gunnar@bastkowski.name")
 
-(setq! which-key-use-C-h-commands t)
+(setq! which-key-use-C-h-commands         t)
+
+(setq! package-install-upgrade-built-in   t)
 #+end_src
 
 
 * Appearance
+** Cursor
+#+begin_src emacs-lisp
+(setq! blink-cursor-blinks  0
+       cursor-type          'bar)
+#+end_src
 ** Theme
 There are two ways to load a theme. Both assume the theme is installed and available.
 You can either set `doom-theme' or manually load a theme with the `load-theme' function.
 This is the default:
 #+begin_src emacs-lisp
-(setq doom-theme 'gunnar)
+(setq! doom-theme 'gunnar)
 #+end_src
 
+** Folds
+*** Functions
+Folds by indentation
+Found at https://stackoverflow.com/questions/1587972/how-to-display-indentation-guides-in-emacs/4459159#4459159
+and decided that I like it
+#+begin_src emacs-lisp
+(defun aj-toggle-fold ()
+  "Toggle fold all lines larger than indentation on current line"
+  (interactive)
+  (let ((col 1))
+    (save-excursion
+      (back-to-indentation)
+      (setq col (+ 1 (current-column)))
+      (set-selective-display
+       (if selective-display nil (or col 1))))))
+#+end_src
+*** TODO (spacemacs/set-leader-keys "of" 'aj-toggle-fold)
 ** Font
 Doom exposes five (optional) variables for controlling fonts in Doom:
 - `doom-font' -- the primary font to use
@@ -39,7 +96,8 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 - `doom-serif-font' -- for the `fixed-pitch-serif' face
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Iosevka" :size 13))
+(setq! doom-font (font-spec :family "Iosevka" :size 13))
+(global-prettify-symbols-mode t)
 #+end_src
 
 If you or Emacs can't find your font, use 'M-x describe-font' to look them up,
@@ -48,6 +106,8 @@ to refresh your font settings.
 
 If Emacs still can't find your font, it likely wasn't installed correctly.
 Font issues are rarely Doom issues!
+
+*** TODO   (spacemacs/set-leader-keys "tP" 'global-prettify-symbols-mode)
 
 ** Line Numbers
 This determines the style of line numbers in effect. If set to `nil', line
@@ -94,71 +154,89 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 #+END_SRC
 
 
+* Mu4e
+** Settings
+#+begin_src emacs-lisp
+#+end_src
+
+
+* OpenAI
+** Settings
+#+begin_src emacs-lisp
+(setq! openai-key                         (password-store-get "private/openai/emacs-api-key")
+       openai-user                        "gunnar.bastkowski@gmail.com")
+#+end_src
+
 
 * Org Mode
 ** Agenda
 *** Keybindings
 #+begin_src emacs-lisp
-(defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))
-(defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "a"))
-(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
-(defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
-
 (map! :leader :desc "Show agenda for today"         :n "oa1" #'gunnar/org-agenda-show-today)
 (map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
 (map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
-
-;; (spacemacs/set-leader-keys "Gi" 'gunnar/org-capture-inbox)
+(map! :leader :desc "Capture Inbox"                 :n "oci" #'gunnar/org-capture-inbox)
+(map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
 
 ;; (spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary) ;
 #+end_src
 
 *** Settings
 #+begin_src emacs-lisp
-(setq org-agenda-custom-commands
-        '(("a" "Agenda and next items" ((agenda)
-                                        (tags-todo "CATEGORY=\"inbox\""
-                                              ((org-agenda-sorting-strategy '(priority-down))
-                                               (org-agenda-overriding-header "Inbox")
-                                               (org-agenda-todo-keyword-format "")))
-                                        (todo "NEXT"
-                                              ((org-agenda-sorting-strategy '(priority-down))
-                                               (org-agenda-overriding-header "Next Actions")
-                                               (org-agenda-todo-keyword-format "")))
-                                        (todo "WAITING"
-                                              ((org-agenda-sorting-strategy '(priority-down))
-                                               (org-agenda-overriding-header "Waiting For")
-                                               (org-agenda-todo-keyword-format ""))))
-           ((org-agenda-span 'day)))
+(setq! org-agenda-custom-commands
+       '(("a" "Agenda and next items" ((agenda)
+                                       (tags-todo "CATEGORY=\"inbox\""
+                                                  ((org-agenda-sorting-strategy    '(priority-down))
+                                                   (org-agenda-overriding-header   "Inbox")
+                                                   (org-agenda-todo-keyword-format "")))
+                                       (todo      "NEXT"
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Next Actions")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (todo      "WAITING"
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Waiting For")
+                                                   (org-agenda-todo-keyword-format      ""))))
+          ((org-agenda-span 'day)))
 
-          ("b" "Mobimeo Agenda"        ((agenda)
-                                        (tags-todo "@mobimeo+TODO=\"NEXT\""
-                                                   ((org-agenda-sorting-strategy '(priority-down))
-                                                    (org-agenda-overriding-header "Next Actions")
-                                                    (org-agenda-todo-keyword-format "")))
-                                        (tags-todo "@mobimeo+TODO=\"WAITING\""
-                                                   ((org-agenda-sorting-strategy '(priority-down))
-                                                    (org-agenda-overriding-header "Waiting For")
-                                                    (org-agenda-todo-keyword-format "")))
-                                        (tags-todo "@mobimeo+TODO=\"TODO\""
-                                                   ((org-agenda-overriding-header "TODO Items")
-                                                    (org-agenda-todo-keyword-format ""))))
-           ((org-agenda-span 'day)))
+         ("b" "Mobimeo Agenda"        ((agenda)
+                                       (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                                  ((org-agenda-sorting-strategy    '(priority-down))
+                                                   (org-agenda-overriding-header   "Next Actions")
+                                                   (org-agenda-todo-keyword-format "")))
+                                       (tags-todo "@mobimeo+TODO=\"WAITING\""
+                                                  ((org-agenda-sorting-strategy    '(priority-down))
+                                                   (org-agenda-overriding-header   "Waiting For")
+                                                   (org-agenda-todo-keyword-format "")))
+                                       (tags-todo "@mobimeo+TODO=\"TODO\""
+                                                  ((org-agenda-overriding-header   "TODO Items")
+                                                   (org-agenda-todo-keyword-format ""))))
+          ((org-agenda-span 'day)))
 
-          ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
-           ((org-agenda-overriding-header "Inbox")))
-          ))
+         ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
+          ((org-agenda-overriding-header "Inbox")))))
 
-(setq org-agenda-prefix-format    '((agenda . " %i %-20:c%?-12t% s")
-                                    (todo . " %i %-20:c")
-                                    (tags . " %i %-20:c")
-                                    (search . " %i %-20:c")))
+(setq! org-agenda-prefix-format     '((agenda . " %i %-20:c%?-12t% s")
+                                      (todo   . " %i %-20:c")
+                                      (tags   . " %i %-20:c")
+                                      (search . " %i %-20:c")))
 
-(setq org-agenda-include-diary      t)
+(setq! org-agenda-include-diary     t
+       org-agenda-files             '("/Users/gunnar.bastkowski/org/inbox-galaxy.org"
+                                      "/Users/gunnar.bastkowski/org/inbox-s7.org"
+                                      "/Users/gunnar.bastkowski/org/inbox-yesomeo.org"
+                                      "/Users/gunnar.bastkowski/org/tickler.org"
+                                      "/Users/gunnar.bastkowski/org/projects.org"))
+
 #+end_src
 
 *** Functions
 #+begin_src emacs-lisp
+(defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "a"))
+(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
+
 (defun my-org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
   (let (should-skip-entry)
@@ -170,6 +248,32 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
     (when should-skip-entry (or (outline-next-heading) (goto-char (point-max))))))
 
 (defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
+
+
+(defun gunnar/all-calendars-to-diary ()
+  (interactive)
+  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
+        (ical-filename (make-temp-file "google-calendar.ics")))
+    (progn
+      (gunnar/some-calendar-to-diary (password-store-get "mobimeo/calendar/url"))
+      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url"))
+      )))
+
+(defun gunnar/some-calendar-to-diary (calendar-url)
+  (let ((ical-filename (make-temp-file "calendar.ics")))
+    (progn
+      (url-copy-file calendar-url ical-filename t)
+      (set-buffer (find-file-noselect ical-filename))
+      (icalendar-import-buffer diary-file t)
+      (kill-buffer)
+      'ok)))
+
+;; (setq org-caldav-calendars '((:calendar-id "work@whatever"
+;;                               :files ("~/org/work.org")
+;;                               :inbox "~/org/fromwork.org")
+;;                              (:calendar-id "stuff@mystuff"
+;;                               :files ("~/org/sports.org" "~/org/play.org")
+;;                               :inbox "~/org/fromstuff.org")))
 #+end_src
 
 ** Babel
@@ -188,14 +292,67 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 (setq! org-brain-include-file-entries t)
 #+END_SRC
 
+** Calendar
+*** Settings
+#+begin_src emacs-lisp
+(setq! calendar-date-display-form   '((format "%s-%.2d-%.2d" year (string-to-number month) (string-to-number day)))
+       calendar-date-style          'iso
+       calendar-week-start-day      1
+       calendar-mark-holidays-flag  1)
 
+(setq! calendar-intermonth-text     '(propertize
+                                      (format "%2d"
+                                              (car
+                                               (calendar-iso-from-absolute
+                                                (calendar-absolute-from-gregorian (list month day year)))))
+                                      'font-lock-face 'font-lock-constant-face)
+       calendar-intermonth-header   (propertize "KW" 'font-lock-face 'font-lock-keyword-face))
+
+(setq! org-caldav-url               "https://cloud.bastkowski.name/remote.php/dav/calendars/gunnar"
+       org-caldav-calendar-id       "personal"
+       org-caldav-calendars         '((:calendar-id "work@whatever"
+                                       :files       ("~/org/work.org")
+                                       :inbox       "~/org/fromwork.org")
+                                      (:calendar-id "stuff@mystuff"
+                                       :files       ("~/org/sports.org" "~/org/play.org")
+                                       :inbox       "~/org/fromstuff.org"))
+       org-caldav-inbox             "~/org/calendars/gunnar.org"
+       org-caldav-files             '("~/org/calendars/gunnar.org"))
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun gunnar/all-calendars-to-diary ()
+  (interactive)
+  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
+        (ical-filename (make-temp-file "google-calendar.ics")))
+    (progn
+      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url")))))
+
+(defun gunnar/some-calendar-to-diary (calendar-url)
+  (let ((ical-filename (make-temp-file "calendar.ics")))
+    (progn
+      (url-copy-file calendar-url ical-filename t)
+      (set-buffer (find-file-noselect ical-filename))
+      (icalendar-import-buffer diary-file t)
+      (kill-buffer)
+      'ok)))
+
+(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
+(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))
+#+end_src
+
+*** Open Tasks
+**** TODO (spacemacs/set-leader-keys "aw" 'eww)
+**** TODO (spacemacs/set-leader-keys "ab" 'calendar)
+**** TODO (spacemacs/set-leader-keys "oc" 'org-capture)
 
 ** General
 *** Settings
 #+begin_src emacs-lisp
 (setq org-bullets-bullet-list      '("x" "◆" "▴" "▸"))
-(setq org-clock-persist            'history)
-(org-clock-persistence-insinuate)
 
 (setq org-directory                 "~/org/")
 (setq org-mobile-directory          "~/org/")
@@ -221,46 +378,11 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
          (org-edit-src-code)))
 #+end_src
 
-** Calendar
-*** Settings
-#+begin_src emacs-lisp
-(setq org-caldav-url                "https://cloud.bastkowski.name/remote.php/dav/calendars/gunnar")
-(setq org-caldav-calendar-id        "personal")
-(setq org-caldav-calendars          '((:calendar-id "work@whatever" :files ("~/org/work.org")
-                                                    :inbox "~/org/fromwork.org")
-                                      (:calendar-id "stuff@mystuff"
-                                                    :files ("~/org/sports.org" "~/org/play.org")
-                                                    :inbox "~/org/fromstuff.org")))
-(setq org-caldav-inbox              "~/org/calendars/gunnar.org")
-(setq org-caldav-files             '("~/org/calendars/gunnar.org"))
-#+end_src
-
-*** Functions
-#+begin_src emacs-lisp
-(defun gunnar/all-calendars-to-diary ()
-  (interactive)
-  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
-        (ical-filename (make-temp-file "google-calendar.ics")))
-    (progn
-      (gunnar/some-calendar-to-diary (password-store-get "mobimeo/calendar/url"))
-      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url"))
-      )))
-
-(defun gunnar/some-calendar-to-diary (calendar-url)
-  (let ((ical-filename (make-temp-file "calendar.ics")))
-    (progn
-      (url-copy-file calendar-url ical-filename t)
-      (set-buffer (find-file-noselect ical-filename))
-      (icalendar-import-buffer diary-file t)
-      (kill-buffer)
-      'ok)))
-#+end_src
-
 ** Capture
 #+begin_src emacs-lisp
-(setq org-default-notes-file        (concat org-directory "inbox-yesomeo.org"))
+(setq! org-default-notes-file       (concat org-directory "inbox-yesomeo.org"))
 
-(setq org-capture-templates       '(("i" "Inbox"          entry (file "")
+(setq! org-capture-templates      '(("i" "Inbox"          entry (file "")
                                      "* TODO %^{Description}%?%i\n  %U\n"     :immediate-finish t)
                                     ("l" "Bookmarks"      entry (file "")
                                      "** %(org-cliplink-capture)%?\n  %U\n"   :immediate-finish t)
@@ -271,17 +393,47 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                     ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
                                      "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish)))
 
-(setq org-refile-targets          '(("~/org/projects.org"                     :maxlevel . 3)
+(setq! org-refile-targets         '(("~/org/projects.org"                     :maxlevel . 3)
                                     ("~/org/someday.org"                      :maxlevel . 3)
                                     ("~/org/bookmarks.org"                    :maxlevel . 5)
-                                    ("~/org/tickler.org"                      :level    . 1)))
+                                    ("~/org/tickler.org"                      :level    . 1))
+       org-todo-keywords          '((sequence "TODO(t)" "NEXT(n)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 #+end_src
 
 ** Journal
+*** Open Tasks
+**** TODO org-enable-appear-support t
+**** TODO org-enable-asciidoc-support t
+**** TODO org-enable-bootstrap-support t
+**** TODO org-enable-epub-support t
+**** TODO org-enable-github-support t
+**** TODO org-enable-jira-support t
+**** TODO jiralib-url "https://jira.mobimeo.com"
+**** TODO org-enable-notifications t
+**** TODO org-enable-reveal-js-support t
+**** TODO org-enable-org-brain-support t
+**** TODO org-enable-org-journal-support t
+**** TODO org-enable-sticky-header nil
+**** TODO org-journal-carryover-items "TODO=\"TODO|NEXT\""
+**** TODO org-journal-dir "~/org/journal/"
+**** TODO org-journal-file-format "%Y/%m/%d.org"
+**** TODO org-journal-file-header "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
+**** TODO org-journal-find-file 'find-file
+**** TODO org-journal-enable-agenda-integration t
+**** TODO org-start-notification-daemon-on-startup t)
 *** Settings
 #+begin_src emacs-lisp
-(setq diary-file                    (concat org-directory "diary"))
-(setq timeclock-file                (concat org-directory "timeclock"))
+(setq! org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+
+(setq! diary-file                             (concat org-directory "diary"))
+(setq! timeclock-file                         (concat org-directory "timeclock"))
+(setq! org-journal-carryover-items            "TODO=\"TODO|NEXT\""
+       org-journal-dir                        "~/org/journal/"
+       org-journal-file-format                "%Y/%m/%d.org"
+       org-journal-file-header                "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
+       org-journal-find-file                  'find-file
+       org-journal-enable-agenda-integration  t)
 #+end_src
 
 *** Functions
@@ -289,6 +441,18 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 (defun gunnar/daily-note ()         (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
 #+end_src
 
+** Pomodoro
+*** TODO '(org-pomodoro-finished-sound "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
+*** TODO '(org-pomodoro-start-sound "/Users/gunnar.bastkowski/Sounds/mixkit-positive-notification-951.wav")
+** Reveal
+*** Settings
+#+begin_src emacs-lisp
+(setq! org-re-reveal-title-slide          nil
+       org-re-reveal-transition           "fade"
+       org-re-reveal-hlevel               2
+       org-re-reveal-width                1920
+       org-re-reveal-center               nil)
+#+end_src
 
 ** TODO
 (add-hook 'org-mode-hook '(lambda ()
@@ -315,6 +479,11 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 (map! :leader :desc "Run vterm in project" :n "$" #'projectile-run-vterm)
 #+END_SRC
 
+** Settings
+#+begin_src emacs-lisp
+(setq projectile-project-search-path '("~/git/mobimeo/" "~/git/gbastkowski/"))
+#+end_src
+
 ** Functions
 #+BEGIN_SRC emacs-lisp
 (defun split-window-right-and-focus ()
@@ -332,6 +501,15 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
     (split-window-right-and-focus)
     (projectile-run-vterm)))
 #+END_SRC
+
+
+* Scala
+** Settings
+#+begin_src emacs-lisp
+(setq! scala-auto-insert-asterisk-in-comments t
+       scala-sbt-window-position              nil
+       scala-enable-gtags                     t)
+#+end_src
 
 
 * Documentation

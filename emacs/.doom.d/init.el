@@ -129,25 +129,25 @@
                     ;;ocaml                           ; an objective camel
                     (org +brain +crypt +hugo +journal +pandoc +passwords +pomodoro +present +pretty)
                     ;;php                             ; perl's insecure younger brother
-                    plantuml                        ; diagrams for confusing people more
+                    plantuml
                     ;;purescript                      ; javascript, but functional
-                    python                          ; beautiful is better than ugly
+                    python
                     ;;qt                              ; the 'cutest' gui framework ever
                     ;;racket                          ; a DSL for DSLs
                     ;;raku                            ; the artist formerly known as perl6
-                    rest                            ; Emacs as a REST client
+                    rest
                     ;;rst                             ; ReST in peace
-                    ;;(ruby +rails)                   ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-                    ;;(rust +lsp)                     ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+                    ;;(ruby +rails)
+                    ;;(rust +lsp)
                     (scala +lsp +tree-sitter)
-                    ;;(scheme +guile)                 ; a fully conniving family of lisps
-                    sh                              ; she sells {ba,z,fi}sh shells on the C xor
+                    ;;(scheme +guile)
+                    sh
                     ;;sml
                     ;;solidity                        ; do you need a blockchain? No.
                     ;;swift                           ; who asked for emoji variables?
                     ;;terra                           ; Earth and Moon in alignment for performance.
                     ;;web                             ; the tubes
-                    yaml                            ; JSON, but readable
+                    yaml
                     ;;zig                             ; C, but simpler
        :email       (mu4e +org +gmail)
                     ;;notmuch

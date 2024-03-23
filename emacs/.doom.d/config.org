@@ -385,11 +385,11 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 ** General
 *** Settings
 #+begin_src emacs-lisp
-(setq org-bullets-bullet-list      '("x" "◆" "▴" "▸"))
+(setq! org-bullets-bullet-list     '("x" "◆" "▴" "▸"))
 
-(setq org-directory                 "~/org/")
-(setq org-mobile-directory          "~/org/")
-(setq org-todo-keywords            '((sequence "TODO(t)" "NEXT(n)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
+(setq! org-directory                "~/org/")
+(setq! org-mobile-directory         "~/org/")
+(setq! org-todo-keywords           '((sequence "TODO(t)" "NEXT(n)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 #+end_src
 
 *** Functions

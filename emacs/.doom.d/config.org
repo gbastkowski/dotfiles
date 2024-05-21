@@ -217,6 +217,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 #+end_src
 
 *** Settings
+**** org-agenda-custom-commands
 #+begin_src emacs-lisp
 (setq! org-agenda-custom-commands
        '(("a" "Agenda and next items" ((agenda)
@@ -250,14 +251,19 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
          ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
           ((org-agenda-overriding-header "Inbox")))))
-
+#+end_src
+**** org-agenda-prefix-format
+#+begin_src emacs-lisp
 (setq! org-agenda-prefix-format     '((agenda . " %i %-20:c%?-12t% s")
                                       (todo   . " %i %-20:c")
                                       (tags   . " %i %-20:c")
                                       (search . " %i %-20:c")))
-
+#+end_src
+**** org-agenda-include-diary
+#+begin_src emacs-lisp
 (setq! org-agenda-include-diary     t
-       org-agenda-files             '("/Users/gunnar.bastkowski/org/inbox-galaxy.org"
+       org-agenda-files             '("/Users/gunnar.bastkowski/org/inbox-akiko.org"
+                                      "/Users/gunnar.bastkowski/org/inbox-galaxy.org"
                                       "/Users/gunnar.bastkowski/org/inbox-s7.org"
                                       "/Users/gunnar.bastkowski/org/inbox-yesomeo.org"
                                       "/Users/gunnar.bastkowski/org/tickler.org"
@@ -268,6 +274,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 *** Functions
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))
+#+end_src
+#+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "a"))
 (defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
 (defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
@@ -415,9 +423,9 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 ** Capture
 #+begin_src emacs-lisp
-(setq! org-default-notes-file       (concat org-directory "inbox-yesomeo.org"))
+(setq! +org-default-notes-file       (concat org-directory "inbox-yesomeo.org"))
 
-(setq! org-capture-templates      '(("i" "Inbox"          entry (file "")
+(setq! org-capture-templates      '(("i" "Inbox"          entry (file "inbox-yesomeo.org")
                                      "* TODO %^{Description}%?%i\n  %U\n"     :immediate-finish t)
                                     ("l" "Bookmarks"      entry (file "")
                                      "** %(org-cliplink-capture)%?\n  %U\n"   :immediate-finish t)

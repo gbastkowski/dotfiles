@@ -70,6 +70,10 @@ pman () {
     done
 }
 
+mcd () {
+  mkdir "$1" && cd "$1"
+}
+
 unalias run-help
 autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles

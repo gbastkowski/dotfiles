@@ -115,7 +115,7 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - zsh)"
 
-eval "$(op completion zsh)"; compdef _op op
+# eval "$(op completion zsh)"; compdef _op op
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -132,4 +132,7 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-source /Users/gunnar.bastkowski/.config/op/plugins.sh
+# source /Users/gunnar.bastkowski/.config/op/plugins.sh
+
+# Created by `pipx` on 2024-05-10 23:04:23
+export PATH="$PATH:/home/gunnar/.local/bin"

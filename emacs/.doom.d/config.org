@@ -54,6 +54,8 @@ clients, file templates and snippets. It is optional.
 (setq! which-key-use-C-h-commands         t)
 
 (setq! package-install-upgrade-built-in   t)
+
+(server-start)
 #+end_src
 
 

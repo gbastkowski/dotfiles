@@ -68,7 +68,7 @@
                     ;;collab                          ; buffers with friends
                     ;;debugger                        ; FIXME stepping through code, to help you add bugs
                     ;;direnv
-                    ;;docker
+                    docker
                     editorconfig
                     ;;ein                             ; tame Jupyter notebooks with emacs
                     (eval +overlay)
@@ -89,7 +89,7 @@
                     ;;tty                             ; improve the terminal Emacs experience
         :lang       ;;agda                            ; types of types of types of types...
                     ;;beancount                       ; mind the GAAP
-                    ;;(cc +lsp)                       ; C > C++ == 1
+                    (cc +lsp)                         ; C > C++ == 1
                     ;;clojure                         ; java with a lisp
                     ;;common-lisp                     ; if you've seen one lisp, you've seen them all
                     ;;coq                             ; proofs-as-programs

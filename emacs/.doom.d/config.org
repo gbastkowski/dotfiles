@@ -100,7 +100,11 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 - `doom-serif-font' -- for the `fixed-pitch-serif' face
 
 #+begin_src emacs-lisp
-(setq! doom-font (font-spec :family "Iosevka" :size 13))
+(cond ((eq system-type 'gnu/linux)
+       (setq! doom-font (font-spec :family "Iosevka" :size 18)))
+      (t
+       (setq! doom-font (font-spec :family "Iosevka" :size 13))))
+
 (global-prettify-symbols-mode t)
 #+end_src
 
@@ -513,7 +517,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 * Projects
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
-(map! :leader :desc "Run vterm in project" :n "$" #'projectile-run-vterm)
+(map! :leader :desc "Run vterm in project" :n "$" #'projectile-run-shell)
 #+END_SRC
 
 ** Settings

@@ -37,7 +37,10 @@
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
-(setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh")
+(cond ((eq system-type 'gnu/linux)
+       (setenv "SSH_AUTH_SOCK" "/run/user/1000/gnupg/S.gpg-agent.ssh"))
+      (t
+       (setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh")))
 
 (setq! auth-sources                       '(password-store))
 

@@ -532,7 +532,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 ** Settings
 #+begin_src emacs-lisp
-(setq projectile-project-search-path '("~/git/mobimeo/" "~/git/gbastkowski/"))
+(setq! projectile-project-search-path '("~/git/mobimeo/" "~/git/gbastkowski/"))
+(setq! lsp-file-watch-threshold nil)
 #+end_src
 
 ** Functions

@@ -271,13 +271,13 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 **** org-agenda-include-diary
 #+begin_src emacs-lisp
 (setq! org-agenda-include-diary     t
-       org-agenda-files             '("/Users/gunnar.bastkowski/org/inbox-akiko.org"
-                                      "/Users/gunnar.bastkowski/org/inbox-galaxy.org"
-                                      "/Users/gunnar.bastkowski/org/inbox-s7.org"
-                                      "/Users/gunnar.bastkowski/org/inbox-yesomeo.org"
-                                      "/Users/gunnar.bastkowski/org/tickler.org"
-                                      "/Users/gunnar.bastkowski/org/projects.org"))
-
+       org-agenda-files             (mapcar (lambda (x) (concat (getenv "HOME") "/" x))
+                                            '("org/inbox-akiko.org"
+                                              "org/inbox-galaxy.org"
+                                              "org/inbox-s7.org"
+                                              "org/inbox-yesomeo.org"
+                                              "org/tickler.org"
+                                              "org/projects.org")))
 #+end_src
 
 *** Functions

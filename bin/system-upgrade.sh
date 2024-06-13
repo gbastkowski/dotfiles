@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
 case "$OSTYPE" in
-  darwin*)  source macos.include.sh ;;
-  linux*)   source linux.include.sh ;;
+  darwin*)  source $(dirname $0)/macos.include.sh ;;
+  linux*)   source $(dirname $0)/linux.include.sh ;;
   *)        echo "unknown: $OSTYPE" ; exit 1 ;;
 esac
 

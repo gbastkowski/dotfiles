@@ -8,6 +8,8 @@ esac
 
 upgrade_system_and_packages
 
+upgrade_python_packages
+
 echo "updating cs"
 cs update
 

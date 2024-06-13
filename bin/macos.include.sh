@@ -5,7 +5,7 @@ upgrade_system_and_packages() {
     brew update && brew upgrade
 }
 
-upgrade_pip() {
+upgrade_python_packages() {
     echo "updating pip stuff"
     for i in $(pip list -o | awk 'NR > 2 {print $1}')
     do

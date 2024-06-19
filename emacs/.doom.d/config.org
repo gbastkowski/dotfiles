@@ -268,7 +268,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                       (tags   . " %i %-20:c")
                                       (search . " %i %-20:c")))
 #+end_src
-**** org-agenda-include-diary
+**** org-agenda-files
 #+begin_src emacs-lisp
 (setq! org-agenda-include-diary     t
        org-agenda-files             (mapcar (lambda (x) (concat (getenv "HOME") "/" x))

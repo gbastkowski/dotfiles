@@ -557,10 +557,18 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 * Scala
 ** Settings
+*** General
 #+begin_src emacs-lisp
 (setq! scala-auto-insert-asterisk-in-comments t
        scala-sbt-window-position              nil
        scala-enable-gtags                     t)
+#+end_src
+*** Scala-Indent
+#+begin_src emacs-lisp
+(setq! scala-indent:use-javadoc-style nil)
+#+end_src
+*** LSP
+#+begin_src emacs-lisp
 #+end_src
 
 

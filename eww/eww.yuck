@@ -1,0 +1,75 @@
+(defwindow bar
+  :monitor 0
+  :geometry (geometry :x "0%" :y "0%" :width "3820px" :height "50px" :anchor "top center")
+  :stacking "overlay"
+  :exclusive true
+  (bar))
+
+(defwidget bar [] (centerbox :class "topbar" :orientation "h" (workspaces) (clock) (sidestuff)))
+
+(defwidget workspaces []
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly true
+       :halign "start"
+       :spacing 0
+    (workspace :no 1)
+    (workspace :no 2)
+    (workspace :no 3)
+    (workspace :no 4)
+    (workspace :no 5)))
+
+(defwidget workspace [no]
+  (box :class { active-workspace == no ? "active" : "inactive" }
+    (button :onclick "hyprctl dispatch workspace ${no}" no)))
+
+(defwidget clock [] (box :class "clock" time))
+
+(defwidget sidestuff []
+  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+    (image :path "${volume-icon}"
+           :image-height "32")
+    (button :class "icon" "🔊")
+    (metric :label ""
+            :value volume
+            :onchange "amixer sset Master {}%")
+    (metric :label ""
+            :value {EWW_RAM.used_mem_perc}
+            :onchange "")
+    (metric :label "💾"
+            :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
+            :onchange "")))
+
+(defwidget music []
+  (box :class "music"
+       :orientation "h"
+       :space-evenly false
+       :halign "center"
+    {music != "" ? "🎵${music}" : ""}))
+
+(defwidget metric [label value onchange]
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :value value
+           :onchange onchange)))
+
+
+(deflisten active-workspace :initial "1" `~/.config/eww/listen_hyprland_events.sh`)
+(deflisten music :initial ""
+  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
+
+(defpoll time :interval "10s" "date '+%H:%M   %b %d, %Y'")
+(defpoll volume :interval "1s" "scripts/getvol")
+(defpoll volume-icon :interval "1s" "./volume.sh --icon")
+
+(defwindow powermenu
+  :stacking "fg"
+  :windowtype "normal"
+  :wm-ignore true
+  :geometry (geometry :width "100%" :height "100%")
+  (powermenu_layout))

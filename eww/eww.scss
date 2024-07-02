@@ -1,0 +1,87 @@
+* {
+  all: unset;
+}
+
+//Global Styles
+.topbar {
+  background-color: rgba(#333333, 0.7);
+  border-color: rgba(#006633, 0.2);
+  border-radius: 10px;
+  border-style: none;
+  border-width: 1px;
+  color: #66cc00;
+  font-family: "Bitstream Vera Sans";
+  font-size: 16px;
+  opacity: 255;
+  padding: 10px;
+}
+
+.clock {
+  font-weight: bold;
+}
+
+.workspaces {
+  background-color: rgba(#333333, 0.7);
+}
+
+.workspaces box {
+  border-color: #bbbbbb;
+  border-radius: 4px;
+  border-style: none;
+  border-width: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.workspaces box.active {
+  border-style: solid;
+  color: white;
+  font-weight: bold;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.sidestuff slider {
+  all: unset;
+  color: #ffd5cd;
+}
+
+.metric scale trough highlight {
+  all: unset;
+  background-color: #D35D6E;
+  color: #000000;
+  border-radius: 10px;
+}
+.metric scale trough {
+  all: unset;
+  background-color: #4e4e4e;
+  border-radius: 50px;
+  min-height: 3px;
+  min-width: 50px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+.metric scale trough highlight {
+  all: unset;
+  background-color: #D35D6E;
+  color: #000000;
+  border-radius: 10px;
+}
+.metric scale trough {
+  all: unset;
+  background-color: #4e4e4e;
+  border-radius: 50px;
+  min-height: 3px;
+  min-width: 50px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+.label-ram {
+  font-size: large;
+}
+.workspaces button:hover {
+  color: #D35D6E;
+}
+

@@ -10,13 +10,15 @@ import Sound.ALSA.Mixer
 
 main :: IO ()
 main = do
-  putStrLn "Hello, World"
   toggleMute
 
 toggleMute :: IO ()
 toggleMute =
   withMixer "default" $ \mixer ->
     do Just control <- getControlByName mixer "Master"
+       element <- getElementByName mixer "Master"
        let Just playbackSwitch = playback $ switch control
-       Just sw <- getChannel FrontLeft playbackSwitch
-       setChannel FrontLeft playbackSwitch $ not sw
+       Just switchState <- getChannel FrontLeft playbackSwitch
+       let newSwitchState = not switchState
+       setChannel FrontLeft playbackSwitch newSwitchState
+       putStrLn $ "Current switch state: " ++ (if newSwitchState then "On" else "Off")

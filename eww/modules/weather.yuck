@@ -3,7 +3,7 @@
 (defpoll weather-temp :interval "15m" `modules/weather.sh --temp`)
 (defpoll weather-hex  :interval "15m" `modules/weather.sh --hex`)
 
-(defwidget weather []
+(defwidget weather-icon []
   (box              :class              "weatherbox"
                     :orientation        "h"
                     :spacing            0
@@ -17,3 +17,42 @@
                     :text               weather-icon)
     (label          :class              "weathertemp"
                     :text               weather-temp)))
+
+(defwindow weather
+  :monitor 0
+  :geometry (geometry :x "0%" :y "0%" :width "10%" :height "30%" :anchor "top center")
+  :stacking "overlay"
+  :exclusive false
+  (weather))
+
+(defwidget weather []
+  (box              :class              "weather-window"
+    (box            :orientation        "v"
+                    :spacing            10
+                    :space-evenly       "false"
+                    :vexpand            "false"
+                    :hexpand            "false"
+      (box          :orientation        "h"
+                    :vexpand            "false"
+                    :hexpand            "false"
+        (label      :class              "iconweather"
+                    :halign             "start"
+                    :valign             "start"
+                    :style              "color: ${weather-hex};"
+                    :text               weather-icon)
+        (label      :class              "label_temp"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               weather-temp))
+      (box          :orientation        "v"
+                    :spacing            10
+                    :halign             "center"
+                    :space-evenly       "false"
+                    :vexpand            "false"
+                    :hexpand            "false"
+        (label      :class              "label_stat"
+                    :text               "STAT")
+        (label      :class              "label_quote"
+                    :text               "QUOTE")
+        (label      :class              "label_quote"
+                    :text               "QUOTE2")))))

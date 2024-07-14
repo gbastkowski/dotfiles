@@ -25,7 +25,7 @@
                     :space-evenly       false
                     :spacing            30
       (clock)
-      (weather)
+      (weather-icon)
       (github))
     (box            :orientation        "h"
                     :space-evenly       false

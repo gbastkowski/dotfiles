@@ -1,0 +1,19 @@
+
+(defpoll weather-icon :interval "15m" `modules/weather.sh --icon`)
+(defpoll weather-temp :interval "15m" `modules/weather.sh --temp`)
+(defpoll weather-hex  :interval "15m" `modules/weather.sh --hex`)
+
+(defwidget weather []
+  (box              :class              "weatherbox"
+                    :orientation        "h"
+                    :spacing            0
+                    :valign             "center"
+                    :halign             "end"
+                    :space-evenly       false
+                    :vexpand            false
+                    :hexpand            false
+    (label          :class              "weathericon"
+                    :style              "color: ${weather-hex};"
+                    :text               weather-icon)
+    (label          :class              "weathertemp"
+                    :text               weather-temp)))

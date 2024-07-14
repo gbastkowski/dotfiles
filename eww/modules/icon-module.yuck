@@ -1,0 +1,10 @@
+(defwidget icon-module [icon overlay ?class]
+  (box              :class              "${class} icon-module"
+                    :orientation        "h"
+                    :space-evenly       false
+                    :spacing            0
+    (label          :class              "icon-module__icon"
+                    :text "${icon}")
+    (label          :class              "icon-module__count"
+                    :xalign             0.1
+                    :text               overlay)))

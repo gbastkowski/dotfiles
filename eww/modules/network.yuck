@@ -1,0 +1,29 @@
+(defwidget network_stats []
+  (box :class "network-stats"
+       :spacing 10
+       :vexpand false
+       :hexpand false
+       :space-eveny false
+    (label :text " ${round(EWW_NET.enp5s0.NET_DOWN / 1000000, 4)}")
+    (label :text " ${round(EWW_NET.enp5s0.NET_UP / 1000000, 4)}")))
+
+(defwidget network []
+  (eventbox :onhover "${EWW_CMD} update network_rev=true"
+            :onhoverlost "${EWW_CMD} update network_rev=false"
+    (box :class "network"
+         :vexpand false
+         :hexpand false
+         :spacing 10
+         :space-evenly false
+      (label :text wired)
+        (revealer :transition "slideleft"
+                  :reveal network_rev
+                  :duration "600ms"
+          (network_stats)))))
+
+(defpoll network_info :interval "5s" "perl ~/.config/eww/scripts/get-network")
+
+(defvar network_rev  false)
+(defvar vpn_active   "")
+(defvar vpn_inactive "")
+(defvar wired        "")

@@ -1,0 +1,94 @@
+(defwindow system
+  :monitor 0
+  :geometry (geometry :x "0%" :y "0%" :width "10%" :height "30%" :anchor "center right")
+  :stacking "overlay"
+  :exclusive false
+  (system))
+
+(defwidget system []
+  (box              :class              "system-window"
+                    :orientation        "v"
+                    :space-evenly       false
+                    :spacing            10
+    (cpu-info)
+    (fan-info)
+    (network-info)
+    (system-load)))
+
+(defwidget cpu-info []
+  (box              :orientation        "v"
+                    :space-evenly       false
+    (label          :text               "CPU Info"
+                    :xalign             0
+                    :yalign             0
+                    :class              "heading")
+    (label          :text               "test"
+                    :xalign             0
+                    :yalign             0
+                    :class              "info-label")))
+
+(defwidget fan-info []
+  (box              :orientation        "v"
+                    :space-evenly       false
+    (label          :text               "Fan Info"
+                    :xalign             0
+                    :yalign             0
+                    :class              "heading")
+    (fan-speeds)))
+
+(defwidget fan-speeds []
+  (box              :orientation        "v"
+                    :space-evenly       true
+    (fan-speed      :name               "fan1"
+                    :command            {fan-speeds.fan1})
+    (fan-speed      :name               "fan2"
+                    :command            {fan-speeds.fan2})
+    (fan-speed      :name               "fan3"
+                    :command            {fan-speeds.fan3})
+    (fan-speed      :name               "fan4"
+                    :command            {fan-speeds.fan4})
+    (fan-speed      :name               "fan5"
+                    :command            {fan-speeds.fan5})
+    (fan-speed      :name               "fan7"
+                    :command            {fan-speeds.fan7})))
+
+(defwidget fan-speed [name command]
+  (box              :orientation        "h"
+                    :space-evenly       false
+                    :spacing            20
+    (label          :class              "info-name"
+                    :text               name)
+    (label          :text               "${command} rpm"
+                    :xalign             1
+                    :class              "info-value")
+    (graph          :value              command
+                    :max                3000
+                    :thickness          2
+                    :time-rand          "1m"
+                    :hexpand            true
+                    :class              "info-graph")))
+
+(defwidget system-load []
+  (box              :orientation        "v"
+                    :space-evenly:      false
+    (label          :text               "System Load"
+                    :xalign             0
+                    :yalign             0
+                    :class              "heading")))
+
+(defwidget network-info []
+  (box              :orientation        "v"
+                    :space-evenly:      false
+    (label          :text               "Network"
+                    :xalign             0
+                    :yalign             0
+                    :class              "heading")
+    (box            :class              "network-stats"
+                    :spacing            10
+                    :vexpand false
+                    :hexpand false
+                    :space-eveny false
+      (label        :text "   ${round(EWW_NET.enp5s0.NET_DOWN / 1000000, 4)}")
+      (label        :text "   ${round(EWW_NET.enp5s0.NET_UP / 1000000, 4)}"))))
+
+(defpoll fan-speeds :interval "5s" "./system.sh --get-fan-speeds")

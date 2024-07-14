@@ -57,6 +57,7 @@
                     :space-evenly       false
                     :spacing            20
     (label          :class              "info-name"
+                    :xalign             0
                     :text               name)
     (label          :text               "${command} rpm"
                     :xalign             1
@@ -64,7 +65,7 @@
     (graph          :value              command
                     :max                3000
                     :thickness          2
-                    :time-rand          "1m"
+                    :time-rand          "1h"
                     :hexpand            true
                     :class              "info-graph")))
 
@@ -74,7 +75,52 @@
     (label          :text               "System Load"
                     :xalign             0
                     :yalign             0
-                    :class              "heading")))
+                    :class              "heading")
+    (box            :orientation        "h"
+                    :space-evenly       false
+                    :spacing            20
+      (label        :class              "info-name"
+                    :xalign             0
+                    :text               "Memory")
+      (label        :text               "${memory-percentage}%"
+                    :xalign             1
+                    :class              "info-value")
+      (graph        :value              memory-percentage
+                    :max                100
+                    :thickness          2
+                    :time-rand          "1h"
+                    :hexpand            true
+                    :class              "info-graph"))
+    (box            :orientation        "h"
+                    :space-evenly       false
+                    :spacing            20
+      (label        :class              "info-name"
+                    :xalign             0
+                    :text               "Used")
+      (label        :text               "${memory-used}"
+                    :xalign             1
+                    :class              "info-value")
+      (graph        :value              memory-used
+                    :max                100
+                    :thickness          2
+                    :time-rand          "1h"
+                    :hexpand            true
+                    :class              "info-graph"))
+    (box            :orientation        "h"
+                    :space-evenly       false
+                    :spacing            20
+      (label        :class              "info-name"
+                    :xalign             0
+                    :text               "Free")
+      (label        :text               "${memory-free}"
+                    :xalign             1
+                    :class              "info-value")
+      (graph        :value              memory-free
+                    :max                100
+                    :thickness          2
+                    :time-rand          "1h"
+                    :hexpand            true
+                    :class              "info-graph"))))
 
 (defwidget network-info []
   (box              :orientation        "v"
@@ -92,3 +138,6 @@
       (label        :text "   ${round(EWW_NET.enp5s0.NET_UP / 1000000, 4)}"))))
 
 (defpoll fan-speeds :interval "5s" "./system.sh --get-fan-speeds")
+(defpoll memory-percentage :interval "5s" "./system.sh --get-memory-percentage")
+(defpoll memory-free       :interval "5s" "./system.sh --get-memory-info free")
+(defpoll memory-used       :interval "5s" "./system.sh --get-memory-info used")

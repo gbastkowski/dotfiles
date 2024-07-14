@@ -1,0 +1,13 @@
+(defwidget volume []
+  (box              :space-evenly       false
+    (button         :onclick            "./modules/volume.sh --toggle"
+                    :class              "volume-button"
+      volume-icon)
+    (scale          :min                0
+                    :max                101
+                    :active             true
+                    :onchange           "amixer sset Master {}%"
+                    :value              volume)))
+
+(deflisten volume       "./modules/volume.sh --subscribe-volume")
+(deflisten volume-icon  "./modules/volume.sh --subscribe-icon")

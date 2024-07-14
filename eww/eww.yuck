@@ -1,11 +1,37 @@
+(include "./calendar.yuck")
+(include "./modules/github.yuck")
+(include "./system.yuck")
+(include "./modules/network.yuck")
+(include "./modules/shutdown.yuck")
+(include "./modules/volume.yuck")
+
 (defwindow bar
   :monitor 0
-  :geometry (geometry :x "0%" :y "0%" :width "3820px" :height "50px" :anchor "top center")
+  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "50px" :anchor "top center")
   :stacking "overlay"
   :exclusive true
   (bar))
 
-(defwidget bar [] (centerbox :class "topbar" :orientation "h" (workspaces) (clock) (sidestuff)))
+(defwidget bar []
+  (centerbox        :orientation        "h"
+                    :class              "topbar"
+    (box            :orientation        "h"
+                    :space-evenly       false
+                    :spacing            30
+      (shutdown)
+      (workspaces))
+    (box            :orientation        "h"
+                    :space-evenly       false
+                    :spacing            30
+      (clock)
+      (github))
+    (box            :orientation        "h"
+                    :space-evenly       false
+                    :spacing            30
+                    :halign             "end"
+      (systray      :spacing            5
+                    :prepend-new        true)
+      (sidestuff))))
 
 (defwidget workspaces []
   (box :class "workspaces"
@@ -23,22 +49,23 @@
   (box :class { active-workspace == no ? "active" : "inactive" }
     (button :onclick "hyprctl dispatch workspace ${no}" no)))
 
-(defwidget clock [] (box :class "clock" time))
-
 (defwidget sidestuff []
-  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
-    (image :path "${volume-icon}"
-           :image-height "32")
-    (button :class "icon" "🔊")
-    (metric :label ""
-            :value volume
-            :onchange "amixer sset Master {}%")
-    (metric :label ""
-            :value {EWW_RAM.used_mem_perc}
-            :onchange "")
-    (metric :label "💾"
-            :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
-            :onchange "")))
+  (box              :orientation        "h"
+                    :space-evenly       false
+                    :halign             "end"
+                    :spacing            20
+    (volume)
+    (network)
+    (box          :space-evenly true
+      (metric     :label        ""
+                  :value        {EWW_RAM.used_mem_perc}
+                  :onchange     "")
+      (metric     :label        "💾"
+                  :value        {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
+                  :onchange     ""))
+    (eventbox     :onclick      "~/.config/eww/system.sh --toggle"
+      (image      :path         "icons/utilities-system-monitor-symbolic.svg"
+                  :image-height "24"))))
 
 (defwidget music []
   (box :class "music"
@@ -63,9 +90,8 @@
 (deflisten music :initial ""
   "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
 
-(defpoll time :interval "10s" "date '+%H:%M   %b %d, %Y'")
-(defpoll volume :interval "1s" "scripts/getvol")
-(defpoll volume-icon :interval "1s" "./volume.sh --icon")
+(defpoll time :interval "10s" "date '+%H:%M'")
+(defpoll date :interval "10s" "date '+%b %d, %Y'")
 
 (defwindow powermenu
   :stacking "fg"

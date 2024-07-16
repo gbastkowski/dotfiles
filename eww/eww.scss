@@ -1,9 +1,9 @@
-$green-text:        #66cc00;
+$green-text:        #66b044;
 $hover-text:        #D35D6E;
 $selected-text:     white;
 $font-family:       "Ubuntu Nerd Font";
 $font-size:         20px;
-$background-color:  rgba(#333333, 0.9);
+$background-color:  rgba(#33333f, 0.9);
 $green-border:      rgba(#006633, 0.9);
 
 * {
@@ -143,19 +143,13 @@ scale trough highlight {
   color: white;
 }
 
-.weather-window {
-  background-color: $background-color;
-  padding: 20px;
-  border-color:     $green-border;
-  border-radius:    10px;
-  border-style:     none;
-  border-width:     1px;
-}
+@import 'modules/calendar'
+@import 'modules/weather'
 
-.iconweather {
-  font-size: 4em;
-}
+calendar {
+  border: 1px solid white;
 
-.label_temp {
-  font-size: 2.5em;
+  &:selected {
+    color: white;
+  }
 }

@@ -1,10 +1,13 @@
 
-(defpoll weather-icon :interval "15m" `modules/weather.sh --icon`)
-(defpoll weather-temp :interval "15m" `modules/weather.sh --temp`)
-(defpoll weather-hex  :interval "15m" `modules/weather.sh --hex`)
+(defpoll weather-icon   :interval "15m" `modules/weather/weather.sh --icon`)
+(defpoll weather-temp   :interval "15m" `modules/weather/weather.sh --temp`)
+(defpoll weather-hex    :interval "15m" `modules/weather/weather.sh --hex`)
+(defpoll weather-stat   :interval "15m" `modules/weather/weather.sh --stat`)
+(defpoll weather-quote  :interval "15m" `modules/weather/weather.sh --quote`)
+(defpoll weather-quote2 :interval "15m" `modules/weather/weather.sh --quote2`)
 
 (defwidget weather-icon []
-  (box              :class              "weatherbox"
+  (box              :class              "weather"
                     :orientation        "h"
                     :spacing            0
                     :valign             "center"
@@ -12,15 +15,18 @@
                     :space-evenly       false
                     :vexpand            false
                     :hexpand            false
-    (label          :class              "weathericon"
+    (button         :class              "button"
+                    :halign             "start"
+                    :valign             "start"
                     :style              "color: ${weather-hex};"
-                    :text               weather-icon)
-    (label          :class              "weathertemp"
+                    :onclick            "~/.config/eww/modules/common/eww.sh --toggle weather"
+      weather-icon)
+    (label          :class              "label"
                     :text               weather-temp)))
 
 (defwindow weather
   :monitor 0
-  :geometry (geometry :x "0%" :y "0%" :width "10%" :height "30%" :anchor "top center")
+  :geometry (geometry :x "0%" :y "0%" :width "15%" :height "10%" :anchor "top center")
   :stacking "overlay"
   :exclusive false
   (weather))
@@ -51,8 +57,8 @@
                     :vexpand            "false"
                     :hexpand            "false"
         (label      :class              "label_stat"
-                    :text               "STAT")
+                    :text               weather-stat)
         (label      :class              "label_quote"
-                    :text               "QUOTE")
+                    :text               weather-quote)
         (label      :class              "label_quote"
-                    :text               "QUOTE2")))))
+                    :text               weather-quote2)))))

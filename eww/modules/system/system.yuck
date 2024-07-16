@@ -1,3 +1,8 @@
+(defwidget system-button []
+  (eventbox         :onclick            "~/.config/eww/modules/common/eww.sh --toggle system"
+    (image          :path               "icons/utilities-system-monitor-symbolic.svg"
+                    :image-height       "24")))
+
 (defwindow system
   :monitor 0
   :geometry (geometry :x "0%" :y "0%" :width "10%" :height "30%" :anchor "center right")
@@ -137,7 +142,7 @@
       (label        :text "   ${round(EWW_NET.enp5s0.NET_DOWN / 1000000, 4)}")
       (label        :text "   ${round(EWW_NET.enp5s0.NET_UP / 1000000, 4)}"))))
 
-(defpoll fan-speeds :interval "5s" "./system.sh --get-fan-speeds")
-(defpoll memory-percentage :interval "5s" "./system.sh --get-memory-percentage")
-(defpoll memory-free       :interval "5s" "./system.sh --get-memory-info free")
-(defpoll memory-used       :interval "5s" "./system.sh --get-memory-info used")
+(defpoll fan-speeds        :interval "5s" "./modules/system/system.sh --get-fan-speeds")
+(defpoll memory-percentage :interval "5s" "./modules/system/system.sh --get-memory-percentage")
+(defpoll memory-free       :interval "5s" "./modules/system/system.sh --get-memory-info free")
+(defpoll memory-used       :interval "5s" "./modules/system/system.sh --get-memory-info used")

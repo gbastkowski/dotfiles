@@ -1,0 +1,28 @@
+.weather-window {
+  background-color: $background-color;
+  padding: 20px;
+  border-color:     $green-border;
+  border-radius:    10px;
+  border-style:     none;
+  border-width:     1px;
+}
+
+.label_temp {
+  font-size: 3.5em;
+  font-weight: bold;
+}
+
+.label_stat {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: $green-text;
+  padding-bottom: 0.4em;
+}
+
+.label_quote {
+  font-size: 1.2em;
+}
+
+.iconweather {
+  font-size: 6em;
+}

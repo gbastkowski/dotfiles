@@ -1,10 +1,10 @@
-(include "./calendar.yuck")
+(include "./modules/system/system.yuck")
+(include "./modules/clock/clock.yuck")
 (include "./modules/github.yuck")
-(include "./system.yuck")
 (include "./modules/network.yuck")
 (include "./modules/shutdown.yuck")
 (include "./modules/volume.yuck")
-(include "./modules/weather.yuck")
+(include "./modules/weather/weather.yuck")
 
 (defwindow bar
   :monitor 0
@@ -65,9 +65,7 @@
       (metric     :label        "💾"
                   :value        {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
                   :onchange     ""))
-    (eventbox     :onclick      "~/.config/eww/system.sh --toggle"
-      (image      :path         "icons/utilities-system-monitor-symbolic.svg"
-                  :image-height "24"))))
+    (system-button)))
 
 (defwidget music []
   (box :class "music"
@@ -91,9 +89,6 @@
 (deflisten active-workspace :initial "1" `~/.config/eww/listen_hyprland_events.sh`)
 (deflisten music :initial ""
   "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
-
-(defpoll time :interval "10s" "date '+%H:%M'")
-(defpoll date :interval "10s" "date '+%b %d, %Y'")
 
 (defwindow powermenu
   :stacking "fg"

@@ -1,0 +1,32 @@
+(defpoll time   :interval "10s" "date '+%H:%M'")
+(defpoll date   :interval "10s" "date '+%b %d, %Y'")
+(defpoll day    :interval "10s" "date '%d'")
+(defpoll month  :interval "10s" "date '%b'")
+(defpoll year   :interval "10s" "date '%Y'")
+
+(defwidget clock []
+  (box              :orientation        "h"
+                    :space-evenly       false
+                    :spacing            20
+                    :halign             "center"
+    (eventbox       :space-evenly       false
+                    :spacing            5
+                    :onclick            "~/.config/eww/modules/common/eww.sh --toggle calendar"
+      (box          :class              "clock"
+        "  ${time} | ${date}"))))
+
+(defwindow calendar :monitor 0
+                    :geometry (geometry :x "0%" :y "0%" :width "10%" :height "50px" :anchor "top center")
+                    :stacking "overlay"
+                    :exclusive false
+  (box
+    (label          :text
+      "asdf")
+    (calendar       :day                day
+                    :month              month
+                    :year               year
+                    :show-details       true
+                    :show-heading       true
+                    :show-day-names     true
+                    :show-week-numbers  true
+    )))

@@ -2,7 +2,7 @@
 (include "./modules/clock/clock.yuck")
 (include "./modules/github.yuck")
 (include "./modules/network.yuck")
-(include "./modules/shutdown.yuck")
+(include "./modules/shutdown/shutdown.yuck")
 (include "./modules/volume.yuck")
 (include "./modules/weather/weather.yuck")
 
@@ -19,7 +19,7 @@
     (box            :orientation        "h"
                     :space-evenly       false
                     :spacing            30
-      (shutdown)
+      (shutdown-icon)
       (workspaces))
     (box            :orientation        "h"
                     :space-evenly       false
@@ -66,13 +66,6 @@
                   :value        {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
                   :onchange     ""))
     (system-button)))
-
-(defwidget music []
-  (box :class "music"
-       :orientation "h"
-       :space-evenly false
-       :halign "center"
-    {music != "" ? "🎵${music}" : ""}))
 
 (defwidget metric [label value onchange]
   (box :orientation "h"

@@ -1,0 +1,57 @@
+
+(defwidget shutdown-icon []
+    (button         :onclick            "~/.config/eww/modules/common/eww.sh --toggle shutdown"
+                    :class              "volume-button"
+      "󰐥"))
+
+(defwindow shutdown
+  :monitor 0
+  :geometry (geometry :x "0%" :y "0%" :width "10%" :height "5%" :anchor "top left")
+  :stacking "overlay"
+  :exclusive false
+  (shutdown))
+
+(defwidget shutdown []
+  (box              :orientation        "v"
+                    :spacing            20
+                    :class              "popup-window shutdown"
+    (eventbox       :onclick            "systemctl suspend"
+      (box          :orientation        "h"
+                    :spacing            80
+                    :space-evenly       false
+        (label      :text               "󰒲"
+                    :class              "shutdown-icon"
+                    :xalign             0)
+        (label      :text               "Suspend"
+                    :class              "shutdown-text"
+                    :xalign             0)))
+    (eventbox       :onclick            "systemctl suspend"
+      (box          :orientation        "h"
+                    :spacing            80
+                    :space-evenly       false
+        (label      :text               "󰩈"
+                    :class              "shutdown-icon"
+                    :xalign             0)
+        (label      :text               "Quit Hyprland"
+                    :class              "shutdown-text"
+                    :xalign             0)))
+    (eventbox       :onclick            "systemctl poweroff"
+      (box          :orientation        "h"
+                    :spacing            80
+                    :space-evenly       false
+        (label      :text               "󰜉"
+                    :class              "shutdown-icon"
+                    :xalign             0)
+        (label      :text               "Reboot"
+                    :class              "shutdown-text"
+                    :xalign             0)))
+    (eventbox       :onclick            "systemctl reboot"
+      (box          :orientation        "h"
+                    :spacing            80
+                    :space-evenly       false
+        (label      :text               "󰐥"
+                    :class              "shutdown-icon"
+                    :xalign             0)
+        (label      :text               "Shutdown"
+                    :class              "shutdown-text"
+                    :xalign             0)))))

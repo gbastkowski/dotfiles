@@ -1,5 +1,0 @@
-
-(defwidget shutdown []
-    (button         :onclick            "systemctl suspend"
-                    :class              "volume-button"
-      "󰐥"))

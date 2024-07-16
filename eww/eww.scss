@@ -24,18 +24,6 @@ $green-border:      rgba(#006633, 0.9);
   margin:           0;
 }
 
-.calendar {
-  background-color: $background-color;
-  border-color:     $green-border;
-  border-radius:    10px;
-  border-style:     solid;
-  border-width:     1px;
-  color:            $green-text;
-  font-family:      $font-family;
-  font-size:        $font-size;
-  padding:          10px;
-}
-
 .clock {
   font-weight:      bold;
 }
@@ -132,24 +120,7 @@ scale trough highlight {
   min-width: 100px;
 }
 
-.icon-module__icon {
-  font-size: 1em;
-}
-
-.icon-module__count {
-  min-width: 2em;
-  font-size: 0.7em;
-  font-weight: bold;
-  color: white;
-}
-
-@import 'modules/calendar'
+@import 'modules/common'
+@import 'modules/clock'
+@import 'modules/shutdown'
 @import 'modules/weather'
-
-calendar {
-  border: 1px solid white;
-
-  &:selected {
-    color: white;
-  }
-}

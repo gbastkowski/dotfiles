@@ -1,3 +1,15 @@
 calendar {
-    color: $text_color;
+  color:            $green_text;
+}
+
+.calendar {
+  background-color: $background-color;
+  border-color:     $green-border;
+  border-radius:    10px;
+  border-style:     solid;
+  border-width:     1px;
+  color:            $green-text;
+  font-family:      $font-family;
+  font-size:        $font-size;
+  padding:          10px;
 }

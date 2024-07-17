@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-07-17 Wed 13:45 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Doomemacs Cheatsheet</title>
+<meta name="author" content="Gunnar Bastkowski" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="cheatsheet.css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Doomemacs Cheatsheet</h1>
+<div id="outline-container-orge0dd966" class="outline-2">
+<h2 id="orge0dd966"><span class="section-number-2">1.</span> Jump to files, buffers or projects</h2>
+<div class="outline-text-2" id="text-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left"><a href="kbd:">SPC RET</a></td>
+<td class="org-left">Find bookmark</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC f f</a>, <a href="kbd:">SPC .</a></td>
+<td class="org-left">Browse from current directory</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC p f</a>, <a href="kbd:">SPC SPC</a></td>
+<td class="org-left">Find file in project</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC f r</a></td>
+<td class="org-left">Find recently opened file</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC p p</a></td>
+<td class="org-left">Open another project</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC b b</a>, <a href="kbd:">SPC ,</a></td>
+<td class="org-left">Switch to buffer in current workspace</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC b B</a>, <a href="kbd:">SPC &lt;</a></td>
+<td class="org-left">Switch to buffer</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org54b3c9f" class="outline-2">
+<h2 id="org54b3c9f"><span class="section-number-2">2.</span> Code completion</h2>
+<div class="outline-text-2" id="text-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left"><a href="kbd:">C-n</a></td>
+<td class="org-left">Go to next candidate</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-p</a></td>
+<td class="org-left">Go to previous candidate</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-j</a></td>
+<td class="org-left">(evil) Go to next candidate</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-k</a></td>
+<td class="org-left">(evil) Go to previous candidate</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-h</a></td>
+<td class="org-left">Display documentation (if available)</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-u</a></td>
+<td class="org-left">Move to previous page of candidates</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-d</a></td>
+<td class="org-left">Move to next page of candidates</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-s</a></td>
+<td class="org-left">Filter candidates</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-S-s</a></td>
+<td class="org-left">Search candidates with helm/ivy</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">C-SPC</a></td>
+<td class="org-left">Complete common</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">TAB</a></td>
+<td class="org-left">Complete common or select next candidate</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">S-TAB</a></td>
+<td class="org-left">Select previous candidate</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org3a0087b" class="outline-2">
+<h2 id="org3a0087b"><span class="section-number-2">3.</span> Jump-to navigation</h2>
+<div class="outline-text-2" id="text-3">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left"><a href="kbd:">SPC p f</a>, <a href="kbd:">SPC SPC</a></td>
+<td class="org-left">Jump to file in project</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC f f</a>, <a href="kbd:">SPC .</a></td>
+<td class="org-left">Jump to file from current directory</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="kbd:">SPC s i</a></td>
+<td class="org-left">Jump to symbol in file</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Gunnar Bastkowski</p>
+<p class="date">Created: 2024-07-17 Wed 13:45</p>
+</div>
+</body>
+</html>

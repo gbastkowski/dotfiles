@@ -1,0 +1,17 @@
+body {
+    font-family: sans-serif;
+}
+
+th {
+    text-align: left;
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+}
+
+.outline-2 {
+    float: left;
+}

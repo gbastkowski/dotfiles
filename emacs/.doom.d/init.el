@@ -61,7 +61,7 @@
                     ;;term                            ; basic terminal emulator for Emacs
                     vterm
         :checkers   (syntax +childframe)
-                    (spell +flyspell +everywhere)
+                    (spell +aspell +flyspell +everywhere)
                     grammar
         :tools      ;;ansible
                     ;;biblio                          ; Writes a PhD for you (citation needed)

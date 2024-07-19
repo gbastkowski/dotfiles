@@ -1,10 +1,11 @@
 
-(defpoll weather-icon   :interval "15m" `modules/weather/weather.sh --icon`)
-(defpoll weather-temp   :interval "15m" `modules/weather/weather.sh --temp`)
-(defpoll weather-hex    :interval "15m" `modules/weather/weather.sh --hex`)
-(defpoll weather-stat   :interval "15m" `modules/weather/weather.sh --stat`)
-(defpoll weather-quote  :interval "15m" `modules/weather/weather.sh --quote`)
-(defpoll weather-quote2 :interval "15m" `modules/weather/weather.sh --quote2`)
+(defpoll weather-data   :interval "15m" `modules/weather/weather.sh --getdata`)
+(defpoll weather-icon   :interval "1m" `modules/weather/weather.sh --icon`)
+(defpoll weather-temp   :interval "1m" `modules/weather/weather.sh --temp`)
+(defpoll weather-hex    :interval "1m" `modules/weather/weather.sh --hex`)
+(defpoll weather-stat   :interval "1m" `modules/weather/weather.sh --stat`)
+(defpoll weather-quote  :interval "1m" `modules/weather/weather.sh --quote`)
+(defpoll weather-quote2 :interval "1m" `modules/weather/weather.sh --quote2`)
 
 (defwidget weather-icon []
   (box              :class              "weather"
@@ -59,6 +60,4 @@
         (label      :class              "label_stat"
                     :text               weather-stat)
         (label      :class              "label_quote"
-                    :text               weather-quote)
-        (label      :class              "label_quote"
-                    :text               weather-quote2)))))
+                    :text               weather-quote)))))

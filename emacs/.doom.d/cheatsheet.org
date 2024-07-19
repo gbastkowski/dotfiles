@@ -1,7 +1,18 @@
 #+title: Doomemacs Cheatsheet
-#+OPTIONS: toc:nil
+#+OPTIONS: toc:nil num:nil
 #+OPTIONS: html-style:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="cheatsheet.css" />
+
+* Open files
+|----------------------------+-----------|
+| Recently opened files      | [[kbd:][SPC f r]]   |
+| Reload last session        | [[kbd:][SPC q l]]   |
+| Open org-agenda            | [[kbd:][SPC o A]]   |
+| Open project               | [[kbd:][SPC p p]]   |
+| Jump to bookmark           | [[kbd:][SPC RET]]   |
+| Open private configuration | [[kbd:][SPC f P]]   |
+| Open documentation         | [[kbd:][SPC h d h]] |
+|----------------------------+-----------|
 
 * Jump to files, buffers or projects
 |------------------+---------------------------------------|

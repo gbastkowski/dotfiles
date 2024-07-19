@@ -15,7 +15,7 @@
   (box              :orientation        "v"
                     :spacing            20
                     :class              "popup-window shutdown"
-    (eventbox       :onclick            "systemctl suspend"
+    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --suspend"
       (box          :orientation        "h"
                     :spacing            80
                     :space-evenly       false
@@ -25,7 +25,7 @@
         (label      :text               "Suspend"
                     :class              "shutdown-text"
                     :xalign             0)))
-    (eventbox       :onclick            "systemctl suspend"
+    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --quit"
       (box          :orientation        "h"
                     :spacing            80
                     :space-evenly       false
@@ -35,7 +35,7 @@
         (label      :text               "Quit Hyprland"
                     :class              "shutdown-text"
                     :xalign             0)))
-    (eventbox       :onclick            "systemctl poweroff"
+    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --poweroff"
       (box          :orientation        "h"
                     :spacing            80
                     :space-evenly       false
@@ -45,7 +45,7 @@
         (label      :text               "Reboot"
                     :class              "shutdown-text"
                     :xalign             0)))
-    (eventbox       :onclick            "systemctl reboot"
+    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --reboot"
       (box          :orientation        "h"
                     :spacing            80
                     :space-evenly       false

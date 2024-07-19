@@ -25,20 +25,20 @@ labelsheader = X-Keywords
 type = Gmail
 remoteuser = gunnar.bastkowski@gmail.com
 remotepasseval = get_pass("private/gmail/application-password")
-sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
+sslcacertfile = /etc/openssl@3/cert.pem
 
 [Repository Gmailserver-mobimeo]
 type = Gmail
 remoteuser = gunnar.bastkowski@mobimeo.com
 remotepasseval = get_pass("mobimeo/gmail/application-password")
-sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
+sslcacertfile = /etc/openssl@3/cert.pem
 
 [Repository bastkowskiserver]
 type = IMAP
 remotehost = w00d23c2.kasserver.com
 remoteusereval = get_pass("private/bastkowski.name/imap-user")
 remotepasseval = get_pass("private/bastkowski.name/imap-pass")
-sslcacertfile = /opt/homebrew/etc/openssl@3/cert.pem
+sslcacertfile = /etc/openssl@3/cert.pem
 ssl = yes
 
 [Repository Gmaillocal-mine]

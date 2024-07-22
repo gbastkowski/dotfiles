@@ -208,41 +208,6 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 * Org Mode
 ** Agenda
 *** Settings
-**** org-agenda-custom-commands
-#+begin_src emacs-lisp
-(setq! org-agenda-custom-commands
-       '(("a" "Agenda and next items" ((agenda)
-                                       (tags-todo "CATEGORY=\"inbox\""
-                                                  ((org-agenda-sorting-strategy    '(priority-down))
-                                                   (org-agenda-overriding-header   "Inbox")
-                                                   (org-agenda-todo-keyword-format "")))
-                                       (todo      "NEXT"
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Next Actions")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (todo      "WAIT"
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Waiting For")
-                                                   (org-agenda-todo-keyword-format      ""))))
-          ((org-agenda-span 'day)))
-
-         ("b" "Mobimeo Agenda"        ((agenda)
-                                       (tags-todo "@mobimeo+TODO=\"NEXT\""
-                                                  ((org-agenda-sorting-strategy    '(priority-down))
-                                                   (org-agenda-overriding-header   "Next Actions")
-                                                   (org-agenda-todo-keyword-format "")))
-                                       (tags-todo "@mobimeo+TODO=\"WAIT\""
-                                                  ((org-agenda-sorting-strategy    '(priority-down))
-                                                   (org-agenda-overriding-header   "Waiting For")
-                                                   (org-agenda-todo-keyword-format "")))
-                                       (tags-todo "@mobimeo+TODO=\"TODO\""
-                                                  ((org-agenda-overriding-header   "TODO Items")
-                                                   (org-agenda-todo-keyword-format ""))))
-          ((org-agenda-span 'day)))
-
-         ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
-          ((org-agenda-overriding-header "Inbox")))))
-#+end_src
 **** org-agenda-prefix-format
 #+begin_src emacs-lisp
 (setq! org-agenda-prefix-format     '((agenda . " %i %-20:c%?-12t% s")
@@ -298,7 +263,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                                (calendar-iso-from-absolute
                                                 (calendar-absolute-from-gregorian (list month day year)))))
                                       'font-lock-face 'font-lock-constant-face)
-       calendar-intermonth-header   (propertize "KW" 'font-lock-face 'font-lock-keyword-face))
+       calendar-intermonth-header   (propertize "WK" 'font-lock-face 'font-lock-keyword-face))
 
 (setq! org-caldav-url               "https://cloud.bastkowski.name/remote.php/dav/calendars/gunnar"
        org-caldav-calendar-id       "personal"
@@ -369,11 +334,12 @@ Inspiration can be obtained from
 - [[https://www.labri.fr/perso/nrougier/GTD/index.html][Get Things Done with Emacs]]
 - [[https://blog.jethro.dev/posts/org_mode_workflow_preview/][Org-mode Workflow: A Preview]]
 - [[http://doc.norang.ca/org-mode.html][Org Mode - Organize Your Life In Plain Text!]]
+- [[https://vtimofeenko.com/posts/my-doom-emacs-setup/#orgmode-config][My doom-emacs setup | Vladimir Timofeenko's blog]]
 
 The following steps are involved:
 1. Capture
 2. Clarify
-3. Oranize
+3. Organize
 4. Review
 5. Engage
   
@@ -395,16 +361,23 @@ The following steps are involved:
                                           (if (string-prefix-p "akiko" (system-name) t)
                                               "inbox-akiko.org"
                                             "inbox-yesomeo.org")))
-  (setq org-capture-templates     '(("i" "Inbox"          entry (file org-default-notes-file)
-                                     "* TODO %^{Description} %? %i\n %U\n"     :immediate-finish t)
+
+  (setq org-capture-templates     '(("t" "Task"           entry (file org-default-notes-file)
+                                     "* TODO %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
+                                    ("n" "Note"           entry (file org-default-notes-file)
+                                     "* %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
                                     ("l" "Bookmarks"      entry (file "")
-                                     "** %(org-cliplink-capture)%?\n  %U\n"   :immediate-finish t)
+                                     "** %(org-cliplink-capture)%?\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
                                     ("s" "Step"           entry (clock)
-                                     "* %^{Description}%?%i\n   %U\n")
+                                     "* %^{Description}%?%i\n :PROPERTIES: :CREATED: %U :END:\n")
                                     ;; ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
                                     ;;  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
                                     ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
-                                     "* TODO Review %c\n%U\n%i\n Added: %U\n" :immediate-finish))
+                                     "* TODO Review %c\n%U\n%i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish))
 
         org-refile-targets        '(("~/org/projects.org"                     :maxlevel . 3)
                                     ("~/org/someday.org"                      :maxlevel . 3)
@@ -431,10 +404,50 @@ The following steps are involved:
                                     ("NEXT" . +org-todo-active)
                                     ("[?]"  . +org-todo-onhold)
                                     ("WAIT" . +org-todo-onhold)
-                                    ("HOLD" . +org-todo-onhold)
                                     ("NO"   . +org-todo-cancel)
+                                    ("DONE" . +org-todo-cancel)
                                     ("KILL" . +org-todo-cancel))))
 #+end_src
+**** org-agenda-custom-commands
+#+begin_src emacs-lisp
+(setq! org-agenda-custom-commands
+       '(("a" "Agenda and next items" ((agenda)
+                                       (todo      "NEXT"
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Next Actions")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (todo      "WAIT"
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Waiting For")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags-todo "CATEGORY=\"inbox\""
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Inbox")
+                                                   (org-agenda-todo-keyword-format      ""))))
+          ((org-agenda-span 'day)))
+
+         ("b" "Mobimeo Agenda"        ((agenda)
+                                       (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Next Actions")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags-todo "@mobimeo+TODO=\"WAIT\""
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Waiting For")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags-todo "@mobimeo+TODO=\"TODO\""
+                                                  ((org-agenda-overriding-header        "TODO Items")
+                                                   (org-agenda-todo-keyword-format      ""))))
+          ((org-agenda-span 'day)))
+
+         ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
+          ((org-agenda-overriding-header "Inbox")))
+         ("g" "Get Things Done (GTD)" ((tags      "CATEGORY=\"inbox\""
+                                                  ((org-agenda-prefix-format            "  %?-12t% s")
+                                                   (org-agenda-hide-tags-regexp         "inbox")
+                                                   (org-agenda-overriding-header        "\nInbox: clarify and organize\n")))))))
+#+end_src
+
 *** Functions
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 case "$OSTYPE" in
   darwin*)  source $(dirname $0)/macos.include.sh ;;

@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env sh
+#
+. $HOME/.bashrc
 
 case "$OSTYPE" in
   darwin*)  source $(dirname $0)/macos.include.sh ;;

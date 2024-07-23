@@ -252,6 +252,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 **** org-agenda-files
 #+begin_src emacs-lisp
 (setq! org-agenda-include-diary     t
+       org-agenda-start-on-weekday  1
        diary-date-forms             '((month     "/"  day   "[^/0-9]")
                                       (month     "/"  day   "/"   year "[^0-9]")
                                       (monthname " *" day   "[^,0-9]")
@@ -310,10 +311,9 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 #+begin_src emacs-lisp
 (defun gunnar/all-calendars-to-diary ()
   (interactive)
-  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
-        (ical-filename (make-temp-file "google-calendar.ics")))
-    (progn
-      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url")))))
+  (progn
+    (gunnar/some-calendar-to-diary (password-store-get "mobimeo/calendar/url"))
+    (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url"))))
 
 (defun gunnar/some-calendar-to-diary (calendar-url)
   (let ((ical-filename (make-temp-file "calendar.ics")))

@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 #
+
 . $HOME/.bashrc
 
 case "$OSTYPE" in
@@ -12,13 +13,9 @@ upgrade_system_and_packages
 
 upgrade_python_packages
 
-echo "updating cs"
-cs update
-
 echo "updating sdkman"
-sdk selfupdate && sdk upgrade
-
-upgrade_pip
+sdk selfupdate
+sdk upgrade
 
 echo "updating dotfiles ..."
 echo

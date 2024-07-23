@@ -213,101 +213,6 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 
 * Org Mode
-** Agenda
-*** Settings
-**** org-agenda-prefix-format
-#+begin_src emacs-lisp
-(setq! org-agenda-prefix-format     '((agenda . " %i %-20:c%?-12t% s")
-                                      (todo   . " %i %-20:c")
-                                      (tags   . " %i %-20:c")
-                                      (search . " %i %-20:c")))
-#+end_src
-**** org-agenda-files
-#+begin_src emacs-lisp
-(setq! org-agenda-include-diary     t
-       org-agenda-files             (mapcar (lambda (x) (concat org-directory x))
-                                            '("inbox-akiko.org"
-                                              "inbox-galaxy.org"
-                                              "inbox-s7.org"
-                                              "inbox-yesomeo.org"
-                                              "tickler.org"
-                                              "projects.org")))
-#+end_src
-
-
-** Babel
-#+begin_src emacs-lisp
-  (setq org-babel-load-languages  '((emacs-lisp . t)
-                                    (awk . t)
-                                    (ditaa . t)
-                                    (dot . t)
-                                    (java . t)
-                                    (dot . t)
-                                    (plantuml . t)
-                                    (ruby . t)))
-#+end_src
-** Brain
-#+BEGIN_SRC emacs-lisp
-(setq! org-brain-include-file-entries t)
-#+END_SRC
-
-** Calendar
-*** Keybindings
-#+begin_src emacs-lisp
-(map! :leader :desc "Show calendar"         :n "y" #'calendar)
-#+end_src
-
-*** Settings
-#+begin_src emacs-lisp
-(setq! calendar-date-display-form   '((format "%s-%.2d-%.2d" year (string-to-number month) (string-to-number day)))
-       calendar-date-style          'iso
-       calendar-week-start-day      1
-       calendar-mark-holidays-flag  1)
-
-(setq! calendar-intermonth-text     '(propertize
-                                      (format "%2d"
-                                              (car
-                                               (calendar-iso-from-absolute
-                                                (calendar-absolute-from-gregorian (list month day year)))))
-                                      'font-lock-face 'font-lock-constant-face)
-       calendar-intermonth-header   (propertize "WK" 'font-lock-face 'font-lock-keyword-face))
-
-(setq! org-caldav-url               "https://cloud.bastkowski.name/remote.php/dav/calendars/gunnar"
-       org-caldav-calendar-id       "personal"
-       org-caldav-calendars         '((:calendar-id "work@whatever"
-                                       :files       ("~/org/work.org")
-                                       :inbox       "~/org/fromwork.org")
-                                      (:calendar-id "stuff@mystuff"
-                                       :files       ("~/org/sports.org" "~/org/play.org")
-                                       :inbox       "~/org/fromstuff.org"))
-       org-caldav-inbox             "~/org/calendars/gunnar.org"
-       org-caldav-files             '("~/org/calendars/gunnar.org"))
-#+end_src
-
-*** Functions
-#+begin_src emacs-lisp
-(defun gunnar/all-calendars-to-diary ()
-  (interactive)
-  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
-        (ical-filename (make-temp-file "google-calendar.ics")))
-    (progn
-      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url")))))
-
-(defun gunnar/some-calendar-to-diary (calendar-url)
-  (let ((ical-filename (make-temp-file "calendar.ics")))
-    (progn
-      (url-copy-file calendar-url ical-filename t)
-      (set-buffer (find-file-noselect ical-filename))
-      (icalendar-import-buffer diary-file t)
-      (kill-buffer)
-      'ok)))
-
-(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
-(defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
-(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
-(defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))
-#+end_src
-
 ** General
 *** Settings
 #+begin_src emacs-lisp
@@ -335,6 +240,101 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
          (org-edit-src-code)))
 #+end_src
 
+** Agenda
+*** Settings
+**** org-agenda-prefix-format
+#+begin_src emacs-lisp
+(setq! org-agenda-prefix-format     '((agenda . " %i %-20:c%?-12t% s")
+                                      (todo   . " %i %-20:c")
+                                      (tags   . " %i %-20:c")
+                                      (search . " %i %-20:c")))
+#+end_src
+**** org-agenda-files
+#+begin_src emacs-lisp
+(setq! org-agenda-include-diary     t
+       diary-date-forms             '((month     "/"  day   "[^/0-9]")
+                                      (month     "/"  day   "/"   year "[^0-9]")
+                                      (monthname " *" day   "[^,0-9]")
+                                      (monthname " *" day   ", *" year "[^0-9]")
+                                      (dayname   "\\W")
+                                      (year      "/"  month "/"   day  "[^,0-9]"))
+       org-agenda-files             (mapcar (lambda (x) (concat org-directory x))
+                                            '("inbox-akiko.org"
+                                              "inbox-galaxy.org"
+                                              "inbox-s7.org"
+                                              "inbox-yesomeo.org"
+                                              "tickler.org"
+                                              "projects.org")))
+#+end_src
+
+** Babel
+#+begin_src emacs-lisp
+  (setq org-babel-load-languages  '((emacs-lisp . t)
+                                    (awk . t)
+                                    (ditaa . t)
+                                    (dot . t)
+                                    (java . t)
+                                    (dot . t)
+                                    (plantuml . t)
+                                    (ruby . t)))
+#+end_src
+
+** Brain
+#+begin_src emacs-lisp
+(setq! org-brain-include-file-entries t)
+#+end_src
+
+** Calendar
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Show calendar"         :n "y" #'calendar)
+#+end_src
+
+*** Settings
+#+begin_src emacs-lisp
+(setq! calendar-date-display-form   '((format "%s-%.2d-%.2d" year (string-to-number month) (string-to-number day)))
+       calendar-date-style          'iso
+       calendar-week-start-day      1
+       calendar-mark-holidays-flag  1)
+
+(setq! calendar-intermonth-text     '(propertize
+                                      (format "%2d"
+                                              (car
+                                               (calendar-iso-from-absolute
+                                                (calendar-absolute-from-gregorian (list month day year)))))
+                                      'font-lock-face 'font-lock-constant-face)
+       calendar-intermonth-header   (propertize "WK" 'font-lock-face 'font-lock-keyword-face))
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun gunnar/all-calendars-to-diary ()
+  (interactive)
+  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
+        (ical-filename (make-temp-file "google-calendar.ics")))
+    (progn
+      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url")))))
+
+(defun gunnar/some-calendar-to-diary (calendar-url)
+  (let ((ical-filename (make-temp-file "calendar.ics")))
+    (progn
+      (url-copy-file calendar-url ical-filename t)
+      (set-buffer (find-file-noselect ical-filename))
+      (icalendar-import-buffer diary-file t)
+      (kill-buffer)
+      'ok)))
+
+(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
+(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))
+#+end_src
+
+*** Keybindings
+#+BEGIN_SRC emacs-lisp
+(map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
+#+END_SRC
+
 
 ** GTD
 Inspiration can be obtained from
@@ -356,7 +356,6 @@ The following steps are involved:
 (map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
 (map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
 (map! :leader :desc "Capture Inbox"                 :n "oci" #'gunnar/org-capture-inbox)
-(map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
 
 ;; (spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary) ;
 #+end_src
@@ -473,32 +472,6 @@ The following steps are involved:
     (when should-skip-entry (or (outline-next-heading) (goto-char (point-max))))))
 
 (defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
-
-
-(defun gunnar/all-calendars-to-diary ()
-  (interactive)
-  (let ((google-calendar-url (password-store-get "mobimeo/calendar/url"))
-        (ical-filename (make-temp-file "google-calendar.ics")))
-    (progn
-      (gunnar/some-calendar-to-diary (password-store-get "mobimeo/calendar/url"))
-      (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url"))
-      )))
-
-(defun gunnar/some-calendar-to-diary (calendar-url)
-  (let ((ical-filename (make-temp-file "calendar.ics")))
-    (progn
-      (url-copy-file calendar-url ical-filename t)
-      (set-buffer (find-file-noselect ical-filename))
-      (icalendar-import-buffer diary-file t)
-      (kill-buffer)
-      'ok)))
-
-;; (setq org-caldav-calendars '((:calendar-id "work@whatever"
-;;                               :files ("~/org/work.org")
-;;                               :inbox "~/org/fromwork.org")
-;;                              (:calendar-id "stuff@mystuff"
-;;                               :files ("~/org/sports.org" "~/org/play.org")
-;;                               :inbox "~/org/fromstuff.org")))
 #+end_src
 
 ** Journal

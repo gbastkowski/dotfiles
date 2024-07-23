@@ -58,6 +58,13 @@ clients, file templates and snippets. It is optional.
 
 (setq! package-install-upgrade-built-in   t)
 
+
+;; Override function because we are generating config.el from this file
+(defun doom/goto-private-config-file ()
+  "Open your private config.el file."
+  (interactive)
+  (find-file (expand-file-name "config.org" doom-user-dir)))
+
 (server-start)
 #+end_src
 

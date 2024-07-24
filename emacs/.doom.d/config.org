@@ -417,7 +417,7 @@ The following steps are involved:
 **** org-agenda-custom-commands
 #+begin_src emacs-lisp
 (setq! org-agenda-custom-commands
-       '(("a" "Agenda and next items" ((agenda)
+       '(("T" "Agenda and next items" ((agenda)
                                        (todo      "NEXT"
                                                   ((org-agenda-sorting-strategy         '(priority-down))
                                                    (org-agenda-overriding-header        "Next Actions")
@@ -430,9 +430,9 @@ The following steps are involved:
                                                   ((org-agenda-sorting-strategy         '(priority-down))
                                                    (org-agenda-overriding-header        "Inbox")
                                                    (org-agenda-todo-keyword-format      ""))))
-          ((org-agenda-span 'day)))
+          ((org-agenda-start-day "+0d")(org-agenda-span 'day)))
 
-         ("b" "Mobimeo Agenda"        ((agenda)
+         ("M" "Mobimeo Agenda"        ((agenda)
                                        (tags-todo "@mobimeo+TODO=\"NEXT\""
                                                   ((org-agenda-sorting-strategy         '(priority-down))
                                                    (org-agenda-overriding-header        "Next Actions")

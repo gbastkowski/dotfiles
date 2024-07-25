@@ -216,9 +216,10 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 ** General
 *** Settings
 #+begin_src emacs-lisp
-(setq! org-bullets-bullet-list     '("x" "◆" "▴" "▸"))
-(setq! org-directory                "~/org/")
-(setq! org-mobile-directory         "~/org/")
+(setq! org-bullets-bullet-list     '("x" "◆" "▴" "▸")
+       org-directory                "~/org/"
+       org-mobile-directory         "~/org/"
+       org-tags-column              100)
 #+end_src
 
 *** Functions
@@ -244,12 +245,60 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 *** Settings
 **** org-agenda-prefix-format
 #+begin_src emacs-lisp
-(setq! org-agenda-prefix-format     '((agenda . " %i %-20:c%?-12t% s")
-                                      (todo   . " %i %-20:c")
-                                      (tags   . " %i %-20:c")
-                                      (search . " %i %-20:c")))
+(setq! org-agenda-prefix-format      '((agenda . " %i %-16:c%?-12t% s")
+                                       (todo   . " %i %-15:c [%e] ")
+                                       (tags   . "                  %i")
+                                       (search . " %i %-20:c"))
+       org-agenda-custom-commands
+       '(("T" "Agenda and next items" ((agenda)
+                                       (todo      "NEXT"
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Next Actions")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags-todo "CATEGORY=\"inbox\""
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Inbox")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (todo      "WAIT"
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Waiting For")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags      "CLOSED>=\"<today>\""
+                                                  ((org-agenda-overriding-header "Completed today"))))
+          ((org-agenda-start-day "+0d")(org-agenda-span 'day)))
+
+         ("M" "Mobimeo Agenda"        ((agenda)
+                                       (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Next Actions")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags-todo "@mobimeo+TODO=\"WAIT\""
+                                                  ((org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-overriding-header        "Waiting For")
+                                                   (org-agenda-todo-keyword-format      "")))
+                                       (tags-todo "@mobimeo+TODO=\"TODO\""
+                                                  ((org-agenda-overriding-header        "TODO Items")
+                                                   (org-agenda-todo-keyword-format      ""))))
+          ((org-agenda-span 'day)))
+
+         ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
+          ((org-agenda-overriding-header "Inbox")))
+         ("g" "Get Things Done (GTD)" ((tags      "CATEGORY=\"inbox\""
+                                                  ((org-agenda-prefix-format            "  %?-12t% s")
+                                                   (org-agenda-hide-tags-regexp         "inbox")
+                                                   (org-agenda-overriding-header        "\nInbox: clarify and organize\n")))))))
 #+end_src
 **** org-agenda-files
+#+begin_src emacs-lisp
+(setq! org-agenda-files             (mapcar (lambda (x) (concat org-directory x))
+                                            '("inbox-akiko.org"
+                                              "inbox-galaxy.org"
+                                              "inbox-s7.org"
+                                              "inbox-yesomeo.org"
+                                              "tickler.org"
+                                              "projects.org")))
+#+end_src
+**** diary
 #+begin_src emacs-lisp
 (setq! org-agenda-include-diary     t
        org-agenda-start-on-weekday  1
@@ -258,14 +307,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                       (monthname " *" day   "[^,0-9]")
                                       (monthname " *" day   ", *" year "[^0-9]")
                                       (dayname   "\\W")
-                                      (year      "/"  month "/"   day  "[^,0-9]"))
-       org-agenda-files             (mapcar (lambda (x) (concat org-directory x))
-                                            '("inbox-akiko.org"
-                                              "inbox-galaxy.org"
-                                              "inbox-s7.org"
-                                              "inbox-yesomeo.org"
-                                              "tickler.org"
-                                              "projects.org")))
+                                      (year      "/"  month "/"   day  "[^,0-9]")))
+#+end_src
 #+end_src
 
 ** Babel
@@ -361,6 +404,36 @@ The following steps are involved:
 #+end_src
 
 *** Settings
+**** keywords
+#+begin_src emacs-lisp
+(after! org
+  (setq org-todo-keywords         '((sequence "TODO(t)"  ; A task that needs doing & is ready to do
+                                              "NEXT(n)"  ; next step in a project
+                                              "STRT(s)"  ; A task that is in progress
+                                              "WAIT(w)"  ; Something external is holding up this task
+                                              "|"
+                                              "DONE(d)"  ; successfully completed
+                                              "KILL(k)") ; cancelled, aborted
+                                    (sequence "[ ](T)"   ; needs doing
+                                              "[-](S)"   ; in progress
+                                              "[?](W)"   ; held up or paused
+                                              "|"
+                                              "[X](D)")  ; completed
+                                    (sequence "|"
+                                              "OKAY(o)"
+                                              "YES(y)"
+                                              "NO(n)"))
+        org-todo-keyword-faces    '(("[-]"  . +org-todo-active)
+                                    ("STRT" . +org-todo-active)
+                                    ("NEXT" . +org-todo-active)
+                                    ("[?]"  . +org-todo-onhold)
+                                    ("WAIT" . +org-todo-onhold)
+                                    ("NO"   . +org-todo-cancel)
+                                    ("DONE" . +org-todo-cancel)
+                                    ("KILL" . +org-todo-cancel))))
+#+end_src
+
+**** capture & refile
 #+begin_src emacs-lisp
 (after! org
   (setq org-default-notes-file    (concat org-directory
@@ -388,70 +461,7 @@ The following steps are involved:
         org-refile-targets        '(("~/org/projects.org"                     :maxlevel . 3)
                                     ("~/org/someday.org"                      :maxlevel . 3)
                                     ("~/org/bookmarks.org"                    :maxlevel . 5)
-                                    ("~/org/tickler.org"                      :level    . 1))
-        org-todo-keywords         '((sequence "TODO(t)"  ; A task that needs doing & is ready to do
-                                              "NEXT(n)"  ; next step in a project
-                                              "STRT(s)"  ; A task that is in progress
-                                              "WAIT(w)"  ; Something external is holding up this task
-                                              "|"
-                                              "DONE(d)"  ; successfully completed
-                                              "KILL(k)") ; cancelled, aborted
-                                    (sequence "[ ](T)"   ; needs doing
-                                              "[-](S)"   ; in progress
-                                              "[?](W)"   ; held up or paused
-                                              "|"
-                                              "[X](D)")  ; completed
-                                    (sequence "|"
-                                              "OKAY(o)"
-                                              "YES(y)"
-                                              "NO(n)"))
-        org-todo-keyword-faces    '(("[-]"  . +org-todo-active)
-                                    ("STRT" . +org-todo-active)
-                                    ("NEXT" . +org-todo-active)
-                                    ("[?]"  . +org-todo-onhold)
-                                    ("WAIT" . +org-todo-onhold)
-                                    ("NO"   . +org-todo-cancel)
-                                    ("DONE" . +org-todo-cancel)
-                                    ("KILL" . +org-todo-cancel))))
-#+end_src
-**** org-agenda-custom-commands
-#+begin_src emacs-lisp
-(setq! org-agenda-custom-commands
-       '(("T" "Agenda and next items" ((agenda)
-                                       (todo      "NEXT"
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Next Actions")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (todo      "WAIT"
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Waiting For")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags-todo "CATEGORY=\"inbox\""
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Inbox")
-                                                   (org-agenda-todo-keyword-format      ""))))
-          ((org-agenda-start-day "+0d")(org-agenda-span 'day)))
-
-         ("M" "Mobimeo Agenda"        ((agenda)
-                                       (tags-todo "@mobimeo+TODO=\"NEXT\""
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Next Actions")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags-todo "@mobimeo+TODO=\"WAIT\""
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Waiting For")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags-todo "@mobimeo+TODO=\"TODO\""
-                                                  ((org-agenda-overriding-header        "TODO Items")
-                                                   (org-agenda-todo-keyword-format      ""))))
-          ((org-agenda-span 'day)))
-
-         ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
-          ((org-agenda-overriding-header "Inbox")))
-         ("g" "Get Things Done (GTD)" ((tags      "CATEGORY=\"inbox\""
-                                                  ((org-agenda-prefix-format            "  %?-12t% s")
-                                                   (org-agenda-hide-tags-regexp         "inbox")
-                                                   (org-agenda-overriding-header        "\nInbox: clarify and organize\n")))))))
+                                    ("~/org/tickler.org"                      :level    . 1))))
 #+end_src
 
 *** Functions

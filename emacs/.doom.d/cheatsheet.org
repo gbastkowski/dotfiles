@@ -72,7 +72,23 @@
 | org/goto-visible | [[kbd:][g s h]] |
 |------------------+-------|
 
-* Info Modde
+* Org Journal
+|-----------------------------+-----------|
+| go to next journal file     | [[kbd:][SPC m j n]] |
+| go to previous journal file | [[kbd:][SPC m j p]] |
+| create new entry            | [[kbd:][SPC m j c]] |
+|                             |           |
+|-----------------------------+-----------|
+* Calendar Mode
+|-------+---------------+------|
+| go to | today         | [[kbd:][.]]    |
+|       | next year     | [[kbd:][] ]​]] |
+|       | previous year | [[kbd:][[ []]  |
+|       | section begin | [[kbd:][[ ]​]] |
+|       | section end   | [[kbd:][] []]  |
+|-------+---------------+------|
+
+* Info Mode
 |--------------+---|
 | info-apropos | [[kbd:][a]] |
 |--------------+---|

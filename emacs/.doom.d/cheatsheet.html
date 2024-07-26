@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-07-20 Sat 00:49 -->
+<!-- 2024-07-26 Fri 01:23 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Doomemacs Cheatsheet</title>
@@ -14,9 +14,9 @@
 <body>
 <div id="content" class="content">
 <h1 class="title">Doomemacs Cheatsheet</h1>
-<div id="outline-container-org28609d8" class="outline-2">
-<h2 id="org28609d8">Open files</h2>
-<div class="outline-text-2" id="text-org28609d8">
+<div id="outline-container-orgcb68559" class="outline-2">
+<h2 id="orgcb68559">Open files</h2>
+<div class="outline-text-2" id="text-orgcb68559">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -64,9 +64,44 @@
 </table>
 </div>
 </div>
-<div id="outline-container-org9300afd" class="outline-2">
-<h2 id="org9300afd">Jump to files, buffers or projects</h2>
-<div class="outline-text-2" id="text-org9300afd">
+<div id="outline-container-orgc154e02" class="outline-2">
+<h2 id="orgc154e02">Fast Buffer Navigation</h2>
+<div class="outline-text-2" id="text-orgc154e02">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">evil-goto-mark</td>
+<td class="org-left"><a href="kbd:">`</a></td>
+</tr>
+
+<tr>
+<td class="org-left">evilem-motion-next-line</td>
+<td class="org-left"><a href="kbd:">g s j</a></td>
+</tr>
+
+<tr>
+<td class="org-left">evilem-motion-search-word-backward</td>
+<td class="org-left"><a href="kbd:">g s #</a></td>
+</tr>
+
+<tr>
+<td class="org-left">evilem-motion-search-word-forward</td>
+<td class="org-left"><a href="kbd:">g s *</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org0f30332" class="outline-2">
+<h2 id="org0f30332">Jump to files, buffers or projects</h2>
+<div class="outline-text-2" id="text-org0f30332">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -114,9 +149,9 @@
 </table>
 </div>
 </div>
-<div id="outline-container-org068aab4" class="outline-2">
-<h2 id="org068aab4">Code completion</h2>
-<div class="outline-text-2" id="text-org068aab4">
+<div id="outline-container-org32bc83f" class="outline-2">
+<h2 id="org32bc83f">Code completion</h2>
+<div class="outline-text-2" id="text-org32bc83f">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -189,9 +224,9 @@
 </table>
 </div>
 </div>
-<div id="outline-container-org97210ce" class="outline-2">
-<h2 id="org97210ce">Jump-to navigation</h2>
-<div class="outline-text-2" id="text-org97210ce">
+<div id="outline-container-org0ee23c7" class="outline-2">
+<h2 id="org0ee23c7">Jump-to navigation</h2>
+<div class="outline-text-2" id="text-org0ee23c7">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -219,10 +254,96 @@
 </table>
 </div>
 </div>
+<div id="outline-container-org7500ce4" class="outline-2">
+<h2 id="org7500ce4">Agenda View</h2>
+<div class="outline-text-2" id="text-org7500ce4">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Filter by effort</td>
+<td class="org-left"><a href="kbd:">s e</a></td>
+</tr>
+
+<tr>
+<td class="org-left">Filter by tag</td>
+<td class="org-left"><a href="kbd:">t t</a></td>
+</tr>
+
+<tr>
+<td class="org-left">Filter by regexp</td>
+<td class="org-left"><a href="kbd:">t r</a></td>
+</tr>
+
+<tr>
+<td class="org-left">Filter by top headline</td>
+<td class="org-left"><a href="kbd:">t ^</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgfa35c62" class="outline-2">
+<h2 id="orgfa35c62">Org Mode</h2>
+<div class="outline-text-2" id="text-orgfa35c62">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">org-shiftleft</th>
+<th scope="col" class="org-left"><a href="kbd:">C S h</a></th>
+</tr>
+
+<tr>
+<th scope="col" class="org-left">org-shiftright</th>
+<th scope="col" class="org-left"><a href="kbd:">C S l</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">org/goto-visible</td>
+<td class="org-left"><a href="kbd:">g s h</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org4a2da6a" class="outline-2">
+<h2 id="org4a2da6a">Info Modde</h2>
+<div class="outline-text-2" id="text-org4a2da6a">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">info-apropos</td>
+<td class="org-left"><a href="kbd:">a</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Gunnar Bastkowski</p>
-<p class="date">Created: 2024-07-20 Sat 00:49</p>
+<p class="date">Created: 2024-07-26 Fri 01:23</p>
 </div>
 </body>
 </html>

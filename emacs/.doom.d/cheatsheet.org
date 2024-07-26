@@ -14,36 +14,65 @@
 | Open documentation         | [[kbd:][SPC h d h]] |
 |----------------------------+-----------|
 
+* Fast Buffer Navigation
+|------------------------------------+-------|
+| evil-goto-mark                     | [[kbd:][`]]     |
+| evilem-motion-next-line            | [[kbd:][g s j]] |
+| evilem-motion-search-word-backward | [[kbd:][g s #]] |
+| evilem-motion-search-word-forward  | [[kbd:][g s *]] |
+|------------------------------------+-------|
+
 * Jump to files, buffers or projects
-|------------------+---------------------------------------|
-| [[kbd:][SPC RET]]          | Find bookmark                         |
-| [[kbd:][SPC f f]], [[kbd:][SPC .]]   | Browse from current directory         |
-| [[kbd:][SPC p f]], [[kbd:][SPC SPC]] | Find file in project                  |
-| [[kbd:][SPC f r]]          | Find recently opened file             |
-| [[kbd:][SPC p p]]          | Open another project                  |
-| [[kbd:][SPC b b]], [[kbd:][SPC ,]]   | Switch to buffer in current workspace |
-| [[kbd:][SPC b B]], [[kbd:][SPC <]]   | Switch to buffer                      |
-|------------------+---------------------------------------|
+|---------------------------------------+------------------|
+| Find bookmark                         | [[kbd:][SPC RET]]          |
+| Browse from current directory         | [[kbd:][SPC f f]], [[kbd:][SPC .]]   |
+| Find file in project                  | [[kbd:][SPC p f]], [[kbd:][SPC SPC]] |
+| Find recently opened file             | [[kbd:][SPC f r]]          |
+| Open another project                  | [[kbd:][SPC p p]]          |
+| Switch to buffer in current workspace | [[kbd:][SPC b b]], [[kbd:][SPC ,]]   |
+| Switch to buffer                      | [[kbd:][SPC b B]], [[kbd:][SPC <]]   |
+|---------------------------------------+------------------|
 
 * Code completion
-|---------+------------------------------------------|
-| [[kbd:][C-n]]     | Go to next candidate                     |
-| [[kbd:][C-p]]     | Go to previous candidate                 |
-| [[kbd:][C-j]]     | (evil) Go to next candidate              |
-| [[kbd:][C-k]]     | (evil) Go to previous candidate          |
-| [[kbd:][C-h]]     | Display documentation (if available)     |
-| [[kbd:][C-u]]     | Move to previous page of candidates      |
-| [[kbd:][C-d]]     | Move to next page of candidates          |
-| [[kbd:][C-s]]     | Filter candidates                        |
-| [[kbd:][C-S-s]]   | Search candidates with helm/ivy          |
-| [[kbd:][C-SPC]]   | Complete common                          |
-| [[kbd:][TAB]]     | Complete common or select next candidate |
-| [[kbd:][S-TAB]]   | Select previous candidate                |
-|---------+------------------------------------------|
+|------------------------------------------+-------|
+| Go to next candidate                     | [[kbd:][C-n]]   |
+| Go to previous candidate                 | [[kbd:][C-p]]   |
+| (evil) Go to next candidate              | [[kbd:][C-j]]   |
+| (evil) Go to previous candidate          | [[kbd:][C-k]]   |
+| Display documentation (if available)     | [[kbd:][C-h]]   |
+| Move to previous page of candidates      | [[kbd:][C-u]]   |
+| Move to next page of candidates          | [[kbd:][C-d]]   |
+| Filter candidates                        | [[kbd:][C-s]]   |
+| Search candidates with helm/ivy          | [[kbd:][C-S-s]] |
+| Complete common                          | [[kbd:][C-SPC]] |
+| Complete common or select next candidate | [[kbd:][TAB]]   |
+| Select previous candidate                | [[kbd:][S-TAB]] |
+|------------------------------------------+-------|
 
 * Jump-to navigation
-|------------------+-------------------------------------|
-| [[kbd:][SPC p f]], [[kbd:][SPC SPC]] | Jump to file in project             |
-| [[kbd:][SPC f f]], [[kbd:][SPC .]]   | Jump to file from current directory |
-| [[kbd:][SPC s i]]          | Jump to symbol in file              |
-|------------------+-------------------------------------|
+|-------------------------------------+------------------|
+| Jump to file in project             | [[kbd:][SPC p f]], [[kbd:][SPC SPC]] |
+| Jump to file from current directory | [[kbd:][SPC f f]], [[kbd:][SPC .]]   |
+| Jump to symbol in file              | [[kbd:][SPC s i]]          |
+|-------------------------------------+------------------|
+
+* Agenda View
+|------------------------+-----|
+| Filter by effort       | [[kbd:][s e]] |
+| Filter by tag          | [[kbd:][t t]] |
+| Filter by regexp       | [[kbd:][t r]] |
+| Filter by top headline | [[kbd:][t ^]] |
+|------------------------+-----|
+
+* Org Mode
+|------------------+-------|
+| org-shiftleft    | [[kbd:][C S h]] |
+| org-shiftright   | [[kbd:][C S l]] |
+|------------------+-------|
+| org/goto-visible | [[kbd:][g s h]] |
+|------------------+-------|
+
+* Info Modde
+|--------------+---|
+| info-apropos | [[kbd:][a]] |
+|--------------+---|

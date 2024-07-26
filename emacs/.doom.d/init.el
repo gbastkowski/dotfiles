@@ -56,7 +56,7 @@
                     (ibuffer +icons)
                     undo
                     vc
-        :term       ;;eshell                          ; the elisp shell that works everywhere
+        :term       eshell                            ; the elisp shell that works everywhere
                     ;;shell                           ; simple shell REPL for Emacs
                     ;;term                            ; basic terminal emulator for Emacs
                     vterm
@@ -114,16 +114,16 @@
                     (haskell +lsp)                    ; a language that's lazier than I am
                     ;;hy                              ; readability of scheme w/ speed of python
                     ;;idris                           ; a language you can depend on
-                    json                            ; At least it ain't XML
-                    (java +lsp)                     ; the poster child for carpal tunnel syndrome
-                    javascript                      ; all(hope(abandon(ye(who(enter(here))))))
+                    json                              ; At least it ain't XML
+                    (java +lsp)                       ; the poster child for carpal tunnel syndrome
+                    javascript                        ; all(hope(abandon(ye(who(enter(here))))))
                     ;;julia                           ; a better, faster MATLAB
-                    kotlin                          ; a better, slicker Java(Script)
-                    ;;latex                           ; writing papers in Emacs has never been so fun
+                    kotlin                            ; a better, slicker Java(Script)
+                    latex                             ; writing papers in Emacs has never been so fun
                     ;;lean                            ; for folks with too much to prove
                     ;;ledger                          ; be audit you can be
-                    lua                             ; one-based indices? one-based indices
-                    markdown                        ; writing docs for people to ignore
+                    lua                               ; one-based indices? one-based indices
+                    markdown                          ; writing docs for people to ignore
                     ;;nim                             ; python + lisp at the speed of c
                     ;;nix                             ; I hereby declare "nix geht mehr!"
                     ;;ocaml                           ; an objective camel
@@ -132,7 +132,7 @@
                     plantuml
                     ;;purescript                      ; javascript, but functional
                     python
-                    ;;qt                              ; the 'cutest' gui framework ever
+                    qt                                ; the 'cutest' gui framework ever
                     ;;racket                          ; a DSL for DSLs
                     ;;raku                            ; the artist formerly known as perl6
                     rest
@@ -146,7 +146,7 @@
                     ;;solidity                        ; do you need a blockchain? No.
                     ;;swift                           ; who asked for emoji variables?
                     ;;terra                           ; Earth and Moon in alignment for performance.
-                    ;;web                             ; the tubes
+                    web                               ; the tubes
                     yaml
                     ;;zig                             ; C, but simpler
        :email       (mu4e +org +gmail)

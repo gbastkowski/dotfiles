@@ -218,8 +218,10 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 #+begin_src emacs-lisp
 (setq! org-bullets-bullet-list     '("x" "◆" "▴" "▸")
        org-directory                "~/org/"
-       org-mobile-directory         "~/org/"
-       org-tags-column              100)
+       org-mobile-directory         "~/org/")
+
+(after! org
+  (setq org-tags-column              100))
 #+end_src
 
 *** Functions
@@ -250,10 +252,13 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                        (tags   . "                  %i")
                                        (search . " %i %-20:c"))
        org-agenda-custom-commands
-       '(("T" "Agenda and next items" ((agenda)
+       '(("T" "Agenda and next items" ((agenda    ""
+                                                  ((org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
+                                                   (org-deadline-warning-days           0)))
                                        (todo      "NEXT"
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Next Actions")
+                                                  ((org-agenda-overriding-header        "Next Actions")
+                                                   (org-agenda-sorting-strategy         '(priority-down))
+                                                   (org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
                                                    (org-agenda-todo-keyword-format      "")))
                                        (tags-todo "CATEGORY=\"inbox\""
                                                   ((org-agenda-sorting-strategy         '(priority-down))
@@ -264,7 +269,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                                    (org-agenda-overriding-header        "Waiting For")
                                                    (org-agenda-todo-keyword-format      "")))
                                        (tags      "CLOSED>=\"<today>\""
-                                                  ((org-agenda-overriding-header "Completed today"))))
+                                                  ((org-agenda-overriding-header "Completed today")
+                                                   (org-agenda-todo-keyword-format      ""))))
           ((org-agenda-start-day "+0d")(org-agenda-span 'day)))
 
          ("M" "Mobimeo Agenda"        ((agenda)
@@ -296,7 +302,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                               "inbox-s7.org"
                                               "inbox-yesomeo.org"
                                               "tickler.org"
-                                              "projects.org")))
+                                              "projects.org"
+                                              "projects.org_archive")))
 #+end_src
 **** diary
 #+begin_src emacs-lisp
@@ -482,6 +489,20 @@ The following steps are involved:
     (when should-skip-entry (or (outline-next-heading) (goto-char (point-max))))))
 
 (defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
+
+(defun gunnar/save-org-buffers ()
+  "Save `org-agenda-files' buffers without user confirmation.
+See also `org-save-all-org-buffers'"
+  (interactive)
+  (message "Saving org-agenda-files buffers...")
+  (save-some-buffers t (lambda ()
+                         (when (member (buffer-file-name) org-agenda-files)
+                           t)))
+  (message "Saving org-agenda-files buffers... done"))
+
+(advice-add 'org-refile :after
+            (lambda (&rest _)
+              gunnar/save-org-buffers))
 #+end_src
 
 ** Journal

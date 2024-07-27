@@ -1,3 +1,18 @@
+(defwidget workspaces []
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly true
+       :halign "start"
+       :spacing 0
+    (workspace :no 1)
+    (workspace :no 2)
+    (workspace :no 3)
+    (workspace :no 4)
+    (workspace :no 5)))
+
+(defwidget workspace [no]
+  (box :class { active-workspace == no ? "active" : "inactive" }
+    (button :onclick "hyprctl dispatch workspace ${no}" no)))
 
 (defwidget hypr []
   (box :space-evenly false
@@ -6,4 +21,5 @@
     (label :style "color: #ffb044;font-weight: bold;"
         :text active-window)))
 
-(defpoll active-window :interval "5s" "./modules/hypr/hypr.sh --active-window")
+(defpoll    active-window     :interval "5s"  "./modules/hypr/hypr.sh --active-window")
+(deflisten  active-workspace  :initial  "1"   "./modules/hypr/listen_hyprland_events.sh")

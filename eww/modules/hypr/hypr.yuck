@@ -1,0 +1,8 @@
+
+(defwidget hypr []
+  (box :space-evenly false
+    (label :style "font-size: 1.3em;" :text " ")
+    (label :style "color: #99b044;font-weight: bold;"
+        :text active-window)))
+
+(defpoll active-window :interval "5s" "./modules/hypr/hypr.sh --active-window")

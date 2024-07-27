@@ -1,0 +1,8 @@
+(defwidget emacs []
+  (box :space-evenly false
+    (label :style "font-size: 1.4em;"
+           :text "󰔛 ")
+    (label :style "color: #99b044;font-weight: bold;"
+        :text current-task)))
+
+(defpoll current-task :interval "5s" "./modules/emacs/emacs.sh --current-task")

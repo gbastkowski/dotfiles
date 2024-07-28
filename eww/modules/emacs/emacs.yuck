@@ -3,7 +3,9 @@
        :spacing 10
     (label :style "color: #ffb044; font-size: 1.2em;"
            :text {current-task.icon})
+    (label :style "color: #ffb044;"
+           :text {current-task.time})
     (label :style "color: #ffb044; font-weight: bold;"
         :text {current-task.text})))
 
-(defpoll current-task :interval "5s" "./modules/emacs/emacs.sh --current-task")
+(defpoll current-task :interval "1s" "./modules/emacs/emacs.sh --current-task")

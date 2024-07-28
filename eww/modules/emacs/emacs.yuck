@@ -1,11 +1,12 @@
 (defwidget emacs []
   (box :space-evenly false
        :spacing 10
-    (label :style "color: #ffb044; font-size: 1.2em;"
+    (label :class "icon_emacs"
            :text {current-task.icon})
-    (label :style "color: #ffb044;"
+    (label :style {current-task?.expired ? "color: #ff6064;" : "color: #ffb044;"}
            :text {current-task.time})
-    (label :style "color: #ffb044; font-weight: bold;"
+    (label :style {current-task?.expired ? "color: #ff6064;" : "color: #ffb044;"}
+           :class "label_emacs_task"
         :text {current-task.text})))
 
-(defpoll current-task :interval "5s" "./modules/emacs/emacs.sh --current-task")
+(defpoll current-task :interval "1s" "./modules/emacs/emacs.sh --current-task")

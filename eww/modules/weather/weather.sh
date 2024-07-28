@@ -1,33 +1,18 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-## Collect data
 cache_dir="$HOME/.cache/eww/weather"
-cache_weather_stat=${cache_dir}/weather-stat
-cache_weather_degree=${cache_dir}/weather-degree
-cache_weather_quote=${cache_dir}/weather-quote
-cache_weather_hex=${cache_dir}/weather-hex
-cache_weather_icon=${cache_dir}/weather-icon
-cache_weather_updated=${cache_dir}/weather-updated
-
-## Weather data
-KEY="YOUR_KEY"
-ID="CITY_ID"
-UNIT="metric"
 
 LAT=52.446562
 LON=13.331812
 APPID=`pass show private/openweather/api-key`
 
-## Make cache dir
-if [[ ! -d "$cache_dir" ]]; then
-    mkdir -p ${cache_dir}
-fi
+if [[ ! -d "$cache_dir" ]]; then mkdir -p ${cache_dir}; fi
 
 ## Get data
 get_weather_data() {
     weather=`curl -sf https://api.openweathermap.org/data/2.5/weather?units=metric\&lat=${LAT}\&lon=${LON}\&appid=${APPID}`
     echo ${weather}
-    echo $(date +"%a %b %d %H:%M") > ${cache_weather_updated}
+    echo $(date +"%a %b %d %H:%M") > ${cache_dir}/weather-updated
 
     if [ ! -z "$weather" ]; then
         weather_temp=`echo "$weather" | jq '.main.temp'`
@@ -36,7 +21,7 @@ get_weather_data() {
 
         #Big long if statement of doom
 	if [ "$weather_icon_code" == "50d"  ]; then
-            weather_icon="  "
+        weather_icon="  "
 	    weather_quote="Forecast says it's misty"
 	    weather_hex="#84afdb"
         elif [ "$weather_icon_code" == "50n"  ]; then
@@ -120,27 +105,45 @@ get_weather_data() {
             weather_quote="Sort of odd, I don't know what to forecast"
             weather_hex="#adadff"
         fi
-        echo "$weather_icon"        > ${cache_weather_icon}
-        echo "$weather_description" > ${cache_weather_stat}
-        echo "$weather_temp""°C"    > ${cache_weather_degree}
-        echo -e "$weather_quote"    > ${cache_weather_quote}
-        echo "$weather_hex"         > ${cache_weather_hex}
+        echo "$weather"             > ${cache_dir}/weather-json
+        echo "$weather_icon"        > ${cache_dir}/weather-icon
+        echo "$weather_description" > ${cache_dir}/weather-stat
+        echo "$weather_temp""°C"    > ${cache_dir}/weather-degree
+        echo -e "$weather_quote"    > ${cache_dir}/weather-quote
+        echo "$weather_hex"         > ${cache_dir}/weather-hex
     else
-        echo "Weather Unavailable"  > ${cache_weather_stat}
-        echo " "                  > ${cache_weather_icon}
-        echo -e "Ah well, no weather huh? \nEven if there's no weather, it's gonna be a great day!" > ${cache_weather_quote}
-        echo "-"                    > ${cache_weather_degree}
-        echo "#adadff"              > ${cache_weather_hex}
+        echo "{}"                   > ${cache_dir}/weather-json
+        echo "Weather Unavailable"  > ${cache_dir}/weather-stat
+        echo " "                  > ${cache_dir}/weather-icon
+        echo -e "Ah well, no weather huh? \nEven if there's no weather, it's gonna be a great day!" > ${cache_dir}/weather-quote
+        echo "-"                    > ${cache_dir}/weather-degree
+        echo "#adadff"              > ${cache_dir}/weather-hex
+    fi
+}
+
+wind_direction () {
+    degrees=$(jq '.wind.deg' ${cache_dir}/weather-json)
+    if   (( degrees >= 338 || degrees <= 22 ));   then echo ""
+    elif (( degrees >= 23  && degrees <= 67 ));   then echo ""
+    elif (( degrees >= 68  && degrees <= 112 ));  then echo ""
+    elif (( degrees >= 113 && degrees <= 157 ));  then echo ""
+    elif (( degrees >= 158 && degrees <= 202 ));  then echo ""
+    elif (( degrees >= 203 && degrees <= 247 ));  then echo ""
+    elif (( degrees >= 248 && degrees <= 292 ));  then echo ""
+    elif (( degrees >= 293 && degrees <= 337 ));  then echo ""
+    else echo "Invalid degrees"
     fi
 }
 
 ## Execute
-if [[ "$1" == "--getdata"  ]];        then get_weather_data
-elif [[ "$1" == "--icon"   ]];        then cat ${cache_weather_icon}
-elif [[ "$1" == "--temp"   ]];        then cat ${cache_weather_degree}
-elif [[ "$1" == "--hex"    ]];        then cat ${cache_weather_hex}
-elif [[ "$1" == "--stat"   ]];        then cat ${cache_weather_stat}
-elif [[ "$1" == "--quote"  ]];        then cat ${cache_weather_quote}   | head -n1
-elif [[ "$1" == "--quote2" ]];        then cat ${cache_weather_quote}   | tail -n1
-elif [[ "$1" == "--last-updated" ]];  then cat ${cache_weather_updated} | tail -n1
+if [[ "$1" == "--getdata"  ]];          then get_weather_data
+elif [[ "$1" == "--icon"   ]];          then cat ${cache_dir}/weather-icon
+elif [[ "$1" == "--temp"   ]];          then cat ${cache_dir}/weather-degree
+elif [[ "$1" == "--hex"    ]];          then cat ${cache_dir}/weather-hex
+elif [[ "$1" == "--stat"   ]];          then cat ${cache_dir}/weather-stat
+elif [[ "$1" == "--quote"  ]];          then cat ${cache_dir}/weather-quote   | head -n1
+elif [[ "$1" == "--quote2" ]];          then cat ${cache_dir}/weather-quote   | tail -n1
+elif [[ "$1" == "--last-updated" ]];    then cat ${cache_dir}/weather-updated | tail -n1
+elif [[ "$1" == "--wind-speed" ]];      then echo "$(jq '.wind.speed' ${cache_dir}/weather-json)m/s"
+elif [[ "$1" == "--wind-direction" ]];  then wind_direction
 fi

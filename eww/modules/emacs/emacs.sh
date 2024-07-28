@@ -4,7 +4,7 @@ function current_task() {
     result=$(emacsclient -e '(if org-clock-current-task (substring-no-properties org-clock-current-task) "")')
     if [[ "$result" == "\"\"" ]]; then
         icon=""
-        time=""
+        time="\"\""
     else
         icon="󰔛"
         time="$(emacsclient -e '(gunnar/get-clocked-time)')"

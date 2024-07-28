@@ -8,4 +8,4 @@
     (label :style "color: #ffb044; font-weight: bold;"
         :text {current-task.text})))
 
-(defpoll current-task :interval "1s" "./modules/emacs/emacs.sh --current-task")
+(defpoll current-task :interval "5s" "./modules/emacs/emacs.sh --current-task")

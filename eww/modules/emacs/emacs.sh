@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 current_task() {
-    result=$(emacsclient -e '(if org-clock-current-task (substring-no-properties org-clock-current-task) "")')
+    result=$(emacsclient -e '(if org-clock-current-task org-clock-heading "")')
     if [[ "$result" == "\"\"" ]]; then
         icon=""
         time="\"\""

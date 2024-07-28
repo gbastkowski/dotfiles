@@ -21,5 +21,4 @@
     (label :style "color: #ffb044;font-weight: bold;"
         :text {hypr-socket?.activewindow?.title ?: ""})))
 
-(defvar     hypr-socket-initial                               "./modules/hypr/hypr.sh")
-(deflisten  hypr-socket         :initial  hypr-socket-initial "./modules/hypr/hypr.sh --listen")
+(deflisten hypr-socket :initial "" "./modules/hypr/hypr.sh --listen")

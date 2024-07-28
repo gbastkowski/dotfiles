@@ -490,6 +490,12 @@ The following steps are involved:
 
 (defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
 
+(defun gunnar/get-clocked-time ()
+  (interactive)
+  (let ((hours (/ (org-clock-get-clocked-time) 60))
+        (minutes (% (org-clock-get-clocked-time) 60)))
+    (format "[%02d:%02d]" hours minutes)))
+
 (defun gunnar/save-org-buffers ()
   "Save `org-agenda-files' buffers without user confirmation.
 See also `org-save-all-org-buffers'"

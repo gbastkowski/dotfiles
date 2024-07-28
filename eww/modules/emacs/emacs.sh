@@ -7,9 +7,9 @@ function current_task() {
         time=""
     else
         icon="󰔛"
-        time="[$(emacsclient -e '(org-clock-get-clocked-time)')]"
+        time="$(emacsclient -e '(gunnar/get-clocked-time)')"
     fi
-    echo "{ \"text\" : $result, \"icon\" : \"$icon\", \"time\" : \"$time\"}"
+    echo "{ \"text\" : $result, \"icon\" : \"$icon\", \"time\" : $time}"
 }
 
 if [[ "$1" == "--current-task" ]]; then current_task

@@ -11,9 +11,6 @@ if [[ ! -d "$cache_dir" ]]; then mkdir -p ${cache_dir}; fi
 ## Get data
 get_weather_data() {
     weather=`curl -sf https://api.openweathermap.org/data/2.5/weather?units=metric\&lat=${LAT}\&lon=${LON}\&appid=${APPID}`
-    echo ${weather}
-    echo $(date +"%a %b %d %H:%M") > ${cache_dir}/weather-updated
-
     if [ ! -z "$weather" ]; then
         weather_temp=`echo "$weather" | jq '.main.temp'`
         weather_icon_code=`echo "$weather" | jq -r ".weather[].icon" | head -1`
@@ -119,6 +116,7 @@ get_weather_data() {
         echo "-"                    > ${cache_dir}/weather-degree
         echo "#adadff"              > ${cache_dir}/weather-hex
     fi
+    echo $(date +"%a %b %d %H:%M")
 }
 
 wind_direction () {
@@ -143,7 +141,6 @@ elif [[ "$1" == "--hex"    ]];          then cat ${cache_dir}/weather-hex
 elif [[ "$1" == "--stat"   ]];          then cat ${cache_dir}/weather-stat
 elif [[ "$1" == "--quote"  ]];          then cat ${cache_dir}/weather-quote   | head -n1
 elif [[ "$1" == "--quote2" ]];          then cat ${cache_dir}/weather-quote   | tail -n1
-elif [[ "$1" == "--last-updated" ]];    then cat ${cache_dir}/weather-updated | tail -n1
 elif [[ "$1" == "--wind-speed" ]];      then echo "$(jq '.wind.speed' ${cache_dir}/weather-json)m/s"
 elif [[ "$1" == "--wind-direction" ]];  then wind_direction
 fi

@@ -1,11 +1,10 @@
-(defpoll weather-data         :interval "15m" `modules/weather/weather.sh --getdata`)
+(defpoll weather-last-updated :interval "15m" `modules/weather/weather.sh --getdata`)
 (defpoll weather-icon         :interval "1m"  `modules/weather/weather.sh --icon`)
 (defpoll weather-temp         :interval "1m"  `modules/weather/weather.sh --temp`)
 (defpoll weather-hex          :interval "1m"  `modules/weather/weather.sh --hex`)
 (defpoll weather-stat         :interval "1m"  `modules/weather/weather.sh --stat`)
 (defpoll weather-quote        :interval "1m"  `modules/weather/weather.sh --quote`)
 (defpoll weather-quote2       :interval "1m"  `modules/weather/weather.sh --quote2`)
-(defpoll weather-last-updated :interval "1m"  `modules/weather/weather.sh --last-updated`)
 (defpoll wind-speed           :interval "1m"  `modules/weather/weather.sh --wind-speed`)
 (defpoll wind-direction       :interval "1m"  `modules/weather/weather.sh --wind-direction`)
 

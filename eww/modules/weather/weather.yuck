@@ -1,11 +1,11 @@
-
-(defpoll weather-data   :interval "15m" `modules/weather/weather.sh --getdata`)
-(defpoll weather-icon   :interval "1m" `modules/weather/weather.sh --icon`)
-(defpoll weather-temp   :interval "1m" `modules/weather/weather.sh --temp`)
-(defpoll weather-hex    :interval "1m" `modules/weather/weather.sh --hex`)
-(defpoll weather-stat   :interval "1m" `modules/weather/weather.sh --stat`)
-(defpoll weather-quote  :interval "1m" `modules/weather/weather.sh --quote`)
-(defpoll weather-quote2 :interval "1m" `modules/weather/weather.sh --quote2`)
+(defpoll weather-data         :interval "15m" `modules/weather/weather.sh --getdata`)
+(defpoll weather-icon         :interval "1m"  `modules/weather/weather.sh --icon`)
+(defpoll weather-temp         :interval "1m"  `modules/weather/weather.sh --temp`)
+(defpoll weather-hex          :interval "1m"  `modules/weather/weather.sh --hex`)
+(defpoll weather-stat         :interval "1m"  `modules/weather/weather.sh --stat`)
+(defpoll weather-quote        :interval "1m"  `modules/weather/weather.sh --quote`)
+(defpoll weather-quote2       :interval "1m"  `modules/weather/weather.sh --quote2`)
+(defpoll weather-last-updated :interval "1m"  `modules/weather/weather.sh --last-updated`)
 
 (defwidget weather-icon []
   (box              :class              "weather"
@@ -34,30 +34,26 @@
 
 (defwidget weather []
   (box              :class              "weather-window"
-    (box            :orientation        "v"
-                    :spacing            10
-                    :space-evenly       "false"
-                    :vexpand            "false"
-                    :hexpand            "false"
-      (box          :orientation        "h"
-                    :vexpand            "false"
-                    :hexpand            "false"
-        (label      :class              "iconweather"
-                    :halign             "start"
-                    :valign             "start"
-                    :style              "color: ${weather-hex};"
+    (box            :orientation        "v" :hexpand  "false"  :vexpand "false"
+                    :spacing            10  :space-evenly "false"
+      (box          :orientation        "h" :hexpand  "false"  :vexpand "false"
+        (label      :halign             "start" :valign "start"
+                    :class              "iconweather" :style  "color: ${weather-hex};"
                     :text               weather-icon)
         (label      :class              "label_temp"
                     :halign             "end"
                     :valign             "start"
                     :text               weather-temp))
-      (box          :orientation        "v"
-                    :spacing            10
-                    :halign             "center"
+      (box          :orientation        "h" :hexpand  "true"  :vexpand  "false"
+        (box        :orientation        "v" :hexpand  "false" :vexpand  "false"
+                    :halign             "start"
+                    :spacing            0
                     :space-evenly       "false"
-                    :vexpand            "false"
-                    :hexpand            "false"
-        (label      :class              "label_stat"
+          (label    :class              "label_stat"  :style  "color: ${weather-hex};"
                     :text               weather-stat)
-        (label      :class              "label_quote"
-                    :text               weather-quote)))))
+          (label    :class              "label_quote"
+                    :text               weather-quote))
+        (box        :orientation        "h" :halign "end" :valign "end"
+                    :spacing            10  :space-evenly "false"
+          (label    :text               "last updated")
+          (label    :text               weather-last-updated))))))

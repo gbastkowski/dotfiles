@@ -7,6 +7,7 @@ cache_weather_degree=${cache_dir}/weather-degree
 cache_weather_quote=${cache_dir}/weather-quote
 cache_weather_hex=${cache_dir}/weather-hex
 cache_weather_icon=${cache_dir}/weather-icon
+cache_weather_updated=${cache_dir}/weather-updated
 
 ## Weather data
 KEY="YOUR_KEY"
@@ -26,6 +27,7 @@ fi
 get_weather_data() {
     weather=`curl -sf https://api.openweathermap.org/data/2.5/weather?units=metric\&lat=${LAT}\&lon=${LON}\&appid=${APPID}`
     echo ${weather}
+    echo $(date +"%a %b %d %H:%M") > ${cache_weather_updated}
 
     if [ ! -z "$weather" ]; then
         weather_temp=`echo "$weather" | jq '.main.temp'`
@@ -133,11 +135,12 @@ get_weather_data() {
 }
 
 ## Execute
-if [[ "$1" == "--getdata"  ]];  then get_weather_data
-elif [[ "$1" == "--icon"   ]];  then cat ${cache_weather_icon}
-elif [[ "$1" == "--temp"   ]];  then cat ${cache_weather_degree}
-elif [[ "$1" == "--hex"    ]];  then cat ${cache_weather_hex}
-elif [[ "$1" == "--stat"   ]];  then cat ${cache_weather_stat}
-elif [[ "$1" == "--quote"  ]];  then cat ${cache_weather_quote} | head -n1
-elif [[ "$1" == "--quote2" ]];  then cat ${cache_weather_quote} | tail -n1
+if [[ "$1" == "--getdata"  ]];        then get_weather_data
+elif [[ "$1" == "--icon"   ]];        then cat ${cache_weather_icon}
+elif [[ "$1" == "--temp"   ]];        then cat ${cache_weather_degree}
+elif [[ "$1" == "--hex"    ]];        then cat ${cache_weather_hex}
+elif [[ "$1" == "--stat"   ]];        then cat ${cache_weather_stat}
+elif [[ "$1" == "--quote"  ]];        then cat ${cache_weather_quote}   | head -n1
+elif [[ "$1" == "--quote2" ]];        then cat ${cache_weather_quote}   | tail -n1
+elif [[ "$1" == "--last-updated" ]];  then cat ${cache_weather_updated} | tail -n1
 fi

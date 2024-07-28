@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-function current_task() {
+current_task() {
     result=$(emacsclient -e '(if org-clock-current-task (substring-no-properties org-clock-current-task) "")')
     if [[ "$result" == "\"\"" ]]; then
         icon=""

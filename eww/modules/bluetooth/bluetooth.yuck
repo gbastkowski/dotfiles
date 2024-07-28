@@ -1,0 +1,7 @@
+(defwidget bluetooth []
+  (box              :space-evenly       false
+    (button         :onclick            "./modules/bluetooth/bluetooth.sh --status"
+                    :class              "volume-button"
+      bluetooth-icon)))
+
+(defpoll bluetooth-icon :interval "1s" "./modules/bluetooth/bluetooth.sh --icon")

@@ -11,7 +11,7 @@
     (workspace :no 5)))
 
 (defwidget workspace [no]
-  (box :class { active-workspace == no ? "active" : "inactive" }
+  (box :class { hypr-socket.activeworkspace.name == no ? "active" : "inactive" }
     (button :onclick "hyprctl dispatch workspace ${no}" no)))
 
 (defwidget hypr []
@@ -19,7 +19,7 @@
        :spacing 10
     (label :style "color: #ffb044;font-size: 1.2em;" :text "")
     (label :style "color: #ffb044;font-weight: bold;"
-        :text active-window)))
+        :text {hypr-socket?.activewindow?.title ?: ""})))
 
-(defpoll    active-window     :interval "5s"  "./modules/hypr/hypr.sh --active-window")
-(deflisten  active-workspace  :initial  "1"   "./modules/hypr/listen_hyprland_events.sh")
+(defvar     hypr-socket-initial                               "./modules/hypr/hypr.sh")
+(deflisten  hypr-socket         :initial  hypr-socket-initial "./modules/hypr/hypr.sh --listen")

@@ -11,7 +11,7 @@
     (workspace :no 5)))
 
 (defwidget workspace [no]
-  (box :class { hypr-socket.activeworkspace.name == no ? "active" : "inactive" }
+  (box :class { hypr-socket.activeworkspace.id == no ? "active" : "inactive" }
     (button :onclick "hyprctl dispatch workspace ${no}" no)))
 
 (defwidget hypr []

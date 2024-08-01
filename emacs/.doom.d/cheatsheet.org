@@ -92,3 +92,11 @@
 |--------------+---|
 | info-apropos | [[kbd:][a]] |
 |--------------+---|
+
+* Multiple Cursors
+see [[https://github.com/gabesoft/evil-mc][GitHub - gabesoft/evil-mc: Multiple cursors implementation for evil-mode]]
+|-------------------------------------+-------|
+| Create cursors for                  | [[kbd:][g z m]] |
+| all strings that match the selected |       |
+| region or the symbol under cursor   |       |
+|-------------------------------------+-------|

@@ -17,7 +17,7 @@
 * Fast Buffer Navigation
 |------------------------------------+-------|
 | evil-goto-mark                     | [[kbd:][`]]     |
-| evilem-motion-next-line            | [[kbd:][g s j]] |
+| 0evilem-motion-next-line            | [[kbd:][g s j]] |
 | evilem-motion-search-word-backward | [[kbd:][g s #]] |
 | evilem-motion-search-word-forward  | [[kbd:][g s *]] |
 |------------------------------------+-------|
@@ -28,19 +28,62 @@
 | Push a mark onto the mark ring | [[kbd:][C-SPC C-SPC]] |
 | Go to previous mark position   | [[kbd:][[ `]]         |
 | Go to next mark position       | [[kbd:][] `]]         |
-| Exchange point and mark        | [[kbd:][C-x C-x]]     |
+| Exchange and mark point        | [[kbd:][C-x C-x]]     |
 |--------------------------------+-------------|
 
 * Editing
-|-------------------------+---------|
-| Delete horizontal space | [[kbd:][M-\]]     |
-| Cycle spacing           | [[kbd:][M-SPC]]   |
-|-------------------------+---------|
-| Delete blank lines      | [[kbd:][C-x C-o]] |
-| Delete rest of line     | [[kbd:][D]]       |
-| Delete entire line      | [[kbd:][d d]]     |
-| Delete region           | [[kbd:][d]]       |
-|-------------------------+---------|
+|-----------------------------+---------|
+| Delete horizontal space     | [[kbd:][M-\]]     |
+| Cycle spacing               | [[kbd:][M-SPC]]   |
+|-----------------------------+---------|
+| Delete blank lines          | [[kbd:][C-x C-o]] |
+| Delete rest of line         | [[kbd:][D]]       |
+| Delete entire line          | [[kbd:][d d]]     |
+| Delete region               | [[kbd:][d]]       |
+|-----------------------------+---------|
+| Split line                  | [[kbd:][C-M-o]]   |
+| Indent to the next tab stop | [[kbd:][M-i]]     |
+|-----------------------------+---------|
+
+* Search & Replace
+|--------------------------+-------|
+| Begin incremental search | [[kbd:][/]]     |
+| Begin reverse search     | [[kbd:][?]]     |
+| Next match               | [[kbd:][n]]     |
+| Previous match           | [[kbd:][N]]     |
+|--------------------------+-------|
+| Query replace string     | [[kbd:][M-%]]   |
+| Query replace regexpp    | [[kbd:][C-M-%]] |
+|--------------------------+-------|
+
+* Minibuffer
+|--------------------+-----|
+| Minibuffer history | [[kbd:][C-s]] |
+|--------------------+-----|
+
+* Registers & Bookmarks
+|---------------------------------------+----------------------|
+| Record position to register           | [[kbd:][C-x r SPC]]            |
+| Jump to position in register          | [[kbd:][C-x r j]]              |
+|---------------------------------------+----------------------|
+| Copy region into register             | [[kbd:][C-x r s]]              |
+| Insert text from register             | [[kbd:][C-x r i]]              |
+|---------------------------------------+----------------------|
+| Copy region-rectangle into register   | [[kbd:][C-x r r]]              |
+| Insert the rectangle from register    | [[kbd:][C-x r i]]              |
+|---------------------------------------+----------------------|
+| Save the state of selected frame      | [[kbd:][C-x r w]]              |
+| Save state of all frames              | [[kbd:][C-x r f]]              |
+| Restore window or frame configuration | [[kbd:][C-x r j]]              |
+|---------------------------------------+----------------------|
+| Store a number in a register          | [[kbd:][C-u NUMBER C-x r n]]   |
+| Increment number in register          | [[kbd:][C-u NUMBER C-x r +]]   |
+| Insert number from register           | [[kbd:][C-x r i]]              |
+|---------------------------------------+----------------------|
+| Set bookmark at point                 | [[kbd:][C-x r m RET]]          |
+| Set bookmark named BOOKMARK at point  | [[kbd:][C-x r m BOOKMARK RET]] |
+| Jump to the bookmark named BOOKMARK   | [[kbd:][C-x r b BOOKMARK RET]] |
+|---------------------------------------+----------------------|
 
 * Jump to files, buffers or projects
 |---------------------------------------+------------------|
@@ -147,3 +190,13 @@ and TODO
 | Jump to the next multiedit region                           | [[kbd:][C-n]]    |
 | Jump to the previous multiedit region                       | [[kbd:][C-p]]    |
 |-------------------------------------------------------------+--------|
+
+* Spelling
+|---|
+|   |
+
+* Macros
+|---------------------------------------+---------|
+| Start defining a keyboard macro       | [[kbd:][q a]], [[kbd:][F3]] |
+| End definition or execute most recent | [[kbd:][F4]]      |
+|---------------------------------------+---------|

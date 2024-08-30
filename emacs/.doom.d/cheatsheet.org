@@ -22,6 +22,26 @@
 | evilem-motion-search-word-forward  | [[kbd:][g s *]] |
 |------------------------------------+-------|
 
+* The Mark
+|--------------------------------+-------------|
+| Set the mark at point          | [[kbd:][C-SPC]], [[kbd:][v]]    |
+| Push a mark onto the mark ring | [[kbd:][C-SPC C-SPC]] |
+| Go to previous mark position   | [[kbd:][[ `]]         |
+| Go to next mark position       | [[kbd:][] `]]         |
+| Exchange point and mark        | [[kbd:][C-x C-x]]     |
+|--------------------------------+-------------|
+
+* Editing
+|-------------------------+---------|
+| Delete horizontal space | [[kbd:][M-\]]     |
+| Cycle spacing           | [[kbd:][M-SPC]]   |
+|-------------------------+---------|
+| Delete blank lines      | [[kbd:][C-x C-o]] |
+| Delete rest of line     | [[kbd:][D]]       |
+| Delete entire line      | [[kbd:][d d]]     |
+| Delete region           | [[kbd:][d]]       |
+|-------------------------+---------|
+
 * Jump to files, buffers or projects
 |---------------------------------------+------------------|
 | Find bookmark                         | [[kbd:][SPC RET]]          |

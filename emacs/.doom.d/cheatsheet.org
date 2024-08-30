@@ -113,11 +113,13 @@
 |------------------------------------------+-------|
 
 * Jump-to navigation
-|-------------------------------------+------------------|
-| Jump to file in project             | [[kbd:][SPC p f]], [[kbd:][SPC SPC]] |
-| Jump to file from current directory | [[kbd:][SPC f f]], [[kbd:][SPC .]]   |
-| Jump to symbol in file              | [[kbd:][SPC s i]]          |
-|-------------------------------------+------------------|
+|--------------------------------------------------------------+------------------|
+| Jump to file in project                                      | [[kbd:][SPC p f]], [[kbd:][SPC SPC]] |
+| Jump to file from current directory                          | [[kbd:][SPC f f]], [[kbd:][SPC .]]   |
+| Jump to symbol in file                                       | [[kbd:][SPC s i]]          |
+| Read one or many consecutive chars and jump to the first one | [[kbd:][SPC g s /]]        |
+| Jump to the currently visible CHAR1 followed by CHAR2.       | [[kbd:][SPC g s s]]        |
+|--------------------------------------------------------------+------------------|
 
 * Agenda View
 |------------------------+-----|
@@ -200,3 +202,46 @@ and TODO
 | Start defining a keyboard macro       | [[kbd:][q a]], [[kbd:][F3]] |
 | End definition or execute most recent | [[kbd:][F4]]      |
 |---------------------------------------+---------|
+
+* Windows
+|----------------------------+-----------|
+| Undo window changes        | [[kbd:][SPC w C-u]] |
+| Redo window changes        | [[kbd:][SPC w C-r]] |
+| Next window                | [[kbd:][SPC w w]]   |
+| Previous window            | [[kbd:][SPC w W]]   |
+| Maximize window            | [[kbd:][SPC w m m]] |
+| Maximize window horizontal | [[kbd:][SPC w m h]] |
+| Maximize window vertical   | [[kbd:][SPC w m v]] |
+| Exchange windows           | [[kbd:][SPC w x]]   |
+|----------------------------+-----------|
+
+* Evil
+|--------------------------------------------------------------------------+-----+
+| Append at point                                                          | [[kbd:][a]]   |
+| Append at end of line                                                    | [[kbd:][A]]   |
+| Change text                                                              | [[kbd:][c]]   |
+| Change to end of line                                                    | [[kbd:][C]]   |
+| Delete text                                                              | [[kbd:][d]]   |
+| Delete to end of line                                                    | [[kbd:][D]]   |
+| Switch to insert state                                                   | [[kbd:][i]]   |
+| Switch to insert state at beginning of line                              | [[kbd:][I]]   |
+| Join two lines                                                           | [[kbd:][J]]   |
+| Set marker                                                               | [[kbd:][m]]   |
+| Insert new line below and switch to insert                               | [[kbd:][o]]   |
+| Insert new line above and switch to insert                               | [[kbd:][O]]   |
+| Paste yanked text behind point                                           | [[kbd:][p]]   |
+| Paste yanked text before point                                           | [[kbd:][P]]   |
+| Record keyboard macro                                                    | [[kbd:][q]]   |
+| Execute keyboard macro                                                   | [[kbd:][Q]]   |
+| Replace text                                                             | [[kbd:][r]]   |
+| Switch to replace state                                                  | [[kbd:][R]]   |
+| Switch to insert mode at previous insert point                           | [[kbd:][g i]] |
+| Join lines without changing whitespaces                                  | [[kbd:][g J]] |
+| Paste after point and leave the cursor after the new text                | [[kbd:][g p]] |
+| Paste before point and leave the cursor after the new text               | [[kbd:][g P]] |
+| Find FILENAME, guessing a default from text around point                 | [[kbd:][g f]] |
+| Open the file at point and go to position if present.                    | [[kbd:][g F]] |
+| Open URL at point                                                        | [[kbd:][g x]] |
+| Go to the point where the last edit was made                             | [[kbd:][g ;]] |
+| Go back to more recent changes after M-x goto-last-change have been used | [[kbd:][g ,]] |
+|--------------------------------------------------------------------------+-----+

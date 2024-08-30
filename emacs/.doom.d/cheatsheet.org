@@ -96,12 +96,34 @@
 * Multiple Cursors
 see [[https://github.com/gabesoft/evil-mc][GitHub - gabesoft/evil-mc: Multiple cursors implementation for evil-mode]]
 and TODO
-|--------------------------------------------------------+-------|
-| Create cursors for all strings that match the selected | [[kbd:][g z m]] |
-| Toggle frozen cursors at point                         | [[kbd:][g z z]] |
-| Toggle mirroring on and off                            | [[kbd:][g z t]] |
-| Place cursors at the end of each selected line         | [[kbd:][g z A]] |
-| Place cursors at the beginning of each selected line   | [[kbd:][g z I]] |
-| Go to the next match                                   | [[kbd:][g z s]] |
-| Make a cursor at point, and go to the next match.      | [[kbd:][g z d]] |
-|--------------------------------------------------------+-------|
+|-------------------------------------------------------------+--------|
+| *evil-mc*                                                   |        |
+|-------------------------------------------------------------+--------|
+| Create cursors for all strings that match the selected      | [[kbd:][g z m]]  |
+| Toggle frozen cursors at point                              | [[kbd:][g z z]]  |
+| Toggle mirroring on and off                                 | [[kbd:][g z t]]  |
+| Place cursors at the end of each selected line              | [[kbd:][g z A]]  |
+| Place cursors at the beginning of each selected line        | [[kbd:][g z I]]  |
+| Go to the next match                                        | [[kbd:][g z s]]  |
+| Make a cursor at point, and go to the next match.           | [[kbd:][g z d]]  |
+|-------------------------------------------------------------+--------|
+| *evil-multiedit*                                            |        |
+|-------------------------------------------------------------+--------|
+| Clear the region                                            | [[kbd:][D]]      |
+| Clear to end-of-region and go into insert mode              | [[kbd:][C]]      |
+| Go into insert mode at end-of-region                        | [[kbd:][A]]      |
+| Go into insert mode at start-of-region                      | [[kbd:][I]]      |
+| Select the region                                           | [[kbd:][V]]      |
+| Replace the iedit region with the contents of the clipboard | [[kbd:][P]]      |
+| Go to end-of-region                                         | [[kbd:][$]]      |
+| Go to start-of-region                                       | [[kbd:][0]] / [[kbd:][^]]  |
+| Go to the first/last region                                 | [[kbd:][gg]] / [[kbd:][G]] |
+|-------------------------------------------------------------+--------|
+| *multiedit mode*                                            |        |
+|-------------------------------------------------------------+--------|
+| Mark the word at point, then mark the next matches          | [[kbd:][M-d]]    |
+| Mark the word at point, then mark the previous matches      | [[kbd:][M-D]]    |
+| Highlight all matches as multiedit regions                  | [[kbd:][R]]      |
+| Jump to the next multiedit region                           | [[kbd:][C-n]]    |
+| Jump to the previous multiedit region                       | [[kbd:][C-p]]    |
+|-------------------------------------------------------------+--------|

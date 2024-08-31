@@ -355,6 +355,9 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                                 (calendar-absolute-from-gregorian (list month day year)))))
                                       'font-lock-face 'font-lock-constant-face)
        calendar-intermonth-header   (propertize "WK" 'font-lock-face 'font-lock-keyword-face))
+(setq! calendar-longitude 13.331850
+       calendar-latitude  52.446540
+       calendar-location-name "Berlin, DE")
 #+end_src
 
 *** Functions

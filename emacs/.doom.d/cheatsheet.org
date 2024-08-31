@@ -245,3 +245,4 @@ and TODO
 | Go to the point where the last edit was made                             | [[kbd:][g ;]] |
 | Go back to more recent changes after M-x goto-last-change have been used | [[kbd:][g ,]] |
 |--------------------------------------------------------------------------+-----+
+

@@ -213,6 +213,21 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 
 * Org Mode
+Most of the stuff here is to implement a GTD workflow.
+
+Inspiration can be obtained from
+- [[https://www.labri.fr/perso/nrougier/GTD/index.html][Get Things Done with Emacs]]
+- [[https://blog.jethro.dev/posts/org_mode_workflow_preview/][Org-mode Workflow: A Preview]]
+- [[http://doc.norang.ca/org-mode.html][Org Mode - Organize Your Life In Plain Text!]]
+- [[https://vtimofeenko.com/posts/my-doom-emacs-setup/#orgmode-config][My doom-emacs setup | Vladimir Timofeenko's blog]]
+
+The following steps are involved:
+1. Capture
+2. Clarify
+3. Organize
+4. Review
+5. Engage
+
 ** General
 *** Settings
 #+begin_src emacs-lisp
@@ -302,8 +317,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                               "inbox-s7.org"
                                               "inbox-yesomeo.org"
                                               "tickler.org"
-                                              "projects.org"
-                                              "projects.org_archive")))
+                                              "projects.org")))
 #+end_src
 **** diary
 #+begin_src emacs-lisp
@@ -316,23 +330,46 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                       (dayname   "\\W")
                                       (year      "/"  month "/"   day  "[^,0-9]")))
 #+end_src
+
+*** Functions
+**** agenda-views
+#+begin_src emacs-lisp
+(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
+(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))
+#+end_src
+
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Show agenda for today"         :n "oa1" #'gunnar/org-agenda-show-today)
+(map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
+(map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
 #+end_src
 
 ** Babel
+*** Settings
 #+begin_src emacs-lisp
-  (setq org-babel-load-languages  '((emacs-lisp . t)
-                                    (awk . t)
-                                    (ditaa . t)
-                                    (dot . t)
-                                    (java . t)
-                                    (dot . t)
-                                    (plantuml . t)
-                                    (ruby . t)))
+(setq org-babel-load-languages  '((emacs-lisp . t)
+                                  (awk . t)
+                                  (ditaa . t)
+                                  (dot . t)
+                                  (java . t)
+                                  (dot . t)
+                                  (plantuml . t)
+                                  (ruby . t)))
 #+end_src
 
 ** Brain
 #+begin_src emacs-lisp
 (setq! org-brain-include-file-entries t)
+#+end_src
+
+** Capture
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Capture Inbox"                 :n "oci" #'gunnar/org-capture-inbox)
+;; (spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary) ;
 #+end_src
 
 ** Calendar
@@ -376,41 +413,11 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
       (icalendar-import-buffer diary-file t)
       (kill-buffer)
       'ok)))
-
-(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
-(defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
-(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
-(defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))
 #+end_src
 
 *** Keybindings
-#+BEGIN_SRC emacs-lisp
-(map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
-#+END_SRC
-
-
-** GTD
-Inspiration can be obtained from
-- [[https://www.labri.fr/perso/nrougier/GTD/index.html][Get Things Done with Emacs]]
-- [[https://blog.jethro.dev/posts/org_mode_workflow_preview/][Org-mode Workflow: A Preview]]
-- [[http://doc.norang.ca/org-mode.html][Org Mode - Organize Your Life In Plain Text!]]
-- [[https://vtimofeenko.com/posts/my-doom-emacs-setup/#orgmode-config][My doom-emacs setup | Vladimir Timofeenko's blog]]
-
-The following steps are involved:
-1. Capture
-2. Clarify
-3. Organize
-4. Review
-5. Engage
-  
-*** Keybindings
 #+begin_src emacs-lisp
-(map! :leader :desc "Show agenda for today"         :n "oa1" #'gunnar/org-agenda-show-today)
-(map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
-(map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
-(map! :leader :desc "Capture Inbox"                 :n "oci" #'gunnar/org-capture-inbox)
-
-;; (spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary) ;
+(map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
 #+end_src
 
 *** Settings

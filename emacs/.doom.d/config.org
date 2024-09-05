@@ -265,8 +265,11 @@ The following steps are involved:
 (setq! org-agenda-prefix-format      '((agenda . " %i %-16:c%?-12t% s")
                                        (todo   . " %i %-15:c [%e] ")
                                        (tags   . "                  %i")
-                                       (search . " %i %-20:c"))
-       org-agenda-custom-commands
+                                       (search . " %i %-20:c")))
+#+end_src
+**** org-agenda-custom-commands
+#+begin_src emacs-lisp
+(setq! org-agenda-custom-commands
        '(("T" "Agenda and next items" ((agenda    ""
                                                   ((org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
                                                    (org-deadline-warning-days           0)))
@@ -334,7 +337,7 @@ The following steps are involved:
 *** Functions
 **** agenda-views
 #+begin_src emacs-lisp
-(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
+un gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
 (defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
 (defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
 (defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))

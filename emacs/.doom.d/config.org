@@ -307,6 +307,7 @@ The following steps are involved:
 
          ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""
           ((org-agenda-overriding-header "Inbox")))
+
          ("g" "Get Things Done (GTD)" ((tags      "CATEGORY=\"inbox\""
                                                   ((org-agenda-prefix-format            "  %?-12t% s")
                                                    (org-agenda-hide-tags-regexp         "inbox")
@@ -337,7 +338,7 @@ The following steps are involved:
 *** Functions
 **** agenda-views
 #+begin_src emacs-lisp
-un gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
+(defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
 (defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
 (defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
 (defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))

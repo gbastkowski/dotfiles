@@ -315,13 +315,15 @@ The following steps are involved:
 #+end_src
 **** org-agenda-files
 #+begin_src emacs-lisp
-(setq! org-agenda-files             (mapcar (lambda (x) (concat org-directory x))
-                                            '("inbox-akiko.org"
-                                              "inbox-galaxy.org"
-                                              "inbox-s7.org"
-                                              "inbox-yesomeo.org"
-                                              "tickler.org"
-                                              "projects.org")))
+(setq! org-agenda-files (cons
+                         org-journal-dir
+                         (mapcar (lambda (x) (concat org-directory x))
+                                 '("inbox-akiko.org"
+                                   "inbox-galaxy.org"
+                                   "inbox-s7.org"
+                                   "inbox-yesomeo.org"
+                                   "tickler.org"
+                                   "projects.org"))))
 #+end_src
 **** diary
 #+begin_src emacs-lisp
@@ -540,19 +542,9 @@ See also `org-save-all-org-buffers'"
 **** TODO org-enable-bootstrap-support t
 **** TODO org-enable-epub-support t
 **** TODO org-enable-github-support t
-**** TODO org-enable-jira-support t
 **** TODO jiralib-url "https://jira.mobimeo.com"
-**** TODO org-enable-notifications t
-**** TODO org-enable-reveal-js-support t
-**** TODO org-enable-org-brain-support t
-**** TODO org-enable-org-journal-support t
 **** TODO org-enable-sticky-header nil
 **** TODO org-journal-carryover-items "TODO=\"TODO|NEXT\""
-**** TODO org-journal-dir "~/org/journal/"
-**** TODO org-journal-file-format "%Y/%m/%d.org"
-**** TODO org-journal-file-header "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
-**** TODO org-journal-find-file 'find-file
-**** TODO org-journal-enable-agenda-integration t
 **** TODO org-start-notification-daemon-on-startup t)
 *** Settings
 #+begin_src emacs-lisp
@@ -565,8 +557,7 @@ See also `org-save-all-org-buffers'"
        org-journal-dir                        "~/org/journal/"
        org-journal-file-format                "%Y/%m/%d.org"
        org-journal-file-header                "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
-       org-journal-find-file                  'find-file
-       org-journal-enable-agenda-integration  t)
+       org-journal-find-file                  'find-file)
 #+end_src
 
 *** Functions

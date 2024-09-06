@@ -1,7 +1,12 @@
 (defpoll weather-last-updated :interval "15m" `modules/weather/weather.sh --getdata`)
+(defpoll humidity             :interval "1m"  `modules/weather/weather.sh --humidity`)
+(defpoll pressure             :interval "1m"  `modules/weather/weather.sh --pressure`)
+(defpoll sunrise              :interval "1m"  `modules/weather/weather.sh --sunrise`)
+(defpoll sunset               :interval "1m"  `modules/weather/weather.sh --sunset`)
 (defpoll weather-icon         :interval "1m"  `modules/weather/weather.sh --icon`)
 (defpoll weather-temp         :interval "1m"  `modules/weather/weather.sh --temp`)
 (defpoll weather-hex          :interval "1m"  `modules/weather/weather.sh --hex`)
+(defpoll weather-name         :interval "1m"  `modules/weather/weather.sh --name`)
 (defpoll weather-stat         :interval "1m"  `modules/weather/weather.sh --stat`)
 (defpoll weather-quote        :interval "1m"  `modules/weather/weather.sh --quote`)
 (defpoll weather-quote2       :interval "1m"  `modules/weather/weather.sh --quote2`)
@@ -28,14 +33,14 @@
 
 (defwindow weather
   :monitor 0
-  :geometry (geometry :x "0%" :y "0%" :width "15%" :height "10%" :anchor "top center")
+  :geometry (geometry :x "0%" :y "0%" :width "16%" :height "10%" :anchor "top center")
   :stacking "overlay"
   :exclusive false
   (weather))
 
 (defwidget weather []
   (box              :class              "weather-window"
-                    :orientation        "v" :space-evenly "false"
+                    :orientation        "v" :spacing  40       :space-evenly "false"
     (box            :orientation        "h" :hexpand  "true"   :vexpand "false"
       (box          :orientation        "v" :hexpand  "true"   :vexpand "false" :space-evenly "false"
         (label      :halign             "start" :valign "start"
@@ -44,9 +49,14 @@
         (label      :halign             "start" :valign "start"
                     :class              "label_stat"  :style  "color: ${weather-hex};"
                     :text               weather-stat)
-          (label    :halign             "start" :valign "start"
+        (label      :halign             "start" :valign "start"
                     :class              "label_quote"
-                    :text               weather-quote))
+                    :text               weather-quote)
+        (label      :class              "label_weatherstation"
+                    :halign             "start"
+                    :valign             "start"
+                    :text               weather-name)
+                    )
       (box          :orientation        "v" :hexpand  "true"   :vexpand "true"
                     :spacing            20  :space-evenly "false"
         (label      :class              "label_temp"
@@ -64,7 +74,52 @@
           (label    :class              "label_wind"
                     :halign             "end"
                     :valign             "start"
-                    :text               wind-speed))))
+                    :text               wind-speed))
+        (box        :orientation        "h"
+                    :spacing            15  :space-evenly "false"
+                    :halign             "end"
+                    :valign             "start"
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               "")
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               humidity))
+        (box        :orientation        "h"
+                    :spacing            15  :space-evenly "false"
+                    :halign             "end"
+                    :valign             "start"
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               "")
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               pressure))
+        (box        :orientation        "h"
+                    :spacing            10  :space-evenly "false"
+                    :halign             "end"
+                    :valign             "start"
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               "")
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               sunrise)
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               "")
+          (label    :class              "label_wind"
+                    :halign             "end"
+                    :valign             "start"
+                    :text               sunset))
+                    ))
     (box            :orientation        "h" :halign "end" :valign "end"
                     :spacing            10  :space-evenly "false"
           (label    :text               "last updated")

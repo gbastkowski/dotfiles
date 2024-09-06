@@ -12,7 +12,6 @@ if [[ ! -d "$cache_dir" ]]; then mkdir -p ${cache_dir}; fi
 get_weather_data() {
     weather=`curl -sf https://api.openweathermap.org/data/2.5/weather?units=metric\&lat=${LAT}\&lon=${LON}\&appid=${APPID}`
     if [ ! -z "$weather" ]; then
-        weather_temp=`echo "$weather" | jq '.main.temp'`
         weather_icon_code=`echo "$weather" | jq -r ".weather[].icon" | head -1`
         weather_description=`echo "$weather" | jq -r ".weather[].description" | head -1 | sed -e "s/\b\(.\)/\u\1/g"`
 
@@ -105,7 +104,6 @@ get_weather_data() {
         echo "$weather"             > ${cache_dir}/weather-json
         echo "$weather_icon"        > ${cache_dir}/weather-icon
         echo "$weather_description" > ${cache_dir}/weather-stat
-        echo "$weather_temp""°C"    > ${cache_dir}/weather-degree
         echo -e "$weather_quote"    > ${cache_dir}/weather-quote
         echo "$weather_hex"         > ${cache_dir}/weather-hex
     else
@@ -136,11 +134,16 @@ wind_direction () {
 ## Execute
 if [[ "$1" == "--getdata"  ]];          then get_weather_data
 elif [[ "$1" == "--icon"   ]];          then cat ${cache_dir}/weather-icon
-elif [[ "$1" == "--temp"   ]];          then cat ${cache_dir}/weather-degree
+elif [[ "$1" == "--temp"   ]];          then printf "%.1f°C" "$(jq '.main.temp' ${cache_dir}/weather-json)"
 elif [[ "$1" == "--hex"    ]];          then cat ${cache_dir}/weather-hex
 elif [[ "$1" == "--stat"   ]];          then cat ${cache_dir}/weather-stat
 elif [[ "$1" == "--quote"  ]];          then cat ${cache_dir}/weather-quote   | head -n1
 elif [[ "$1" == "--quote2" ]];          then cat ${cache_dir}/weather-quote   | tail -n1
 elif [[ "$1" == "--wind-speed" ]];      then echo "$(jq '.wind.speed' ${cache_dir}/weather-json)m/s"
 elif [[ "$1" == "--wind-direction" ]];  then wind_direction
+elif [[ "$1" == "--humidity" ]];        then echo "$(jq '.main.humidity' ${cache_dir}/weather-json) %"
+elif [[ "$1" == "--pressure" ]];        then echo "$(jq '.main.pressure' ${cache_dir}/weather-json) hPa"
+elif [[ "$1" == "--name" ]];            then echo "$(jq -r '.name' ${cache_dir}/weather-json)"
+elif [[ "$1" == "--sunrise" ]];         then date -d @"$(jq -r '.sys.sunrise' ${cache_dir}/weather-json)" +"%H:%M"
+elif [[ "$1" == "--sunset" ]];          then date -d @"$(jq -r '.sys.sunset' ${cache_dir}/weather-json)" +"%H:%M"
 fi

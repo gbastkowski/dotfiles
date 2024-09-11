@@ -8,3 +8,19 @@
   font-size:        1.2em;
   font-weight:      bold;
 }
+
+.confirm-question {
+  color:            $green-text;
+  font-size:        2em;
+}
+
+button.confirm-shutdown {
+  border-style:     solid;
+  color:            $selected-text;
+  font-size:        2em;
+}
+
+button.confirm-shutdown:hover {
+  color: $hover-text;
+  font-weight: normal;
+}

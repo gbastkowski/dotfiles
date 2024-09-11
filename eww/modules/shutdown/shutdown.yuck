@@ -1,4 +1,3 @@
-
 (defwidget shutdown-icon []
     (button         :onclick            "~/.config/eww/modules/common/eww.sh --toggle shutdown"
                     :class              "volume-button"
@@ -35,7 +34,7 @@
         (label      :text               "Quit Hyprland"
                     :class              "shutdown-text"
                     :xalign             0)))
-    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --poweroff"
+    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --reboot"
       (box          :orientation        "h"
                     :spacing            80
                     :space-evenly       false
@@ -45,7 +44,7 @@
         (label      :text               "Reboot"
                     :class              "shutdown-text"
                     :xalign             0)))
-    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --reboot"
+    (eventbox       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --poweroff"
       (box          :orientation        "h"
                     :spacing            80
                     :space-evenly       false
@@ -55,3 +54,26 @@
         (label      :text               "Shutdown"
                     :class              "shutdown-text"
                     :xalign             0)))))
+
+(defwindow confirm-suspend
+  :monitor 0
+  :geometry (geometry :x "50%" :y "50%" :width "20%" :height "10%" :anchor "center center")
+  :stacking "overlay"
+  :exclusive false
+  (confirm-suspend))
+
+(defwidget confirm-suspend []
+  (box              :orientation        "v"
+                    :spacing            20
+                    :class              "popup-window confirm-shutdown"
+    (label          :text               "Do you really want to suspend?"
+                    :class              "confirm-question")
+    (box            :orientation        "h"
+                    :class              "confirm-shutdown"
+                    :spacing            20
+      (button       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --confirm-suspend"
+                    :class              "confirm-shutdown"
+                    "    Yes")
+      (button       :onclick            "~/.config/eww/modules/shutdown/shutdown.sh --cancel"
+                    :class              "confirm-shutdown"
+                    "󰜺    No"))))

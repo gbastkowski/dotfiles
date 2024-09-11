@@ -28,25 +28,6 @@ $green-border:      rgba(#006633, 0.9);
   font-weight:      bold;
 }
 
-.workspaces {
-  background-color: $background-color;
-}
-
-.workspaces box {
-  border-color: #999999;
-  border-radius: 5px;
-  border-style: none;
-  border-width: 3px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.workspaces box.active {
-  border-style: solid;
-  color: $selected-text;
-  font-weight: bold;
-}
-
 button:hover {
   color: $hover-text;
   font-weight: bold;
@@ -121,6 +102,7 @@ scale trough highlight {
 }
 
 @import 'modules/common'
+@import 'modules/hypr'
 @import 'modules/clock'
 @import 'modules/emacs'
 @import 'modules/shutdown'

@@ -149,7 +149,7 @@
                     web                               ; the tubes
                     yaml
                     ;;zig                             ; C, but simpler
-       :email       (mu4e +org +gmail)
+       :email       (mu4e +org +gmail +offlineimap)
                     ;;notmuch
                     ;;(wanderlust +gmail)
        :app         calendar

@@ -168,6 +168,18 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 * Mu4e
 ** Settings
 #+begin_src emacs-lisp
+(setq mu4e-update-interval 60)
+(setq +mu4e-gmail-accounts '(("gunnar.bastkowski@mobimeo.com" . "/gunnar.bastkowski@mobimeo.com")))
+
+(set-email-account! "bar.com"
+  '((mu4e-sent-folder       . "/bar.com/Sent Mail")
+    (mu4e-drafts-folder     . "/bar.com/Drafts")
+    (mu4e-trash-folder      . "/bar.com/Trash")
+    (mu4e-refile-folder     . "/bar.com/All Mail")
+    (smtpmail-smtp-user     . "foo@bar.com")
+    (user-mail-address      . "foo@bar.com")    ;; only needed for mu < 1.4
+    (mu4e-compose-signature . "---\nYours truly\nThe Baz"))
+  t)
 #+end_src
 
 

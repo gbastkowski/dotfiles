@@ -24,7 +24,7 @@
                     (emoji +unicode +github)
                     hl-todo                           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
                     ;;hydra
-                    ;;indent-guides                   ; highlighted indent columns
+                    indent-guides                     ; highlighted indent columns
                     ligatures
                     minimap
                     modeline
@@ -127,7 +127,7 @@
                     ;;nim                             ; python + lisp at the speed of c
                     ;;nix                             ; I hereby declare "nix geht mehr!"
                     ;;ocaml                           ; an objective camel
-                    (org +brain +crypt +hugo +journal +pandoc +passwords +pomodoro +present +pretty)
+                    (org +brain +crypt +hugo +journal +pandoc +passwords +pomodoro +present +pretty +roam2)
                     ;;php                             ; perl's insecure younger brother
                     plantuml
                     ;;purescript                      ; javascript, but functional

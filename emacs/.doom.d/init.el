@@ -15,7 +15,7 @@
 ;;      directory (for easy access to its source code).
 
 (doom!
-        :completion company
+        :completion (corfu +icons +orderless +dabbrev)
                     (vertico +icons +childframe)
         :ui         ;;deft                            ; notational velocity for Emacs
                     doom
@@ -86,7 +86,7 @@
                     tree-sitter
                     ;;upload                          ; map local to remote projects via ssh/ftp
         :os         (:if (featurep :system 'macos) macos)
-                    ;;tty                             ; improve the terminal Emacs experience
+                    tty                               ; improve the terminal Emacs experience
         :lang       ;;agda                            ; types of types of types of types...
                     ;;beancount                       ; mind the GAAP
                     (cc +lsp)                         ; C > C++ == 1

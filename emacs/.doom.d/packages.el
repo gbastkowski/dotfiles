@@ -49,3 +49,4 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+(package! org-ai :recipe (:host github :repo "rksm/org-ai"))

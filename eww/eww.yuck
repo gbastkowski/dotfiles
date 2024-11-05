@@ -16,6 +16,13 @@
   :exclusive true
   (bar))
 
+(defwindow vnc
+  :monitor 1
+  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "50px" :anchor "top center")
+  :stacking "overlay"
+  :exclusive true
+  (bar))
+
 (defwidget bar []
   (centerbox        :orientation        "h"
                     :class              "topbar"

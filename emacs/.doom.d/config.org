@@ -239,6 +239,24 @@ Inspiration can be obtained from
        org-directory                "~/org/"
        org-mobile-directory         "~/org/")
 
+(advice-add 'org-refile :after 'org-save-all-org-buffers)
+#+end_src
+
+**** org-agenda-files
+#+begin_src emacs-lisp
+(setq! org-agenda-files                       (cons
+                                               org-journal-dir
+                                               (mapcar (lambda (x) (concat org-directory x))
+                                                       '("inbox-akiko.org"
+                                                         "inbox-galaxy.org"
+                                                         "inbox-s7.org"
+                                                         "inbox-yesomeo.org"
+                                                         "tickler.org"
+                                                         "projects.org"))))
+#+end_src
+
+**** Journal
+#+begin_src emacs-lisp
 (setq! org-clock-persist 'history)
 (org-clock-persistence-insinuate)
 
@@ -249,21 +267,24 @@ Inspiration can be obtained from
        org-journal-file-format                "%Y/%m/%d.org"
        org-journal-file-header                "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
        org-journal-find-file                  'find-file)
-
-(setq! org-agenda-files                       (cons
-                                               org-journal-dir
-                                               (mapcar (lambda (x) (concat org-directory x))
-                                                       '("inbox-akiko.org"
-                                                         "inbox-galaxy.org"
-                                                         "inbox-s7.org"
-                                                         "inbox-yesomeo.org"
-                                                         "tickler.org"
-                                                         "projects.org"))))
-
-(after! org
-  (setq org-tags-column                       100))
 #+end_src
 
+**** Tags
+#+begin_src emacs-lisp
+(after! org
+  (setq org-tag-alist                         '((:startgroup)
+                                                ; Put mutually exclusive tags here
+                                                (:endgroup)
+                                                ("@errand" . ?E)
+                                                ("@home" . ?H)
+                                                ("@work" . ?W)
+                                                ("note" . ?n)
+                                                ("idea" . ?i)
+                                                ("recurring" . ?r)
+                                                ("thinking" . ?t)))
+  (setq org-tags-column                       100))
+
+#+end_src
 *** Functions
 #+begin_src emacs-lisp
 (defun org-insert-src-block (language)
@@ -298,7 +319,7 @@ Inspiration can be obtained from
 (setq! org-agenda-custom-commands
        '(("T" "Agenda and next items" ((agenda    ""
                                                   ((org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
-                                                   (org-deadline-warning-days           0)))
+                                                   (org-deadline-warning-days           2)))
                                        (todo      "NEXT"
                                                   ((org-agenda-overriding-header        "Next Actions")
                                                    (org-agenda-sorting-strategy         '(priority-down))
@@ -479,7 +500,7 @@ Inspiration can be obtained from
                                             "inbox-yesomeo.org")))
 
   (setq org-capture-templates     '(("t" "Task"           entry (file org-default-notes-file)
-                                     "* TODO %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     "* TODO %^{Description} %? %a\n %i\n :PROPERTIES: :CREATED: %U :END:\n"
                                      :immediate-finish t)
                                     ("n" "Note"           entry (file org-default-notes-file)
                                      "* %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"

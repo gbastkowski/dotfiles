@@ -19,6 +19,7 @@
        :spacing 10
     (label :style "color: #ffb044;font-size: 1.2em;" :text "")
     (label :style "color: #ffb044;font-weight: bold;"
-        :text {hypr-socket?.activewindow?.title ?: ""})))
+           :text {hypr-socket?.activewindow?.title ?: ""}
+           :tooltip {hypr-socket?.activewindow?.class ?: ""})))
 
 (deflisten hypr-socket :initial "" "./modules/hypr/hypr.sh --listen")

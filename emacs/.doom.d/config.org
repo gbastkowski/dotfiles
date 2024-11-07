@@ -510,6 +510,8 @@ Inspiration can be obtained from
                                      :immediate-finish t)
                                     ("s" "Step"           entry (clock)
                                      "* %^{Description}%?%i\n :PROPERTIES: :CREATED: %U :END:\n")
+                                    ("m" "Metrics" table-line (file+headline (concat org-directory "exercises.org") "November")
+                                     "| %U         | %^{Yoga} | %^{Crunches} | %^{Push-Ups} | %^{Pull-Ups} | %^{Boxing} | %^{Knee bends} | %^{Rolls} | %^{B} | Z |  |")
                                     ;; ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
                                     ;;  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
                                     ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")

@@ -226,24 +226,16 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 * Org Mode
 Most of the stuff here is to implement a GTD workflow.
-
 Inspiration can be obtained from
 - [[https://www.labri.fr/perso/nrougier/GTD/index.html][Get Things Done with Emacs]]
 - [[https://blog.jethro.dev/posts/org_mode_workflow_preview/][Org-mode Workflow: A Preview]]
 - [[http://doc.norang.ca/org-mode.html][Org Mode - Organize Your Life In Plain Text!]]
 - [[https://vtimofeenko.com/posts/my-doom-emacs-setup/#orgmode-config][My doom-emacs setup | Vladimir Timofeenko's blog]]
 
-The following steps are involved:
-1. Capture
-2. Clarify
-3. Organize
-4. Review
-5. Engage
-
 ** General
 *** Settings
 #+begin_src emacs-lisp
-(setq! org-bullets-bullet-list     '("x" "◆" "▴" "▸")
+(setq! org-superstar-headline-bullets-list '("◉" "○" "⬥" "⬦" "▸" "▹")
        org-directory                "~/org/"
        org-mobile-directory         "~/org/")
 
@@ -274,20 +266,22 @@ The following steps are involved:
 
 *** Functions
 #+begin_src emacs-lisp
-(defun org-insert-src-block (src-code-type)
+(defun org-insert-src-block (language)
   "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
-  (interactive (let ((src-code-types
+  (interactive (let ((languages
                       '("gunnar-test"
                         "C" "C++" "R" "clojure" "css" "ditaa" "dot" "emacs-lisp" "gnuplot" "haskell" "http"
                         "java" "js" "latex" "lisp" "org" "plantuml" "python" "ruby"
                         "sass" "scala" "sh" "sql" "sqlite")))
-                 (list (ido-completing-read "Source code type: " src-code-types))))
-  (progn (newline-and-indent)
-         (insert (format "#+BEGIN_SRC %s\n" src-code-type))
-         (newline-and-indent)
-         (insert "#+END_SRC\n")
-         (previous-line 2)
-         (org-edit-src-code)))
+                 (list (ido-completing-read "Language: " languages))))
+  (newline-and-indent)
+  (insert (format "#+begin_src %s\n\n#+end_src" language))
+  (previous-line 1)
+  (org-edit-src-code))
+#+end_src
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Insert source block"         :n "mws" #'org-insert-src-block)
 #+end_src
 
 ** Agenda & Journal
@@ -615,6 +609,11 @@ See also `org-save-all-org-buffers'"
         (org-roam-capture-templates (list (append (car org-roam-capture-templates)
                                                   '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
+#+end_src
+
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Insert node in background"       :n "nrI"  #'org-roam-node-insert-immediate)
 #+end_src
 ** TODO
 (add-hook 'org-mode-hook '(lambda ()

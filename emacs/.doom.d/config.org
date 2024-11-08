@@ -255,7 +255,6 @@ Inspiration can be obtained from
                                     ("KILL" . +org-todo-cancel))))
 #+end_src
 
-
 *** Functions
 #+begin_src emacs-lisp
 (defun org-insert-src-block (language)
@@ -289,8 +288,14 @@ Inspiration can be obtained from
 (setq! org-journal-carryover-items            "TODO=\"TODO|NEXT\""
        org-journal-dir                        "~/org/journal/"
        org-journal-file-format                "%Y/%m/%d.org"
-       org-journal-file-header                "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
+       org-journal-date-format                "Journal"
+       org-journal-file-header                (lambda (time) (concat
+                                                              "#+TITLE: " (format-time-string "%Y-%m-%d") "\n"
+                                                              "#+CATEGORY: Journal\n"
+                                                              "\n\n"))
        org-journal-find-file                  'find-file)
+
+(defun gunnar/today-note-file-name () (concat org-journal-dir (format-time-string org-journal-file-format)))
 #+end_src
 
 **** Agenda Date and Diary Handling
@@ -372,6 +377,32 @@ Inspiration can be obtained from
 *** Functions
 **** Helpers
 #+begin_src emacs-lisp
+(defun gunnar/org-copy-todo-to-today ()
+  (interactive)
+  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+        (org-capture-templates '(("a" "Journal Task"   entry (file+headline gunnar/today-note-file-name "Tasks")
+                                  "* [%<%H:%M>] %(gunnar/org-entry-info) %?"
+                                  :immediate-finish t)))
+        (org-refile-targets '(((gunnar/today-note-file-name) :maxlevel . 1)))
+        pos)
+    (with-current-buffer (find-file-noselect (gunnar/today-note-file-name))
+      (goto-char (point-min))
+      (unless (re-search-forward "^\\* Tasks\\b" nil t)
+        (goto-char (point-max))
+        (unless (bolp) (newline)) ; Make sure we're on a new line
+        (insert "* Tasks\n"))
+      (save-buffer))
+    (setq pos (point))
+    ;; Only refile if the target file is different than the current file
+    (unless (equal (file-truename (gunnar/today-note-file-name))
+                   (file-truename (buffer-file-name)))
+      (org-refile nil nil (list "Tasks" (gunnar/today-note-file-name) nil pos)))))
+
+(add-to-list 'org-after-todo-state-change-hook
+             (lambda ()
+               (when (equal org-state "DONE")
+                 (gunnar/org-copy-todo-to-today))))
+
 (defun my-org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
   (let (should-skip-entry)
@@ -408,14 +439,12 @@ Inspiration can be obtained from
 (defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
 #+end_src
 
-
 *** Keybindings
 #+begin_src emacs-lisp
 (map! :leader :desc "Show agenda for today"         :n "oa1" #'gunnar/org-agenda-show-today)
 (map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
 (map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
 #+end_src
-
 
 ** Babel
 *** Settings
@@ -431,6 +460,7 @@ Inspiration can be obtained from
 #+end_src
 
 ** Brain
+*** Settings
 #+begin_src emacs-lisp
 (setq! org-brain-include-file-entries t)
 #+end_src
@@ -438,16 +468,20 @@ Inspiration can be obtained from
 ** Capture & Refile
 *** Settings
 #+begin_src emacs-lisp
+(setq! gunnar/inbox-file-name (concat org-directory
+                                      (if (string-prefix-p "akiko" (system-name) t)
+                                          "inbox-akiko.org"
+                                        "inbox-yesomeo.org")))
 (after! org
-  (setq org-default-notes-file    (concat org-directory
-                                          (if (string-prefix-p "akiko" (system-name) t)
-                                              "inbox-akiko.org"
-                                            "inbox-yesomeo.org")))
+  (setq org-default-notes-file    gunnar/inbox-file-name)
 
   (setq org-capture-templates     '(("t" "Task"           entry (file org-default-notes-file)
                                      "* TODO %^{Description} %? %a\n %i\n :PROPERTIES: :CREATED: %U :END:\n"
                                      :immediate-finish t)
                                     ("n" "Note"           entry (file org-default-notes-file)
+                                     "* %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
+                                    ("j" "Journal Entry"  entry (file gunnar/today-note-file-name)
                                      "* %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
                                      :immediate-finish t)
                                     ("l" "Bookmarks"      entry (file "")
@@ -464,6 +498,7 @@ Inspiration can be obtained from
                                      :immediate-finish))
 
         org-refile-targets        '(("~/org/projects.org"                     :maxlevel . 3)
+                                    (gunnar/today-note-file-name              :maxlevel . 3)
                                     ("~/org/someday.org"                      :maxlevel . 3)
                                     ("~/org/bookmarks.org"                    :maxlevel . 5)
                                     ("~/org/tickler.org"                      :level    . 1))))
@@ -533,39 +568,6 @@ Inspiration can be obtained from
 **** TODO org-enable-sticky-header nil
 **** TODO org-journal-carryover-items "TODO=\"TODO|NEXT\""
 **** TODO org-start-notification-daemon-on-startup t)
-*** Functions
-#+begin_src emacs-lisp
-(defun gunnar/daily-note ()         (concat org-journal-dir (format-time-string "%Y/%m/%d.org")))
-
-(defun gunnar/org-copy-todo-to-today ()
-  (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-        (org-dailies-capture-templates
-         '(("t" "tasks" entry "%?"
-            :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
-        (org-refile-targets '(((gunnar/daily-note) :maxlevel . 3)))
-        (org-after-refile-insert-hook #'save-buffer)
-        today-file
-        pos)
-    (save-window-excursion
-      ;; (org-roam-dailies--capture (current-time) t)
-      (setq today-file (buffer-file-name))
-      (setq pos (point)))
-    ;; Only refile if the target file is different than the current file
-    (unless (equal (file-truename (gunnar/daily-note))
-                   (file-truename (buffer-file-name)))
-      ;; RFLOC:
-      ;; 1. Name      an identifier for the refile location, typically the headline text
-      ;; 2. File      the file the refile location is in
-      ;; 3. nil       not needed when passing RFLOC
-      ;; 4. Position  the position in the specified file of the headline to refile under
-      (org-refile nil nil (list "Tasks" (gunnar/daily-note) nil pos)))))
-
-(add-to-list 'org-after-todo-state-change-hook
-             (lambda ()
-               (when (equal org-state "DONE")
-                 (gunnar/org-copy-todo-to-today))))
-#+end_src
 
 ** Pomodoro
 *** TODO '(org-pomodoro-finished-sound "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")

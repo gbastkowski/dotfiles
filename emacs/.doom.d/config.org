@@ -4,35 +4,6 @@
 #+end_src
 
 
-* Open Tasks
-** Packages
-*** TODO all-the-icons
-*** TODO all-the-icons-dired
-*** TODO atomic-chrome
-*** TODO (openai  :location  (recipe :fetcher github :repo "emacs-openai/openai"))
-*** TODO (chatgpt :location  (recipe :fetcher github :repo "emacs-openai/chatgpt"))
-*** TODO (codeium :location  (recipe :fetcher github :repo "Exafunction/codeium.el"))
-*** TODO dictcc
-*** TODO editorconfig
-*** TODO graphql-mode
-*** TODO helm-posframe
-*** TODO org-jira
-*** TODO osm
-*** TODO (scalaz-unicode-input-method :location (recipe :fetcher github :repo "folone/emacs-scalaz-unicode-input-method"))
-*** TODO smithy-mode
-** auto-completion
-*** TODO auto-completion-complete-with-key-sequence "jk"
-*** TODO auto-completion-enable-help-tooltip 'manual
-*** TODO auto-completion-enable-sort-by-usage t
-*** TODO auto-completion-enable-snippets-in-popup t
-*** TODO auto-completion-idle-delay 0.0
-*** TODO auto-completion-minimum-prefix-length 1
-*** TODO auto-completion-private-snippets-directory (expand-file-name "snippets" user-emacs-directory)
-*** TODO auto-completion-use-company-box t)
-
-*** TODO (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-
-
 * General Settings
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
@@ -238,35 +209,6 @@ Inspiration can be obtained from
 (setq! org-superstar-headline-bullets-list '("◉" "○" "⬥" "⬦" "▸" "▹")
        org-directory                "~/org/"
        org-mobile-directory         "~/org/")
-
-(advice-add 'org-refile :after 'org-save-all-org-buffers)
-#+end_src
-
-**** org-agenda-files
-#+begin_src emacs-lisp
-(setq! org-agenda-files                       (cons
-                                               org-journal-dir
-                                               (mapcar (lambda (x) (concat org-directory x))
-                                                       '("inbox-akiko.org"
-                                                         "inbox-galaxy.org"
-                                                         "inbox-s7.org"
-                                                         "inbox-yesomeo.org"
-                                                         "tickler.org"
-                                                         "projects.org"))))
-#+end_src
-
-**** Journal
-#+begin_src emacs-lisp
-(setq! org-clock-persist 'history)
-(org-clock-persistence-insinuate)
-
-(setq! diary-file                             (concat org-directory "diary"))
-(setq! timeclock-file                         (concat org-directory "timeclock"))
-(setq! org-journal-carryover-items            "TODO=\"TODO|NEXT\""
-       org-journal-dir                        "~/org/journal/"
-       org-journal-file-format                "%Y/%m/%d.org"
-       org-journal-file-header                "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
-       org-journal-find-file                  'find-file)
 #+end_src
 
 **** Tags
@@ -283,8 +225,37 @@ Inspiration can be obtained from
                                                 ("recurring" . ?r)
                                                 ("thinking" . ?t)))
   (setq org-tags-column                       100))
-
 #+end_src
+**** Keywords
+#+begin_src emacs-lisp
+(after! org
+  (setq org-todo-keywords         '((sequence "TODO(t)"  ; A task that needs doing & is ready to do
+                                              "NEXT(n)"  ; next step in a project
+                                              "STRT(s)"  ; A task that is in progress
+                                              "WAIT(w)"  ; Something external is holding up this task
+                                              "|"
+                                              "DONE(d)"  ; successfully completed
+                                              "KILL(k)") ; cancelled, aborted
+                                    (sequence "[ ](T)"   ; needs doing
+                                              "[-](S)"   ; in progress
+                                              "[?](W)"   ; held up or paused
+                                              "|"
+                                              "[X](D)")  ; completed
+                                    (sequence "|"
+                                              "OKAY(o)"
+                                              "YES(y)"
+                                              "NO(n)"))
+        org-todo-keyword-faces    '(("[-]"  . +org-todo-active)
+                                    ("STRT" . +org-todo-active)
+                                    ("NEXT" . +org-todo-active)
+                                    ("[?]"  . +org-todo-onhold)
+                                    ("WAIT" . +org-todo-onhold)
+                                    ("NO"   . +org-todo-cancel)
+                                    ("DONE" . +org-todo-cancel)
+                                    ("KILL" . +org-todo-cancel))))
+#+end_src
+
+
 *** Functions
 #+begin_src emacs-lisp
 (defun org-insert-src-block (language)
@@ -300,6 +271,7 @@ Inspiration can be obtained from
   (previous-line 1)
   (org-edit-src-code))
 #+end_src
+
 *** Keybindings
 #+begin_src emacs-lisp
 (map! :leader :desc "Insert source block"         :n "mws" #'org-insert-src-block)
@@ -307,13 +279,49 @@ Inspiration can be obtained from
 
 ** Agenda & Journal
 *** Settings
-**** org-agenda-prefix-format
+**** Clock, Diary, and Journal
+#+begin_src emacs-lisp
+(setq! org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+
+(setq! diary-file                             (concat org-directory "diary"))
+(setq! timeclock-file                         (concat org-directory "timeclock"))
+(setq! org-journal-carryover-items            "TODO=\"TODO|NEXT\""
+       org-journal-dir                        "~/org/journal/"
+       org-journal-file-format                "%Y/%m/%d.org"
+       org-journal-file-header                "#+TITLE: Daily Journal\n#+CATEGORY: Journal"
+       org-journal-find-file                  'find-file)
+#+end_src
+
+**** Agenda Date and Diary Handling
 #+begin_src emacs-lisp
 (setq! org-agenda-prefix-format      '((agenda . " %i %-16:c%?-12t% s")
                                        (todo   . " %i %-15:c [%e] ")
                                        (tags   . "                  %i")
-                                       (search . " %i %-20:c")))
+                                       (search . " %i %-20:c"))
+       org-agenda-include-diary       t
+       org-agenda-start-on-weekday    1
+       diary-date-forms              '((month     "/"  day   "[^/0-9]")
+                                       (month     "/"  day   "/"   year "[^0-9]")
+                                       (monthname " *" day   "[^,0-9]")
+                                       (monthname " *" day   ", *" year "[^0-9]")
+                                       (dayname   "\\W")
+                                       (year      "/"  month "/"   day  "[^,0-9]")))
 #+end_src
+
+**** org-agenda-files
+#+begin_src emacs-lisp
+(setq! org-agenda-files                       (cons
+                                               org-journal-dir
+                                               (mapcar (lambda (x) (concat org-directory x))
+                                                       '("inbox-akiko.org"
+                                                         "inbox-galaxy.org"
+                                                         "inbox-s7.org"
+                                                         "inbox-yesomeo.org"
+                                                         "tickler.org"
+                                                         "projects.org"))))
+#+end_src
+
 **** org-agenda-custom-commands
 #+begin_src emacs-lisp
 (setq! org-agenda-custom-commands
@@ -360,26 +368,46 @@ Inspiration can be obtained from
                                                    (org-agenda-hide-tags-regexp         "inbox")
                                                    (org-agenda-overriding-header        "\nInbox: clarify and organize\n")))))))
 #+end_src
-**** diary
-#+begin_src emacs-lisp
-(setq! org-agenda-include-diary     t
-       org-agenda-start-on-weekday  1
-       diary-date-forms             '((month     "/"  day   "[^/0-9]")
-                                      (month     "/"  day   "/"   year "[^0-9]")
-                                      (monthname " *" day   "[^,0-9]")
-                                      (monthname " *" day   ", *" year "[^0-9]")
-                                      (dayname   "\\W")
-                                      (year      "/"  month "/"   day  "[^,0-9]")))
-#+end_src
 
 *** Functions
+**** Helpers
+#+begin_src emacs-lisp
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (let (should-skip-entry)
+    (unless (org-current-is-todo) (setq should-skip-entry t))
+    (save-excursion
+      (while (and (not should-skip-entry) (org-goto-sibling t))
+        (when (org-current-is-todo)
+          (setq should-skip-entry t))))
+    (when should-skip-entry (or (outline-next-heading) (goto-char (point-max))))))
+
+(defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
+
+(defun gunnar/get-clocked-time ()
+  (interactive)
+  (let ((hours (/ (org-clock-get-clocked-time) 60))
+        (minutes (% (org-clock-get-clocked-time) 60)))
+    (format "[%02d:%02d]" hours minutes)))
+
+(advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
+
+(defun gunnar/org-clock-expired-p ()
+  (when (org-clocking-p)
+    (let ((effort-in-minutes (org-duration-to-minutes org-clock-effort))
+	  (clocked-time (org-clock-get-clocked-time)))
+      (if (or (null effort-in-minutes) (zerop effort-in-minutes))
+          nil
+        (>= clocked-time effort-in-minutes)))))
+#+end_src
+
 **** agenda-views
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
 (defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
 (defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
-(defun gunnar/org-capture-inbox             (&optional arg) (interactive "P") (org-capture arg "i"))
 #+end_src
+
 
 *** Keybindings
 #+begin_src emacs-lisp
@@ -387,6 +415,7 @@ Inspiration can be obtained from
 (map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
 (map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
 #+end_src
+
 
 ** Babel
 *** Settings
@@ -406,7 +435,45 @@ Inspiration can be obtained from
 (setq! org-brain-include-file-entries t)
 #+end_src
 
-** Capture
+** Capture & Refile
+*** Settings
+#+begin_src emacs-lisp
+(after! org
+  (setq org-default-notes-file    (concat org-directory
+                                          (if (string-prefix-p "akiko" (system-name) t)
+                                              "inbox-akiko.org"
+                                            "inbox-yesomeo.org")))
+
+  (setq org-capture-templates     '(("t" "Task"           entry (file org-default-notes-file)
+                                     "* TODO %^{Description} %? %a\n %i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
+                                    ("n" "Note"           entry (file org-default-notes-file)
+                                     "* %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
+                                    ("l" "Bookmarks"      entry (file "")
+                                     "** %(org-cliplink-capture)%?\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish t)
+                                    ("s" "Step"           entry (clock)
+                                     "* %^{Description}%?%i\n :PROPERTIES: :CREATED: %U :END:\n")
+                                    ("m" "Metrics" table-line (file+headline (concat org-directory "exercises.org") "November")
+                                     "| %U         | %^{Yoga} | %^{Crunches} | %^{Push-Ups} | %^{Pull-Ups} | %^{Boxing} | %^{Knee bends} | %^{Rolls} | %^{B} | Z |  |")
+                                    ;; ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
+                                    ;;  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
+                                    ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
+                                     "* TODO Review %c\n%U\n%i\n :PROPERTIES: :CREATED: %U :END:\n"
+                                     :immediate-finish))
+
+        org-refile-targets        '(("~/org/projects.org"                     :maxlevel . 3)
+                                    ("~/org/someday.org"                      :maxlevel . 3)
+                                    ("~/org/bookmarks.org"                    :maxlevel . 5)
+                                    ("~/org/tickler.org"                      :level    . 1))))
+#+end_src
+
+*** Functions
+#+begin_src emacs-lisp
+(defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
+#+end_src
+
 *** Keybindings
 #+begin_src emacs-lisp
 (map! :leader :desc "Capture Inbox"                 :n "oci" #'gunnar/org-capture-inbox)
@@ -414,11 +481,6 @@ Inspiration can be obtained from
 #+end_src
 
 ** Calendar
-*** Keybindings
-#+begin_src emacs-lisp
-(map! :leader :desc "Show calendar"         :n "y" #'calendar)
-#+end_src
-
 *** Settings
 #+begin_src emacs-lisp
 (setq! calendar-date-display-form   '((format "%s-%.2d-%.2d" year (string-to-number month) (string-to-number day)))
@@ -458,118 +520,8 @@ Inspiration can be obtained from
 
 *** Keybindings
 #+begin_src emacs-lisp
+(map! :leader :desc "Show calendar"         :n "y" #'calendar)
 (map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
-#+end_src
-
-*** Settings
-**** keywords
-#+begin_src emacs-lisp
-(after! org
-  (setq org-todo-keywords         '((sequence "TODO(t)"  ; A task that needs doing & is ready to do
-                                              "NEXT(n)"  ; next step in a project
-                                              "STRT(s)"  ; A task that is in progress
-                                              "WAIT(w)"  ; Something external is holding up this task
-                                              "|"
-                                              "DONE(d)"  ; successfully completed
-                                              "KILL(k)") ; cancelled, aborted
-                                    (sequence "[ ](T)"   ; needs doing
-                                              "[-](S)"   ; in progress
-                                              "[?](W)"   ; held up or paused
-                                              "|"
-                                              "[X](D)")  ; completed
-                                    (sequence "|"
-                                              "OKAY(o)"
-                                              "YES(y)"
-                                              "NO(n)"))
-        org-todo-keyword-faces    '(("[-]"  . +org-todo-active)
-                                    ("STRT" . +org-todo-active)
-                                    ("NEXT" . +org-todo-active)
-                                    ("[?]"  . +org-todo-onhold)
-                                    ("WAIT" . +org-todo-onhold)
-                                    ("NO"   . +org-todo-cancel)
-                                    ("DONE" . +org-todo-cancel)
-                                    ("KILL" . +org-todo-cancel))))
-#+end_src
-
-**** capture & refile
-#+begin_src emacs-lisp
-(after! org
-  (setq org-default-notes-file    (concat org-directory
-                                          (if (string-prefix-p "akiko" (system-name) t)
-                                              "inbox-akiko.org"
-                                            "inbox-yesomeo.org")))
-
-  (setq org-capture-templates     '(("t" "Task"           entry (file org-default-notes-file)
-                                     "* TODO %^{Description} %? %a\n %i\n :PROPERTIES: :CREATED: %U :END:\n"
-                                     :immediate-finish t)
-                                    ("n" "Note"           entry (file org-default-notes-file)
-                                     "* %^{Description} %? %i\n :PROPERTIES: :CREATED: %U :END:\n"
-                                     :immediate-finish t)
-                                    ("l" "Bookmarks"      entry (file "")
-                                     "** %(org-cliplink-capture)%?\n :PROPERTIES: :CREATED: %U :END:\n"
-                                     :immediate-finish t)
-                                    ("s" "Step"           entry (clock)
-                                     "* %^{Description}%?%i\n :PROPERTIES: :CREATED: %U :END:\n")
-                                    ("m" "Metrics" table-line (file+headline (concat org-directory "exercises.org") "November")
-                                     "| %U         | %^{Yoga} | %^{Crunches} | %^{Push-Ups} | %^{Pull-Ups} | %^{Boxing} | %^{Knee bends} | %^{Rolls} | %^{B} | Z |  |")
-                                    ;; ("l" "Bookmarks"      entry (file+headline (lambda () (gunnar/daily-note)) "Bookmarks")
-                                    ;;  "** %(org-cliplink-capture)%?\n" :unnarrowed t)
-                                    ("x" "org-protocol"   entry (file+headline org-default-notes-file "Inbox")
-                                     "* TODO Review %c\n%U\n%i\n :PROPERTIES: :CREATED: %U :END:\n"
-                                     :immediate-finish))
-
-        org-refile-targets        '(("~/org/projects.org"                     :maxlevel . 3)
-                                    ("~/org/someday.org"                      :maxlevel . 3)
-                                    ("~/org/bookmarks.org"                    :maxlevel . 5)
-                                    ("~/org/tickler.org"                      :level    . 1))))
-#+end_src
-
-*** Functions
-#+begin_src emacs-lisp
-(defun gunnar/org-agenda-show-inbox (&optional arg) (interactive "P") (org-agenda arg "c"))
-(defun gunnar/org-agenda-show-today (&optional arg) (interactive "P") (org-agenda arg "a"))
-(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
-(defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
-
-(defun my-org-agenda-skip-all-siblings-but-first ()
-  "Skip all but the first non-done entry."
-  (let (should-skip-entry)
-    (unless (org-current-is-todo) (setq should-skip-entry t))
-    (save-excursion
-      (while (and (not should-skip-entry) (org-goto-sibling t))
-        (when (org-current-is-todo)
-          (setq should-skip-entry t))))
-    (when should-skip-entry (or (outline-next-heading) (goto-char (point-max))))))
-
-(defun org-current-is-todo () (string= "TODO" (org-get-todo-state)))
-
-(defun gunnar/get-clocked-time ()
-  (interactive)
-  (let ((hours (/ (org-clock-get-clocked-time) 60))
-        (minutes (% (org-clock-get-clocked-time) 60)))
-    (format "[%02d:%02d]" hours minutes)))
-
-(defun gunnar/save-org-buffers ()
-  "Save `org-agenda-files' buffers without user confirmation.
-See also `org-save-all-org-buffers'"
-  (interactive)
-  (message "Saving org-agenda-files buffers...")
-  (save-some-buffers t (lambda ()
-                         (when (member (buffer-file-name) org-agenda-files)
-                           t)))
-  (message "Saving org-agenda-files buffers... done"))
-
-(advice-add 'org-refile :after
-            (lambda (&rest _)
-              gunnar/save-org-buffers))
-
-(defun gunnar/org-clock-expired-p ()
-  (when (org-clocking-p)
-    (let ((effort-in-minutes (org-duration-to-minutes org-clock-effort))
-	  (clocked-time (org-clock-get-clocked-time)))
-      (if (or (null effort-in-minutes) (zerop effort-in-minutes))
-          nil
-        (>= clocked-time effort-in-minutes)))))
 #+end_src
 
 ** Journal
@@ -583,26 +535,31 @@ See also `org-save-all-org-buffers'"
 **** TODO org-start-notification-daemon-on-startup t)
 *** Functions
 #+begin_src emacs-lisp
-(defun gunnar/daily-note ()         (concat org-directory (format-time-string "/%Y/%B_%-e.org")))
+(defun gunnar/daily-note ()         (concat org-journal-dir (format-time-string "%Y/%m/%d.org")))
 
 (defun gunnar/org-copy-todo-to-today ()
   (interactive)
   (let ((org-refile-keep t) ;; Set this to nil to delete the original!
         (org-dailies-capture-templates
-          '(("t" "tasks" entry "%?"
-             :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+         '(("t" "tasks" entry "%?"
+            :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+        (org-refile-targets '(((gunnar/daily-note) :maxlevel . 3)))
         (org-after-refile-insert-hook #'save-buffer)
         today-file
         pos)
     (save-window-excursion
-      (org-roam-dailies--capture (current-time) t)
+      ;; (org-roam-dailies--capture (current-time) t)
       (setq today-file (buffer-file-name))
       (setq pos (point)))
-
     ;; Only refile if the target file is different than the current file
-    (unless (equal (file-truename today-file)
+    (unless (equal (file-truename (gunnar/daily-note))
                    (file-truename (buffer-file-name)))
-      (org-refile nil nil (list "Tasks" today-file nil pos)))))
+      ;; RFLOC:
+      ;; 1. Name      an identifier for the refile location, typically the headline text
+      ;; 2. File      the file the refile location is in
+      ;; 3. nil       not needed when passing RFLOC
+      ;; 4. Position  the position in the specified file of the headline to refile under
+      (org-refile nil nil (list "Tasks" (gunnar/daily-note) nil pos)))))
 
 (add-to-list 'org-after-todo-state-change-hook
              (lambda ()

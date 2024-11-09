@@ -51,3 +51,4 @@
 
 (package! command-log-mode
   :recipe (:host github :repo "lewang/command-log-mode"))
+

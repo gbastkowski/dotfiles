@@ -35,8 +35,6 @@ clients, file templates and snippets. It is optional.
   "Open your private config.el file."
   (interactive)
   (find-file (expand-file-name "config.org" doom-user-dir)))
-
-(server-start)
 #+end_src
 
 
@@ -441,28 +439,9 @@ Inspiration can be obtained from
 
 *** Keybindings
 #+begin_src emacs-lisp
-(map! :leader :desc "Show agenda for today"         :n "oa1" #'gunnar/org-agenda-show-today)
-(map! :leader :desc "Show Mobimeo agenda for today" :n "oa2" #'gunnar/org-agenda-show-today-mobimeo)
-(map! :leader :desc "Show Inbox"                    :n "oa3" #'gunnar/org-agenda-show-inbox)
-#+end_src
-
-** Babel
-*** Settings
-#+begin_src emacs-lisp
-(setq org-babel-load-languages  '((emacs-lisp . t)
-                                  (awk . t)
-                                  (ditaa . t)
-                                  (dot . t)
-                                  (java . t)
-                                  (dot . t)
-                                  (plantuml . t)
-                                  (ruby . t)))
-#+end_src
-
-** Brain
-*** Settings
-#+begin_src emacs-lisp
-(setq! org-brain-include-file-entries t)
+(map! :leader :desc "Show agenda for today"         :n "Gt" #'gunnar/org-agenda-show-today)
+(map! :leader :desc "Show Mobimeo agenda for today" :n "Gm" #'gunnar/org-agenda-show-today-mobimeo)
+(map! :leader :desc "Show Inbox"                    :n "Gi" #'gunnar/org-agenda-show-inbox)
 #+end_src
 
 ** Capture & Refile
@@ -506,13 +485,14 @@ Inspiration can be obtained from
 
 *** Functions
 #+begin_src emacs-lisp
-(defun gunnar/org-capture-inbox (&optional arg) (interactive "P") (org-capture arg "i"))
+(defun gunnar/org-capture-task (&optional arg) (interactive "P") (org-capture arg "t"))
+(defun gunnar/org-capture-note (&optional arg) (interactive "P") (org-capture arg "n"))
 #+end_src
 
 *** Keybindings
 #+begin_src emacs-lisp
-(map! :leader :desc "Capture Inbox"                 :n "oci" #'gunnar/org-capture-inbox)
-;; (spacemacs/set-leader-keys "Gs" 'gunnar/all-calendars-to-diary) ;
+(map! :leader :desc "Capture Task"                  :n "Gc" #'gunnar/org-capture-task)
+(map! :leader :desc "Capture Note"                  :n "Gn" #'gunnar/org-capture-note)
 #+end_src
 
 ** Calendar
@@ -556,7 +536,7 @@ Inspiration can be obtained from
 *** Keybindings
 #+begin_src emacs-lisp
 (map! :leader :desc "Show calendar"         :n "y" #'calendar)
-(map! :leader :desc "All calendars to diary"        :n "occ" #'gunnar/all-calendars-to-diary)
+(map! :leader :desc "All calendars to diary"        :n "Gc" #'gunnar/all-calendars-to-diary)
 #+end_src
 
 ** Journal
@@ -566,12 +546,30 @@ Inspiration can be obtained from
 **** TODO org-enable-github-support t
 **** TODO jiralib-url "https://jira.mobimeo.com"
 **** TODO org-enable-sticky-header nil
-**** TODO org-journal-carryover-items "TODO=\"TODO|NEXT\""
 **** TODO org-start-notification-daemon-on-startup t)
 
 ** Pomodoro
 *** TODO '(org-pomodoro-finished-sound "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
 *** TODO '(org-pomodoro-start-sound "/Users/gunnar.bastkowski/Sounds/mixkit-positive-notification-951.wav")
+** Babel
+*** Settings
+#+begin_src emacs-lisp
+(setq org-babel-load-languages  '((emacs-lisp . t)
+                                  (awk . t)
+                                  (ditaa . t)
+                                  (dot . t)
+                                  (java . t)
+                                  (dot . t)
+                                  (plantuml . t)
+                                  (ruby . t)))
+#+end_src
+
+** Brain
+*** Settings
+#+begin_src emacs-lisp
+(setq! org-brain-include-file-entries t)
+#+end_src
+
 ** Reveal
 *** Settings
 #+begin_src emacs-lisp

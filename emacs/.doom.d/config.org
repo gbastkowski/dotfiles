@@ -62,8 +62,9 @@ and decided that I like it
       (setq col (+ 1 (current-column)))
       (set-selective-display
        (if selective-display nil (or col 1))))))
+
+(map! :leader :desc "Toggle fold by indentation" :n "aj" #'aj-toggle-fold)
 #+end_src
-*** TODO (spacemacs/set-leader-keys "of" 'aj-toggle-fold)
 ** Font
 Doom exposes five (optional) variables for controlling fonts in Doom:
 - `doom-font' -- the primary font to use
@@ -79,6 +80,7 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
        (setq! doom-font (font-spec :family "Iosevka" :size 13))))
 
 (global-prettify-symbols-mode t)
+(map! :leader :desc "Toggle global prettify symbols mode" :n "aP" #'global-prettify-symbols-mode)
 #+end_src
 
 If you or Emacs can't find your font, use 'M-x describe-font' to look them up,
@@ -87,8 +89,6 @@ to refresh your font settings.
 
 If Emacs still can't find your font, it likely wasn't installed correctly.
 Font issues are rarely Doom issues!
-
-*** TODO   (spacemacs/set-leader-keys "tP" 'global-prettify-symbols-mode)
 
 ** Line Numbers
 This determines the style of line numbers in effect. If set to `nil', line

@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/yasnippet-capf/yasnippet-capf.el

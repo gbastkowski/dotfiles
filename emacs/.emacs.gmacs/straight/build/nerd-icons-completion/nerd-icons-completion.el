@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/nerd-icons-completion/nerd-icons-completion.el

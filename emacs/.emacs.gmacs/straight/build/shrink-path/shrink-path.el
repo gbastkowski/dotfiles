@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/shrink-path.el/shrink-path.el

@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/Emacs-wgrep/wgrep.el

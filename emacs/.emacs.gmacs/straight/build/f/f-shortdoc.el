@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/f.el/f-shortdoc.el

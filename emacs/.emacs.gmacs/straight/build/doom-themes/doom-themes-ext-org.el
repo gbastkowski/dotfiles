@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/themes/extensions/doom-themes-ext-org.el

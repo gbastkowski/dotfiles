@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/command-log-mode/command-log-mode.el

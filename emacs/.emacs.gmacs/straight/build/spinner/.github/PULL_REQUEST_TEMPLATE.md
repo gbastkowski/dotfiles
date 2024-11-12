@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/spinner/.github/PULL_REQUEST_TEMPLATE.md

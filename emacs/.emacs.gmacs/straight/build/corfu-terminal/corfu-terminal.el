@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/corfu-terminal/corfu-terminal.el

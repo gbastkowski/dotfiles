@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/nerd-icons.el/nerd-icons-data.el

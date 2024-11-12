@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/evil/evil-digraphs.el

@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/doom-modeline/doom-modeline-segments.el

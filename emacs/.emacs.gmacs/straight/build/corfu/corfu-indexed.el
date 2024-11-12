@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/corfu/extensions/corfu-indexed.el

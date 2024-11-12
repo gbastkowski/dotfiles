@@ -52,3 +52,5 @@
 (package! command-log-mode
   :recipe (:host github :repo "lewang/command-log-mode"))
 
+(package! corfu-quick
+  :recipe (:host github :repo "minad/corfu" :files ("extensions/*")))

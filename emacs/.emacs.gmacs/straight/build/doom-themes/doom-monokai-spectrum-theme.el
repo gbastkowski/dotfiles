@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/themes/themes/doom-monokai-spectrum-theme.el

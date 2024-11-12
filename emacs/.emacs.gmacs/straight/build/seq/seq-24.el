@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/seq/seq-24.el

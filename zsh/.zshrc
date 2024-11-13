@@ -57,7 +57,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(aws brew common-aliases docker docker-compose dotenv extract fasd gem git git-lfs gitignore gpg-agent helm history history-substring-search kubectl macos mvn pass sbt scala sdk screen zsh-vi-mode)
+plugins=(aws brew common-aliases docker docker-compose dotenv extract fasd gem git git-lfs gitignore gpg-agent helm history history-substring-search kubectl macos mvn nvm pass sbt scala sdk screen zsh-vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -94,8 +94,14 @@ export PATH=/opt/homebrew/bin/python3/opt/homebrew/bin/python3:~/.bin:~/go/bin:$
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+if [[ "$(uname)" == "Darwin" ]]; then
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+elif [[ "$(uname)" == "Linux" ]]; then
+    [ -s "/usr/share/nvm/init-nvm.sh" ] && \. "/usr/share/nvm/init-nvm.sh"
+fi
+
+export PATH="./node_modules/.bin:$PATH"
 
 # export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 
@@ -111,7 +117,6 @@ export ANDROID_HOME=/Users/gunnar.bastkowski/Library/Android/sdk/
 export PATH="$ANDROID_HOME/tools/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
-export PATH="$HOME/.rbenv/bin:$PATH"
 
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - zsh)"

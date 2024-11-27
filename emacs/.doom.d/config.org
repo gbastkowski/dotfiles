@@ -663,6 +663,21 @@ Inspiration can be obtained from
 #+end_src
 
 
+* LaTeX
+** Settings
+
+#+begin_src emacs-lisp
+(setq! TeX-command-list
+       (append TeX-command-list
+               '(("LatexMk" "latexmk %s" TeX-run-TeX nil t
+                  :help "Run latexmk to compile the document")
+                 ("LatexMk-PVC" "latexmk -pvc %s" TeX-run-TeX nil t
+                  :help "Run latexmk to compile the document"))))
+
+(setq! TeX-command-default "LatexMk-PVC")
+#+end_src
+
+
 * Web
 ** Settings
 #+begin_src emacs-lisp

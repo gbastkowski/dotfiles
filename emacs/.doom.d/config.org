@@ -136,19 +136,57 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 
 * Mu4e
+** TODO missing settings
+(mu4e-maildir-shortcuts         . ,((:maildir (concat dir-name "/INBOX")                                         :key ?i)
+                                (:maildir (concat dir-name "/[Gmail].Sent Mail")                             :key ?s)
+                                (:maildir (concat dir-name "/gunnar.bastkowski@gmail.com/[Gmail].All Mail")  :key ?a)))
+
+(mu4e-bookmarks                 . ,((:name "Inbox"                 :query (concat "maildir:" dir-name "/INBOX")  :key ?i   :favorite t)
+                                (:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
+                                (:name "Today's messages"      :query "date:today..now"                      :key 116)
+                                (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
+                                (:name "Messages with images"  :query "mime:image/*"                         :key 112)))
+
+(smtpmail-starttls-credentials  . '(("smtp.gmail.com" 587 nil nil)))
+;; (smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 "gunnar.bastkowski@gmail.com" nil)))
+(smtpmail-default-smtp-server   . "smtp.gmail.com")
+(smtpmail-smtp-server           . "smtp.gmail.com")
+(smtpmail-smtp-service          . 587)))))
 ** Settings
 #+begin_src emacs-lisp
-(setq mu4e-update-interval 60)
-(setq +mu4e-gmail-accounts '(("gunnar.bastkowski@mobimeo.com" . "/gunnar.bastkowski@mobimeo.com")))
+(after! mu4e
+  (setq sendmail-program (executable-find "msmtp")
+        send-mail-function #'smtpmail-send-it
+        message-sendmail-f-is-evil t
+        message-sendmail-extra-arguments '("--read-envelope-from")
+        message-send-mail-function #'message-send-mail-with-sendmail))
 
-(set-email-account! "bar.com"
-  '((mu4e-sent-folder       . "/bar.com/Sent Mail")
-    (mu4e-drafts-folder     . "/bar.com/Drafts")
-    (mu4e-trash-folder      . "/bar.com/Trash")
-    (mu4e-refile-folder     . "/bar.com/All Mail")
-    (smtpmail-smtp-user     . "foo@bar.com")
-    (user-mail-address      . "foo@bar.com")    ;; only needed for mu < 1.4
-    (mu4e-compose-signature . "---\nYours truly\nThe Baz"))
+(setq mu4e-update-interval 60)
+(setq +mu4e-gmail-accounts '(("gunnar.bastkowski@gmail.com" . "/gunnar.bastkowski@gmail.com")))
+
+(set-email-account! "bastkowski.name"
+  '((mu4e-sent-folder       . "/gunnar@bastkowski.name/Sent")
+    (mu4e-drafts-folder     . "/gunnar@bastkowski.name/Drafts")
+    (mu4e-trash-folder      . "/gunnar@bastkowski.name/Trash")
+    (mu4e-refile-folder     . "/gunnar@bastkowski.name/Archive")
+    (smtpmail-smtp-user     . "gunnar@bastkowski.name")
+    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+  t)
+(set-email-account! "digitalstep.de"
+  '((mu4e-sent-folder       . "/gunnar@digitalstep.de/Sent")
+    (mu4e-drafts-folder     . "/gunnar@digitalstep.de/Drafts")
+    (mu4e-trash-folder      . "/gunnar@digitalstep.de/Trash")
+    (mu4e-refile-folder     . "/gunnar@digitalstep.de/Archive")
+    (smtpmail-smtp-user     . "gunnar@digitalstep.de")
+    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+  t)
+(set-email-account! "gmail.com"
+  '((mu4e-sent-folder       . "/gunnar.bastkowski@gmail.com/Sent")
+    (mu4e-drafts-folder     . "/gunnar.bastkowski@gmail.com/Drafts")
+    (mu4e-trash-folder      . "/gunnar.bastkowski@gmail.com/Trash")
+    (mu4e-refile-folder     . "/gunnar.bastkowski@gmail.com/Archive")
+    (smtpmail-smtp-user     . "gunnar.bastkowski@gmail.com")
+    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
   t)
 #+end_src
 

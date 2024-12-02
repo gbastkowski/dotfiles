@@ -21,6 +21,12 @@ remoterepository = bastkowskiserver
 synclabels = yes
 labelsheader = X-Keywords
 
+[Account digitalstep]
+localrepository = digitalsteplocal
+remoterepository = digitalstepserver
+synclabels = yes
+labelsheader = X-Keywords
+
 [Repository Gmailserver-mine]
 type = Gmail
 remoteuser = gunnar.bastkowski@gmail.com
@@ -41,6 +47,14 @@ remotepasseval = get_pass("private/bastkowski.name/imap-pass")
 sslcacertfile = /etc/openssl@3/cert.pem
 ssl = yes
 
+[Repository digitalstepserver]
+type = IMAP
+remotehost = w00d23c2.kasserver.com
+remoteusereval = get_pass("private/digitalstep.de/imap-user")
+remotepasseval = get_pass("private/digitalstep.de/imap-pass")
+sslcacertfile = /etc/openssl@3/cert.pem
+ssl = yes
+
 [Repository Gmaillocal-mine]
 type = GmailMaildir
 localfolders = ~/.mail/gunnar.bastkowski@gmail.com
@@ -52,3 +66,7 @@ localfolders = ~/.mail/gunnar.bastkowski@mobimeo.com
 [Repository bastkowskilocal]
 type = Maildir
 localfolders = ~/.mail/gunnar@bastkowski.name
+
+[Repository digitalsteplocal]
+type = Maildir
+localfolders = ~/.mail/gunnar@digitalstep.de

@@ -137,21 +137,12 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 * Mu4e
 ** TODO missing settings
-(mu4e-maildir-shortcuts         . ,((:maildir (concat dir-name "/INBOX")                                         :key ?i)
-                                (:maildir (concat dir-name "/[Gmail].Sent Mail")                             :key ?s)
-                                (:maildir (concat dir-name "/gunnar.bastkowski@gmail.com/[Gmail].All Mail")  :key ?a)))
-
-(mu4e-bookmarks                 . ,((:name "Inbox"                 :query (concat "maildir:" dir-name "/INBOX")  :key ?i   :favorite t)
-                                (:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
-                                (:name "Today's messages"      :query "date:today..now"                      :key 116)
-                                (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
-                                (:name "Messages with images"  :query "mime:image/*"                         :key 112)))
-
 (smtpmail-starttls-credentials  . '(("smtp.gmail.com" 587 nil nil)))
 ;; (smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 "gunnar.bastkowski@gmail.com" nil)))
 (smtpmail-default-smtp-server   . "smtp.gmail.com")
 (smtpmail-smtp-server           . "smtp.gmail.com")
 (smtpmail-smtp-service          . 587)))))
+
 ** Settings
 #+begin_src emacs-lisp
 (after! mu4e
@@ -188,6 +179,21 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
     (smtpmail-smtp-user     . "gunnar.bastkowski@gmail.com")
     (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
   t)
+(set-email-account! "gmx.de"
+  '((mu4e-sent-folder       . "/gbastkowski@gmx.de/Sent")
+    (mu4e-drafts-folder     . "/gbastkowski@gmx.de/Drafts")
+    (mu4e-trash-folder      . "/gbastkowski@gmx.de/Trash")
+    (mu4e-refile-folder     . "/gbastkowski@gmx.de/Archive")
+    (smtpmail-smtp-user     . "gbastkowski@gmx.de")
+    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+  t)
+
+(setq mu4e-bookmarks            '((:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
+                                  (:name "Inbox"                 :query "maildir:/inbox/"                      :key 116)
+                                  (:name "Today's messages"      :query "date:today..now"                      :key 116)
+                                  (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
+                                  ("flag:flagged" "Flagged messages" 102)
+                                  (:name "Messages with images"  :query "mime:image/*"                         :key 112)))
 #+end_src
 
 

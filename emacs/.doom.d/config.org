@@ -189,7 +189,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
   t)
 
 (setq mu4e-bookmarks            '((:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
-                                  (:name "Inbox"                 :query "maildir:/inbox/"                      :key 116)
+                                  (:name "Inbox"                 :query "maildir:/inbox/ OR maildir:/INBOX/"   :key 105)
+                                  (:name "Waiting"               :query "maildir:/Waiting/"                    :key 119)
                                   (:name "Today's messages"      :query "date:today..now"                      :key 116)
                                   (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
                                   ("flag:flagged" "Flagged messages" 102)

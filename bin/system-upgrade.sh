@@ -1,20 +1,15 @@
 #!/usr/bin/env sh
-#
 
-OSTYPE=$(./ostype.sh)
-if [ -f $HOME/.bashrc ]
-then
-. $HOME/.bashrc
-fi
+SCRIPTPATH=$(dirname $0)
+OSTYPE=$($SCRIPTPATH/ostype.sh)
+# [ -f $HOME/.bashrc ] && $HOME/.bashrc
 
 case "$OSTYPE" in
-  darwin*)  source $(dirname $0)/macos.include.sh ;;
-  linux*)   source $(dirname $0)/linux.include.sh ;;
-  termux*)  source $(dirname $0)/termux.include.sh ;;
+  darwin*)  . $SCRIPTPATH/macos.include.sh ;;
+  linux*)   . $SCRIPTPATH/linux.include.sh ;;
+  termux*)  . $SCRIPTPATH/termux.include.sh ;;
   *)        echo "unknown: $OSTYPE" ; exit 1 ;;
 esac
-
-exit 0
 
 upgrade_system_and_packages
 

@@ -142,3 +142,7 @@ unset __conda_setup
 
 # Created by `pipx` on 2024-05-10 23:04:23
 export PATH="$PATH:/home/gunnar/.local/bin"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

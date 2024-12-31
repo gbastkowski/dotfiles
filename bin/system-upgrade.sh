@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/bash
 
 SCRIPTPATH=$(dirname $0)
 OSTYPE=$($SCRIPTPATH/ostype.sh)
@@ -15,9 +15,13 @@ upgrade_system_and_packages
 
 upgrade_python_packages
 
-echo "updating sdkman"
-sdk selfupdate
-sdk upgrade
+if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]
+then
+  echo "updating sdkman"
+  source "$HOME/.sdkman/bin/sdkman-init.sh"
+  sdk selfupdate
+  sdk upgrade
+fi
 
 echo "updating dotfiles ..."
 echo

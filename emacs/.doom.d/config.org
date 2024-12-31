@@ -76,9 +76,9 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 
 #+begin_src emacs-lisp
 (cond ((eq system-type 'gnu/linux)
-       (setq! doom-font (font-spec :family "Iosevka" :size 18)))
+       (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 18)))
       (t
-       (setq! doom-font (font-spec :family "Iosevka" :size 13))))
+       (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 13))))
 
 (global-prettify-symbols-mode t)
 ;; (map! :leader :desc "Toggle global prettify symbols mode" :n "aP" #'global-prettify-symbols-mode)
@@ -711,14 +711,14 @@ Inspiration can be obtained from
 ** Settings
 
 #+begin_src emacs-lisp
-(setq! TeX-command-list
-       (append TeX-command-list
-               '(("LatexMk" "latexmk %s" TeX-run-TeX nil t
-                  :help "Run latexmk to compile the document")
-                 ("LatexMk-PVC" "latexmk -pvc %s" TeX-run-TeX nil t
-                  :help "Run latexmk to compile the document"))))
-
-(setq! TeX-command-default "LatexMk-PVC")
+(after! tex
+  (setq TeX-command-list
+        (append TeX-command-list
+                '(("LatexMk" "latexmk %s" TeX-run-TeX nil t
+                   :help "Run latexmk to compile the document")
+                  ("LatexMk-PVC" "latexmk -pvc %s" TeX-run-TeX nil t
+                   :help "Run latexmk to compile the document"))))
+  (setq TeX-command-default "LatexMk-PVC"))
 #+end_src
 
 

@@ -1,13 +1,20 @@
 #!/usr/bin/env sh
 #
 
+OSTYPE=$(./ostype.sh)
+if [ -f $HOME/.bashrc ]
+then
 . $HOME/.bashrc
+fi
 
 case "$OSTYPE" in
   darwin*)  source $(dirname $0)/macos.include.sh ;;
   linux*)   source $(dirname $0)/linux.include.sh ;;
+  termux*)  source $(dirname $0)/termux.include.sh ;;
   *)        echo "unknown: $OSTYPE" ; exit 1 ;;
 esac
+
+exit 0
 
 upgrade_system_and_packages
 

@@ -76,9 +76,9 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 
 #+begin_src emacs-lisp
 (cond ((eq system-type 'gnu/linux)
-       (setq! doom-font (font-spec :family "Iosevka" :size 18)))
+       (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 18)))
       (t
-       (setq! doom-font (font-spec :family "Iosevka" :size 13))))
+       (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 13))))
 
 (global-prettify-symbols-mode t)
 ;; (map! :leader :desc "Toggle global prettify symbols mode" :n "aP" #'global-prettify-symbols-mode)
@@ -189,8 +189,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
   t)
 
 (setq mu4e-bookmarks            '((:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
-                                  (:name "Inbox"                 :query "maildir:/inbox/ OR maildir:/INBOX/"   :key 105)
-                                  (:name "Waiting"               :query "maildir:/Waiting/"                    :key 119)
+                                  (:name "Inbox"                 :query "maildir:/inbox/"                      :key 116)
                                   (:name "Today's messages"      :query "date:today..now"                      :key 116)
                                   (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
                                   ("flag:flagged" "Flagged messages" 102)
@@ -719,7 +718,6 @@ Inspiration can be obtained from
                    :help "Run latexmk to compile the document")
                   ("LatexMk-PVC" "latexmk -pvc %s" TeX-run-TeX nil t
                    :help "Run latexmk to compile the document"))))
-
   (setq TeX-command-default "LatexMk-PVC"))
 #+end_src
 

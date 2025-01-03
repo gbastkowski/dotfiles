@@ -1,11 +1,13 @@
-#!/usr/bin/env sh
-#
+#!/usr/bin/bash
 
-. $HOME/.bashrc
+SCRIPTPATH=$(dirname $0)
+OSTYPE=$($SCRIPTPATH/ostype.sh)
+# [ -f $HOME/.bashrc ] && $HOME/.bashrc
 
 case "$OSTYPE" in
-  darwin*)  source $(dirname $0)/macos.include.sh ;;
-  linux*)   source $(dirname $0)/linux.include.sh ;;
+  darwin*)  . $SCRIPTPATH/macos.include.sh ;;
+  linux*)   . $SCRIPTPATH/linux.include.sh ;;
+  termux*)  . $SCRIPTPATH/termux.include.sh ;;
   *)        echo "unknown: $OSTYPE" ; exit 1 ;;
 esac
 
@@ -13,9 +15,13 @@ upgrade_system_and_packages
 
 upgrade_python_packages
 
-echo "updating sdkman"
-sdk selfupdate
-sdk upgrade
+if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]
+then
+  echo "updating sdkman"
+  source "$HOME/.sdkman/bin/sdkman-init.sh"
+  sdk selfupdate
+  sdk upgrade
+fi
 
 echo "updating dotfiles ..."
 echo
@@ -40,15 +46,15 @@ EDITOR=vim git -C emacs/.emacs.d merge upstream/main
 EDITOR=vim git -C emacs/.emacs.d push
 echo
 
-echo "updating spacemacs ..."
-git -C emacs/.emacs.spacemacs fetch --all
-EDITOR=vim git -C emacs/.emacs.spacemacs checkout develop
-EDITOR=vim git -C emacs/.emacs.spacemacs merge upstream/develop
-EDITOR=vim git -C emacs/.emacs.spacemacs push
-EDITOR=vim git -C emacs/.emacs.spacemacs checkout gunnar
-EDITOR=vim git -C emacs/.emacs.spacemacs merge develop
-EDITOR=vim git -C emacs/.emacs.spacemacs push
-echo
+# echo "updating spacemacs ..."
+# git -C emacs/.emacs.spacemacs fetch --all
+# EDITOR=vim git -C emacs/.emacs.spacemacs checkout develop
+# EDITOR=vim git -C emacs/.emacs.spacemacs merge upstream/develop
+# EDITOR=vim git -C emacs/.emacs.spacemacs push
+# EDITOR=vim git -C emacs/.emacs.spacemacs checkout gunnar
+# EDITOR=vim git -C emacs/.emacs.spacemacs merge develop
+# EDITOR=vim git -C emacs/.emacs.spacemacs push
+# echo
 
 echo "updating doomemacs ..."
 git -C emacs/.emacs.doom fetch --all

@@ -250,8 +250,9 @@ Inspiration can be obtained from
 *** Settings
 #+begin_src emacs-lisp
 (setq! org-superstar-headline-bullets-list '("◉" "○" "⬥" "⬦" "▸" "▹")
-       org-directory                "~/org/"
-       org-mobile-directory         "~/org/")
+       org-directory                        "~/org/"
+       org-mobile-directory                 "~/org/"
+       org-modules                         '(ol-bibtex org-habit))
 #+end_src
 
 **** Tags

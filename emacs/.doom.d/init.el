@@ -37,7 +37,7 @@
                     unicode
                     (vc-gutter +pretty)
                     vi-tilde-fringe
-                    (window-select +numbers)
+                    window-select
                     workspaces
                     zen
         :editor     (evil +everywhere)

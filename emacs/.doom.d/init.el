@@ -119,7 +119,7 @@
                     (java +lsp)                       ; the poster child for carpal tunnel syndrome
                     (javascript +lsp +tree-sitter)    ; all(hope(abandon(ye(who(enter(here))))))
                     ;;julia                           ; a better, faster MATLAB
-                    kotlin                            ; a better, slicker Java(Script)
+                    (kotlin +lsp)                     ; a better, slicker Java(Script)
                     (latex +fold +lsp)                ; writing papers in Emacs has never been so fun
                     ;;lean                            ; for folks with too much to prove
                     ;;ledger                          ; be audit you can be
@@ -139,7 +139,7 @@
                     rest
                     ;;rst                             ; ReST in peace
                     ;;(ruby +rails)
-                    ;;(rust +lsp)
+                    (rust +lsp)
                     (scala +lsp +tree-sitter)
                     ;;(scheme +guile)
                     sh
@@ -160,4 +160,4 @@
                     ;;(rss +org)                      ; emacs as an RSS reader
                     ;;twitter                         ; twitter client https://twitter.com/vnought
        :config      literate
-                    (default +bindings +smartparens))
+                    (default +bindings +gnupg +smartparens))

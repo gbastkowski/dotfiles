@@ -1,7 +1,13 @@
 [general]
-accounts        = Gmail-mine, gmx, bastkowski, digitalstep
+accounts        = akiko, Gmail-mine, gmx, bastkowski, digitalstep
 maxsyncaccounts = 3
 pythonfile      = ~/.offlineimap.py
+
+[Account akiko]
+localrepository = akikolocal
+remoterepository = akikoremote
+synclabels = yes
+labelsheader = X-Keywords
 
 [Account Gmail-mine]
 localrepository = Gmaillocal-mine
@@ -26,6 +32,14 @@ localrepository = digitalsteplocal
 remoterepository = digitalstepserver
 synclabels = yes
 labelsheader = X-Keywords
+
+[Repository akikolocal]
+type = IMAP
+remotehost = localhost
+remoteusereval = get_pass("private/localimap/imap-user")
+remotepasseval = get_pass("private/localimap/imap-pass")
+sslcacertfile = /etc/openssl@3/cert.pem
+ssl = yes
 
 [Repository Gmailserver-mine]
 type = Gmail

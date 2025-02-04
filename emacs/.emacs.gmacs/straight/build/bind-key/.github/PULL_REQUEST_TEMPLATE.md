@@ -1,0 +1,1 @@
+/home/gunnar/.emacs.gmacs/straight/repos/bind-key/.github/PULL_REQUEST_TEMPLATE.md

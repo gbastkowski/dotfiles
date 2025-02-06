@@ -207,8 +207,6 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 * Copilot
 ** Settings
-
-#+begin_src emacs-lisp
 ;; accept completion from copilot and fallback to company
 (use-package! copilot
   :hook (prog-mode . copilot-mode)
@@ -217,7 +215,6 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
               ("TAB" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
-#+end_src
 
 * OpenAI
 ** Settings

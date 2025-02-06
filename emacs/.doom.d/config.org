@@ -155,6 +155,14 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 (setq mu4e-update-interval 60)
 (setq +mu4e-gmail-accounts '(("gunnar.bastkowski@gmail.com" . "/gunnar.bastkowski@gmail.com")))
 
+(set-email-account! "akiko.local"
+  '((mu4e-sent-folder       . "/gunnar@akiko.local/Sent")
+    (mu4e-drafts-folder     . "/gunnar@akiko.local/Drafts")
+    (mu4e-trash-folder      . "/gunnar@akiko.local/Trash")
+    (mu4e-refile-folder     . "/gunnar@akiko.local/Archive")
+    (smtpmail-smtp-user     . "gunnar@akiko.local")
+    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+  t)
 (set-email-account! "bastkowski.name"
   '((mu4e-sent-folder       . "/gunnar@bastkowski.name/Sent")
     (mu4e-drafts-folder     . "/gunnar@bastkowski.name/Drafts")
@@ -196,6 +204,20 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
                                   (:name "Messages with images"  :query "mime:image/*"                         :key 112)))
 #+end_src
 
+
+* Copilot
+** Settings
+
+#+begin_src emacs-lisp
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+#+end_src
 
 * OpenAI
 ** Settings

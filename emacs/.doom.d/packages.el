@@ -54,3 +54,6 @@
 
 (package! corfu-quick
   :recipe (:host github :repo "minad/corfu" :files ("extensions/*")))
+
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))

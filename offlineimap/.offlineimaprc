@@ -5,7 +5,7 @@ pythonfile      = ~/.offlineimap.py
 
 [Account akiko]
 localrepository = akikolocal
-remoterepository = akikoremote
+remoterepository = akikoserver
 synclabels = yes
 labelsheader = X-Keywords
 
@@ -33,13 +33,12 @@ remoterepository = digitalstepserver
 synclabels = yes
 labelsheader = X-Keywords
 
-[Repository akikolocal]
+[Repository akikoserver]
 type = IMAP
 remotehost = localhost
 remoteusereval = get_pass("private/localimap/imap-user")
 remotepasseval = get_pass("private/localimap/imap-pass")
-sslcacertfile = /etc/openssl@3/cert.pem
-ssl = yes
+ssl = no
 
 [Repository Gmailserver-mine]
 type = Gmail
@@ -70,6 +69,10 @@ remoteusereval = get_pass("private/digitalstep.de/imap-user")
 remotepasseval = get_pass("private/digitalstep.de/imap-pass")
 sslcacertfile = /etc/openssl@3/cert.pem
 ssl = yes
+
+[Repository akikolocal]
+type = Maildir
+localfolders = ~/.mail/gunnar@akiko.local
 
 [Repository Gmaillocal-mine]
 type = GmailMaildir

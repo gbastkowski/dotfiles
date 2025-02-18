@@ -49,11 +49,6 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
-(package! command-log-mode
-  :recipe (:host github :repo "lewang/command-log-mode"))
-
-(package! corfu-quick
-  :recipe (:host github :repo "minad/corfu" :files ("extensions/*")))
-
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+(package! command-log-mode  :recipe (:host github :repo "lewang/command-log-mode"))
+(package! corfu-quick       :recipe (:host github :repo "minad/corfu"              :files ("extensions/*")))
+(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))

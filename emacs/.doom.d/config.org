@@ -207,8 +207,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 * Copilot
 ** Settings
-accept completion from copilot and fallback to company
 #+begin_src emacs-lisp
+accept completion from copilot and fallback to company
 (use-package! copilot
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map

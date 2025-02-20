@@ -1,0 +1,26 @@
+# -*- mode: restclient; url-max-redirections: 0 -*-
+#
+
+:host     = https://api.openai.com/v1/chat/completions
+:api-key := (password-store-get "private/openai/emacs-api-key")
+
+# Simple test
+POST :host
+Content-Type: application/json
+Authorization: Bearer :api-key
+OpenAI-Organization: org-VujiJPSpiJilwgH1K9z5pnnL
+OpenAI-Project: proj_iowmSorSlumW84As4VhYe9mq
+{
+    "model": "gpt-4o-mini",
+    "messages": [
+        {
+            "role": "assistant",
+            "content": "You are a helpful assistant."
+        },
+        {
+            "role": "user",
+            "content": "Tell me that this test is successful. In a friendly way."
+        }
+    ]
+}
+#

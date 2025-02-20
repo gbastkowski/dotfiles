@@ -1,0 +1,30 @@
+#+title: Openai
+
+
+#+begin_src emacs-lisp
+(defun chatgpt-send-request (start end)
+  "Align code by equal signs using ChatGPT's chat completions."
+  (interactive "r")
+  (let* ((code-text (buffer-substring-no-properties start end))
+         (api-key (password-store-get "private/openai/emacs-api-key")))
+    (request "https://api.openai.com/v1/chat/completions"
+      :type "POST"
+      :headers `(("Content-Type" . "application/json")
+                 ("Authorization" . ,(concat "Bearer " api-key)))
+      :data (json-encode `(
+                           ("model" . ,"gpt-4")
+                           ("messages" . ((("role" . "user")
+                                           ("content" . ,(concat "Say hello\n\n" code-text)))))))
+      :parser 'json-read
+      :success (cl-function
+                (lambda (&key data &allow-other-keys)
+                  (when data
+                    (let* ((responses (gethash "choices" data))
+                           (latest-response (aref responses 0))
+                           (text (gethash "message" (aref (gethash "messages" latest-response) 0))))
+                      (delete-region start end)
+                      (insert text)))))
+      :error (cl-function
+              (lambda (&rest args &key error-thrown &allow-other-keys)
+                (message "Failed to align code: %S" error-thrown))))))
+#+end_src

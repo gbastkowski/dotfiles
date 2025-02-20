@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/markdown-mode/markdown-mode.el

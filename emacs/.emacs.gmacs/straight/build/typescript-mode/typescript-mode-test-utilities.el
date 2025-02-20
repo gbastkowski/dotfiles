@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/typescript.el/typescript-mode-test-utilities.el

@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/compat/.github/PULL_REQUEST_TEMPLATE.md

@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/consult-yasnippet/consult-yasnippet.el

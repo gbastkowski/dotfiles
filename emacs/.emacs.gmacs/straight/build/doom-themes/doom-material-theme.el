@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/themes/themes/doom-material-theme.el

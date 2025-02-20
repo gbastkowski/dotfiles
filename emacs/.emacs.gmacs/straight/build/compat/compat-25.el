@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/compat/compat-25.el

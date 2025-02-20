@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/nerd-icons-corfu/nerd-icons-corfu.el

@@ -2,30 +2,42 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Nov 12 11:13:21 2024
+;; Created Fri Feb 14 13:46:53 2025
 ;; Desktop file format version 208
 ;; Emacs version 29.4
 
 ;; Global section:
-(setq desktop-saved-frameset [frameset 1 (26419 10817 501584 878000) (desktop . "208") "gunnar@akiko" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font . "-UKWN-Iosevka-regular-normal-normal-*-19-*-*-*-d-0-iso10646-1") (border-width . 0) (internal-border-width . 0) (child-frame-border-width) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars) (foreground-color . "#bbc2cf") (background-color . "#282828") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 10) (right-fringe . 10) (no-special-glyphs) (scroll-bar-foreground) (scroll-bar-background) (menu-bar-lines . 0) (tab-bar-lines . 0) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 16) (alpha) (alpha-background) (no-focus-on-map) (no-accept-focus) (fullscreen) (visibility . t) (use-frame-synchronization) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "#51afef") (font-parameter) (sticky) (shaded) (environment) (persp) (persp-buffer-predicate-old . "Unprintable entity") (persp-buffer-predicate-generated . "Unprintable entity") (dnd-root-window-position) (last-focus-update . t) (tabs (current-tab (name . "config.org") (explicit-name))) (frameset--id . "4BF7-1544-8411-803B") (frameset--mini t . t) (modeline . t) (unsplittable) (icon-name) (display . ":0") (explicit-name) (height . 83) (width . 141) (left . 1442) (top . 60)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 4) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 100) (min-pixel-width . 100) (min-pixel-height-ignore . 50) (min-pixel-width-ignore . 40) (min-pixel-height-safe . 25) (min-pixel-width-safe . 20)) leaf (pixel-width . 1436) (pixel-height . 2073) (total-width . 144) (total-height . 82) (normal-height . 1.0) (normal-width . 1.0) (buffer "config.org" (selected . t) (hscroll . 0) (fringes 10 10 nil nil) (margins nil) (scroll-bars nil 0 t nil 0 t nil) (vscroll . 0) (dedicated) (point . 8047) (start . 1)) (prev-buffers ("*scratch*" 1 1))))])
+(setq desktop-saved-frameset [frameset 1 (26543 15165 658796 670000) (desktop . "208") "gunnar@akiko" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font . "-UKWN-Iosevka-regular-normal-normal-*-19-*-*-*-d-0-iso10646-1") (border-width . 0) (internal-border-width . 0) (child-frame-border-width) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars) (foreground-color . "#bbc2cf") (background-color . "#282828") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 10) (right-fringe . 10) (no-special-glyphs) (scroll-bar-foreground) (scroll-bar-background) (menu-bar-lines . 0) (tab-bar-lines . 0) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 16) (alpha) (alpha-background) (no-focus-on-map) (no-accept-focus) (fullscreen . maximized) (visibility . t) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "#51afef") (font-parameter) (sticky) (environment) (last-focus-update . t) (persp) (persp-buffer-predicate-old . "Unprintable entity") (persp-buffer-predicate-generated . "Unprintable entity") (use-frame-synchronization) (shaded) (dnd-root-window-position) (tabs (current-tab (name . "config.org") (explicit-name))) (frameset--id . "4BF7-1544-8411-803B") (frameset--mini t . t) (modeline . t) (unsplittable) (icon-name) (display . "wayland-1") (explicit-name) (height . 41) (width . 189) (left . 0) (top . 0)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 4) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 100) (min-pixel-width . 100) (min-pixel-height-ignore . 50) (min-pixel-width-ignore . 40) (min-pixel-height-safe . 25) (min-pixel-width-safe . 20)) leaf (pixel-width . 1916) (pixel-height . 1022) (total-width . 192) (total-height . 40) (normal-height . 1.0) (normal-width . 1.0) (buffer "init.el" (selected . t) (hscroll . 0) (fringes 10 10 nil nil) (margins nil) (scroll-bars nil 0 t nil 0 t nil) (vscroll . 0) (dedicated) (point . 1) (start . 1)) (prev-buffers ("config.org" 1 8752) ("*scratch*" 1 1))))])
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring nil)
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/.emacs.gmacs/config.org" "~/org/projects.org"))
+(setq file-name-history '("~/git/gbastkowski/dotfiles/emacs/.emacs.gmacs/init.el" "~/.emacs.gmacs/config.org" "~/org/projects.org"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 208
-  "/home/gunnar/.emacs.gmacs/config.org"
+  "/home/gunnar/git/gbastkowski/dotfiles/emacs/.emacs.gmacs/init.el"
+  "init.el"
+  'emacs-lisp-mode
+  '(font-lock-mode eldoc-mode display-line-numbers-mode evil-local-mode corfu-mode rainbow-delimiters-mode)
+  1
+  '(1316 nil)
+  nil
+  nil
+  '((buffer-display-time 26543 14730 130799 156000) (buffer-file-coding-system . prefer-utf-8-unix) (overwrite-mode))
+  '((mark-ring (1278 744))))
+
+(desktop-create-buffer 208
+  "/home/gunnar/git/gbastkowski/dotfiles/emacs/.emacs.gmacs/config.org"
   "config.org"
   'org-mode
-  '(corfu-mode org-fancy-priorities-mode evil-local-mode org-superstar-mode font-lock-mode org-indent-mode)
-  8047
-  '(5540 nil)
+  '(font-lock-mode org-indent-mode org-superstar-mode evil-local-mode org-fancy-priorities-mode corfu-mode)
+  8752
+  '(8752 nil)
   nil
   nil
-  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 26419 10796 134078 448000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode) (truncate-lines . t))
-  '((mark-ring (5742 5742 5773 5805 5835 5875 5900 7809))))
+  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 26543 14721 820740 284000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode) (truncate-lines . t))
+  '((mark-ring (5540 5742 5742 5773 5805 5835 5875 5900 7809))))
 

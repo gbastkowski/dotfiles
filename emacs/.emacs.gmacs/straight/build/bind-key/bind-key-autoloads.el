@@ -9,6 +9,10 @@
 
 ;;; Generated autoloads from bind-key.el
 
+(defvar personal-keybindings nil "\
+List of bindings performed by `bind-key'.
+
+Elements have the form ((KEY . [MAP]) CMD ORIGINAL-CMD)")
 (autoload 'bind-key "bind-key" "\
 Bind KEY-NAME to COMMAND in KEYMAP (`global-map' if not passed).
 
@@ -17,8 +21,7 @@ KEY-NAME may be a vector, in which case it is passed straight to
 spelled-out keystrokes, e.g., \"C-c C-z\".  See the documentation
 of `edmacro-mode' for details.
 
-COMMAND must be an interactive function, lambda form, or a cons
-`(STRING . DEFN)'.
+COMMAND must be an interactive function or lambda form.
 
 KEYMAP, if present, should be a keymap variable or symbol.
 For example:
@@ -64,7 +67,7 @@ Accepts keyword arguments:
                          key in the repeat map, but will not set the
                          `repeat-map' property of the bound command.
 :continue BINDINGS     - Within the scope of `:repeat-map' forces the
-                         same behaviour as if no special keyword had
+                         same behavior as if no special keyword had
                          been used (that is, the command is bound, and
                          it's `repeat-map' property set)
 :filter FORM           - optional form to determine when bindings apply
@@ -83,7 +86,7 @@ other modes.  See `override-global-mode'.
 (fn &rest ARGS)" nil t)
 (autoload 'describe-personal-keybindings "bind-key" "\
 Display all the personal keybindings defined by `bind-key'." t)
-(register-definition-prefixes "bind-key" '("bind-key" "compare-keybindings" "get-binding-description" "override-global-m" "personal-keybindings"))
+(register-definition-prefixes "bind-key" '("bind-key" "override-global-m"))
 
 ;;; End of scraped data
 

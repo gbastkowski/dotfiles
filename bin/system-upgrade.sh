@@ -5,8 +5,8 @@ OSTYPE=$($SCRIPTPATH/ostype.sh)
 # [ -f $HOME/.bashrc ] && $HOME/.bashrc
 
 case "$OSTYPE" in
+  arch*)    . $SCRIPTPATH/linux.include.sh ;;
   darwin*)  . $SCRIPTPATH/macos.include.sh ;;
-  linux*)   . $SCRIPTPATH/linux.include.sh ;;
   termux*)  . $SCRIPTPATH/termux.include.sh ;;
   *)        echo "unknown: $OSTYPE" ; exit 1 ;;
 esac

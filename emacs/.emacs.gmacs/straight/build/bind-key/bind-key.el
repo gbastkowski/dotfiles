@@ -1,1 +1,1 @@
-/home/gunnar/.emacs.gmacs/straight/repos/use-package/bind-key.el
+/home/gunnar/.emacs.gmacs/straight/repos/bind-key/bind-key.el

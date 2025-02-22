@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/org/lisp/org-compat.el

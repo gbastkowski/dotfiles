@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/org-fancy-priorities/org-fancy-priorities.el

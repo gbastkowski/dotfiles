@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/vertico/extensions/vertico-indexed.el

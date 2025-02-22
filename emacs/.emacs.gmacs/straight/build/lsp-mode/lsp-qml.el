@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/lsp-mode/clients/lsp-qml.el

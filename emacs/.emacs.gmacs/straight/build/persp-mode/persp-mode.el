@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/persp-mode.el/persp-mode.el

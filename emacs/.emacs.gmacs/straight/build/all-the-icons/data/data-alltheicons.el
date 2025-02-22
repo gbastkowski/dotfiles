@@ -1,1 +1,0 @@
-/home/gunnar/.emacs.gmacs/straight/repos/all-the-icons.el/data/data-alltheicons.el

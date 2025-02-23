@@ -9,10 +9,8 @@
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
-(cond ((eq system-type 'gnu/linux)
-       (setenv "SSH_AUTH_SOCK" "/run/user/1000/gnupg/S.gpg-agent.ssh"))
-      (t
-       (setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh")))
+(cond ((eq system-type 'gnu/linux) (setenv "SSH_AUTH_SOCK" "/run/user/1000/gnupg/S.gpg-agent.ssh"))
+      (t                           (setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh")))
 
 (setq! auth-sources                       '(password-store))
 
@@ -222,14 +220,12 @@ accept completion from copilot and fallback to company
 * OpenAI
 ** Settings
 #+begin_src emacs-lisp
-(use-package! org-pandoc-import :after org)
-
 (setq! openai-key                         (password-store-get "private/openai/emacs-api-key")
        openai-user                        "gunnar.bastkowski@gmail.com")
 #+end_src
 ** Functions
 #+BEGIN_SRC emacs-lisp
-(load "openai/openai-playground")
+;; (use-package! openai-playground)
 #+END_SRC
 
 

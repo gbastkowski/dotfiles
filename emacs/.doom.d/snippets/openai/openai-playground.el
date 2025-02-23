@@ -117,5 +117,3 @@
                                        (user      . ,(format "Please explain the following %s code:\n%s" language code)))))))
 
 ;;; openai-playground.el ends here
-
-Tony

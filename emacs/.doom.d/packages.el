@@ -49,7 +49,10 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+;; (package! org-pandoc-import :recipe (:host github :repo "tecosaur/org-pandoc-import" :files ("*.el" "filters" "preprocessors")))
+
 (package! command-log-mode  :recipe (:host github :repo "lewang/command-log-mode"))
 (package! corfu-quick       :recipe (:host github :repo "minad/corfu"                :files ("extensions/*")))
 (package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
-(package! org-pandoc-import :recipe (:host github :repo "tecosaur/org-pandoc-import" :files ("*.el" "filters" "preprocessors")))
+
+(package! openai-playground :recipe (:local-repo "openai/playground" :build (:not compile)))

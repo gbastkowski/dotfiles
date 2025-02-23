@@ -20,22 +20,27 @@
 ;;; Code:
 (provide 'openai-playground)
 
-;;
-;; Public variables
-;;
-
-(defconst openai-playground-completion-api   "https://api.openai.com/v1/chat/completions")
-(defconst openai-playground-project          "proj_iowmSorSlumW84As4VhYe9mq")
-(defconst openai-playground-org              "org-VujiJPSpiJilwgH1K9z5pnnL")
-(defconst openai-playground-completion-model "gpt-4o-mini")
-(defconst openai-playground-headers          `(("Content-Type"        . "application/json")
-                                               ("Authorization"       . ,(concat "Bearer " (password-store-get "private/openai/emacs-api-key")))
-                                               ("OpenAI-Organization" . ,openai-org)
-                                               ("OpenAI-Project"      . ,openai-project)))
+(require 'markdown-mode)
+(require 'posframe)
 
 ;;
-;; Private functions
+;;; Public variables
 ;;
+
+(defvar openai-playground-completion-api)
+(defvar openai-playground-project)
+(defvar openai-playground-org)
+(defvar openai-playground-completion-model "gpt-4o-mini")
+
+;;
+;;; Private functions
+;;
+
+(defun openai-playground--request-headers ()
+  `(("Content-Type"        . "application/json")
+    ("Authorization"       . ,(concat "Bearer " (password-store-get "private/openai/emacs-api-key")))
+    ("OpenAI-Organization" . ,openai-playground-org)
+    ("OpenAI-Project"      . ,openai-playground-project)))
 
 (defun openai-playground--completion-request-create-body (messages &optional model)
   (let ((model (or model openai-playground-completion-model))
@@ -59,24 +64,42 @@
     (insert text)))
 
 (defun openai-playground--completion-show-in-posframe (text)
-  (posframe-show "*openai-playground-output*"
-                 :string "text"
-                 :poshandler posframe-poshandler-frame-bottom-right-corner
-                 :border-width 1
-                 :border-color "gray"
-                 :initialize (lambda () (markdown-mode))))
+  (let ((posframe (posframe-show " *openai-playground-output*"
+                                 :string text
+                                 ;; :position (point)
+                                 :poshandler #'posframe-poshandler-window-top-right-corner
+                                 :x-pixel-offset 10
+                                 :y-pixel-offset 10
+                                 :max-width 80
+                                 :border-width 2
+                                 :border-color "green"
+                                 :initialize (lambda () (markdown-mode)))))
+    posframe))
 
-(setq openai-playground-output-function
-      (lambda (text)
-        (posframe-show "*openai-playground-output*"
-                       :string "text"
-                       :poshandler posframe-poshandler-frame-bottom-right-corner
-                       :border-width 1
-                       :border-color "gray"
-                       :initialize (lambda () (markdown-mode)))))
+(defun openai-playground--completion-show-in-sidewindow (text)
+  (let ((buffer (get-buffer-create " *openai-playground-output*")))
+    (with-current-buffer buffer
+      (markdown-mode)
+      (erase-buffer)
+      (insert text))
+    (display-buffer-in-side-window buffer
+                                   '((side         . right)
+                                     (window-width . 0.4)))))
+
+(defun openai-playground--completion-show-in-window-right (text)
+  (let ((buffer (get-buffer-create " *openai-playground-output*")))
+    (with-current-buffer buffer
+      (markdown-mode)
+      (erase-buffer)
+      (insert text))
+    (display-buffer-in-direction buffer
+                                   '((direction    . right)
+                                     (window-width . 0.4)))))
+
+(setq openai-playground-output-function #'openai-playground--completion-show-in-posframe)
 
 ;;
-;; Public functions
+;;; Public functions
 ;;
 
 (defun openai-playground-completion-send-region (fn)
@@ -85,33 +108,27 @@
            (end      (region-end))
            (code     (buffer-substring-no-properties start end))
            (messages (funcall fn code)))
+      (funcall openai-playground-output-function (concat "------------------------------------------\n"
+                                                         "            **Please wait...**            \n"
+                                                         "------------------------------------------\n"))
       (request openai-playground-completion-api
         :type "POST"
-        :headers openai-playground-headers
+        :headers (openai-playground--request-headers)
         :data (openai-playground--completion-request-create-body messages)
         :parser 'json-read
         :success (cl-function
                   (lambda (&key data &allow-other-keys)
                     (when data
-                      ;; (funcall openai-playground-output-function (openai-playground--completion-response-extract-messages data))
-                      (posframe-show "*openai-playground-output*"
-                       :string "text"
-                       :poshandler posframe-poshandler-frame-bottom-right-corner
-                       :border-width 1
-                       :border-color "gray"
-                       :initialize (lambda () (markdown-mode)))
-                      )))
+                      (funcall openai-playground-output-function (openai-playground--completion-response-extract-messages data)))))
 
         :error (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
                               (message "Got error: %S" error-thrown)))
-
-        :complete (lambda (&rest _) (message "Finished!"))
 
         :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
                        (418 . (lambda (&rest _) (message "Got 418."))))))))
 
 ;;
-;; Public interactive functions
+;;; Public interactive functions
 ;;
 
 (defun openai-playground-completion-say-hello ()
@@ -128,8 +145,5 @@
        `((assistant . "I am very brief. User knows the context and the programming language in which the code is written.")
          (user      . ,(format "Please explain the following %s code:\n%s" language code))
          (user      . "Start with a short paragraph which describes what the code does."))))))
-
-
-(posframe-delete-all)
 
 ;;; openai-playground.el ends here

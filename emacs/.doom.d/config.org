@@ -205,8 +205,8 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 * Copilot
 ** Settings
-#+begin_src emacs-lisp
 accept completion from copilot and fallback to company
+#+begin_src emacs-lisp
 (use-package! copilot
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
@@ -220,13 +220,17 @@ accept completion from copilot and fallback to company
 * OpenAI
 ** Settings
 #+begin_src emacs-lisp
-(setq! openai-key                         (password-store-get "private/openai/emacs-api-key")
-       openai-user                        "gunnar.bastkowski@gmail.com")
+(setq! openai-playground-completion-api   "https://api.openai.com/v1/chat/completions"
+       openai-playground-completion-model "gpt-4o-mini"
+       openai-playground-key              (password-store-get "private/openai/emacs-api-key")
+       openai-playground-project          (password-store-get "private/openai/default-project-id")
+       openai-playground-org              (password-store-get "private/openai/default-org-id"))
+
 #+end_src
 ** Functions
-#+BEGIN_SRC emacs-lisp
-;; (use-package! openai-playground)
-#+END_SRC
+#+begin_src emacs-lisp
+(use-package! openai-playground)
+#+end_src
 
 
 * Org Mode

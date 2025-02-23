@@ -222,41 +222,14 @@ accept completion from copilot and fallback to company
 * OpenAI
 ** Settings
 #+begin_src emacs-lisp
+(use-package! org-pandoc-import :after org)
+
 (setq! openai-key                         (password-store-get "private/openai/emacs-api-key")
        openai-user                        "gunnar.bastkowski@gmail.com")
 #+end_src
 ** Functions
 #+BEGIN_SRC emacs-lisp
-(require 'request)
-(require 'json)
-
-(setq api-key (password-store-get "private/openai/emacs-api-key"))
-
-(defun chatgpt-align-code (start end)
-  "Align code by equal signs using ChatGPT's chat completions."
-  (interactive "r")
-  (let* ((code-text (buffer-substring-no-properties start end))
-         (api-key (password-store-get "private/openai/emacs-api-key")))
-    (request "https://api.openai.com/v1/chat/completions"
-      :type "POST"
-      :headers `(("Content-Type" . "application/json")
-                 ("Authorization" . ,(concat "Bearer " api-key)))
-      :data (json-encode `(
-                           ("model" . ,"gpt-4")
-                           ("messages" . ((("role" . "user")
-                                           ("content" . ,(concat "Align the following code by equal signs:\n\n" code-text)))))))
-      :parser 'json-read
-      :success (cl-function
-                (lambda (&key data &allow-other-keys)
-                  (when data
-                    (let* ((responses (gethash "choices" data))
-                           (latest-response (aref responses 0))
-                           (text (gethash "message" (aref (gethash "messages" latest-response) 0))))
-                      (delete-region start end)
-                      (insert text)))))
-      :error (cl-function
-              (lambda (&rest args &key error-thrown &allow-other-keys)
-                (message "Failed to align code: %S" error-thrown))))))
+(load "openai/openai-playground")
 #+END_SRC
 
 

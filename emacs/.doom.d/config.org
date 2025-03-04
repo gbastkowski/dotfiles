@@ -1,32 +1,46 @@
 #+startup: overview
 * Header
-#+begin_src
-(defun chatgpt-send-request (start end)
-  "Align code by equal signs using ChatGPT's chat completions."
-  (interactive "r")
-  (let* ((code-text (buffer-substring-no-properties start end))
-         (api-key (password-store-get "private/openai/emacs-api-key")))
-    (request "https://api.openai.com/v1/chat/completions"
-      :type "POST"
-      :headers `(("Content-Type" . "application/json")
-                 ("Authorization" . ,(concat "Bearer " api-key)))
-      :data (json-encode `(
-                           ("model" . ,"gpt-4")
-                           ("messages" . ((("role" . "user")
-                                           ("content" . ,(concat "Say hello\n\n" code-text)))))))
-      :parser 'json-read
-      :success (cl-function
-                (lambda (&key data &allow-other-keys)
-                  (when data
-                    (let* ((responses (gethash "choices" data))
-                           (latest-response (aref responses 0))
-                           (text (gethash "message" (aref (gethash "messages" latest-response) 0))))
-                      (delete-region start end)
-                      (insert text)))))
-      :error (cl-function
-              (lambda (&rest args &key error-thrown &allow-other-keys)
-                (message "Failed to align code: %S" error-thrown))))))
-ou can either set `doom-theme' or manually load a theme with the `load-theme' function.
+#+begin_src emacs-lisp
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+#+end_src
+
+
+* General Settings
+Some functionality uses this to identify you, e.g. GPG configuration, email
+clients, file templates and snippets. It is optional.
+#+begin_src emacs-lisp
+(cond ((eq system-type 'gnu/linux) (setenv "SSH_AUTH_SOCK" "/run/user/1000/gnupg/S.gpg-agent.ssh"))
+      (t                           (setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh")))
+
+(setq! auth-sources                       '(password-store))
+
+(setq! fill-column                        120
+       fci-rule-color                     "#555555"
+       fci-rule-width                     1)
+(global-display-fill-column-indicator-mode)
+
+(setq! tab-width                          8)
+
+(setq! user-full-name                     "Gunnar Bastkowski"
+       user-mail-address                  "gunnar@bastkowski.name")
+
+(setq! which-key-use-C-h-commands         t)
+
+(setq! package-install-upgrade-built-in   t)
+
+
+;; Override function because we are generating config.el from this file
+(defun doom/goto-private-config-file ()
+  "Open your private config.el file."
+  (interactive)
+  (find-file (expand-file-name "config.org" doom-user-dir)))
+#+end_src
+
+
+* Appearance
+** Theme
+There are two ways to load a theme. Both assume the theme is installed and available.
+You can either set `doom-theme' or manually load a theme with the `load-theme' function.
 This is the default:
 #+begin_src emacs-lisp
 (setq! doom-theme 'gunnar)
@@ -206,43 +220,17 @@ accept completion from copilot and fallback to company
 * OpenAI
 ** Settings
 #+begin_src emacs-lisp
-(setq! openai-key                         (password-store-get "private/openai/emacs-api-key")
-       openai-user                        "gunnar.bastkowski@gmail.com")
+(setq! openai-playground-completion-api   "https://api.openai.com/v1/chat/completions"
+       openai-playground-completion-model "gpt-4o-mini"
+       openai-playground-key              (password-store-get "private/openai/emacs-api-key")
+       openai-playground-project          (password-store-get "private/openai/default-project-id")
+       openai-playground-org              (password-store-get "private/openai/default-org-id"))
+
 #+end_src
-
 ** Functions
-#+BEGIN_SRC emacs-lisp
-(require 'request)
-(require 'json)
-
-(setq api-key (password-store-get "private/openai/emacs-api-key"))
-
-(defun chatgpt-align-code (start end)
-  "Align code by equal signs using ChatGPT's chat completions."
-  (interactive "r")
-  (let* ((code-text (buffer-substring-no-properties start end))
-         (api-key (password-store-get "private/openai/emacs-api-key")))
-    (request "https://api.openai.com/v1/chat/completions"
-      :type "POST"
-      :headers `(("Content-Type" . "application/json")
-                 ("Authorization" . ,(concat "Bearer " api-key)))
-      :data (json-encode `(
-                           ("model" . ,"gpt-4")
-                           ("messages" . ((("role" . "user")
-                                           ("content" . ,(concat "Align the following code by equal signs:\n\n" code-text)))))))
-      :parser 'json-read
-      :success (cl-function
-                (lambda (&key data &allow-other-keys)
-                  (when data
-                    (let* ((responses (gethash "choices" data))
-                           (latest-response (aref responses 0))
-                           (text (gethash "message" (aref (gethash "messages" latest-response) 0))))
-                      (delete-region start end)
-                      (insert text)))))
-      :error (cl-function
-              (lambda (&rest args &key error-thrown &allow-other-keys)
-                (message "Failed to align code: %S" error-thrown))))))
-#+END_SRC
+#+begin_src emacs-lisp
+(use-package! openai-playground)
+#+end_src
 
 
 * Org Mode

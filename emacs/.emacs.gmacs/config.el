@@ -17,7 +17,7 @@
 (package-initialize)
 (unless package-archive-contents (package-refresh-contents))
 
-(set-face-attribute 'default nil :font "Iosevka" :height 140)
+(set-face-attribute 'default nil :font "IosevkaNerdFont" :height 130)
 (gmacs/load-config "ligatures.el")
 
 (use-package minimap)

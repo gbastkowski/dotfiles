@@ -55,7 +55,7 @@ Use unix pass as default source for authentication.
 * Appearance
 ** Font
 #+begin_src emacs-lisp
-(set-face-attribute 'default nil :font "Iosevka" :height 140)
+(set-face-attribute 'default nil :font "IosevkaNerdFont" :height 140)
 (gmacs/load-config "ligatures.el")
 #+end_src
 

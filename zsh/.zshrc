@@ -113,7 +113,7 @@ fi
 export PATH=$PATH:~/.emacs.doom/bin
 export PATH="/usr/local/opt/sqlite/bin:$PATH"
 
-export ANDROID_HOME=/home/gunnar/Android/Sdk/
+export ANDROID_HOME=/home/gunnar/Android/Sdk
 export PATH="$ANDROID_HOME/tools/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 

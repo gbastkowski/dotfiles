@@ -7,8 +7,7 @@
     (workspace :no 1)
     (workspace :no 2)
     (workspace :no 3)
-    (workspace :no 4)
-    (workspace :no 5)))
+    (workspace :no 4)))
 
 (defwidget workspace [no]
   (box :class { hypr-socket.activeworkspace.id == no ? "active" : "inactive" }

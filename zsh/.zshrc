@@ -113,7 +113,7 @@ fi
 export PATH=$PATH:~/.emacs.doom/bin
 export PATH="/usr/local/opt/sqlite/bin:$PATH"
 
-export ANDROID_HOME=/home/gunnar/Android/Sdk/
+export ANDROID_HOME=/home/gunnar/Android/Sdk
 export PATH="$ANDROID_HOME/tools/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
@@ -146,3 +146,9 @@ export PATH="$PATH:/home/gunnar/.local/bin"
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /home/gunnar/.dart-cli-completion/zsh-config.zsh ]] && . /home/gunnar/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+

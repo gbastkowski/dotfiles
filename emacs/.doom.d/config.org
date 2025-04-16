@@ -343,6 +343,7 @@ Inspiration can be obtained from
                                        (todo   . " %i %-15:c [%e] ")
                                        (tags   . "                  %i")
                                        (search . " %i %-20:c"))
+       org-agenda-scheduled-leaders   '("" "") ;; original:   ("Scheduled: " "Sched.%2dx: ")
        org-agenda-include-diary       t
        org-agenda-start-on-weekday    1
        diary-date-forms              '((month     "/"  day   "[^/0-9]")
@@ -472,6 +473,13 @@ Inspiration can be obtained from
         (>= clocked-time effort-in-minutes)))))
 #+end_src
 
+**** align-tags
+#+begin_src emacs-lisp
+(defun gunnar/org-align-all-tags ()
+  "Align all tags in the current buffer."
+  (interactive)
+  (org-agenda-align-tags))
+#+end_src
 **** agenda-views
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
@@ -481,9 +489,10 @@ Inspiration can be obtained from
 
 *** Keybindings
 #+begin_src emacs-lisp
-(map! :leader :desc "Show agenda for today"         :n "Gt" #'gunnar/org-agenda-show-today)
-(map! :leader :desc "Show Mobimeo agenda for today" :n "Gm" #'gunnar/org-agenda-show-today-mobimeo)
-(map! :leader :desc "Show Inbox"                    :n "Gi" #'gunnar/org-agenda-show-inbox)
+(map! :leader :desc "Show agenda for today"         :n "Gt"   #'gunnar/org-agenda-show-today)
+(map! :leader :desc "Show Mobimeo agenda for today" :n "Gm"   #'gunnar/org-agenda-show-today-mobimeo)
+(map! :leader :desc "Show Inbox"                    :n "Gi"   #'gunnar/org-agenda-show-inbox)
+(map! :leader :desc "Align all tags in buffer"      :n "mwa"  #'gunnar/org-align-all-tags)
 #+end_src
 
 ** Capture & Refile
@@ -591,8 +600,11 @@ Inspiration can be obtained from
 **** TODO org-start-notification-daemon-on-startup t)
 
 ** Pomodoro
-*** TODO '(org-pomodoro-finished-sound "/Users/gunnar.bastkowski/Sounds/mixkit-correct-answer-reward-952.wav")
-*** TODO '(org-pomodoro-start-sound "/Users/gunnar.bastkowski/Sounds/mixkit-positive-notification-951.wav")
+*** Settings
+#+begin_src emacs-lisp
+(setq! org-pomodoro-finished-sound "/Users/gunnar/Media/Sounds/mixkit-correct-answer-reward-952.wav"
+       org-pomodoro-start-sound    "/Users/gunnar/Media/Sounds/mixkit-positive-notification-951.wav")
+#+end_src
 ** Babel
 *** Settings
 #+begin_src emacs-lisp
@@ -637,23 +649,6 @@ Inspiration can be obtained from
 #+begin_src emacs-lisp
 (map! :leader :desc "Insert node in background"       :n "nrI"  #'org-roam-node-insert-immediate)
 #+end_src
-** TODO
-(add-hook 'org-mode-hook '(lambda ()
-                        ;; turn on flyspell-mode by default
-                        (flyspell-mode 1)
-                        ;; C-TAB for expanding
-                        (local-set-key (kbd "C-<tab>")
-                                        'yas-expand-from-trigger-key)
-                        ;; keybinding for editing source code blocks
-                        (local-set-key (kbd "C-c s e")
-                                        'org-edit-src-code)
-                        ;; keybinding for inserting code blocks
-                        (local-set-key (kbd "C-c s i")
-                                        'org-insert-src-block)))
-
-
-
-
 
 
 * Projects

@@ -38,6 +38,8 @@ type = IMAP
 remotehost = localhost
 remoteusereval = get_pass("private/localimap/imap-user")
 remotepasseval = get_pass("private/localimap/imap-pass")
+auth_mechanisms = LOGIN
+starttls = no
 ssl = no
 
 [Repository Gmailserver-mine]

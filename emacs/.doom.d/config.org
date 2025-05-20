@@ -371,39 +371,39 @@ Inspiration can be obtained from
 **** org-agenda-custom-commands
 #+begin_src emacs-lisp
 (setq! org-agenda-custom-commands
-       '(("T" "Agenda and next items" ((agenda    ""
-                                                  ((org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
-                                                   (org-deadline-warning-days           2)))
-                                       (todo      "NEXT"
-                                                  ((org-agenda-overriding-header        "Next Actions")
-                                                   (org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags-todo "CATEGORY=\"inbox\""
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Inbox")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (todo      "WAIT"
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Waiting For")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags      "CLOSED>=\"<today>\""
-                                                  ((org-agenda-overriding-header "Completed today")
-                                                   (org-agenda-todo-keyword-format      ""))))
+       '(("P" "Private Agenda " ((agenda    ""
+                                            ((org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
+                                             (org-deadline-warning-days           2)))
+                                 (todo      "NEXT"
+                                            ((org-agenda-overriding-header        "Next Actions")
+                                             (org-agenda-sorting-strategy         '(priority-down))
+                                             (org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
+                                             (org-agenda-todo-keyword-format      "")))
+                                 (tags-todo "CATEGORY=\"inbox\""
+                                            ((org-agenda-sorting-strategy         '(priority-down))
+                                             (org-agenda-overriding-header        "Inbox")
+                                             (org-agenda-todo-keyword-format      "")))
+                                 (todo      "WAIT"
+                                            ((org-agenda-sorting-strategy         '(priority-down))
+                                             (org-agenda-overriding-header        "Waiting For")
+                                             (org-agenda-todo-keyword-format      "")))
+                                 (tags      "CLOSED>=\"<today>\""
+                                            ((org-agenda-overriding-header "Completed today")
+                                             (org-agenda-todo-keyword-format      ""))))
           ((org-agenda-start-day "+0d")(org-agenda-span 'day)))
 
-         ("M" "Mobimeo Agenda"        ((agenda)
-                                       (tags-todo "@mobimeo+TODO=\"NEXT\""
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Next Actions")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags-todo "@mobimeo+TODO=\"WAIT\""
-                                                  ((org-agenda-sorting-strategy         '(priority-down))
-                                                   (org-agenda-overriding-header        "Waiting For")
-                                                   (org-agenda-todo-keyword-format      "")))
-                                       (tags-todo "@mobimeo+TODO=\"TODO\""
-                                                  ((org-agenda-overriding-header        "TODO Items")
-                                                   (org-agenda-todo-keyword-format      ""))))
+         ("W" "Work Agenda"     ((agenda)
+                                 (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                            ((org-agenda-sorting-strategy         '(priority-down))
+                                             (org-agenda-overriding-header        "Next Actions")
+                                             (org-agenda-todo-keyword-format      "")))
+                                 (tags-todo "@mobimeo+TODO=\"WAIT\""
+                                            ((org-agenda-sorting-strategy         '(priority-down))
+                                             (org-agenda-overriding-header        "Waiting For")
+                                             (org-agenda-todo-keyword-format      "")))
+                                 (tags-todo "@mobimeo+TODO=\"TODO\""
+                                            ((org-agenda-overriding-header        "TODO Items")
+                                             (org-agenda-todo-keyword-format      ""))))
           ((org-agenda-span 'day)))
 
          ("c" "Inbox" tags-todo "CATEGORY=\"inbox\""

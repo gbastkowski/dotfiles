@@ -6,6 +6,8 @@
 
 
 * General Settings
+** Functions
+** Settings
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
@@ -96,6 +98,26 @@ numbers are disabled. For relative line numbers, set this to `relative'.
 #+begin_src emacs-lisp
 (setq display-line-numbers-type     t
       display-line-numbers-width    4)
+#+end_src
+
+
+* Dashboard
+** Settings
+
+#+begin_src emacs-lisp
+(setq! dashboard-banner-logo-title "Welcome to Emacs!")
+(setq! dashboard-items '((recents . 10)
+                         (bookmarks . 5)
+                         (agenda . 20)
+                         (registers . 10)))
+(setq! dashboard-icon-type 'nerd-icons)
+(setq! dashboard-set-heading-icons nil)
+(setq! dashboard-set-file-icons nil)
+(setq! dashboard-week-agenda nil)
+#+end_src
+** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Open Dashboard" :n "bh" #'dashboard-open)
 #+end_src
 
 
@@ -439,10 +461,10 @@ Inspiration can be obtained from
                    (file-truename (buffer-file-name)))
       (org-refile nil nil (list "Tasks" (gunnar/today-note-file-name) nil pos)))))
 
-(add-to-list 'org-after-todo-state-change-hook
-             (lambda ()
-               (when (equal org-state "DONE")
-                 (gunnar/org-copy-todo-to-today))))
+;; (add-to-list 'org-after-todo-state-change-hook
+;;              (lambda ()
+;;                (when (equal org-state "DONE")
+;;                  (gunnar/org-copy-todo-to-today))))
 
 (defun my-org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."

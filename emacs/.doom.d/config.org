@@ -78,7 +78,7 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 (cond ((eq system-type 'gnu/linux)
        (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 18)))
       (t
-       (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 13))))
+       (setq! doom-font (font-spec :family "Iosevka Nerd Font" :size 15))))
 
 (global-prettify-symbols-mode t)
 ;; (map! :leader :desc "Toggle global prettify symbols mode" :n "aP" #'global-prettify-symbols-mode)

@@ -152,3 +152,5 @@ export SDKMAN_DIR="$HOME/.sdkman"
 [[ -f /home/gunnar/.dart-cli-completion/zsh-config.zsh ]] && . /home/gunnar/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
+[[ -n "$SSH_CONNECTION" ]] && systemctl --user start inhibit-suspend.service
+

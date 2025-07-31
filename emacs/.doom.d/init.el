@@ -112,7 +112,8 @@
                     ;;gdscript                        ; the language you waited for
                     ;;(go +lsp)                         ; the hipster dialect
                     (graphql +lsp)                    ; Give queries a REST
-                    (haskell +lsp)                    ; a language that's lazier than I am
+                    ,@(when (string-prefix-p "akiko" (system-name) t)
+                        '((haskell +lsp)))            ; a language that's lazier than I am (akiko only)
                     ;;hy                              ; readability of scheme w/ speed of python
                     ;;idris                           ; a language you can depend on
                     json                              ; At least it ain't XML
@@ -139,7 +140,8 @@
                     rest
                     ;;rst                             ; ReST in peace
                     ;;(ruby +rails)
-                    (rust +lsp)
+                    ,@(when (string-prefix-p "akiko" (system-name) t)
+                        '((rust +lsp)))              ; rust support (akiko only)
                     (scala +lsp +tree-sitter)
                     ;;(scheme +guile)
                     sh
@@ -150,7 +152,8 @@
                     (web +lsp +tree-sitter)
                     yaml
                     ;;zig                             ; C, but simpler
-       :email       (mu4e +org +gmail +offlineimap)
+       :email       ,@(when (string-prefix-p "akiko" (system-name) t)
+                        '((mu4e +org +gmail +offlineimap))) ; email support (akiko only)
                     ;;notmuch
                     ;;(wanderlust +gmail)
        :app         calendar

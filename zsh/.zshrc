@@ -19,20 +19,16 @@ POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 
 export TERM="xterm-256color"
 export DEFAULT_USER=gunnar
-
-if [ -f ~/.private ]
-then
-    source ~/.private
-fi
-
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
+
+[ -f ~/.ista_rc ] && source ~/.ista_rc
+[ -f ~/.private ] && source ~/.private
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
 
-# Uncomment this to disable bi-weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
+DISABLE_AUTO_UPDATE="true"
 
 # Uncomment to change how often before auto-updates occur? (in days)
 # export UPDATE_ZSH_DAYS=13
@@ -82,8 +78,6 @@ HELPDIR=/usr/local/share/zsh/helpfiles
 # source ~/.exports
 export GTAGSLABEL=pygments
 
-eval "$(fasd --init auto)"
-
 eval $(thefuck --alias)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -113,7 +107,7 @@ fi
 export PATH=$PATH:~/.emacs.doom/bin
 export PATH="/usr/local/opt/sqlite/bin:$PATH"
 
-export ANDROID_HOME=/home/gunnar/Android/Sdk
+export ANDROID_HOME=$HOME/Android/Sdk
 export PATH="$ANDROID_HOME/tools/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
@@ -152,3 +146,8 @@ export SDKMAN_DIR="$HOME/.sdkman"
 [[ -f /home/gunnar/.dart-cli-completion/zsh-config.zsh ]] && . /home/gunnar/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/gunnar.bastkowski/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions

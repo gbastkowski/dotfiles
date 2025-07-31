@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 SCRIPTPATH=$(dirname $0)
 OSTYPE=$($SCRIPTPATH/ostype.sh)

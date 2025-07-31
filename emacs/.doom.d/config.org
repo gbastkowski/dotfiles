@@ -101,26 +101,6 @@ numbers are disabled. For relative line numbers, set this to `relative'.
 #+end_src
 
 
-* Dashboard
-** Settings
-
-#+begin_src emacs-lisp
-(setq! dashboard-banner-logo-title "Welcome to Emacs!")
-(setq! dashboard-items '((recents . 10)
-                         (bookmarks . 5)
-                         (agenda . 20)
-                         (registers . 10)))
-(setq! dashboard-icon-type 'nerd-icons)
-(setq! dashboard-set-heading-icons nil)
-(setq! dashboard-set-file-icons nil)
-(setq! dashboard-week-agenda nil)
-#+end_src
-** Keybindings
-#+begin_src emacs-lisp
-(map! :leader :desc "Open Dashboard" :n "bh" #'dashboard-open)
-#+end_src
-
-
 * Editing
 ** Duplicate
 *** Functions
@@ -228,7 +208,7 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 * Copilot
 ** Settings
 accept completion from copilot and fallback to company
-#+begin_src emacs-lisp
++begin_src emacs-lisp
 (use-package! copilot
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
@@ -236,11 +216,43 @@ accept completion from copilot and fallback to company
               ("TAB" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
++end_src
+
+
+* AI
+** Claude
+*** Settings
+#+begin_src emacs-lisp
 #+end_src
+*** Functions
+#+begin_src emacs-lisp
+(use-package! eat)
+(use-package! claude-code
+  :bind-keymap  ("C-c c" . claude-code-command-map)
+  :config       (claude-code-mode))
 
+(defun gunnar/macos-notify (title message)
+  "Display macOS notification with sound."
+  (call-process "osascript" nil nil nil
+                "-e" (format
+                      "display notification \"%s\" with title \"%s\" sound name \"Glass\""
+                      message
+                      title)))
 
-* OpenAI
-** Settings
+(defun gunnar/linux-notify (title message)
+  "Display Linux notification using notify-send."
+  (call-process "notify-send" nil nil nil title message))
+
+(defun gunnar/claude-notify (title message)
+  "Display cross-platform notification for Claude Code."
+  (cond ((eq system-type 'darwin)                                           (gunnar/macos-notify title message))
+        ((and (eq system-type 'gnu/linux) (executable-find "notify-send"))  (gunnar/linux-notify title message))
+        (t                                                                  (message "%s: %s" title message))))
+
+(setq claude-code-notification-function #'gunnar/claude-notify)
+#+end_src
+** OpenAI
+*** Settings
 #+begin_src emacs-lisp
 (setq! openai-playground-completion-api   "https://api.openai.com/v1/chat/completions"
        openai-playground-completion-model "gpt-4o-mini"
@@ -249,7 +261,7 @@ accept completion from copilot and fallback to company
        openai-playground-org              (password-store-get "private/openai/default-org-id"))
 
 #+end_src
-** Functions
+*** Functions
 #+begin_src emacs-lisp
 (use-package! openai-playground)
 #+end_src
@@ -384,7 +396,7 @@ Inspiration can be obtained from
                                                        '("inbox-akiko.org"
                                                          "inbox-galaxy.org"
                                                          "inbox-s7.org"
-                                                         "inbox-yesomeo.org"
+                                                         "inbox-gistaone.org"
                                                          "habits.org"
                                                          "tickler.org"
                                                          "projects.org"))))
@@ -415,15 +427,15 @@ Inspiration can be obtained from
           ((org-agenda-start-day "+0d")(org-agenda-span 'day)))
 
          ("W" "Work Agenda"     ((agenda)
-                                 (tags-todo "@mobimeo+TODO=\"NEXT\""
+                                 (tags-todo "@ista+TODO=\"NEXT\""
                                             ((org-agenda-sorting-strategy         '(priority-down))
                                              (org-agenda-overriding-header        "Next Actions")
                                              (org-agenda-todo-keyword-format      "")))
-                                 (tags-todo "@mobimeo+TODO=\"WAIT\""
+                                 (tags-todo "@ista+TODO=\"WAIT\""
                                             ((org-agenda-sorting-strategy         '(priority-down))
                                              (org-agenda-overriding-header        "Waiting For")
                                              (org-agenda-todo-keyword-format      "")))
-                                 (tags-todo "@mobimeo+TODO=\"TODO\""
+                                 (tags-todo "@ista+TODO=\"TODO\""
                                             ((org-agenda-overriding-header        "TODO Items")
                                              (org-agenda-todo-keyword-format      ""))))
           ((org-agenda-span 'day)))
@@ -506,13 +518,13 @@ Inspiration can be obtained from
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
 (defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
-(defun gunnar/org-agenda-show-today-mobimeo (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-agenda-show-today-ista    (&optional arg) (interactive "P") (org-agenda arg "b"))
 #+end_src
 
 *** Keybindings
 #+begin_src emacs-lisp
 (map! :leader :desc "Show agenda for today"         :n "Gt"   #'gunnar/org-agenda-show-today)
-(map! :leader :desc "Show Mobimeo agenda for today" :n "Gm"   #'gunnar/org-agenda-show-today-mobimeo)
+(map! :leader :desc "Show ista agenda for today"    :n "Gm"   #'gunnar/org-agenda-show-today-ista)
 (map! :leader :desc "Show Inbox"                    :n "Gi"   #'gunnar/org-agenda-show-inbox)
 (map! :leader :desc "Align all tags in buffer"      :n "mwa"  #'gunnar/org-align-all-tags)
 #+end_src
@@ -523,7 +535,7 @@ Inspiration can be obtained from
 (setq! gunnar/inbox-file-name (concat org-directory
                                       (if (string-prefix-p "akiko" (system-name) t)
                                           "inbox-akiko.org"
-                                        "inbox-yesomeo.org")))
+                                        "inbox-gistaone.org")))
 (after! org
   (setq org-default-notes-file    gunnar/inbox-file-name)
 
@@ -593,7 +605,6 @@ Inspiration can be obtained from
 (defun gunnar/all-calendars-to-diary ()
   (interactive)
   (progn
-    (gunnar/some-calendar-to-diary (password-store-get "mobimeo/calendar/url"))
     (gunnar/some-calendar-to-diary (password-store-get "private/cloud.bastkowski.name/calendar-gunnar-url"))))
 
 (defun gunnar/some-calendar-to-diary (calendar-url)
@@ -680,7 +691,7 @@ Inspiration can be obtained from
 
 ** Settings
 #+begin_src emacs-lisp
-(setq! projectile-project-search-path '("~/git/mobimeo/" "~/git/gbastkowski/"))
+(setq! projectile-project-search-path '("~/git/rdm/" "~/git/gbastkowski/"))
 (setq! lsp-file-watch-threshold nil)
 #+end_src
 
@@ -700,6 +711,33 @@ Inspiration can be obtained from
   (progn
     (split-window-right-and-focus)
     (projectile-run-vterm)))
+
+(defun gunnar/toggle-window-split ()
+  "Toggle between horizontal and vertical split for two windows."
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))
+    (message "Can only toggle split with exactly 2 windows")))
 #+END_SRC
 
 
@@ -747,6 +785,8 @@ Inspiration can be obtained from
 
 
 * Dashboard
+** Settings
+*** doom dashboard
 #+begin_src emacs-lisp
 (setq! +doom-dashboard-menu-sections
   '(("Recently opened files"
@@ -784,6 +824,55 @@ Inspiration can be obtained from
     ("Open documentation"
      :icon (nerd-icons-octicon "nf-oct-book" :face 'doom-dashboard-menu-title)
      :action doom/help)))
+#+end_src
+
+*** emacs-dashboard
+#+begin_src emacs-lisp
+(setq! dashboard-banner-logo-title          "Welcome to Emacs!"
+       dashboard-items                      '((agenda . 20)
+                                              (recents . 10)
+                                              (bookmarks . 5)
+                                              (registers . 10))
+       dashboard-icon-type                  'nerd-icons
+       dashboard-display-icons-p            t
+       dashboard-set-heading-icons          t
+       dashboard-set-file-icons             t
+       dashboard-week-agenda                nil
+       dashboard-startup-banner             2
+       dashboard-vertically-center-content  t
+       dashboard-startupify-list            '(dashboard-insert-banner
+                                              dashboard-insert-newline
+                                              ;; dashboard-insert-banner-title
+                                              ;; dashboard-insert-newline
+                                              dashboard-insert-navigator
+                                              ;; dashboard-insert-newline
+                                              ;; dashboard-insert-init-info
+                                              dashboard-insert-items
+                                              dashboard-insert-newline
+                                              dashboard-insert-footer))
+
+;; Format: "(icon title help action face prefix suffix)"
+(setq! dashboard-navigator-buttons
+      `(;; line 1
+        ((,(nerd-icons-octicon "nf-oct-clock" :height 1.1 :v-adjust 0.0)
+          "ista Time"
+          "Manage ista Time sheets"
+          (lambda (&rest _) (browse-url "https://time.ista.com:44300/fiori#TimeEntry-change")))
+         ;; ("★" "Star" "Show stars" (lambda (&rest _) (show-stars)) warning)
+         ;; ("?" "" "?/h" #'show-help nil "<" ">")
+         )
+        ;; line 2
+        ((,(nerd-icons-octicon "nf-oct-inbox" :height 1.1 :v-adjust 0.0)
+          "Inbox"
+          ""
+          (lambda (&rest _) (gunnar/org-agenda-show-inbox)))
+         )))
+#+end_src
+
+** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Open Dashboard"      :n "bh" #'dashboard-open
+      :leader :desc "Open Doom Dashboard" :n "bH" #'+doom-dashboard/open)
 #+end_src
 
 

@@ -221,16 +221,31 @@ accept completion from copilot and fallback to company
 
 * AI
 ** Claude
-*** Settings
-#+begin_src emacs-lisp
-#+end_src
-*** Functions
+*** Packages
 #+begin_src emacs-lisp
 (use-package! eat)
 (use-package! claude-code
   :bind-keymap  ("C-c c" . claude-code-command-map)
   :config       (claude-code-mode))
+#+end_src
+*** Settings
+#+begin_src emacs-lisp
+(setq! claude-code-notification-function #'gunnar/claude-notify)
 
+(add-to-list 'display-buffer-alist
+                 '("^\\*claude"
+                   (display-buffer-in-side-window)
+                   (side . right)
+                   (window-width . 0.3)))
+
+;; (add-to-list 'display-buffer-alist
+;;                  '("^\\*Org Src"
+;;                    (display-buffer-in-side-window)
+;;                    (side . right)
+;;                    (window-width . 0.5)))
+#+end_src
+*** Functions
+#+begin_src emacs-lisp
 (defun gunnar/macos-notify (title message)
   "Display macOS notification with sound."
   (call-process "osascript" nil nil nil
@@ -249,7 +264,6 @@ accept completion from copilot and fallback to company
         ((and (eq system-type 'gnu/linux) (executable-find "notify-send"))  (gunnar/linux-notify title message))
         (t                                                                  (message "%s: %s" title message))))
 
-(setq claude-code-notification-function #'gunnar/claude-notify)
 #+end_src
 ** OpenAI
 *** Settings

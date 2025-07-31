@@ -52,8 +52,18 @@
 ;; (package! org-pandoc-import :recipe (:host github :repo "tecosaur/org-pandoc-import" :files ("*.el" "filters" "preprocessors")))
 
 (package! command-log-mode  :recipe (:host github :repo "lewang/command-log-mode"))
+
 (package! corfu-quick       :recipe (:host github :repo "minad/corfu"                :files ("extensions/*")))
-(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
+;;(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
 
 (package! openai-playground :recipe (:local-repo "openai/playground" :build (:not compile)))
+
 (package! dashboard         :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
+
+(package! eat               :recipe (:host github :repo "jamescherti/emacs-eat" :files ("*.el" ("term" "term/*.el") "*.texi"
+                                                                                 "*.ti" ("terminfo/e" "terminfo/e/*")
+                                                                                 ("terminfo/65" "terminfo/65/*")
+                                                                                 ("integration" "integration/*")
+                                                                                 (:exclude ".dir-locals.el" "*-tests.el"))))
+;; install claude-code.el, using :depth 1 to reduce download size:
+(package! claude-code       :recipe (:host github :repo "stevemolitor/claude-code.el"))

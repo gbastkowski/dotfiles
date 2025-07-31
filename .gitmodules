@@ -30,3 +30,6 @@
 [submodule "emacs/.emacs.doom"]
 	path = emacs/.emacs.doom
 	url = git@github.com:gbastkowski/doomemacs.git
+[submodule "ista"]
+	path = ista
+	url = git@github.com:gbastkowski/ista-dotfiles.git

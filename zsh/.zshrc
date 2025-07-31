@@ -148,6 +148,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/gunnar.bastkowski/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
+autoload -Uz compinit && compinit
 # End of Docker CLI completions
+
+[[ -n "$SSH_CONNECTION" ]] && systemctl --user start inhibit-suspend.service

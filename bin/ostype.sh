@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 
-UNAME=$(uname -a)
-
-case "$UNAME" in
+case "$(uname -a)" in
   *Android*)  echo termux ;;
   *arch*)     echo arch ;;
   *Darwin*)   echo darwin ;;

@@ -67,3 +67,6 @@
                                                                                  (:exclude ".dir-locals.el" "*-tests.el"))))
 ;; install claude-code.el, using :depth 1 to reduce download size:
 (package! claude-code       :recipe (:host github :repo "stevemolitor/claude-code.el"))
+
+(package! pg                :recipe (:host github :repo "emarsden/pg-el"))
+(package! pgmacs            :recipe (:host github :repo "emarsden/pgmacs"))

@@ -140,8 +140,7 @@
                     rest
                     ;;rst                             ; ReST in peace
                     ;;(ruby +rails)
-                    ,@(when (string-prefix-p "akiko" (system-name) t)
-                        '((rust +lsp)))              ; rust support (akiko only)
+                    (rust +lsp)                       ; rust support
                     (scala +lsp +tree-sitter)
                     ;;(scheme +guile)
                     sh

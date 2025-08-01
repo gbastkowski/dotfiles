@@ -10,6 +10,14 @@
 ** Settings
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
+
+*** Auto-revert
+Enable automatic reversion of buffers when files change on disk.
+#+begin_src emacs-lisp
+(global-auto-revert-mode 1)
+#+end_src
+
+*** General Configuration
 #+begin_src emacs-lisp
 (cond ((eq system-type 'gnu/linux) (setenv "SSH_AUTH_SOCK" "/run/user/1000/gnupg/S.gpg-agent.ssh"))
       ((eq system-type 'darwin)    (setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh"))

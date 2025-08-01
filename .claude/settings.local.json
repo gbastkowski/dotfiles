@@ -1,11 +1,16 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(gh issue create:*)"
+      "Bash(gh issue create:*)",
+      "Bash(emacsclient:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
-  },
-  "$schema": "https://json.schemastore.org/claude-code-settings.json"
+  }
 }

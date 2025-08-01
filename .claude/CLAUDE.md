@@ -9,7 +9,6 @@ Features automated deployment, custom bin/ scripts, cross-platform compatibility
 **Note:** Stow and Spacemacs configurations are deprecated and can be ignored.
 
 ## Session Init
-Start with friendly greeting confirming CLAUDE.md loaded.
 Keep responses brief, avoid repeating information.
 
 ## Writing Style
@@ -36,3 +35,9 @@ Use `gh` CLI for issues when requested.
 
 ## File Changes
 Auto-revert enabled - no manual buffer reverting needed.
+
+## Development Environment
+- stow and spacemacs are deprecated and can be ignored
+
+## Git Guidelines
+- Do not add the co-authored line to git commit messages

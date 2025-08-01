@@ -6,9 +6,10 @@ upgrade_system_and_packages() {
 }
 
 upgrade_python_packages() {
-    echo "updating pip stuff"
-    for i in $(pip list -o | awk 'NR > 2 {print $1}')
-    do
-        pip install -U $i
-    done
+    pipx upgrade-all
+    # echo "updating pip stuff"
+    # for i in $(pip list -o | awk 'NR > 2 {print $1}')
+    # do
+    #     pip install -U $i
+    # done
 }

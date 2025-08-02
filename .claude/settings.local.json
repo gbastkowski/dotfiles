@@ -9,7 +9,11 @@
       "WebFetch(domain:docs.anthropic.com)",
       "Bash(echo:*)",
       "Bash(find:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }

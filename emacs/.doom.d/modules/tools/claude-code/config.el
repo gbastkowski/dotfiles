@@ -5,9 +5,5 @@
   :config       (claude-code-mode))
 
 (after! claude-code
-  (add-to-list 'display-buffer-alist
-               '("^\\*claude"
-                 (display-buffer-in-side-window)
-                 (side . right)
-                 (window-width . 0.3))))
+  (set-popup-rule! "^\\*claude" :side 'right :width 0.3 :quit t :select t))
 

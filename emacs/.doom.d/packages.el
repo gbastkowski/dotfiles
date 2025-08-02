@@ -60,13 +60,6 @@
 
 (package! dashboard         :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
 
-(package! eat               :recipe (:host github :repo "jamescherti/emacs-eat" :files ("*.el" ("term" "term/*.el") "*.texi"
-                                                                                 "*.ti" ("terminfo/e" "terminfo/e/*")
-                                                                                 ("terminfo/65" "terminfo/65/*")
-                                                                                 ("integration" "integration/*")
-                                                                                 (:exclude ".dir-locals.el" "*-tests.el"))))
-;; install claude-code.el, using :depth 1 to reduce download size:
-(package! claude-code       :recipe (:host github :repo "stevemolitor/claude-code.el"))
 
 (package! pg                :recipe (:host github :repo "emarsden/pg-el"))
 (package! pgmacs            :recipe (:host github :repo "emarsden/pgmacs"))

@@ -215,50 +215,6 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 
 * AI
-** Claude
-*** Packages
-#+begin_src emacs-lisp
-(use-package! eat)
-(use-package! claude-code
-  :bind-keymap  ("C-c c" . claude-code-command-map)
-  :config       (claude-code-mode))
-#+end_src
-*** Settings
-#+begin_src emacs-lisp
-(after! claude-code
-  (add-to-list 'display-buffer-alist
-               '("^\\*claude"
-                 (display-buffer-in-side-window)
-                 (side . right)
-                 (window-width . 0.3))))
-
-;; (add-to-list 'display-buffer-alist
-;;                  '("^\\*Org Src"
-;;                    (display-buffer-in-side-window)
-;;                    (side . right)
-;;                    (window-width . 0.5)))
-#+end_src
-
-*** Functions
-#+begin_src emacs-lisp
-(defun gunnar/macos-notify (title message)
-  "Display macOS notification with sound."
-  (call-process "osascript" nil nil nil
-                "-e" (format
-                      "display notification \"%s\" with title \"%s\" sound name \"Glass\""
-                      message
-                      title)))
-
-(defun gunnar/linux-notify (title message)
-  "Display Linux notification using notify-send."
-  (call-process "notify-send" nil nil nil title message))
-
-(defun gunnar/claude-notify (title message)
-  "Display cross-platform notification for Claude Code."
-  (cond ((eq system-type 'darwin)                                           (gunnar/macos-notify title message))
-        ((and (eq system-type 'gnu/linux) (executable-find "notify-send"))  (gunnar/linux-notify title message))
-        (t                                                                  (message "%s: %s" title message))))
-#+end_src
 ** *Copilot
 *** Settings
 accept completion from copilot and fallback to company
@@ -712,7 +668,8 @@ Inspiration can be obtained from
 (use-package! pgmacs)
 #+end_src
 
-* Projects
+
+* Project
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
 #+END_SRC

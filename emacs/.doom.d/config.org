@@ -47,6 +47,11 @@ Enable automatic reversion of buffers when files change on disk.
   (find-file (expand-file-name "config.org" doom-user-dir)))
 #+end_src
 
+** Git/Magit Settings
+#+begin_src emacs-lisp
+(setq! git-commit-summary-max-length 70)
+#+end_src
+
 
 * Appearance
 ** Theme

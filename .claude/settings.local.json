@@ -13,7 +13,9 @@
       "Bash(gh issue list:*)",
       "Bash(gh issue view:*)",
       "Bash(mkdir:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(doom doctor:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

@@ -15,7 +15,9 @@
       "Bash(mkdir:*)",
       "Bash(git add:*)",
       "Bash(doom doctor:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(open:*)",
+      "Bash(gh issue comment:*)"
     ],
     "deny": []
   }

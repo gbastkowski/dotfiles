@@ -45,6 +45,8 @@ Enable automatic reversion of buffers when files change on disk.
   "Open your private config.el file."
   (interactive)
   (find-file (expand-file-name "config.org" doom-user-dir)))
+
+(setq! aw-scope 'global)
 #+end_src
 
 ** Git/Magit Settings

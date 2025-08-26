@@ -18,7 +18,8 @@
       "Bash(ls:*)",
       "Bash(open:*)",
       "Bash(gh issue comment:*)",
-      "Read(//Users/gunnar.bastkowski/.claude/commands/**)"
+      "Read(//Users/gunnar.bastkowski/.claude/commands/**)",
+      "Bash(git pull:*)"
     ],
     "deny": []
   }

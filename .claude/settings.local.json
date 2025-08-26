@@ -17,7 +17,8 @@
       "Bash(doom doctor:*)",
       "Bash(ls:*)",
       "Bash(open:*)",
-      "Bash(gh issue comment:*)"
+      "Bash(gh issue comment:*)",
+      "Read(//Users/gunnar.bastkowski/.claude/commands/**)"
     ],
     "deny": []
   }

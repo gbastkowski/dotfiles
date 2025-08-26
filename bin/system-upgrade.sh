@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 SCRIPTPATH=$(dirname $0)
+DOTFILES_DIR="$HOME/git/gbastkowski/dotfiles"
+ORIGINAL_DIR=$(pwd)
+
+# Change to dotfiles directory
+cd "$DOTFILES_DIR" || { echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"; exit 1; }
+
 OSTYPE=$($SCRIPTPATH/ostype.sh)
 # [ -f $HOME/.bashrc ] && $HOME/.bashrc
 
@@ -80,6 +86,9 @@ git push origin
 
 echo "current state:"
 git status
+
+# Return to original directory
+cd "$ORIGINAL_DIR"
 
 echo
 echo "done :-)"

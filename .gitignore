@@ -8,3 +8,5 @@
 /sbt/.sbt/1.0/java9-rt-ext-eclipse_adoptium_17_0_2/
 /sbt/.sbt/1.0/java9-rt-ext-eclipse_adoptium_21_0_4/
 /emacs/.doom.d/custom.el
+/sbt/.sbt/1.0/.bsp/
+/plover/*.log

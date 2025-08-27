@@ -57,6 +57,7 @@
 ;;(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
 
 (package! openai-playground :recipe (:local-repo "openai/playground" :build (:not compile)))
+(package! scala-customs     :recipe (:local-repo "scala/customs" :build (:not compile)))
 
 (package! dashboard         :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
 

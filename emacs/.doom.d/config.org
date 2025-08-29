@@ -151,6 +151,30 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 #+END_SRC
 
 
+* Languages
+** Avro
+#+begin_src emacs-lisp
+(use-package! avdl-mode)
+#+end_src
+
+** Scala
+*** Settings
+**** General
+#+begin_src emacs-lisp
+(setq! scala-auto-insert-asterisk-in-comments t
+       scala-sbt-window-position              nil
+       scala-enable-gtags                     t)
+#+end_src
+**** Scala-Indent
+#+begin_src emacs-lisp
+(setq! scala-indent:use-javadoc-style nil)
+#+end_src
+**** LSP
+#+begin_src emacs-lisp
+#+end_src
+
+
+
 * Mu4e
 ** TODO missing settings
 (smtpmail-starttls-credentials  . '(("smtp.gmail.com" 587 nil nil)))
@@ -731,23 +755,6 @@ Inspiration can be obtained from
           (if this-win-2nd (other-window 1))))
     (message "Can only toggle split with exactly 2 windows")))
 #+END_SRC
-
-
-* Scala
-** Settings
-*** General
-#+begin_src emacs-lisp
-(setq! scala-auto-insert-asterisk-in-comments t
-       scala-sbt-window-position              nil
-       scala-enable-gtags                     t)
-#+end_src
-*** Scala-Indent
-#+begin_src emacs-lisp
-(setq! scala-indent:use-javadoc-style nil)
-#+end_src
-*** LSP
-#+begin_src emacs-lisp
-#+end_src
 
 
 * LaTeX

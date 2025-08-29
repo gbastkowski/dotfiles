@@ -1,0 +1,4 @@
+[plover.meta]
+stitch = plover_stitching.commands:stitch
+stitch_last_word = plover_stitching.commands:stitch_last_word
+

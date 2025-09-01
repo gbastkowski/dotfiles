@@ -1,0 +1,22 @@
+Lapwing Stenography Strokes
+
+test: TEFT
+commit: KPHEUT or KO/PHEUT (two stroke)
+check: KHEBG
+Scott: #SKO*T or #SKOT/*T (two stroke)
+holds: HOELDZ
+wrought: WRAUT
+pour: PO*R
+tour: TAOUR
+Carl: #KRARL or #KA*RL
+stool: STAOL
+cough: KAUF
+curse: KURS
+told: TOELD
+stroll: STROEL
+hers: HERZ
+prove: PRAOUF
+stove: STOEF or STO*EF
+pulled: PULD
+the: -T
+proved: PRAOUFD or PRAOUF/-D (two stroke)

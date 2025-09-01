@@ -10,3 +10,5 @@
 /emacs/.doom.d/custom.el
 /sbt/.sbt/1.0/.bsp/
 /plover/*.log
+plover/**/site-packages/*
+

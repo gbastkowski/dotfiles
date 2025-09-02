@@ -52,8 +52,17 @@
 ;; (package! org-pandoc-import :recipe (:host github :repo "tecosaur/org-pandoc-import" :files ("*.el" "filters" "preprocessors")))
 
 (package! command-log-mode  :recipe (:host github :repo "lewang/command-log-mode"))
+
 (package! corfu-quick       :recipe (:host github :repo "minad/corfu"                :files ("extensions/*")))
-(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
+;;(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
 
 (package! openai-playground :recipe (:local-repo "openai/playground" :build (:not compile)))
+(package! scala-customs     :recipe (:local-repo "scala/customs" :build (:not compile)))
+
 (package! dashboard         :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
+
+
+(package! pg                :recipe (:host github :repo "emarsden/pg-el"))
+(package! pgmacs            :recipe (:host github :repo "emarsden/pgmacs"))
+
+(package! avdl-mode         :recipe (:host github :repo "logc/emacs-avro"))

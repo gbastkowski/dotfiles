@@ -837,7 +837,7 @@ Inspiration can be obtained from
        dashboard-set-heading-icons          t
        dashboard-set-file-icons             t
        dashboard-week-agenda                nil
-       dashboard-startup-banner             2
+       dashboard-startup-banner             'official
        dashboard-vertically-center-content  t
        dashboard-startupify-list            '(dashboard-insert-banner
                                               dashboard-insert-newline

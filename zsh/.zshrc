@@ -1,3 +1,6 @@
+# Initialize completion system early to avoid 'compdef' errors
+autoload -Uz compinit && compinit
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block, everything else may go below.
@@ -153,7 +156,7 @@ case "$(uname -a)" in
   *Darwin*)
       # The following lines have been added by Docker Desktop to enable Docker CLI completions.
       fpath=(/Users/gunnar.bastkowski/.docker/completions $fpath)
-      autoload -Uz compinit && compinit
+      # compinit already called at the top of this file
       # End of Docker CLI completions
       ;;
 esac

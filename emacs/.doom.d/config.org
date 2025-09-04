@@ -11,6 +11,16 @@
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 
+*** Orderless (CamelCase completion)
+Enable CamelCase matching for completion.
+#+begin_src emacs-lisp
+(after! orderless
+  (setq orderless-matching-styles '(orderless-literal
+                                   orderless-regexp
+                                   orderless-initialism
+                                   orderless-flex)))
+#+end_src
+
 *** Auto-revert
 Enable automatic reversion of buffers when files change on disk.
 #+begin_src emacs-lisp

@@ -75,6 +75,7 @@ EDITOR=vim git -C reveal.js merge upstream/master
 echo
 
 echo "pushing submodules to origin ..."
+git -C zsh/.oh-my-zsh pull --rebase origin master || true
 git -C zsh/.oh-my-zsh push origin
 git -C emacs/.emacs.d push origin
 echo
@@ -82,6 +83,7 @@ echo
 echo "pushing dotfiles to origin ..."
 git add .
 EDITOR=vim git commit -m "Update dotfiles and submodules"
+git pull --rebase origin master
 git push origin
 
 echo "current state:"

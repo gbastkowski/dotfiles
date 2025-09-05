@@ -19,7 +19,10 @@
       "Bash(open:*)",
       "Bash(gh issue comment:*)",
       "Read(//Users/gunnar.bastkowski/.claude/commands/**)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(jira issue view:*)",
+      "Read(//Users/gunnar.bastkowski/.doom.d/**)",
+      "Read(//Users/gunnar.bastkowski/org/**)"
     ],
     "deny": []
   }

@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Organize imports in Scala files according to IntelliJ defaults + RDM codestyle configuration
+# Based on INTELLIJ_2020_3 preset with ASCII sorting
+
+if [ $# -eq 0 ]; then
+    echo "Usage: organize-imports <scala-file>"
+    echo "Organizes imports in the specified Scala file according to IntelliJ defaults"
+    exit 1
+fi
+
+SCALA_FILE="$1"
+
+if [ ! -f "$SCALA_FILE" ]; then
+    echo "Error: File '$SCALA_FILE' not found"
+    exit 1
+fi
+
+if [[ ! "$SCALA_FILE" =~ \.scala$ ]]; then
+    echo "Error: File must be a .scala file"
+    exit 1
+fi
+
+# Create temporary .scalafix.conf for this operation
+TEMP_SCALAFIX_CONF=$(mktemp)
+cat > "$TEMP_SCALAFIX_CONF" << 'EOF'
+rules = [OrganizeImports]
+
+OrganizeImports {
+  blankLines = Auto
+  coalesceToWildcardImportThreshold = 5
+  expandRelative = false
+  groupExplicitlyImportedImplicitsSeparately = false
+  groupedImports = Merge
+  groups = [
+    "*"
+    "re:(javax?|scala)\\."
+  ]
+  importSelectorsOrder = Ascii
+  importsOrder = Ascii
+  preset = INTELLIJ_2020_3
+  removeUnused = true
+}
+EOF
+
+# Check if scalafix is available
+if ! command -v scalafix &> /dev/null; then
+    echo "Error: scalafix is not installed or not in PATH"
+    echo "Install it with: cs install scalafix"
+    rm "$TEMP_SCALAFIX_CONF"
+    exit 1
+fi
+
+# Run scalafix with the temporary configuration
+echo "Organizing imports in $SCALA_FILE..."
+scalafix --config="$TEMP_SCALAFIX_CONF" "$SCALA_FILE"
+
+# Clean up
+rm "$TEMP_SCALAFIX_CONF"
+
+echo "Import organization complete"

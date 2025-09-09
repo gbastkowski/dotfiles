@@ -41,3 +41,4 @@ Auto-revert enabled - no manual buffer reverting needed.
 
 ## Git Guidelines
 - Do not add the co-authored line to git commit messages
+- Never include Claude attribution, "Generated with Claude Code" messages, or AI credits in git commits, Jira issues, GitLab merge requests, pull requests, or any project documentation

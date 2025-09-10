@@ -6,12 +6,13 @@
   :config (monet-mode))
 
 (use-package! claude-code
-  :config (claude-code-mode))
+  :config 
+  (claude-code-mode)
+  (map! :leader
+        :desc "Claude Code" "e" claude-code-command-map))
 
 (use-package! claude-code-ide
-  :bind ("C-c C-'" . claude-code-ide-menu)
   :config
-  (claude-code-ide-emacs-tools-setup))
-
-(map! :leader
-      :desc "Claude Code" "e" claude-code-command-map)
+  (claude-code-ide-emacs-tools-setup)
+  (map! :leader
+        :desc "Claude Code IDE" "E" #'claude-code-ide-menu))

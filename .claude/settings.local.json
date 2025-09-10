@@ -22,7 +22,8 @@
       "Bash(git pull:*)",
       "Bash(jira issue view:*)",
       "Read(//Users/gunnar.bastkowski/.doom.d/**)",
-      "Read(//Users/gunnar.bastkowski/org/**)"
+      "Read(//Users/gunnar.bastkowski/org/**)",
+      "WebSearch"
     ],
     "deny": []
   }

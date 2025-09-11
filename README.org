@@ -90,6 +90,22 @@
   - jq
   - pass
   - watch
+  - Ollama (local LLMs for code/chat)
+
+** Local LLM (Ollama)
+  Run powerful local models for coding and chat.
+
+  Quick start:
+  #+BEGIN_SRC
+    bin/ollama-install.sh --yes --start
+    bin/ollama-coder.sh --repl              # interactive coder chat (qwen2.5-coder:7b)
+    bin/ollama-coder.sh "Write a Bash script..."
+  #+END_SRC
+
+  Tips:
+  - Use ~-m qwen2.5-coder:14b~ for higher quality if you have RAM/VRAM.
+  - General models (non-coding): ~llama3.1:8b~, ~qwen2.5:7b~.
+  - Server host: set ~OLLAMA_HOST~ or pass ~--host~ to scripts.
 
 * stow
   https://www.gnu.org/software/stow/

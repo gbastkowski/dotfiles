@@ -160,3 +160,14 @@ case "$(uname -a)" in
       # End of Docker CLI completions
       ;;
 esac
+
+# Auto-start byobu for interactive shells (not already in tmux)
+if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && command -v byobu >/dev/null 2>&1; then
+    if [[ -n "$SSH_CONNECTION" ]]; then
+        # On remote hosts, attach to existing session or create new one
+        exec byobu new-session -A -s main
+    else
+        # On local host, just start byobu normally
+        exec byobu
+    fi
+fi

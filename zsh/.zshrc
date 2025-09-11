@@ -1,3 +1,8 @@
+# Return early when shell is loaded by IntelliJ, to prevent errors with interactive shell features
+if [[ -n "$INTELLIJ_ENVIRONMENT_READER" ]]; then
+    return
+fi
+
 # Initialize completion system early to avoid 'compdef' errors
 autoload -Uz compinit && compinit
 
@@ -161,8 +166,8 @@ case "$(uname -a)" in
       ;;
 esac
 
-# Auto-start byobu for interactive shells (not already in tmux)
-if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && command -v byobu >/dev/null 2>&1; then
+# Auto-start byobu for interactive shells (not already in tmux, and not in IntelliJ)
+if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && [[ -z "$TERMINAL_EMULATOR" ]] && [[ -z "$INSIDE_EMACS" ]] && command -v byobu >/dev/null 2>&1; then
     if [[ -n "$SSH_CONNECTION" ]]; then
         # On remote hosts, attach to existing session or create new one
         exec byobu new-session -A -s main

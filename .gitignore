@@ -20,3 +20,4 @@ claude/statsig/
 claude/settings.local.json
 
 .claude/settings.local.json
+.aider*

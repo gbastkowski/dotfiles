@@ -176,3 +176,5 @@ esac
 #         exec byobu
 #     fi
 # fi
+
+. "$HOME/.local/bin/env"

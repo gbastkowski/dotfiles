@@ -47,3 +47,11 @@ Teammates:
 - Add the related Jira issue to the merge request description.
   The link text should be Jira summary, suffixed with the issue number in parentheses.
 - Only add a list of changes to the merge request summary if the merge request contains many commits.
+
+# Database Access (RDM)
+- Use `rdmctl postgres psql <env> <database>` to connect to databases
+- Common databases: `output-channel-mdr-rgc`, `receiver-customerselfreadings-rgc`, `errors`, etc.
+- Environment aliases: `wpro` (prod), `wpre` (preprod), `w devtest perf` (perf)
+- Always switch to correct environment context before running rdmctl commands
+- Use tmux windows for parallel database operations across environments
+- Example: `rdmctl postgres psql prod output-channel-mdr-rgc -c "SELECT count(*) FROM table_name;"`

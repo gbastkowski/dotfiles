@@ -1,0 +1,14 @@
+{"display":"Analyse. Add an sbt-plugin, outdated. Check if you can see why scala-steward doesn't run on push. Fix it.","pastedContents":{},"timestamp":1759145607669,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Check the readme. Check the scala-steward and renovate config files. Explain these.","pastedContents":{},"timestamp":1759146379019,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Add a comparison and evaluation of the two different configuration approaches.","pastedContents":{},"timestamp":1759146474144,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"has everything been pushed to the repo?","pastedContents":{},"timestamp":1759146787468,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"don'd add just everything. ","pastedContents":{},"timestamp":1759146930079,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"those three","pastedContents":{},"timestamp":1759146980730,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Check for new merge requests.","pastedContents":{},"timestamp":1759148556885,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"we also have internal libs, like ista-common. They are in our inhouse-artifact-manager. How do I configure checks for these?","pastedContents":{},"timestamp":1759148631000,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"to find the precise URLs and project coordinates, please check ~/git/rdm/sbt/base-settings","pastedContents":{},"timestamp":1759149630490,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"So, I need to add the CI/CD Varialbe? How does Scala Steward access the registry? Is the registry token really needed?","pastedContents":{},"timestamp":1759150117792,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Check my local branch in the UI project. It looks like the field lastConsumptionDateFrom and lastConsumptionDateTo are not used anymore. Is that correct?","pastedContents":{},"timestamp":1759150357575,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"In core-extapi, create a branch with the same name as this one. Remove those fields there, run sbt publishLocal","pastedContents":{},"timestamp":1759150650698,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"what is the base url for our registry?","pastedContents":{},"timestamp":1759150702998,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"print the repository config of the base-settings plugin","pastedContents":{},"timestamp":1759150864165,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}

@@ -1,0 +1,505 @@
+package com.ista.rdm.outputchannel.mdr.fixtures
+
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.{Done, NotUsed}
+import com.ista.rdm.common.logging.LazyLogging
+import com.ista.rdm.common.sharedkernel.common.LocalTimespan
+import com.ista.rdm.common.sharedkernel.contract.MandantID
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.types.LocalInstant
+import com.ista.rdm.common.utils.TablePrinter
+import com.ista.rdm.domain.shared.dataRetention.CompoundRetentionPolicy
+import com.ista.rdm.domain.shared.meterport._
+import com.ista.rdm.domain.shared.property.PropertyNumber
+import com.ista.rdm.outputchannel.mdr._
+import com.ista.rdm.outputchannel.mdr.api._
+
+import java.time.{LocalDate, YearMonth, ZonedDateTime}
+import java.util.concurrent.atomic.AtomicLong
+import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
+import scala.concurrent.Future
+
+//noinspection NotImplementedCode
+class MeterDataRepositoryInMemory
+  extends MeterDataRepository
+    with MeterPortRepoModelConversion
+    with LazyLogging {
+
+  override val db: Null = null
+  override val dbReadOnly: Null = null
+
+  // model for meter port and its configs - configs ordered by validFrom
+  case class FakeMeterPortInternal(meterPort: MdrMeterPort, configs: List[MdrMeterPortConfig])
+
+  val _meterPorts: TrieMap[MeterPortID, FakeMeterPortInternal] = TrieMap()
+  val _readings: TrieMap[MeterPortID, List[MdrMeterReading]] = TrieMap()
+  val _revokedReadings: mutable.ArrayBuffer[MdrReadingIdentifier] = mutable.ArrayBuffer.empty
+  val _mandants: TrieMap[ExecPlanID, MandantID] = TrieMap()
+  val _properties: TrieMap[ExecPlanID, (PropertyID, PropertyNumber)] = TrieMap()
+  var _meterPortIdCounter = new AtomicLong(1)
+
+  private def meterPorts = _meterPorts.values.map(_.meterPort).toVector
+
+  def printStateMeterPorts(): Unit = {
+    TablePrinter.printTable(
+      Vector(
+        "mp id",
+        "execPlan",
+        "main",
+        "port",
+        "property id",
+        "location id",
+        "valid from",
+        "r art",
+        "r ser",
+      ),
+      _meterPorts.valuesIterator.flatMap { mp =>
+        val meterPort = mp.meterPort
+        mp.configs.map(c =>
+          Vector(
+            meterPort.id.get.value.toString,
+            meterPort.execPlanId.toString,
+            meterPort.mainDeviceId.toString,
+            meterPort.portNr.toString,
+            meterPort.propertyId.toString,
+            meterPort.locationId.toString,
+            c.validFrom.toString(),
+            c.radioArticleNr.map(_.toString).getOrElse("∅"),
+            c.radioSerialNr.map(_.toString).getOrElse("∅"),
+          )
+        )
+      }.toVector,
+      "meterports",
+    )
+  }
+
+  def printStateReadings(): Unit = {
+    TablePrinter.printTable(
+      Vector(
+        "id",
+        "prop id",
+        "location",
+        "port",
+        "main",
+        "m art",
+        "m ser",
+        "r art",
+        "r ser",
+        "date",
+        "value",
+        "type",
+      ),
+      _readings.flatMap(_._2)
+        .map(r => Vector(
+          r.meterPortId.value.toString,
+          r.propertyId.toString,
+          r.locationId.toString,
+          r.port.toString,
+          r.mainDeviceId.toString,
+          r.mainArticleNr.toString,
+          r.mainSerialNr.toString,
+          r.radioArticleNr.toString,
+          r.radioSerialNr.toString,
+          r.consumptionDate.toString,
+          r.value.toString,
+          r.readingType.toString,
+        )).toVector,
+      "readings",
+    )
+  }
+
+  def debugState(): Unit = {
+    if (logger.isDebugEnabled) printState()
+  }
+
+  def printState(): Unit = {
+    printStateMeterPorts()
+    printStateReadings()
+  }
+
+  private def findMeterPort(mp: MdrMeterPort): Option[FakeMeterPortInternal] = {
+    _meterPorts.values.find(fakeMeterPortInternal =>
+      fakeMeterPortInternal.meterPort.execPlanId == mp.execPlanId &&
+      fakeMeterPortInternal.meterPort.mainDeviceId == mp.mainDeviceId &&
+      fakeMeterPortInternal.meterPort.portNr == mp.portNr
+    )
+  }
+
+  private def findMeterPort(mpc: MeterPortConfig): Option[FakeMeterPortInternal] = {
+    _meterPorts.values.find(mp =>
+      mp.meterPort.execPlanId == mpc.execPlanId &&
+      mp.meterPort.mainDeviceId == mpc.mainDeviceId &&
+      mp.meterPort.portNr == mpc.portNr
+    )
+  }
+
+  private def upsertMeterPort(mp: MeterPortConfig): Unit = synchronized {
+    val internalMpc = domainToSchemaModel(mp)
+    findMeterPort(mp).map { oldMp =>
+      // found existing meter port configs
+      val impc = internalMpc.copy(meterPort = internalMpc.meterPort.copy(id = oldMp.meterPort.id))
+
+      // check whether config with same validity exists
+      if (oldMp.configs.exists(_.validFrom == impc.validFrom)) {
+        // replace the existing config
+        val updatedConfigs = (impc +: oldMp.configs.filter(_.validFrom == impc.validFrom)).sortBy(_.validFrom)
+        _meterPorts.put(oldMp.meterPort.id.get, oldMp.copy(meterPort = impc.meterPort, configs = updatedConfigs))
+        _properties.put(mp.execPlanId, (mp.propertyId, mp.propertyNumber))
+      } else {
+        // add the existing config
+        val updatedConfigs = (impc +: oldMp.configs).sortBy(_.validFrom)
+        _meterPorts.put(oldMp.meterPort.id.get, oldMp.copy(meterPort = impc.meterPort, configs = updatedConfigs))
+        _properties.put(mp.execPlanId, (mp.propertyId, mp.propertyNumber))
+      }
+    }.orElse {
+      // no config with this key yet => generate new ID and initialize config list
+      val newId = MeterPortID(_meterPortIdCounter.incrementAndGet)
+      val impc = internalMpc.copy(meterPort = internalMpc.meterPort.copy(id = Some(newId)))
+      _meterPorts.put(newId, FakeMeterPortInternal(impc.meterPort, impc +: Nil))
+      _properties.put(mp.execPlanId, (mp.propertyId, mp.propertyNumber))
+    }
+    ()
+  }
+
+  private def upsertMeterPortConfig(mp: MeterPortConfig): Unit = synchronized {
+    val internalMpc = domainToSchemaModel(mp)
+    findMeterPort(mp).map { oldMp =>
+      // found existing meter port configs => set existing meter port in new config
+      val impc = internalMpc.copy(meterPort = oldMp.meterPort)
+      // check whether config with same validity exists
+      if (oldMp.configs.exists(_.validFrom == impc.validFrom)) {
+        // replace the existing config
+        val updatedConfigs = (impc +: oldMp.configs.filter(_.validFrom == impc.validFrom)).sortBy(_.validFrom)
+        _meterPorts.put(oldMp.meterPort.id.get, oldMp.copy(configs = updatedConfigs))
+      } else {
+        // add the existing config
+        val updatedConfigs = (impc +: oldMp.configs).sortBy(_.validFrom)
+        _meterPorts.put(oldMp.meterPort.id.get, oldMp.copy(configs = updatedConfigs))
+      }
+    }.orElse {
+      // no config with this key yet => generate new ID and initialize config list
+      val newId = MeterPortID(_meterPortIdCounter.incrementAndGet)
+      val impc = internalMpc.copy(meterPort = internalMpc.meterPort.copy(id = Some(newId)))
+      _meterPorts.put(newId, FakeMeterPortInternal(impc.meterPort, impc +: Nil))
+    }
+    ()
+  }
+
+  override def upsertMeterPorts(mpc: Iterable[MeterPortConfig]): Future[Done] = synchronized {
+    logger.debug(s"MDR::upsertMeterPorts: ${mpc.map(mpc => s"[${mpc.execPlanId}:${mpc.mainDeviceId}:${mpc.portNr}-${mpc.articleNr}:${mpc.serialNr}]")}")
+    mpc.foreach(upsertMeterPort)
+    Future.successful(Done)
+  }
+
+  override def upsertMeterPortConfigs(mpc: Iterable[MeterPortConfig]): Future[Done] = synchronized {
+    logger.debug(s"MDR::upsertMeterPortConfigs: ${mpc.map(mpc => s"[${mpc.execPlanId}:${mpc.mainDeviceId}:${mpc.portNr}-${mpc.articleNr}:${mpc.serialNr}]")}")
+    mpc.foreach(upsertMeterPortConfig)
+    Future.successful(Done)
+  }
+
+  override def updateMeterPortConfigValidities(configValidityUpdates: Iterable[(MeterPortID, LocalInstant, LocalInstant)]): Future[Done] = ???
+
+  private def updateMeterPortDataRetention(mp: MdrMeterPort, dr: CompoundRetentionPolicy): Unit = synchronized {
+    findMeterPort(mp).foreach { oldMp =>
+      _meterPorts.put(oldMp.meterPort.id.get, oldMp.copy(meterPort = oldMp.meterPort.copy(retentionPolicy = dr)))
+    }
+  }
+
+  override def updatePropertyDataRetention(propertyId: PropertyID, compoundRetentionPolicy: CompoundRetentionPolicy): Future[Done] = {
+    meterPorts
+      .filter(_.propertyId == propertyId)
+      .foreach(mp => updateMeterPortDataRetention(mp, compoundRetentionPolicy))
+    Future.successful(Done)
+  }
+
+  override def findMeterPortsById(ids: Set[MeterPortID]): Future[Vector[MdrMeterPort]] =
+    Future.successful(ids.map(_meterPorts).map(_.meterPort).toVector)
+
+  override def findMeterPortsByLocation(execPlanId: Option[ExecPlanID], locations: Set[LocationId]): Future[Vector[MdrMeterPort]] = {
+    val results = meterPorts.filter { port =>
+      execPlanId.forall(_ == port.execPlanId) &&
+      locations.contains(port.locationId)
+    }
+    Future.successful(results)
+  }
+
+  override def findMeterPortsByProperty(execPlanId: Option[ExecPlanID], propertyId: PropertyID): Vector[MdrMeterPort] = {
+    meterPorts.filter { port =>
+      execPlanId.forall(_ == port.execPlanId) &&
+      propertyId == port.propertyId
+    }
+  }
+
+  override def findMeterPortIdsByExecPlanId(execPlanId: ExecPlanID): Vector[MeterPortID] = {
+    meterPorts.filter(_.execPlanId == execPlanId).map(_.id.get) // todo langerca bug? would fail if id is None
+  }
+
+  override def findMeterPortIdsByMainDeviceIds(execPlanId: Option[ExecPlanID], devices: Set[DeviceId]): Future[Vector[MeterPortID]] = {
+    val results = meterPorts.filter { port =>
+      execPlanId.forall(_ == port.execPlanId) &&
+      devices.contains(port.mainDeviceId)
+    }.map(_.id.get) // todo langerca 3 bug? would fail if id is None
+    Future.successful(results)
+  }
+
+  override def findMeterPortsByMainDeviceIds(execPlanId: Option[ExecPlanID], devices: Set[DeviceId]): Future[Vector[MdrMeterPort]] = {
+    val results = meterPorts.filter { port =>
+      execPlanId.forall(_ == port.execPlanId) &&
+      devices.contains(port.mainDeviceId)
+    }
+    Future.successful(results)
+  }
+
+  // for testing
+  def findMeterPortConfigsByExecPlanId(execPlanId: ExecPlanID): Iterable[FakeMeterPortInternal] = {
+    _meterPorts.values.filter(_.meterPort.execPlanId == execPlanId)
+  }
+
+  private def findMeterPort(execPlanId: ExecPlanID, mainDeviceId: DeviceId, portNr: PortNr): Option[(MeterPortID, FakeMeterPortInternal)] = {
+    val result = _meterPorts
+      .filter(p => p._2.meterPort.execPlanId == execPlanId && p._2.meterPort.mainDeviceId == mainDeviceId && p._2.meterPort.portNr == portNr)
+
+    assert(result.size <= 1, s"More than one meter port found for plan=$execPlanId device=$mainDeviceId port=$portNr")
+
+    result.headOption
+  }
+
+  private def findMeterPortId(execPlanId: ExecPlanID, mainDeviceId: DeviceId, port: PortNr): Option[MeterPortID] =
+    findMeterPort(execPlanId, mainDeviceId, port).map(_._1)
+
+  private def findMeterPortAndConfig(
+    execPlanId: ExecPlanID,
+    mainDeviceId: DeviceId,
+    portNr: PortNr,
+    consumptionDate: LocalInstant
+  ): Option[(MeterPortID, MdrMeterPort, MdrMeterPortConfig)] = {
+    findMeterPort(execPlanId, mainDeviceId, portNr).map {
+      case (portId, result) =>
+        val config = result.configs
+          .sortBy(_.validFrom)
+          .findLast(c => c.validFrom.isEqual(consumptionDate) || c.validFrom.isBefore(consumptionDate))
+
+        assert(config.isDefined, s"No valid config found for consumption date $consumptionDate (candidates were valid from ${result.configs.map(_.validFrom)})")
+        (portId, result.meterPort, config.get)
+    }
+  }
+
+  private def mapMeterReadingInput(
+    portDef: MdrMeterPort,
+    portConfig: MdrMeterPortConfig,
+    in: MdrMeterPortReadingInput
+  ): MdrMeterReading = {
+    MdrMeterReading(
+      meterPortId = portDef.id.get,
+      propertyId = portDef.propertyId,
+      locationId = portDef.locationId,
+      port = portDef.portNr,
+      mainDeviceId = portDef.mainDeviceId,
+      mainArticleNr = portDef.articleNr,
+      mainSerialNr = portDef.serialNr,
+      radioArticleNr = portConfig.radioArticleNr,
+      radioSerialNr = portConfig.radioSerialNr,
+      consumptionDate = in.consumptionDate,
+      value = in.value,
+      unit = in.unit,
+      readingType = in.readingType,
+      readingProcedure = in.readingProcedure,
+      transportType = in.transportType,
+      mediumType = in.mediumType,
+      estimationType = in.estimationType,
+      measurand = portDef.measurand,
+      timeZone = portDef.timeZone,
+      certificationDate = portDef.certificationDate,
+      identifier = in.identifier.map(_.toJson)
+    )
+  }
+
+  // note: overwrite has no effect, readings are simply appended !
+  override def insertReadings(meterReadings: Iterable[MdrMeterPortReadingInput], overwrite: Boolean): Unit = {
+    meterReadings.foreach { reading =>
+      findMeterPortAndConfig(reading.execPlanId, reading.mainDeviceId, reading.port, reading.consumptionDate).foreach {
+        case (id, portDef, portConfig) =>
+          val mappedReading = mapMeterReadingInput(portDef, portConfig, reading)
+          val oldReadings = _readings.getOrElse(id, List.empty[MdrMeterReading])
+          _readings.put(id, oldReadings :+ mappedReading)
+      }
+    }
+  }
+
+  override def applyReadingEventsWithIdentifier(readingEventsWithIdentifier: Vector[MdrOutputChannelEvent]): Unit = {
+    val revokedReadings = readingEventsWithIdentifier.collect { case e: MdrMeterPortReadingRevoke => e }
+    revokedReadings.foreach { revokedReading =>
+      _readings.mapValuesInPlace { case (_, v) =>
+        v.filterNot { r =>
+          r.identifier.map(_.-("version")).contains(revokedReading.identifier.toUnversionedJson) &&
+          r.identifier.nonEmpty &&
+          (r.identifier.get \ "version").as[Int] <= revokedReading.identifier.version
+        }
+      }
+      _revokedReadings.addOne(revokedReading.identifier)
+    }
+
+    readingEventsWithIdentifier
+      .collect { case e: MdrMeterPortReadingInput => e }
+      .groupBy(_.identifier.get)
+      .toList
+      .foreach { case (identifier, readings) =>
+        // check if the reading identifier was already revoked. If yes we do not need to insert the readings, If not we can just insert them
+        if (!_revokedReadings.contains(identifier))
+          insertReadings(readings, overwrite = true)
+      }
+
+    ()
+  }
+
+  override def findReadingsByMeterPort(
+    execPlanId: ExecPlanID,
+    mainDeviceId: DeviceId,
+    portNr: PortNr,
+    timespan: LocalTimespan
+  ): Future[Vector[MdrMeterReading]] = {
+    val result = findMeterPortId(execPlanId, mainDeviceId, portNr).map { meterPort =>
+      _readings
+        .getOrElse(meterPort, List.empty)
+        .filter(r => timespan.contains(r.consumptionDate))
+        .sortBy(_.consumptionDate)
+        .toVector
+    }.getOrElse(Vector.empty)
+
+    Future.successful(result)
+  }
+
+  override def findSurroundingReadingsByLocation(filterLocations: Set[LocationId], filterExecPlan: Option[ExecPlanID], filterTimespan: LocalTimespan, requestDate: LocalInstant): Future[Vector[MdrMeterPortReading]] = ???
+
+  override def dataRetentionPoliciesCount(): Map[CompoundRetentionPolicy, Long] = ???
+
+  override def findNearestReadingByLocation(filterLocations: Set[LocationId], filterExecPlan: Option[ExecPlanID], filterTimespan: LocalTimespan, requestDate: LocalInstant): Future[Vector[MdrMeterPortReading]] = ???
+
+  override def findMimoReadings2(mimoDate: LocalDate, locations: Set[LocationId]): Seq[MdrMimoReading] = ???
+
+  override def findBillingPeriodEndValueQuirk(requestDate: LocalDate, locations: Set[LocationId]): Seq[MdrMimoReading] = ???
+
+  override def findReadingsByProperty(propertyId: PropertyID, filterDevices: Set[DeviceId], filterExecPlan: Option[ExecPlanID], filterFrom: LocalInstant, filterTo: LocalInstant, filterReadingTypes: Set[MdrReadingType], filterServiceTypes: Set[MdrReadingProcedure], filterTransportTypes: Set[MdrTransportType], filterEndOfMonth: Boolean, anyDayReplacement: Boolean, onlyLatest: Boolean, filterInstalled: Boolean): Vector[MdrMeterReading] = ???
+
+  override def findReadingsByLocations(locations: Set[LocationId], filterExecPlan: Option[ExecPlanID], timespan: LocalTimespan, readingTypes: Set[MdrReadingType], serviceTypes: Set[MdrReadingProcedure]): Future[Vector[MdrMeterPortReading]] = ???
+
+  override def findMimoReadings(execPlanID: Option[ExecPlanID], locations: Set[LocationId], date: LocalDate, prioDaysSpan: Int, prioReadingProcedures: Set[MdrReadingProcedure], prioReadingType: MdrReadingType, otherDaysSpan: Int, fallbackSpan: Int): MdrReadingsResult = ???
+
+  override def existReadingsByMainDevice(filterDevices: Set[DeviceId], filterTimespan: LocalTimespan, filterReadingTypes: Set[MdrReadingType]): Vector[MdrDeviceReadingsInfo] = ???
+
+  override def getMeterPortConfigs(id: MeterPortID): Future[Vector[MdrMeterPortConfig]] = ???
+
+  override def getFirstMeterPortConfigsWithReadingsStartByExecPlan(execPlanId: ExecPlanID): Future[Vector[(MdrMeterPortConfig, Option[LocalInstant])]] = ???
+
+  /////////////////////////////
+  // Property readings status
+  /////////////////////////////
+
+  val propertyReadingsStatus: TrieMap[PropertyID, MdrPropertyReadingsStatus] = TrieMap()
+  val propertyReadingsStatusMonthly: TrieMap[(PropertyID, ExecPlanID, YearMonth), MdrPropertyReadingsStatusMonthly] = TrieMap()
+
+  override def upsertPropertyReadingsStatus(statuus: Iterable[MdrPropertyReadingsStatus]): Future[Done] = {
+    statuus.foreach { status =>
+      propertyReadingsStatus.put(status.propertyId, status)
+
+      val period = YearMonth.from(status.updated.toLocalDate)
+      propertyReadingsStatusMonthly.update((status.propertyId, status.execPlanId, period), MdrPropertyReadingsStatusMonthly(
+        status.execPlanId,
+        status.propertyId,
+        period,
+        status.updated,
+        status.timeZone,
+        status.ppsYield,
+        status.receivable,
+        status.notReceived,
+      ))
+    }
+    Future.successful(Done)
+  }
+
+  override def getPropertyReadingsStatus(properties: Set[PropertyID]): Vector[MdrPropertyReadingsStatus] = {
+    properties.flatMap(propertyReadingsStatus.get).toVector
+  }
+
+  override def getMonthlyPropertyReadingsStatus(propertyId: PropertyID): Vector[MdrPropertyReadingsStatusMonthly] = {
+    propertyReadingsStatusMonthly.collect { case ((propertyId, _, _), v) if propertyId == propertyId => v }.toVector
+  }
+
+  /////////////////////////////
+  // Device readings status
+  /////////////////////////////
+
+  override def deleteExecPlan(execPlanId: ExecPlanID): Unit = {
+    val portsToDelete = findMeterPortIdsByExecPlanId(execPlanId).toSet
+    _readings.filterInPlace { case (k, _) => !portsToDelete.contains(k) }
+    _meterPorts.filterInPlace { case (k, _) => !portsToDelete.contains(k) }
+  }
+
+  override def findMdrDataRetentionScheduleByIds(
+    id: Option[Long]
+  ): Future[Vector[MdrDataRetentionSchedule]] = ???
+
+  /**
+   * Add or update device status events, also maintaining the latest device status
+   */
+  override def upsertMeterPortStatusEvents(events: Vector[MdrMeterPortStatusChangeEvent]): Unit = ???
+
+  override def getMeterPortStatusEvents(filterDevices: Iterable[DeviceId], filterTimespan: Option[LocalTimespan], limit: Option[Int]): Vector[MdrMeterPortStatusChangeEvent] = ???
+
+  override def getMeterPortReadingsStatus(filterDevices: Iterable[DeviceId]): Vector[MdrMeterPortReadingsStatus] = ???
+
+  override def getMeterPortReadingsStatus(execPlanId: ExecPlanID): Vector[MdrMeterPortReadingsStatus] = ???
+
+  override def findMdrDataRetentionExecutors(): Future[Vector[MdrDataRetentionExecutor]] = ???
+
+  override def endOfMonthsReadings(execPlanId: ExecPlanID, dates: Set[LocalInstant]): Vector[(MeterPortID, LocalInstant)] = Vector()
+
+
+  override def upsertMandantForExecPlan(execPlanId: ExecPlanID, mandantId: MandantID): Future[Done] = {
+    _mandants.put(execPlanId, mandantId)
+    Future.successful(Done)
+  }
+
+  override def lookupMandantForExecPlan(execPlanId: ExecPlanID): Future[Option[MandantID]] =
+    Future.successful(_mandants.get(execPlanId))
+
+  override def getRawReadings(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawReading] = ???
+
+  override def getRawMeterports(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawMeterport] = ???
+
+  override def getRawMeterportConfigs(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawMeterportConfig] = ???
+
+  def getUiReadings(
+    propertyIds: Vector[PropertyID],
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: Option[ZonedDateTime],
+    consumptionDateTo: Option[ZonedDateTime],
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand],
+    lastConsumptionDateFrom: Option[ZonedDateTime],
+    lastConsumptionDateTo: Option[ZonedDateTime],
+    limit: Option[Int]
+  ): Vector[UiReadingsSearchData] = ???
+
+  override def saveRequestForUiReadingsExport(
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: ZonedDateTime,
+    consumptionDateTo: ZonedDateTime,
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand],
+    lastConsumptionDateFrom: Option[ZonedDateTime],
+    lastConsumptionDateTo: Option[ZonedDateTime]
+  ): Option[String] = ???
+
+  override def getUiReadingsForExport(id: String): Source[UiReadingsSearchData, NotUsed] = ???
+  override def deleteRequestsForUiReadingsExport(createdBefore: ZonedDateTime): Unit = ???
+}

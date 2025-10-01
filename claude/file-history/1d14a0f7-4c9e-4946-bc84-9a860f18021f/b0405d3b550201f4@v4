@@ -1,0 +1,78 @@
+import com.ista.rdm.sbt.basesettings.BaseDeps
+import play.sbt.PlayImport.ws
+import sbt._
+
+object Deps extends BaseDeps {
+
+  object Versions {
+
+    /* extenal deps */
+    val autowire = "0.3.2"
+    val booPickle = "1.3.3"
+    val diode = "1.1.13"
+    val log4js = "1.4.15"
+    val scalaDom = "1.1.0"
+    val scalajsReact = "1.7.7"
+    val scalaCSS = "0.6.1"
+    val scalaJavaTime = "2.0.0"
+    val scalaJsReactBridge = "0.8.5.1"
+    val jwtPlayJson = "8.0.2"
+    val playJsMessages = "7.0.0"
+    val apachePoiExcel = "2.2.1"
+    val webPack = "5.89.0"
+    val webPackCli = "5.1.4"
+    val startWebPackDevServer = "4.15.1"
+    val webpackMerge = "5.1.0"
+    val importsLoader = "4.0.1"
+    val exposeLoader = "4.1.0"
+    val copyToClipboard = "3.3.1"
+    val reactTippy = "1.2.3"
+    val reactTostify = "5.3.1"
+    val pureReactVirtualized = "9.21.1"
+
+    val react = "16.13.1"
+    val jQuery = "3.7.0"
+    val popperJs = "2.11.7" //needed for bootstrap 5.X release
+    val bootstrap = "5.3.0"
+    val bootstrapIcons = "1.10.5"
+    val fontAwesome = "6.4.2"
+    val chartjs = "2.1.3"
+    val reactVirtualized = "0.11.3"
+    val reactClipboard = "1.4.3"
+
+    val scalajsScripts = "1.1.2"
+
+    // sttp backend will use Pekko HTTP (client3)
+  
+    /* RDM deps */
+    val common = "1.690"
+    val extApi = "0.214-SNAPSHOT"
+    val errors = "1.149"
+    val articles = "2.101"
+
+    val log4jToSlf4j = "2.24.3"
+  }
+
+  val common: Deps.CommonDeps = super.common(Versions.common)
+  val extApi: Deps.ExtApiDeps = super.extApi(Versions.extApi)
+  val errors: Deps.ErrorsDeps = super.errors(Versions.errors)
+  val articles: Deps.ArticlesDeps = super.articles(Versions.articles)
+
+  val fontAwesome: Seq[ModuleID] = Seq("org.webjars" % "font-awesome" % Versions.fontAwesome)
+  val bootstrap: Seq[ModuleID] = Seq("org.webjars" % "bootstrap" % Versions.bootstrap)
+  val bootstrapIcons: Seq[ModuleID] = Seq("org.webjars.npm" % "bootstrap-icons" % Versions.bootstrapIcons)
+  val popperJs: Seq[ModuleID] = Seq("org.webjars" % "popper.js" % Versions.popperJs)
+  val jQuery: Seq[ModuleID] = Seq("org.webjars" % "jquery" % Versions.jQuery)
+
+  // Use sttp client3 Pekko HTTP backend (align version with BaseDeps)
+  val sttpPekkoHttpBackend: Seq[ModuleID] = Seq(
+    "com.softwaremill.sttp.client3" %% "pekko-http-backend" % Deps.BaseVersions.sttpClient
+  )
+
+  val jwtPlayJson: Seq[ModuleID] = Seq("com.github.jwt-scala" %% "jwt-play-json" % Versions.jwtPlayJson)
+  val playWs: Seq[ModuleID] = Seq(ws)
+  val playJsMessages: Seq[ModuleID] = Seq("org.julienrf" %% "play-jsmessages" % Versions.playJsMessages)
+  val apachePoiExcel: Seq[ModuleID] = Seq("com.norbitltd" %% "spoiwo" % Versions.apachePoiExcel)
+  val log4jToSlf4j: Seq[ModuleID] = Seq("org.apache.logging.log4j" % "log4j-to-slf4j" % Versions.log4jToSlf4j)
+
+}

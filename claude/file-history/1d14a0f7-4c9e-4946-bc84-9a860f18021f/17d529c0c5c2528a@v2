@@ -1,0 +1,616 @@
+package com.ista.rdm.ui.frontend.readings.searching
+
+import cats.instances.option._
+import cats.instances.string._
+import cats.syntax.eq._
+import com.ista.rdm.common.extapi.model._
+import com.ista.rdm.emitter.extapi.jsonformats.EmitterReprJsonFormats
+import com.ista.rdm.emitter.extapi.model.{ReadingsExtendedRespRepr, ReadingsSearchReqRepr}
+import com.ista.rdm.ui.frontend.RouterComponent.Loc
+import com.ista.rdm.ui.frontend._
+import com.ista.rdm.ui.frontend.components.Bootstrap.Table.{TableSpec, Td, Tr}
+import com.ista.rdm.ui.frontend.components.Bootstrap.{Button, CommonStyle, Spinner, Table}
+import com.ista.rdm.ui.frontend.components.ContentModule.PageTitleConfig
+import com.ista.rdm.ui.frontend.components.ContentPanel.ContentPanelConfig
+import com.ista.rdm.ui.frontend.components._
+import com.ista.rdm.ui.frontend.readings.searching.ReadingsSearchGridView.{CustomOrder, OrderReadingsExtendedRepr}
+import com.ista.rdm.ui.frontend.readings.searching.ReadingsSearchRoutes.ReadingsSearchLoc
+import com.ista.rdm.ui.frontend.readings.searching.table.Asc
+import com.ista.rdm.ui.frontend.readings.searching.validation._
+import com.ista.rdm.ui.frontend.readings.shared.TypeMappers
+import com.ista.rdm.ui.frontend.readings.shared.inputvalidation.ValidationResult
+import com.ista.rdm.ui.shared.Locale.Locale
+import com.ista.rdm.ui.shared.components.IconsHelper.{FaIcon, FaIconSize}
+import com.ista.rdm.ui.shared.components.{DateTimeDisplay, Icon, Toast}
+import com.ista.rdm.ui.shared.config.FrontendConfig
+import com.ista.rdm.ui.shared.pickling.SharedPicklers
+import com.ista.rdm.ui.shared.utils.ReadingsSearchPropertyConverter
+import diode.data.Pot
+import diode.react.ModelProxy
+import diode.react.ReactPot._
+import japgolly.scalajs.react.Ref.Simple
+import japgolly.scalajs.react.component.Scala.BackendScope
+import japgolly.scalajs.react.extra.OnUnmount
+import japgolly.scalajs.react.extra.router.RouterCtl
+import japgolly.scalajs.react.vdom.html_<^._
+import japgolly.scalajs.react.{Callback, CallbackTo, Ref, ScalaComponent}
+import org.scalajs.dom.html
+import org.scalajs.dom.html.{Div, Element}
+
+import java.time.{LocalDate, LocalTime}
+import java.util.regex.Pattern
+import java.util.UUID
+import scala.scalajs.js.URIUtils
+import scala.util.Try
+
+object ReadingsSearchModule extends SharedPicklers with InputValidator with TypeMappers {
+
+  private val MaxLocationNumberDigits = 9
+  private val MaxArticleNumberDigits = 5
+  private val MaxSerialNumberDigits = 9
+
+  @inline private def bss = GlobalStyles.bootstrapStyles
+
+//  val dateFormatter = DateTimeFormatter.ofPattern("ddMMyyyy")
+//  val regexDateFormatPattern: Regex = "^(\\d\\d){1}.?(\\d\\d){1}.?(\\d\\d\\d\\d){1}$".r
+
+  case class Props(
+    router: RouterCtl[Loc],
+    readingsSearchModelP: ModelProxy[Pot[ReadingsExtendedRespRepr]],
+    execEnvNameRepr: ExecEnvNameRepr,
+    filterParams: Option[String],
+    localeModelP: ModelProxy[Pot[Locale]],
+    frontendConfig: FrontendConfig
+  ) {
+    lazy val readingsSearchInstance: Pot[ReadingsExtendedRespRepr] = readingsSearchModelP()
+    lazy val localeInstance: Locale = localeModelP().toOption.get
+  }
+
+  case class State(
+    propertyNumberField: Seq[String] = Seq.empty,
+    locationNumberField: Seq[String] = Seq.empty,
+    articleField: Seq[String] = Seq.empty,
+    serialNumberField: Seq[String] = Seq.empty,
+    deviceTypeField: Seq[(String, String)] = Seq.empty,
+    consumptionDateFromField: Option[String] = None,
+    consumptionDateToField: Option[String] = None,
+    readingTypeField: Seq[(String, String)] = Seq.empty,
+    measurandField: Seq[(String, String)] = Seq.empty,
+    lastConsumptionDateFromField: Option[String] = None,
+    lastConsumptionDateToField: Option[String] = None,
+    usageUnitField: Seq[String] = Seq.empty,
+    orderingState: Seq[OrderReadingsExtendedRepr] = initialOrderingState,
+    isSearchBarVisible: Boolean = true
+  ) extends SearchInputState {
+    def isEmpty = propertyNumberField.isEmpty &&
+                  locationNumberField.isEmpty &&
+                  articleField.isEmpty &&
+                  serialNumberField.isEmpty &&
+                  deviceTypeField.isEmpty &&
+                  consumptionDateFromField.isEmpty &&
+                  consumptionDateToField.isEmpty &&
+                  readingTypeField.isEmpty &&
+                  measurandField.isEmpty &&
+                  usageUnitField.isEmpty
+
+    /**
+     * Generates and ordered description key-values for the filter to be shown in the minimal filter view mode of the filter bar
+     *
+     * @return
+     */
+    def toTuplesSetValues: Seq[(Int, String, Set[String])] =
+      Set((0, t("ReadingsSearchLoc.Filter.PropertyNumberOrUuids"), propertyNumberField),
+        (1, t("ReadingsSearchLoc.Filter.LocationNumber"), locationNumberField),
+        (2, t("ReadingsSearchLoc.Filter.ArticleNumber"), articleField),
+        (3, t("ReadingsSearchLoc.Filter.SerialNumber"), serialNumberField),
+        (4, t("ReadingsSearchLoc.Filter.DeviceType"), deviceTypeField.map(_._2)),
+        (5, t("ReadingsSearchLoc.Filter.ConsumptionDateFrom"), consumptionDateFromField),
+        (6, t("ReadingsSearchLoc.Filter.ConsumptionDateTo"), consumptionDateToField),
+        (7, t("ReadingsSearchLoc.Filter.ReadingType"), readingTypeField.map(_._2)),
+        (8, t("ReadingsSearchLoc.Filter.Measurand"), measurandField.map(_._2)),
+        (11, t("ReadingsSearchLoc.Filter.UsageUnit"), usageUnitField))
+        .filter(_._3.iterator.nonEmpty)
+        .map(v => (v._1, v._2, v._3.iterator.toSet))
+        .toSeq.sortBy(_._1)
+
+  }
+
+  private val emptyState = State(
+    propertyNumberField = Seq.empty,
+    locationNumberField = Seq.empty,
+    articleField = Seq.empty,
+    serialNumberField = Seq.empty,
+    deviceTypeField = Seq.empty,
+    consumptionDateFromField = None,
+    consumptionDateToField = None,
+    readingTypeField = Seq.empty,
+    measurandField = Seq.empty,
+    usageUnitField = Seq.empty,
+    orderingState = initialOrderingState)
+
+  //define the references for all fields used
+  private val PropertyNumberFieldRef: Simple[Element] = Ref[html.Element]
+  private val LocationNumberFieldRef: Simple[Element] = Ref[html.Element]
+  private val ArticleFieldRef: Simple[Element] = Ref[html.Element]
+  private val SerialNumberFieldRef: Simple[Element] = Ref[html.Element]
+  private val DeviceTypeFieldRef: Simple[Element] = Ref[html.Element]
+  private val ConsumptionDateFromFieldRef: Simple[Element] = Ref[html.Element]
+  private val ConsumptionDateToFieldRef: Simple[Element] = Ref[html.Element]
+  private val ReadingTypeFieldRef: Simple[Element] = Ref[html.Element]
+  private val MeasurandFieldRef: Simple[Element] = Ref[html.Element]
+  private val UsageUnitFieldRef: Simple[Element] = Ref[html.Element]
+  private val SearchButtonRef: Simple[Element] = Ref[html.Element]
+  private val CleanSearchButtonRef: Simple[Element] = Ref[html.Element]
+
+
+  class Backend($: BackendScope[Props, State]) extends OnUnmount with EmitterReprJsonFormats {
+
+    def render(p: Props, s: State) = {
+      ContentModule(
+        p.router,
+        PageTitleConfig(s"Readings Search", None),
+        Some(ContentPanelConfig.NoTitle),
+        p.frontendConfig,
+        <.div(^.className := "readings-search-filter",
+          renderFilterBar(p, s),
+          p.readingsSearchInstance.renderPending(_ => Spinner()),
+          p.readingsSearchInstance.renderFailed(e => Alert(Some(e))),
+          p.readingsSearchInstance.renderReady { rsr =>
+            ReadingsSearchGridView(rsr, p.localeModelP, p.frontendConfig, s.orderingState, orderingStateCallback, s.isSearchBarVisible)
+          }
+        )
+      )
+    }
+
+    /**
+     * This method translate the filter values to a long string with the values used in the filter when the filter fields are hidden to room more space
+     *
+     * @param tuples
+     */
+    private def renderFilterValuesToText(tuples: Seq[(Int, String, Set[String])]): VdomTagOf[Div] =
+      <.div(^.className := "readings-filter-text-format-container",
+        tuples.toTagMod { case (_, prompt, values) =>
+          <.span(^.className := "readings-filter-text-format-tuple-container",
+            <.span(^.className := "readings-filter-text-format-prompt", prompt),
+            <.span(^.className := "readings-filter-text-format-values", values.mkString(", "))
+          )
+        }
+      )
+
+    private def renderFilterBar(p: Props, s: State) =
+      <.div(
+        renderSearchVisibilityButton(s), // eye slash icon for hiding the filterBar
+        renderMinimalFilterBarView(s), //Minimal filter bar (read only) only visible when normal filter bar is hidden
+        renderNormalFilterBarView(p, s) //Normal filter bar only visible when accepting input values for the fields (read/write)
+      )
+
+    private def renderNormalFilterBarView(p: Props, s: State) = {
+      val tooltipInfoIcon = <.span(s"${t("ReadingsSearchLoc.Results.Title.LocationInfo")}")
+      val tooltipPropertyInfo = <.span(s"${t("ReadingsSearchLoc.Results.Title.PropertyInfo")}")
+      <.div(^.classSet1("readings-search-filter-container", "visibility-on" -> s.isSearchBarVisible, "visibility-off" -> !s.isSearchBarVisible),
+        Table(Table.Props(
+          spec = TableSpec(None,
+            Seq(
+              Tr(Seq(
+                //PropertyNumber
+                renderFilterField(
+                  prompt = t("ReadingsSearchLoc.Filter.PropertyNumberOrUuids"),
+                  element = TagsInput(
+                    tags = s.propertyNumberField,
+                    placeHolder = t("ReadingsSearchLoc.Placeholder.PropertyNumberOrUuid"),
+                    stateCallback = propertyNumberFieldCallback(s),
+                    stateEnterCallback = onSearchCallback(p, s),
+                    tabIndex = 1,
+                    validation = validatePropertyNumberField(_).fold(true -> "") { false -> _ },
+                    focusRef = (
+                      { if (!s.isEmpty) CleanSearchButtonRef else SearchButtonRef },
+                      PropertyNumberFieldRef,
+                      LocationNumberFieldRef
+                    ),
+                    sanitizeFn = ReadingsSearchPropertyConverter.sanitizePropertySearchFieldWithCheck,
+                    inputSplitFn = Some(ReadingsSearchPropertyConverter.toValueSet),
+                    maxAllowedInputCount = Some(ReadingsSearchPropertyConverter.maxAllowedPropertiesPasted)),
+                  promptExtraElements = Tooltip(position = "right", hideOnClick = true, html = tooltipPropertyInfo.rawElement)(<.span(^.className := "results-td-info with-smaller-font", Icon.`circle-info`)),
+                  required = true
+                ),
+
+                //LocationNumber
+                renderFilterField(t("ReadingsSearchLoc.Filter.LocationNumber"),
+                  TagsInput(s.locationNumberField, t("ReadingsSearchLoc.Placeholder.LocationNumber"), locationNumberFieldCallback(s), onSearchCallback(p, s), 2, validateNumberField(MaxLocationNumberDigits), (PropertyNumberFieldRef, LocationNumberFieldRef, ArticleFieldRef)),
+                  Tooltip(position = "right", hideOnClick = true, html = tooltipInfoIcon.rawElement)(<.span(^.className := "results-td-info with-smaller-font", Icon.`circle-info`))
+                ),
+                //Article
+                renderFilterField(t("ReadingsSearchLoc.Filter.ArticleNumber"),
+                  TagsInput(s.articleField, t("ReadingsSearchLoc.Placeholder.ArticleNumber"), articleFieldCallback(s), onSearchCallback(p, s), 3, validateNumberField(MaxArticleNumberDigits), (LocationNumberFieldRef, ArticleFieldRef, SerialNumberFieldRef))),
+                //SerialNumber
+                renderFilterField(t("ReadingsSearchLoc.Filter.SerialNumber"),
+                  TagsInput(s.serialNumberField, t("ReadingsSearchLoc.Placeholder.SerialNumber"), serialNumberFieldCallback(s), onSearchCallback(p, s), 4, validateNumberField(MaxSerialNumberDigits), (ArticleFieldRef, SerialNumberFieldRef, DeviceTypeFieldRef))),
+              )),
+              Tr(Seq(
+                //devicetype
+                renderFilterField(t("ReadingsSearchLoc.Filter.DeviceType"),
+                  TagsInputDropdown("ReadingsSearchLoc.Enums.Devicetype", p.localeModelP, s.deviceTypeField, t("ReadingsSearchLoc.Placeholder.DeviceType"), deviceTypeFieldCallback(s), onSearchCallback(p, s), 5, deviceClassesTuples, (SerialNumberFieldRef, DeviceTypeFieldRef, ConsumptionDateFromFieldRef), "999")),
+                //comsumption date from
+                renderFilterField(t("ReadingsSearchLoc.Filter.ConsumptionDateFrom"),
+                  TextDateField(s.consumptionDateFromField, t("ReadingsSearchLoc.Placeholder.ConsumptionDateFrom"), consumptionDateFromFieldCallback(s), onSearchCallback(p, s), 6, validateTextDateField, (DeviceTypeFieldRef, ConsumptionDateFromFieldRef, ConsumptionDateToFieldRef))),
+                //consumption date to
+                renderFilterField(t("ReadingsSearchLoc.Filter.ConsumptionDateTo"),
+                  TextDateField(s.consumptionDateToField, t("ReadingsSearchLoc.Placeholder.ConsumptionDateTo"), consumptionDateToFieldCallback(s), onSearchCallback(p, s), 7, validateTextDateField, (ConsumptionDateFromFieldRef, ConsumptionDateToFieldRef, ReadingTypeFieldRef)),
+                ),
+                //reading type
+                renderFilterField(t("ReadingsSearchLoc.Filter.ReadingType"),
+                  TagsInputDropdown("ReadingsSearchLoc.Enums.ReadingType", p.localeModelP, s.readingTypeField, t("ReadingsSearchLoc.Placeholder.ReadingType"), readingTypeFieldCallback(s), onSearchCallback(p, s), 8, readingTypesTuples, (ConsumptionDateToFieldRef, ReadingTypeFieldRef, MeasurandFieldRef), "999")),
+              )),
+              Tr(Seq(
+                //measurand
+                renderFilterField(t("ReadingsSearchLoc.Filter.Measurand"),
+                  TagsInputDropdown("ReadingsSearchLoc.Enums.Measurands", p.localeModelP, s.measurandField, t("ReadingsSearchLoc.Placeholder.Measurand"), measurandFieldCallback(s), onSearchCallback(p, s), 9, measurandsTuples, (ReadingTypeFieldRef, MeasurandFieldRef, UsageUnitFieldRef), "998")),
+                //Unit
+                renderFilterField(t("ReadingsSearchLoc.Filter.UsageUnit"),
+                  TagsInput(s.usageUnitField, t("ReadingsSearchLoc.Placeholder.UsageUnit"), usageUnitFieldCallback(s), onSearchCallback(p, s), 12, validateNumberField(MaxSerialNumberDigits), (MeasurandFieldRef, UsageUnitFieldRef, SearchButtonRef))),
+              ))
+            )),
+          extraClasses = "readings-search-filter-table rdm-no-borders"
+        )
+        ),
+        //button for search
+        renderButtonField(ButtonField(
+          prompt = t("ReadingsSearchLoc.Filter.Search"),
+          title = t("ReadingsSearchLoc.Filter.Search"),
+          onClickCallback = onSearchCallback(p, s),
+          tabIndex = 100,
+          cssClassName = "tag-input-search-container",
+          focusRef = {
+            if (s.isEmpty) (MeasurandFieldRef, SearchButtonRef, PropertyNumberFieldRef)
+            else (MeasurandFieldRef, SearchButtonRef, CleanSearchButtonRef)
+          }),
+          p, s)
+      )
+    }
+
+    private def renderFilterField(prompt: String, element: VdomElement, promptExtraElements: VdomNode = EmptyVdom, required: Boolean = false) =
+      Td(
+        cls = Option("readings-search-filter-table-td"),
+        content = addPrompt(prompt, element, promptExtraElements, required))
+
+    private def addPrompt(prompt: String, element: VdomElement, promptExtraElements: VdomNode, required: Boolean = false) =
+      <.div(^.className := "readings-search-filter-table-td-prompt",
+        <.span(^.className := "readings-field-prompt",
+          if(required) s"$prompt *" else prompt, promptExtraElements),
+        element)
+
+    private def renderButtonField(element: VdomElement, p: Props, s: State) =
+      <.div(
+        ^.className := "",
+        renderSearchbutton(element, p, s))
+
+    private def renderSearchbutton(element: VdomElement, p: Props, s: State) =
+      <.div(^.className := "tag-search-flex",
+        <.div(^.className := "with-flex"),
+        <.div(^.className := "with-flex justify",
+          element,
+          ButtonField(prompt = Icon.remove,
+            title = t("ReadingsSearchLoc.Filter.Title.CleanFilterSearch"),
+            onClickCallback = () => resetFiltersAndSearch(p),
+            tabIndex = 101,
+            cssClassName = "tag-search-filter-clean",
+            focusRef = (SearchButtonRef, CleanSearchButtonRef, PropertyNumberFieldRef)
+          ).when(!s.isEmpty)
+        ),
+        <.div(^.className := "with-flex")
+      )
+
+    private def renderSearchVisibilityButton(s: State) = {
+      val visibilityIconSpan = {
+        if (s.isSearchBarVisible) <.span(^.className := "readings-icon-eye-slash", Icon(FaIcon.`eye-slash`, Some(FaIconSize.sm)))
+        else <.span(^.className := "readings-icon-eye", Icon(FaIcon.`eye`, Some(FaIconSize.sm)))
+      }
+
+      <.div(^.className := "readings-search-filter-toolbar",
+        <.div(^.className := "readings-visibility-button",
+          ^.title := {
+            if (s.isSearchBarVisible) t("ReadingsSearchLoc.Filter.Title.VisibilityOff") else t("ReadingsSearchLoc.Filter.Title.VisibilityOn")
+          },
+          Button(Button.Props(searchVisibilityCallback(),
+            CommonStyle.default, Seq(bss.buttonXS, bss.flex1), s.isEmpty), visibilityIconSpan)
+        )
+      )
+    }
+
+    private def renderMinimalFilterBarView(s: State) =
+      <.div(^.classSet("readings-search-filter-toolbar-container-visible" -> !s.isSearchBarVisible, "readings-search-filter-toolbar-container-invisible" -> s.isSearchBarVisible),
+        <.div(^.className := "readings-search-filter-string-data", renderFilterValuesToText(s.toTuplesSetValues))
+      )
+
+    ////////////////////////BEGIN STATE CALLBACKS///////////////////////////////
+    private def onSearchCallback(p: Props, s: State): () => Callback = () => onSearch(p, s)
+
+    private def updateFilterParamsProps(s: State): Callback =
+      $.props.flatMap(p => p.router.set(ReadingsSearchLoc(p.execEnvNameRepr.value, filterParamsToUrl(s))))
+
+    private def propertyNumberFieldCallback(s: State): Seq[String] => Callback =
+      tags => $.modState(s => s.copy(propertyNumberField = tags)) >> CallbackTo(s.copy(propertyNumberField = tags)) >>= updateFilterParamsProps
+
+    private def locationNumberFieldCallback(s: State): Seq[String] => Callback =
+      tags => $.modState(s => s.copy(locationNumberField = tags)) >> CallbackTo(s.copy(locationNumberField = tags)) >>= updateFilterParamsProps
+
+    private def articleFieldCallback(s: State): Seq[String] => Callback =
+      tags => $.modState(s => s.copy(articleField = tags)) >> CallbackTo(s.copy(articleField = tags)) >>= updateFilterParamsProps
+
+    private def serialNumberFieldCallback(s: State): Seq[String] => Callback =
+      tags => $.modState(s => s.copy(serialNumberField = tags)) >> CallbackTo(s.copy(serialNumberField = tags)) >>= updateFilterParamsProps
+
+    private def usageUnitFieldCallback(s: State): Seq[String] => Callback =
+      tags => $.modState(s => s.copy(usageUnitField = tags)) >> CallbackTo(s.copy(usageUnitField = tags)) >>= updateFilterParamsProps
+
+    private def deviceTypeFieldCallback(s: State): Seq[(String, String)] => Callback =
+      tags => $.modState(s => s.copy(deviceTypeField = tags)) >> CallbackTo(s.copy(deviceTypeField = tags)) >>= updateFilterParamsProps
+
+    private def readingTypeFieldCallback(s: State): Seq[(String, String)] => Callback =
+      tags => $.modState(s => s.copy(readingTypeField = tags)) >> CallbackTo(s.copy(readingTypeField = tags)) >>= updateFilterParamsProps
+
+    private def measurandFieldCallback(s: State): Seq[(String, String)] => Callback =
+      tags => $.modState(s => s.copy(measurandField = tags)) >> CallbackTo(s.copy(measurandField = tags)) >>= updateFilterParamsProps
+
+    private def consumptionDateFromFieldCallback(s: State): Option[String] => Callback =
+      date => {
+        val sanitizedDate = sanitizeInputDateField(date).flatten
+        $.modState(s => s.copy(consumptionDateFromField = sanitizedDate)) >> CallbackTo(s.copy(consumptionDateFromField = sanitizedDate)) >>= updateFilterParamsProps
+      }
+
+    private def consumptionDateToFieldCallback(s: State): Option[String] => Callback =
+      date => {
+        val sanitizedDate = sanitizeInputDateField(date).flatten
+        $.modState(s => s.copy(consumptionDateToField = sanitizedDate)) >> CallbackTo(s.copy(consumptionDateToField = sanitizedDate)) >>= updateFilterParamsProps
+      }
+
+    private def orderingStateCallback: Seq[OrderReadingsExtendedRepr] => Callback =
+      ord => $.modState(s => s.copy(orderingState = ord))
+
+    private def searchVisibilityCallback(): Callback =
+      $.modState(s => s.copy(isSearchBarVisible = if (s.isEmpty) true else !s.isSearchBarVisible))
+
+    private def resetFiltersAndSearch(p: Props): CallbackTo[Unit] =
+      $.modState(_ => emptyState) >> p.router.set(ReadingsSearchLoc(p.execEnvNameRepr.value, None)) >> p.readingsSearchModelP.dispatchCB(ClearReadingsSearch)
+
+    ////////////////////////END STATE CALLBACKS///////////////////////////////
+
+    private def onSearch(p: Props, s: State) = {
+      p.readingsSearchModelP.dispatchCB(ClearReadingsSearch) >> {
+        validateInput(s) match {
+          case _ @ ValidationResult(true, _, _)         => dispatchLoadReadingsSearch(p, s)
+          case _ @ ValidationResult(false, errorMsg, _) =>
+            println(s"Search button display/hidden functionality failed: $errorMsg")
+            browserNotification(errorMsg)
+        }
+      }
+    }
+
+    private def sanitizeInputDateFieldPartialFunction: PartialFunction[String, Option[String]] = {
+      case regexDateFormatPattern(d, m, y) => Some(s"$d$m$y")
+      case other                           => Some(other)
+    }
+
+    private def sanitizeInputDateField(input: Option[String]): Option[Option[String]] =
+      input.map(sanitizeInputDateFieldPartialFunction)
+
+    private def browserNotification(msg: String, `type`: String = "error"): Callback =
+      Callback(Toast.Toastify.toast(msg, Toast.Props(`type` = `type`)))
+
+  }
+
+  ////////////////////////VALIDATION FUNCTIONS///////////////////////////////
+
+  //Allow multiple validation for the tag input field
+  private def validateNumberField(maxLength: Int): String => (Boolean, String) = input =>
+    if (!validateDigitsNumber(input)) (false, t("ReadingsSearchLoc.Notifications.OnlyDigits"))
+    else if (input.length > maxLength) (false, t("ReadingsSearchLoc.Notifications.MaxLength", maxLength.toString))
+    else (true, "")
+
+  private def validateDigitsNumber(input: String): Boolean = {
+    val pattern = Pattern.compile("^[0-9]*$")
+    input.isEmpty || pattern.matcher(input).matches()
+  }
+
+  private def validatePropertyNumberField(input: String): Option[String] = {
+    import ReadingsSearchPropertyConverter._
+
+    val maybeErrors = toValueSet(input)
+      .map { x =>
+        if (isUuidWithOptionalHyphen(x)) {
+          sanitizePropertyId(x).fold(e => Option(t("ReadingsSearchLoc.Notifications.InvalidPropertyNumberFormat")), _ => Option.empty)
+        } else if (isValidPropertyNumber(x)) {
+          val sanitized = sanitizePropertyNumber(x)
+          val checkDigit = ReadingsSearchPropertyConverter.checkDigit(sanitized.take(9))
+          if ((sanitized.length == 10 && checkDigit == sanitized.takeRight(1)) || sanitized.length == 9) Option.empty
+          else Option(t("ReadingsSearchLoc.Notifications.InvalidPropertyNumberCheckDigit"))
+        } else {
+          Option(t("ReadingsSearchLoc.Notifications.InvalidPropertyNumberFormat"))
+        }
+      }
+
+    maybeErrors.find(_.nonEmpty).flatten
+  }
+  ////////////////////////END VALIDATION FUNCTIONS///////////////////////////////
+
+  ////////////////////////SORTING FUNCTIONS///////////////////////////////
+  lazy val initialOrderingState = Seq(
+    OrderReadingsExtendedRepr(
+      id = 1,
+      key = "PropertyNumber",
+      order = CustomOrder.by(_.propertyNumber.toString),
+      `type` = Asc
+    ))
+
+  /**
+   * Try to convert the current url filter to a real component state parsing the plain string query
+   * Failing on this process cannot affect the readings search functionality, so in case of error we log it a ignore the url filter params setting the state to the current one
+   *
+   * @param filterParams the stringfied version of the state fo the component
+   * @return
+   */
+  def filterParamsFromUrl(filterParams: Option[String]): State = {
+
+    //clean the list of values for a enum type in order to have a clean list of tuple in the for of ("literalNameValueType", comma separated values string)
+    def sanitizedListOfValues(values: Seq[String], prefix: String): Seq[(String, String)] =
+      URIUtils.decodeURIComponent(values.mkString("")).split("\\);\\(").toSeq
+        .map(v => v.replace(")", "").replace("(", ""))
+        .map { tup =>
+          val tupleValue = tup.split(",")
+          (tupleValue.head, t(s"$prefix.${tupleValue.head}"))
+        }
+
+    def sanitizeList(values: Seq[String]): Seq[(String)] =
+      URIUtils.decodeURIComponent(values.mkString("")).split(",").toSeq
+
+    Try {
+      filterParams match {
+        case Some(filters) =>
+          val filterValueList = filters.split("&").filter(_.nonEmpty)
+          filterValueList.foldLeft(State()) { (acc, next) =>
+            val candidate = next.split("=").toSeq
+            (candidate.head, candidate.tail) match {
+              case ("pn", values)   => acc.copy(propertyNumberField = sanitizeList(values))
+              case ("ln", values)   => acc.copy(locationNumberField = sanitizeList(values))
+              case ("a", values)    => acc.copy(articleField = sanitizeList(values))
+              case ("sn", values)   => acc.copy(serialNumberField = sanitizeList(values))
+              case ("dt", values)   => acc.copy(deviceTypeField = sanitizedListOfValues(values, "ReadingsSearchLoc.Enums.Devicetype"))
+              case ("cdf", values)  => acc.copy(consumptionDateFromField = values.headOption)
+              case ("cdt", values)  => acc.copy(consumptionDateToField = values.headOption)
+              case ("rt", values)   => acc.copy(readingTypeField = sanitizedListOfValues(values, "ReadingsSearchLoc.Enums.ReadingType"))
+              case ("m", values)    => acc.copy(measurandField = sanitizedListOfValues(values, "ReadingsSearchLoc.Enums.Measurands"))
+              case ("uu", values)   => acc.copy(usageUnitField = sanitizeList(values))
+            }
+          }
+        case None          => State()
+      }
+    }.getOrElse {
+      println("Error reading the url filter params received for the component")
+      State()
+    }
+  }
+
+  /**
+   * Try to convert the current filter to a url string
+   * Failing on this process cannot affect the readings search functionality, so in case of error we log it a ignore the url filter params
+   *
+   * @param s the state of the component
+   * @return
+   */
+  def filterParamsToUrl(s: State): Option[String] = {
+    def stringfiedSeq(field: String, input: Seq[String]) = {
+      if (input.isEmpty) ""
+      else s"$field=${URIUtils.encodeURIComponent(input.mkString(","))}&"
+    }
+
+    def stringfiedSeqOfTuples(field: String, input: Seq[(String, String)]) = {
+      val prefix = field match {
+        case "dt"                  => "ReadingsSearchLoc.Enums.Devicetype"
+        case "rt"                  => "ReadingsSearchLoc.Enums.ReadingType"
+        case "m"                   => "ReadingsSearchLoc.Enums.Measurands"
+        case no_short_name_defined => ""
+      }
+      if (input.isEmpty) ""
+      else s"$field=${URIUtils.encodeURIComponent(input.map(v => (v._1, t(s"$prefix.${v._1}"))).mkString(";"))}&"
+    }
+
+    Try {
+      if (s.isEmpty) None
+      else {
+        Option(
+          stringfiedSeq("pn", s.propertyNumberField) +
+          stringfiedSeq("ln", s.locationNumberField) +
+          stringfiedSeq("a", s.articleField) +
+          stringfiedSeq("sn", s.serialNumberField) +
+          stringfiedSeqOfTuples("dt", s.deviceTypeField) +
+          s.consumptionDateFromField.map(v => s"cdf=${URIUtils.encodeURIComponent(v)}&").getOrElse("") +
+          s.consumptionDateToField.map(v => s"cdt=${URIUtils.encodeURIComponent(v)}&").getOrElse("") +
+          stringfiedSeqOfTuples("rt", s.readingTypeField) +
+          stringfiedSeqOfTuples("m", s.measurandField) +
+          s.lastConsumptionDateFromField.map(v => s"lcdf=${URIUtils.encodeURIComponent(v)}&").getOrElse("") +
+          s.lastConsumptionDateToField.map(v => s"lcdt=${URIUtils.encodeURIComponent(v)}&").getOrElse("") +
+          stringfiedSeq("uu", s.usageUnitField)
+        )
+      }
+    }.getOrElse {
+      println("Error generating the url filter params applied in the component")
+      None
+    }
+  }
+
+  private def dispatchLoadReadingsSearch(p: Props, s: State): Callback =
+  {
+    val propertyIds = s.propertyNumberField.flatMap(toPropertyId).map(PropertyIdRepr.apply)
+    val propertyNumbers = s.propertyNumberField.filter(isPropertyNumber).map(v => PropertyNumberRepr(v.take(9)))
+    p.readingsSearchModelP.dispatchCB(
+      LoadReadingsSearch(
+        ReadingsSearchReqRepr(
+          propertyIds = propertyIds.toVector,
+          propertyNumbers = propertyNumbers.toVector,
+          locationNumbers = s.locationNumberField.map(LocationNumberRepr).toVector,
+          articleNumbers = s.articleField.map(ArticleNumberRepr).toVector,
+          serialNumbers = s.serialNumberField.map(SerialNumberRepr).toVector,
+          deviceTypes = mapRequestDeviceClassesType(s.deviceTypeField.toVector),
+          consumptionDateFrom = s.consumptionDateFromField.map(w => LocalDate.parse(w, dateFormatter).atStartOfDay(DateTimeDisplay.defaultDisplayZoneId)),
+          consumptionDateTo = s.consumptionDateToField.map(w => LocalDate.parse(w, dateFormatter).atStartOfDay(DateTimeDisplay.defaultDisplayZoneId).`with`(LocalTime.MAX)),
+          readingTypes = mapRequestReadingType(s.readingTypeField.toVector),
+          measurandTypes = mapRequestMeasurand(s.measurandField.toVector),
+          usageUnits = s.usageUnitField.map(UsageUnitNumberRepr).toVector,
+          limit = Option(p.frontendConfig.readingsComponents.outputLimit)
+        )
+      ))
+  }
+
+  private def toPropertyId(s: String): Option[UUID] = 
+    if (ReadingsSearchPropertyConverter.isUuidWithOptionalHyphen(s)) 
+      ReadingsSearchPropertyConverter.sanitizePropertyId(s).toOption
+    else 
+      None
+
+  private def isPropertyNumber(s: String) = ReadingsSearchPropertyConverter.isValidPropertyNumber(s)
+
+  def apply(
+    router: RouterCtl[Loc],
+    readingsSearchModelP: ModelProxy[Pot[ReadingsExtendedRespRepr]],
+    execEnvNameRepr: ExecEnvNameRepr,
+    filterParams: Option[String],
+    localeModelP: ModelProxy[Pot[Locale]],
+    frontendConfig: FrontendConfig
+  ) =
+    component(Props(router, readingsSearchModelP, execEnvNameRepr, filterParams, localeModelP, frontendConfig))
+
+  private val component = ScalaComponent.builder[Props]("ReadingsSearch")
+    .initialStateFromProps(p => filterParamsFromUrl(p.filterParams))
+    .renderBackend[Backend]
+    .componentDidMount { cdm =>
+      val validationResult = validateInput(cdm.state)
+      //Allow to perform a search if a filter is in the url and is valid, the first time loading the component
+      Callback.when(cdm.props.filterParams.nonEmpty && validationResult.isSuccess)(dispatchLoadReadingsSearch(cdm.props, cdm.state)) >> PropertyNumberFieldRef.foreach(_.focus()) >>
+      // Show an error toast if the filterParams are not empty but the validation is not a success
+      Callback.when(cdm.props.filterParams.nonEmpty && !validationResult.isSuccess)(browserNotification(validationResult.error))
+    }
+    .componentDidUpdate(cdu =>
+      //In case of pasting a URL with params we need to set an special behaviour here
+      Callback.when(cdu.prevProps.filterParams =!= cdu.currentProps.filterParams && cdu.currentState == cdu.prevState) {
+        val newState = filterParamsFromUrl(cdu.currentProps.filterParams)
+        val validationResult = validateInput(newState)
+
+        cdu.setState(newState) >>
+        //clear the results in case of a empty filter loaded by url
+        Callback.when(cdu.currentProps.filterParams.isEmpty)(cdu.currentProps.readingsSearchModelP.dispatchCB(ClearReadingsSearch)) >>
+        //force an automatic search in case the url is pasted with some filter and the filter is valid
+        Callback.when(cdu.currentProps.filterParams.nonEmpty && validationResult.isSuccess)(dispatchLoadReadingsSearch(cdu.currentProps, newState)) >>
+        // Show an error toast if the filterParams are not empty but the validation is not a success
+        Callback.when(cdu.currentProps.filterParams.nonEmpty && !validationResult.isSuccess)(browserNotification(validationResult.error))
+      }
+    )
+    .componentWillUnmount(cwu =>
+      cwu.props.readingsSearchModelP.dispatchCB(ClearReadingsSearch)
+    )
+    .build
+
+  private def browserNotification(msg: String, `type`: String = "error"): Callback =
+    Callback(Toast.Toastify.toast(msg, Toast.Props(`type` = `type`)))
+
+
+}

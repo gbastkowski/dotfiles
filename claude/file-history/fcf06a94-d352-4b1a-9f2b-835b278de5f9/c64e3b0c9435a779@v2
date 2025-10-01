@@ -1,0 +1,255 @@
+package com.ista.rdm.collector.reading.impl.api
+
+import com.ista.rdm.collector.checkInitiator.ProcessorConfigAndStateCheckRepository
+import com.ista.rdm.common.execorder.api.routing.ProcessorInputEvent
+import com.ista.rdm.common.execorder.core.{ExecOrderExecutionContext, ExecOrderExecutor}
+import com.ista.rdm.common.execorder.impl.ExecOrderConverter
+import com.ista.rdm.common.execorder.repo.ExecOrderRepository
+import com.ista.rdm.common.kafka.clients.producer.KafkaProducer
+import com.ista.rdm.common.play.http.ApiErrors.BadRequest
+import com.ista.rdm.common.processor.api.CollectorType
+import com.ista.rdm.common.service.api.infrastructure.Env
+import com.ista.rdm.common.sharedkernel.catalog.ProcessorCaps.ProcessorTypeName
+import com.ista.rdm.common.sharedkernel.contract.ServiceName
+import com.ista.rdm.common.sharedkernel.execPlan._
+import com.ista.rdm.test.base.unit.UnitSpec
+import com.typesafe.config.Config
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.{JsObject, Json}
+
+import scala.util.{Failure, Success}
+
+class CollectorReadingRgcServiceImplSyncValidationSpec extends UnitSpec with MockitoSugar {
+
+  // Mock dependencies
+  private val execOrderRepository = mock[ExecOrderRepository]
+  private val processorConfigAndStateRepository = mock[ProcessorConfigAndStateCheckRepository]
+  private val execOrderConverter = mock[ExecOrderConverter]
+  private val orderExecContext = mock[ExecOrderExecutionContext[CollectorType]]
+  private val execOrderExecutor = mock[ExecOrderExecutor[CollectorType]]
+  private val config = mock[Config]
+  private val processorInputKafkaProducer = mock[KafkaProducer[ExecPlanID, ProcessorInputEvent]]
+  private val env = mock[Env]
+
+  private val service = new CollectorReadingRgcServiceImplSync(
+    execOrderRepository,
+    processorConfigAndStateRepository,
+    execOrderConverter,
+    orderExecContext,
+    execOrderExecutor,
+    config,
+    processorInputKafkaProducer,
+    env
+  )
+
+  // Test data
+  private val validExecPlanId = ExecPlanID("test-exec-plan")
+  private val validProcessorId = ProcessorID(validExecPlanId, ExecOrderNr(1), ProcessorNr(1))
+  private val validProcessorType = ProcessorTypeName("test-processor-type")
+  private val validServiceName = ServiceName("test-service")
+  private val validCommandName = "test-command"
+  private val validCommandParams = Json.obj("param1" -> "value1")
+  private val validCause = "SQDD06-1234: Testing validation"
+
+  "generateProcessorPatches validation" should {
+
+    "fail when cause is empty string" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = Some(validExecPlanId),
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = ""
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("cause param is mandatory")
+      failure.exception.getMessage should include("https://ista.atlassian.net/wiki/spaces/RDM/pages/90309213/Manual+system+interventions")
+    }
+
+    "fail when cause contains only whitespace" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = Some(validExecPlanId),
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = "   "
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("cause param is mandatory")
+    }
+
+    "fail when no sufficient parameter combination is provided" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = None,
+        processorId = None,
+        processorType = None,
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("parameters not sufficient")
+      failure.exception.getMessage should include("Required: processorId OR (execPlanId AND processorType) OR (processorType + serviceName)")
+    }
+
+    "fail when only execPlanId is provided without processorType" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = Some(validExecPlanId),
+        processorId = None,
+        processorType = None,
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("parameters not sufficient")
+    }
+
+    "fail when only processorType is provided without execPlanId or serviceName" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = None,
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("parameters not sufficient")
+    }
+
+    "fail when serviceName is provided but empty" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = None,
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = Some(ServiceName("")),
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("If serviceName is given, it must not be empty")
+    }
+
+    "fail when serviceName contains only whitespace" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = None,
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = Some(ServiceName("   ")),
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result shouldBe a[Failure[_]]
+      val failure = result.asInstanceOf[Failure[BadRequest]]
+      failure.exception.getMessage should include("If serviceName is given, it must not be empty")
+    }
+
+    "pass validation with processorId only" in {
+      // This test verifies that providing processorId alone satisfies the parameter requirements
+      // Note: This will likely fail in business logic due to missing mocks, but validation should pass
+
+      val result = service.generateProcessorPatches(
+        execPlanId = None,
+        processorId = Some(validProcessorId),
+        processorType = None,
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      // We expect this to pass validation and reach business logic (where it may fail due to mocked dependencies)
+      // The important thing is that it doesn't fail with a BadRequest about insufficient parameters
+      result match {
+        case Failure(badRequest: BadRequest) =>
+          badRequest.getMessage should not include "parameters not sufficient"
+          badRequest.getMessage should not include "cause param is mandatory"
+          badRequest.getMessage should not include "serviceName is given, it must not be empty"
+        case _ => // Other failures or success are acceptable for this validation test
+      }
+    }
+
+    "pass validation with execPlanId and processorType" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = Some(validExecPlanId),
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = None,
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result match {
+        case Failure(badRequest: BadRequest) =>
+          badRequest.getMessage should not include "parameters not sufficient"
+          badRequest.getMessage should not include "cause param is mandatory"
+          badRequest.getMessage should not include "serviceName is given, it must not be empty"
+        case _ => // Other failures or success are acceptable for this validation test
+      }
+    }
+
+    "pass validation with processorType and serviceName" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = None,
+        processorId = None,
+        processorType = Some(validProcessorType),
+        serviceName = Some(validServiceName),
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result match {
+        case Failure(badRequest: BadRequest) =>
+          badRequest.getMessage should not include "parameters not sufficient"
+          badRequest.getMessage should not include "cause param is mandatory"
+          badRequest.getMessage should not include "serviceName is given, it must not be empty"
+        case _ => // Other failures or success are acceptable for this validation test
+      }
+    }
+
+    "pass validation with all parameters provided" in {
+      val result = service.generateProcessorPatches(
+        execPlanId = Some(validExecPlanId),
+        processorId = Some(validProcessorId),
+        processorType = Some(validProcessorType),
+        serviceName = Some(validServiceName),
+        commandName = validCommandName,
+        commandParams = validCommandParams,
+        cause = validCause
+      )
+
+      result match {
+        case Failure(badRequest: BadRequest) =>
+          badRequest.getMessage should not include "parameters not sufficient"
+          badRequest.getMessage should not include "cause param is mandatory"
+          badRequest.getMessage should not include "serviceName is given, it must not be empty"
+        case _ => // Other failures or success are acceptable for this validation test
+      }
+    }
+  }
+}

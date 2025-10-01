@@ -12,3 +12,61 @@
 {"display":"In core-extapi, create a branch with the same name as this one. Remove those fields there, run sbt publishLocal","pastedContents":{},"timestamp":1759150650698,"project":"/Users/gunnar.bastkowski/git/rdm"}
 {"display":"what is the base url for our registry?","pastedContents":{},"timestamp":1759150702998,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
 {"display":"print the repository config of the base-settings plugin","pastedContents":{},"timestamp":1759150864165,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Look at the current branch of the UI project. Are core-extapi and core on the same branch?","pastedContents":{},"timestamp":1759225143689,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"Look at the current branch of the UI project. Are core-extapi and core on a branch with the same name?","pastedContents":{},"timestamp":1759225160160,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"any local changes in core-extapi","pastedContents":{},"timestamp":1759225300876,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"ui is driving the changes in core  and core-extapi. All three projects need to be on the same branch. The now unused fields should be removed in core-extapi. AFAIK, core-extapi is included as a dependency in core and ui. Therefore, we'll need a new version of core-extapi and update the version number in core and ui. Then UI and core should still compile","pastedContents":{},"timestamp":1759225443757,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"first, pull the three repos and check if there are changes on main. if so, rebase the current branch on top of latest origin/main","pastedContents":{},"timestamp":1759226162792,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the 3744 branch in core should be deleted because the corresponding merge request has been merged","pastedContents":{},"timestamp":1759226681258,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"also the remote branch","pastedContents":{},"timestamp":1759227460391,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"in core, create a commit for the four changed files, and push it","pastedContents":{},"timestamp":1759227523937,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"check the jira issue. create merge requests for core and core-extapi with glab cli. Keep messages, titles and descriptions brief. A link to the jira issue is actually sufficient","pastedContents":{},"timestamp":1759228249760,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"did you push the changes in core-extapi?","pastedContents":{},"timestamp":1759229098389,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"I published the core-extapi snapshot. did you upgrade the dependencies in ui and core?","pastedContents":{},"timestamp":1759230343971,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"commit, push","pastedContents":{},"timestamp":1759230549466,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"ui doesn't compile","pastedContents":{},"timestamp":1759231127525,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"read the comments in the core-extapi merge request","pastedContents":{},"timestamp":1759231372131,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"does ui still compile","pastedContents":{},"timestamp":1759232435684,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"and is everything pushed?","pastedContents":{},"timestamp":1759232481973,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"check the gitlab pipelines. ","pastedContents":{},"timestamp":1759240287747,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"it's 0.213","pastedContents":{},"timestamp":1759240623913,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"continue","pastedContents":{},"timestamp":1759240868912,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"in core, check the gitlab pipeline for this merge request. Something doesn't compile.","pastedContents":{},"timestamp":1759242477819,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"in core, run sbt compile","pastedContents":{},"timestamp":1759242865683,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"oom? no way","pastedContents":{},"timestamp":1759242986218,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"run sbt compile\n","pastedContents":{},"timestamp":1759243105720,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Can you find out if there is an easy fix?","pastedContents":{},"timestamp":1759244061131,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Set it to None","pastedContents":{},"timestamp":1759244174565,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"run sbt compile\n","pastedContents":{},"timestamp":1759244186717,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Is it possible that the change in ExtendedMeterPortDataRepr was a mistake?","pastedContents":{},"timestamp":1759244259455,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"But maybe it was a mistake to remove that field in ExtendedMeterPortDataRepr","pastedContents":{},"timestamp":1759244358319,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"let's revert it. then run sbt publish in core-extapi. After that, update core and ui to the latest snapshot of extapi","pastedContents":{},"timestamp":1759244476732,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"commit and push","pastedContents":{},"timestamp":1759244594465,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"sbt compile","pastedContents":{},"timestamp":1759244616277,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"compile again","pastedContents":{},"timestamp":1759244750916,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"They are on the search screen/export screen in the result table, right?","pastedContents":{},"timestamp":1759244854158,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"not needed anymore. can be removed","pastedContents":{},"timestamp":1759244871775,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"we are running in tmux. you can check the sbt ui tmux window, where sbt automatically compiles on file changes.","pastedContents":{},"timestamp":1759244955924,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"in the future, please don't push without my explicit confirmation","pastedContents":{},"timestamp":1759245386978,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"which version of core-exapi do we depend on currently?","pastedContents":{},"timestamp":1759245430891,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"check with tmux the compilation process for ui, which is running there. ","pastedContents":{},"timestamp":1759245527880,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"if compilation is successful now, commit and push","pastedContents":{},"timestamp":1759245689218,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"no attribution","pastedContents":{},"timestamp":1759245798028,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"check the core sbt tmux window. Fix the compile errors","pastedContents":{},"timestamp":1759246149753,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Why change the ProcessorTypeName stuff? I didn't change anything related to that","pastedContents":{},"timestamp":1759246369234,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"But what changed to make this error appear? Because, the main branch compiles","pastedContents":{},"timestamp":1759246464275,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"na ... grep the whole project for ProcessorTypeName","pastedContents":{},"timestamp":1759246507353,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"upgrade core and ui to extapi 0.214","pastedContents":{},"timestamp":1759262529692,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"First, please remove the heapdump files in the core repo again. You most likely did a git add . and added those files accidentally to the repo","pastedContents":{},"timestamp":1759263593983,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"Create a commit for the removed files","pastedContents":{},"timestamp":1759263707899,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"And that CollectorReadingRgcServiceImplSyncValidationSpec can also be removed again","pastedContents":{},"timestamp":1759263819653,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"and pushed","pastedContents":{},"timestamp":1759263854988,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"confirm","pastedContents":{},"timestamp":1759263872002,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"remove CollectorReadingRgcServiceImplSyncValidationSpec","pastedContents":{},"timestamp":1759263904742,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"1 or 2. 1 is more elegant, 2 is probably more pragmatic and faster to do","pastedContents":{},"timestamp":1759263954964,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"confirmed","pastedContents":{},"timestamp":1759263990447,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"in core, origin/main contains changes. rebase. then push. ","pastedContents":{},"timestamp":1759264047265,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/compact ","pastedContents":{},"timestamp":1759264462099,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/compact ","pastedContents":{},"timestamp":1759264462115,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/compact ","pastedContents":{},"timestamp":1759264462119,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/compact ","pastedContents":{},"timestamp":1759264462121,"project":"/Users/gunnar.bastkowski/git/rdm"}

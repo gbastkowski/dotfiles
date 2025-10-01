@@ -1,0 +1,1152 @@
+package com.ista.rdm.emitter.mdr.impl.api
+
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.util.ByteString
+import com.ista.rdm.articles.{CalibrationCheck, DeadlineDeviceCheck, ArticleNr => ArticleServiceAN}
+import com.ista.rdm.business.metrics.client.BusinessMetricsProducer
+import com.ista.rdm.business.metrics.model.MetricEvent
+import com.ista.rdm.business.metrics.model.MetricKind.COUNTER
+import com.ista.rdm.common.execorder.core.{BaseExecOrderExecutionContext, ExecOrderExecutor}
+import com.ista.rdm.common.execorder.impl.ExecOrderConverter
+import com.ista.rdm.common.execorder.repo.ExecOrderRepository
+import com.ista.rdm.common.extapi.model.{QualityIndicator => EmitterQualityIndicator, _}
+import com.ista.rdm.common.logging.LazyLogging
+import com.ista.rdm.common.play.http.ApiErrors
+import com.ista.rdm.common.processor.api.EmitterType
+import com.ista.rdm.common.processor.repo.ProcessorConfigAndStateRepository
+import com.ista.rdm.common.sharedkernel.common.LocalTimespan
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.types.{LocalInstant, ZoneIds}
+import com.ista.rdm.domain.shared.meterport.{QualityIndicator, _}
+import com.ista.rdm.emitter.extapi.jsonformats.EmitterReprJsonFormats
+import com.ista.rdm.emitter.extapi.model._
+import com.ista.rdm.emitter.mdr.api.mimo._
+import com.ista.rdm.emitter.mdr.api.mimoreadings._
+import com.ista.rdm.emitter.mdr.api.other.{MdrRawMeterportConfigRepr, MdrRawMeterportRepr, MdrRawReadingRepr}
+import com.ista.rdm.emitter.mdr.api.propertyreadings.{MeterPort, Reading, Response}
+import com.ista.rdm.emitter.mdr.api.rdas.RdasRequestReadingType.{ANY_END_OF_DAY, ANY_END_OF_MONTH}
+import com.ista.rdm.emitter.mdr.api.rdas._
+import com.ista.rdm.emitter.mdr.api.rdss._
+import com.ista.rdm.emitter.mdr.api.ui._
+import com.ista.rdm.emitter.mdr.api.{EmitterMdrRgcService, mimoreadings}
+import com.ista.rdm.emitter.mdr.impl.api.EmitterMdrRgcServiceImpl._
+import com.ista.rdm.outputchannel.mdr._
+import com.ista.rdm.outputchannel.mdr.api.MdrMimoReadingLabel.{billingPeriodEndValueQuirkReadingLabels, mimoReadingLabels}
+import com.ista.rdm.outputchannel.mdr.api._
+import com.ista.rdm.outputchannel.mdr.impl.MdrInvalidParametersException
+import com.ista.rdm.platform.emitter.api.EmitterServiceImplSync
+import enumeratum.{EnumEntry, PlayJsonEnum}
+import io.micrometer.core.instrument.{Counter, MeterRegistry}
+import play.api.libs.json.{JsObject, Json}
+
+import java.time.temporal.TemporalAdjusters.lastDayOfMonth
+import java.time.{Instant, LocalDate, Period}
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicLong
+import scala.annotation.unused
+import scala.collection.immutable.ArraySeq
+import scala.util.{Failure, Success, Try}
+
+class EmitterMdrRgcServiceImpl(execOrderRepository: ExecOrderRepository,
+  processorConfigAndStateRepository: ProcessorConfigAndStateRepository,
+  execOrderConverter: ExecOrderConverter,
+  orderExecContext: BaseExecOrderExecutionContext[EmitterType],
+  execOrderExecutor: ExecOrderExecutor[EmitterType],
+  meterDataRepository: MeterDataRepository,
+  deadlineDeviceCheck: DeadlineDeviceCheck,
+  calibrationCheck: CalibrationCheck,
+  val rdmMeterRegistry: MeterRegistry,
+  val businessMetricsProducer: BusinessMetricsProducer,
+) extends EmitterServiceImplSync(
+  execOrderRepository,
+  processorConfigAndStateRepository,
+  execOrderConverter,
+  orderExecContext,
+  execOrderExecutor
+) with EmitterMdrRgcService[Try] with EmitterMdrRgcServiceImplMetrics with EmitterReprJsonFormats {
+  // TODO: Move service implementation to MDR channel implementation
+
+  override def getMimoReadings(req: MimoReadingsRequest): Try[MimoReadingsResponse] = Try {
+    mimoRequestsCounter.increment()
+
+    def mapMeterPortsToLocations(portReadings: Iterable[MdrMeterPortReadingsResult]) = {
+      portReadings
+        .groupBy(p => (p.meterPort.locationId, p.meterPort.portNr))
+        .collect {
+          case ((_, _), portResults) if portResults.nonEmpty =>
+            if (portResults.size > 1) {
+              logger.warn(s"Unclear: Found more than 1 port for a location in MIMO result: [$portResults]. " +
+                          s"Using first port found.")
+            }
+            val portResult = portResults.head
+            if (portResult.readings.size > 2) {
+              logger.warn(s"Unclear: Found more than 2 readings for one port in MIMO result: [$portResult]. " +
+                          s"Returning first 2 readings prioritized by reading type.")
+            }
+            portResult.readings.toVector
+              .sortBy(_.readingType).take(2)
+              .map(reading => MdrMimoMappings.mapMimoReading(portResult, reading))
+        }.flatten.toVector
+    }
+
+    logger.debug(s"getMimoReadings with request: $req")
+
+    val mimoReadings = meterDataRepository.findMimoReadings(
+      None,
+      req.locationUUIDs,
+      req.tenantChangeDate,
+      req.daysMoveInMoveOut,
+      Set(MdrReadingProcedure.Intermediate),
+      MdrReadingType.Current,
+      req.daysOther,
+      fallbackSpan = 31
+    )
+
+    if (mimoReadings.portResults.exists(_.meterPort.timeZone != req.zoneId)) {
+      logger.error(s"The timezone of at least one of the readings does not match the timezone of the request." +
+                   s"Request tz: ${req.zoneId} " +
+                   s"Meter ports: ${
+                     mimoReadings.portResults
+                       .filter(_.meterPort.timeZone != req.zoneId)
+                       .map(_.meterPort.mainDeviceId)
+                   }")
+      throw new MdrInvalidTimeZoneException("The timezone of at least one of the readings does not match " +
+                                            "the timezone of the request. See log for details.")
+    }
+
+    mimoReadings match {
+      case MdrReadingsResult(None, _)                      =>
+        MimoReadingsResponse(None, Vector.empty)
+      case MdrReadingsResult(bundleDate, meterPortResults) =>
+        MimoReadingsResponse(bundleDate, mapMeterPortsToLocations(meterPortResults))
+    }
+  }
+
+  /**
+   * Retrieve readings according to the `RdasReadingsRequest`.
+   * Used by RDAS.
+   *
+   * @param req The `RdasReadingsRequest` containing the filter information
+   * @return One of:
+   *  - `Success[RdasReadingsRequest]` if no error occurred,
+   *  - `Failure[MdrInvalidParametersException]` if
+   *    - timezones of `filterTimespan` do not match.
+   *    - both `filterDevices` AND `filterProperty` are empty.
+   *  - `Failure[MdrInvalidTimeZoneException]` if the timezone of a received reading
+   *    does not match the timezone in `filterTimespan`.
+   */
+  override def getRdasReadings(req: RdasReadingsRequest): Try[RdasReadingsResponse] =
+    getRdasReadings(req, MdrRdasMappings.mapToRdasMeterPorts(calibrationCheck))
+
+  // real implementation needed to be able to replace mapToRdasMeterPorts during testing.
+  private[api] def getRdasReadings(req: RdasReadingsRequest,
+    mapToRdasMeterPorts: Vector[MdrMeterReading] => Vector[RdasMeterPort])
+  : Try[RdasReadingsResponse] = Try {
+    logger.debug(s"Received readings request: $req")
+
+    rdasRequestsCounter.increment()
+
+    val requestTimeZone = req.startTime.getZone
+    if (requestTimeZone != req.endTime.getZone)
+      throw new MdrInvalidParametersException("Only timespans with the same ZoneId in from and to are allowed.")
+
+    val propertyId = PropertyID(req.propertyId)
+    val filterDevices = req.filterDevices.map(DeviceId(_))
+
+    val mdrMeterReadings = meterDataRepository.findReadingsByProperty(
+      propertyId,
+      filterDevices,
+      filterExecPlan = None, // get readings for all exec plans
+      LocalInstant(req.startTime),
+      LocalInstant(req.endTime),
+      MdrRdasMappings.mapRequestReadingTypes(req.filterReadingTypes),
+      filterServiceTypes = Set.empty, // get readings for all service types
+      // RDM-1158 filtering of transport types based on "limited/idx" was removed
+      // however, the findReadingsByProperty signature was kept as-is on purpose
+      // todo remove during SQDD06-2439
+      filterTransportTypes = Set.empty,
+      filterEndOfMonth = req.filterReadingTypes.contains(ANY_END_OF_MONTH),
+      anyDayReplacement = req.filterReadingTypes.contains(ANY_END_OF_MONTH) ||
+                          req.filterReadingTypes.contains(ANY_END_OF_DAY),
+      onlyLatest = req.filterLastReading,
+      filterInstalled = req.filterByInstallationDates
+    )
+
+    if (mdrMeterReadings.exists(_.timeZone != requestTimeZone)) {
+      logger.error(s"The timezone of at least one of the readings does not match the timezone of the request." +
+                   s"Request tz: $requestTimeZone. " +
+                   s"Readings: ${mdrMeterReadings.filter(_.timeZone != requestTimeZone)}")
+      throw new MdrInvalidTimeZoneException("The timezone of at least one of the readings does not match " +
+                                            "the timezone of the request. See log for details.")
+    }
+
+    RdasReadingsResponse(req.propertyId, propertyNr = None, mapToRdasMeterPorts(mdrMeterReadings))
+  }
+
+  override def getPropertyReadingsStatus(request: RdssPropertyStatusRequest): Try[RdssPropertyStatusResponse] = Try {
+    val mdrPropertyReadingsStatuus = meterDataRepository.getPropertyReadingsStatus(request.propertyIds)
+    val rdssPropertyStatuus = mdrPropertyReadingsStatuus.map(result =>
+      RdssPropertyStatus(result.propertyId, result.ppsYield))
+    RdssPropertyStatusResponse(rdssPropertyStatuus)
+  }
+
+  /**
+   * This implementation runs a query against all readings.
+   * The right implementation would run a query against the device status table filled by collector, however
+   * the latest device status will not be available for up to 1 year after migration until first real readings
+   * are received.
+   *
+   * This is why this method keeps two implementations.
+   * TODO: Think about how we could switch to newer status earlier, e.g. with a DB job during migration.
+   */
+  private val GET_DEVICE_READINGS_STATUS_FAKED = true
+
+  // todo langerca 2 if RdssDeviceStatusResponse contains Map[DeviceId,RdssDeviceStatus], which would be a better
+  // match to the domain semantic, this method needs to adapt
+  override def getDeviceReadingsStatus(request: RdssDeviceStatusRequest): Try[RdssDeviceStatusResponse] = Try {
+    def incomplete(device: DeviceId) = RdssDeviceStatus(device, RdssDeviceReadingsCompleteness.INCOMPLETE)
+
+    def complete(device: DeviceId) = RdssDeviceStatus(device, RdssDeviceReadingsCompleteness.COMPLETE)
+
+    def isDeadlineDevice(an: ArticleNr, ran: Option[ArticleNr]): Boolean = {
+      def toServiceAN(an: ArticleNr): ArticleServiceAN = ArticleServiceAN(an.value)
+
+      // device is a deadline device if the radio article is a deadline device or if the main article is one
+      val ranIsDlD = ran.flatMap(n => deadlineDeviceCheck.isDeadlineDevice(toServiceAN(n))).contains(true)
+      val anIsDlD = deadlineDeviceCheck.isDeadlineDevice(toServiceAN(an)).contains(true)
+      ranIsDlD || anIsDlD
+    }
+
+    if (request.periodEndDate.getZone != request.periodStartDate.getZone)
+      throw new MdrInvalidParametersException("Only timespans with the same ZoneId in from and to are allowed.")
+
+    if (GET_DEVICE_READINGS_STATUS_FAKED) {
+      val readings = meterDataRepository.existReadingsByMainDevice(
+        request.deviceIds,
+        LocalTimespan(request.periodStartDate, request.periodEndDate),
+        Set(MdrReadingType.Current, MdrReadingType.Deadline)
+      )
+      val byDevice = readings.groupBy(_.deviceId)
+      val statuus: Iterable[RdssDeviceStatus] = request.deviceIds.map { device =>
+        byDevice.get(device).map { readingsInfos =>
+          // there are readings infos - check whether there is a deadline reading
+          if (readingsInfos.exists(_.readingType == MdrReadingType.Deadline)) {
+            // there is a deadline reading in the timeframe - done
+            complete(device)
+          } else {
+            readingsInfos.find(_.readingType == MdrReadingType.Current).map { r =>
+              // there is a current reading - only allowed for non-deadline devices
+              if (isDeadlineDevice(r.mainArticle, r.lastRadioArticle))
+                incomplete(device)
+              else
+                complete(device)
+            }.getOrElse(incomplete(device))
+          }
+        }.getOrElse(incomplete(device))
+      }
+      RdssDeviceStatusResponse(statuus)
+    } else {
+      //noinspection NotImplementedCode
+      ??? // TODO Implement query against new device status table
+    }
+  }
+
+  override def getMeterPortIds(execPlanID: Long): Try[Vector[Long]] =
+    Success(meterDataRepository.findMeterPortIdsByExecPlanId(ExecPlanID(execPlanID)).map(_.value))
+
+  override def getRawReadings(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Try[Vector[MdrRawReadingRepr]] = {
+    Try {
+      meterDataRepository.getRawReadings(propertyId, execPlanId)
+        .map {
+          r =>
+            MdrRawReadingRepr(
+              meterPortId = r.meterPortId,
+              readingDate = r.readingDate,
+              readingType = r.readingType.entryName,
+              value = r.value,
+              unit = r.unit.entryName,
+              serviceType = r.serviceType.entryName,
+              estimationType = r.estimationType.entryName,
+              mediumType = r.mediumType.entryName,
+              transportType = r.transportType.entryName,
+              transmittingRadioSerial = r.transmittingRadioSerial,
+              transmittingRadioArticle = r.transmittingRadioArticle,
+              createdAt = r.createdAt,
+              migrated = r.migrated,
+              readerType = r.readerType.entryName,
+              identifier = r.identifier,
+              qualityIndicators = r.qualityIndicators,
+              updatedAt = r.updatedAt
+            )
+        }
+    }
+  }
+
+  override def getRawMeterports(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Try[Vector[MdrRawMeterportRepr]] = {
+    Try {
+      meterDataRepository.getRawMeterports(propertyId, execPlanId)
+        .map {
+          r =>
+            MdrRawMeterportRepr(
+              id = r.id,
+              execPlanID = r.execPlanID,
+              mainDeviceId = r.mainDeviceId,
+              meterPort = r.meterPort,
+              propertyID = r.propertyID,
+              locationId = r.locationId,
+              installed = r.installed,
+              uninstalled = r.uninstalled,
+              measurand = r.measurand,
+              timeZone = r.timeZone.getID,
+              articleNr = r.articleNr,
+              serialNr = r.serialNr,
+              inputService = r.inputService,
+              retentionPolicy = r.retentionPolicy.entryName,
+              initialRetentionPolicy = r.initialRetentionPolicy.entryName,
+              migrated = r.migrated,
+              certificationDate = r.certificationDate,
+              locationNumber = r.locationNumber,
+              lastConsumptionDate = r.lastConsumptionDate,
+              meterUse = r.meterUse,
+              readingFrequency = r.readingFrequency,
+              radioComponentUninstalled = r.radioComponentUninstalled
+            )
+        }
+    }
+  }
+
+  override def getRawMeterportConfigs(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Try[Vector[MdrRawMeterportConfigRepr]] = {
+    Try {
+      meterDataRepository.getRawMeterportConfigs(propertyId, execPlanId)
+        .map {
+          r =>
+            MdrRawMeterportConfigRepr(
+              meterPortId = r.meterPortId,
+              validFrom = r.validFrom,
+              deadlineDay = r.deadlineDay.map(_.toString),
+              deviceType = r.deviceType,
+              usageUnitId = r.usageUnitId,
+              radioArticle = r.radioArticle,
+              radioSerial = r.radioSerial,
+              radioDeviceId = r.radioDeviceId,
+              hcaScale = r.hcaScale,
+              hcaScaleType = r.hcaScaleType,
+              hcaZeroSetter = r.hcaZeroSetter,
+              hcaSensorMode = r.hcaSensorMode,
+              migratedConfig = r.migratedConfig,
+              hcaScaleFactor = r.hcaScaleFactor,
+              volPulseCapacity = r.volPulseCapacity,
+              volPulsePerUnit = r.volPulsePerUnit,
+              volDisplayUnit = r.volDisplayUnit,
+              volMbusAddress = r.volMbusAddress
+            )
+        }
+    }
+  }
+
+  override def getUiReadings(req: ReadingsSearchReq): Try[ReadingsSearchRespRepr] = {
+    Try {
+      // To prevent producing slow queries, we validate that at least one of the expected primary keys is defined in the request
+      if (req.propertyIds.isEmpty && req.propertyNumbers.isEmpty && req.locationNumbers.isEmpty)
+        throw ApiErrors.BadRequest("invalid request payload")
+
+      val readingsSearchData = meterDataRepository.getUiReadings(
+        req.propertyIds,
+        req.propertyNumbers,
+        req.locationNumbers,
+        req.articleNumbers,
+        req.serialNumbers,
+        MdrUiMappings.mapRequestDeviceTypes(req.deviceTypes),
+        req.consumptionDateFrom,
+        req.consumptionDateTo,
+        MdrUiMappings.mapRequestReadingTypes(req.readingTypes),
+        MdrUiMappings.mapRequestMeasurand(req.measurandTypes),
+        req.limit
+      )
+      val readingSearchDataWithMissingReadings = addMissingMonthEndReadings(
+        in = readingsSearchData,
+        from = req.consumptionDateFrom.map(LocalInstant.apply),
+        to = req.consumptionDateTo.map(LocalInstant.apply))
+
+      ReadingsSearchRespRepr(
+        metaData = ReadingsMetaData(req.limit.contains(readingSearchDataWithMissingReadings.size)),
+        data = MdrUiMappings.mapUiReadingsSearchDataToRepr(readingSearchDataWithMissingReadings))
+    }
+  }
+
+  override def saveRequestForUiReadingsExport(req: ReadingsSearchReq): Try[ReadingsExportRespRepr] = {
+    Try {
+      if (
+        req.propertyNumbers.isEmpty || // at least one property number must be defined
+        req.propertyNumbers.size > 1000 || // max 1k properties are allowed
+        req.consumptionDuration.fold(true)(_ > 13) || // consumption dates must be defined and max duration of 13 months is allowed
+        req.readingTypes.isEmpty // at least one reading type must be present
+      ) throw ApiErrors.BadRequest("invalid request payload")
+
+      val id = meterDataRepository.saveRequestForUiReadingsExport(
+        req.propertyNumbers,
+        req.locationNumbers,
+        req.articleNumbers,
+        req.serialNumbers,
+        MdrUiMappings.mapRequestDeviceTypes(req.deviceTypes),
+        req.consumptionDateFrom.get,
+        req.consumptionDateTo.get,
+        MdrUiMappings.mapRequestReadingTypes(req.readingTypes),
+        MdrUiMappings.mapRequestMeasurand(req.measurandTypes)
+      )
+      ReadingsExportRespRepr(id.get)
+    }
+  }
+
+  override def getUiReadingsForExport(id: String): Try[Source[ByteString, NotUsed]] = {
+    Try {
+      meterDataRepository.getUiReadingsForExport(id)
+        // reduce the amount of responses sent out by grouping 100 elements into one single batch
+        .grouped(100)
+        .map { batch =>
+          batch.foldLeft(ByteString("")) { (bytes, data) =>
+            val mapped = MdrUiMappings.mapUiReadingsSearchDataToRepr(Vector(data)).head
+            val string = Json.toJson(mapped).toString() + "\n"
+            bytes ++ ByteString(string)
+          }
+        }
+    }
+  }
+
+  private def addMissingMonthEndReadings(
+    in: Vector[UiReadingsSearchData],
+    from: Option[LocalInstant],
+    to: Option[LocalInstant]): Vector[UiReadingsSearchData] = {
+    lazy val consumptionDatesOrdered = in.flatMap(_.consumptionDate).sortWith(_ isBefore _)
+    lazy val readingFromBoundary = consumptionDatesOrdered.headOption
+    lazy val readingToBoundary = consumptionDatesOrdered.lastOption
+
+    val requestSpecificFromBoundary = from.orElse(readingFromBoundary)
+    val requestSpecificToBoundary = to.orElse(readingToBoundary)
+    val readingsByMeterport = in.groupBy(_.meterPortID)
+    val uniqueMeterports = in.map(UiReadingsSearchDataMeterportRef.apply).toSet
+
+    readingsByMeterport.flatMap { case (_, readings) =>
+      val referenceReading = readings.head
+      val maybeInstallDate = referenceReading.installDate
+      val maybeUninstallDate = referenceReading.uninstallDate.orElse {
+        val locationId = referenceReading.locationId
+        val portNr = referenceReading.portNr
+
+        maybeInstallDate.flatMap { date =>
+          uniqueMeterports.filter(mp =>
+              mp.locationId == locationId &&
+              mp.portNr == portNr &&
+              mp.installDate.nonEmpty &&
+              mp.installDate.get.isAfter(date)
+            )
+            .toList.sortWith(_.installDate.get isBefore _.installDate.get)
+            .map(_.installDate.get)
+            .headOption
+        }
+      }
+
+      val meterportFromBoundary = (for {
+        installDate <- maybeInstallDate
+        requestFromDate <- requestSpecificFromBoundary
+      } yield if (requestFromDate.isBefore(installDate)) installDate else requestFromDate)
+        .orElse(requestSpecificFromBoundary)
+
+      val meterportToBoundary = (for {
+        uninstallDate <- maybeUninstallDate
+        requestToDate <- requestSpecificToBoundary
+      } yield if (requestToDate.isBefore(uninstallDate)) requestToDate else uninstallDate)
+        .orElse(requestSpecificToBoundary)
+
+      val expectedDatesWithReadings = calculateExpectedMonthEndDatesBetween(meterportFromBoundary, meterportToBoundary)
+        .getOrElse(Vector.empty)
+      val now = LocalInstant.now(ZoneIds.EuropeBerlin)
+      val missingReadingDates = expectedDatesWithReadings
+        .filterNot(d => readings.exists(_.consumptionDate.contains(d.atStartOfDay())) || d.isAfter(now))
+      val fakeReadings = missingReadingDates.map { date =>
+        referenceReading.copy(
+          consumptionDate = Some(date),
+          readingValue = None,
+          readingType = Some(MdrReadingType.MonthEnd),
+          qualityIndicators = None
+        )
+      }
+      readings.filterNot(_.consumptionDate.isEmpty) ++ fakeReadings
+    }.toVector
+  }
+
+  private def calculateExpectedMonthEndDatesBetween(
+    from: Option[LocalInstant],
+    until: Option[LocalInstant]): Option[Vector[LocalInstant]] = {
+
+    def isLastDayOfMonth(date: LocalInstant) = {
+      val currentMonthValue = date.toLocalDateTime.getMonthValue
+      val monthValueForNextDay = date.plusDays(1).toLocalDateTime.getMonthValue
+      monthValueForNextDay != currentMonthValue
+    }
+
+    def calculateForSameMonth(end: LocalInstant): Vector[LocalInstant] = {
+      if (isLastDayOfMonth(end)) {
+        // End of month is referenced - at least one month end value is expected
+        Vector(end)
+      } else {
+        // End date doesn't cover end of month - no need to add month end value
+        Vector.empty
+      }
+    }
+
+    def getLastDayOfMonth(date: LocalInstant, monthsToAdd: Int): LocalInstant = {
+      val endOfMonth = date.toLocalDate
+        .withDayOfMonth(1)
+        .plusMonths(monthsToAdd)
+        .`with`(lastDayOfMonth())
+
+      LocalInstant(endOfMonth)
+    }
+
+    for {
+      start <- from
+      end <- until
+    } yield {
+      val period = Period.between(start.toLocalDate, end.plusDays(1).toLocalDate)
+      val monthsBetweenPeriod = period.getMonths + period.getYears * 12
+      // Both dates referencing the same date or the period is within the same month
+      if (end.isEqual(start) || monthsBetweenPeriod == 0) {
+        calculateForSameMonth(end)
+      } else {
+        (0 to monthsBetweenPeriod).flatMap { month =>
+          val date = getLastDayOfMonth(start, month)
+          /*
+          * - Create for each month in between an end of month entry
+          * - Only create end of month value for last entry if end date is after calculated end date
+          * */
+          Option(date).filter(_.time <= end.time)
+        }.toVector
+      }
+    }
+  }
+
+  override def dataRetentionPoliciesCount(): Try[Map[String, Long]] =
+    Try {
+      meterDataRepository
+        .dataRetentionPoliciesCount()
+        .map(r => (r._1.entryName, r._2))
+    }
+
+  override def getMimoReadings2(mimoRequest: MimoRequest): Try[MimoResponse] = Try {
+
+    def serviceHealthCheckRequest(mimoRequest: MimoRequest): Boolean = {
+      // This is a special case for the health check request.
+      // Parameter values are same as configured in bundle-configs repo: kubernetes/templates/emitter-mdr-rgc/ingress-service-health-mdr-rgc-mimo.yml
+      mimoRequest.locations.size == 1 &&
+      mimoRequest.locations.head.value.toString == "00000000-0000-0000-0000-000000000000" &&
+      mimoRequest.mimoDate.value == LocalDate.of(1900, 1, 1) &&
+      mimoRequest.propertyNumber.isDefined &&
+      mimoRequest.propertyNumber.get.value == "0123456789"
+    }
+
+    val requestLocations = mimoRequest.locations
+    val billingPeriodEndValueVariant = mimoRequest.billingPeriodEndValueVariant.getOrElse(false)
+    val mdrMimoReadings = if (billingPeriodEndValueVariant)
+      meterDataRepository.findBillingPeriodEndValueQuirk(
+        requestDate = mimoRequest.mimoDate.value,
+        locations = requestLocations.map(_.value).map(LocationId(_)).toSet
+      )
+    else
+      meterDataRepository.findMimoReadings2(
+        mimoDate = mimoRequest.mimoDate.value,
+        locations = requestLocations.map(_.value).map(LocationId(_)).toSet
+      )
+    val receivedLocationsReadings = mdrMimoReadings
+      .groupBy(_.locationId)
+      .map { case receivedLocationId -> mdrMimoReadings =>
+        val responseLocationId = Uuid(receivedLocationId.value)
+        val maybeMainSerialNumber = mdrMimoReadings.head.mainSerialNr.map(_.value).map(SerialNumber(_))
+        val mimoReadings = mdrMimoReadings.map(mdrMimoReading =>
+          MimoReading(
+            readingDate = Date(mdrMimoReading.readingLocalInstant.toLocalDate),
+            readingValue = ReadingValue(mdrMimoReading.readingValue.doubleValue),
+            readingUnit = ReadingUnit(mdrMimoReading.readingUnit.entryName),
+            readingType = ReadingType(mdrMimoReading.readingType.entryName),
+            measurand = mimoreadings.Measurand(mdrMimoReading.measurand.entryName),
+            mimoType = MimoType((mdrMimoReading.readingType, mdrMimoReading.readingProcedure) match {
+              case (_, MdrReadingProcedure.CustomerSelfReading)               => OpenApiMimoType.SelfReading.entryName
+              case (MdrReadingType.Current, MdrReadingProcedure.Intermediate) => OpenApiMimoType.IntermediateReading.entryName
+              case _                                                          => OpenApiMimoType.OtherReading.entryName
+            })
+          )
+        )
+        responseLocationId -> LocationReadings(locationId = responseLocationId, mainSerialNumber = maybeMainSerialNumber, readings = mimoReadings.toList)
+      }
+    val allLocationsReadings = requestLocations.map(locationId =>
+      receivedLocationsReadings
+        .getOrElse(
+          locationId, LocationReadings(locationId, mainSerialNumber = None, readings = List.empty))
+    )
+
+    // We don't want to publish metrics for the health check request
+    if (!serviceHealthCheckRequest(mimoRequest)) {
+      publishMimoMetrics(billingPeriodEndValueVariant, requestLocations.size, receivedLocationsReadings.size, mdrMimoReadings)
+    }
+    MimoResponse(mimoRequest.propertyNumber, mimoRequest.mimoDate, allLocationsReadings, billingPeriodEndValueVariant = None)
+  }
+
+  /**
+   * Retrieve readings for given property within the specified dates.
+   * Used by IstaNext/Code Juno.
+   *
+   * @param propertyUuid The Property UUID
+   * @param startDate    Start Date. format - full-date notation as defined by RFC 3339, for example, 2017-07-21
+   * @param endDate      End Date (Inclusive) - full-date notation as defined by RFC 3339, for example, 2017-07-21
+   * @return One of:
+   *  - `Success[Response]` if no error occurred,
+   *  - `Failure[MdrInvalidParametersException]` if
+   *    - Property not specified.
+   */
+  override def getPropertyReadings(propertyUuid: UUID, startDate: LocalDate, endDate: LocalDate): Try[Response] =
+    getPropertyReadings(propertyUuid, startDate, endDate, PropertyReadingsMappings.mapToPropertyReadingsMeterPorts())
+
+  // real implementation needed to be able to replace mapToPropertyReadingsMeterPorts during testing.
+  private[api] def getPropertyReadings(propertyUuid: UUID, startDate: LocalDate, endDate: LocalDate,
+    mapToPropertyReadingsMeterPorts: ArraySeq[MdrMeterReading] => ArraySeq[MeterPort]): Try[Response] = Try {
+    val propertyId = PropertyID(propertyUuid)
+
+    def findReadingsFromMeterDataRepository(readingTypes: Set[MdrReadingType]) =
+      meterDataRepository.findReadingsByProperty(
+        propertyId,
+        filterDevices = Set.empty,
+        filterExecPlan = None,
+        filterFrom = LocalInstant(startDate),
+        // the filterTo is the point in time (exclusive) but the endDate is inclusive and thus, adding 1 day
+        filterTo = LocalInstant(endDate.plusDays(1L)),
+        filterReadingTypes = readingTypes,
+        filterServiceTypes = Set.empty,
+        filterTransportTypes = Set.empty,
+        filterEndOfMonth = false,
+        anyDayReplacement = true,
+        onlyLatest = false,
+        filterInstalled = true,
+      )
+
+
+    // Readings with all reading types
+    val mdrMeterReadings: ArraySeq[MdrMeterReading] =
+      distinctMerge(
+        findReadingsFromMeterDataRepository(Set(MdrReadingType.Initial)), // Readings with Initial reading type
+        findReadingsFromMeterDataRepository(Set.empty)) // Readings with all reading types
+
+    Response(propertyUuid, startDate, endDate, mapToPropertyReadingsMeterPorts(mdrMeterReadings))
+  }
+
+  private def distinctMerge[T](A: Vector[T], B: Vector[T]): ArraySeq[T] = {
+    val small = Seq(A, B).minBy(_.size)
+    val large = Seq(A, B).maxBy(_.size)
+
+    // ArraySeq.unsafeWrapArray(large.view.filterNot(small.contains) ++ small)
+
+    ArraySeq.untagged.from(large.view.filterNot(small.contains) ++ small)
+  }
+
+  private def publishMimoMetrics(
+    billingPeriodEndValueVariant: Boolean,
+    numberOfRequestedLocations: Int,
+    numberOfReceivedLocationsReadings: Int,
+    mdrMimoReadings: Seq[MdrMimoReading]): Unit = {
+
+    val metricName = if (billingPeriodEndValueVariant) "Billing.billingPeriodEndValueQuirk" else "Billing.mimo"
+    val locationMetrics = Map(
+      "requested_locations" -> numberOfRequestedLocations.toString,
+      "filled_locations" -> numberOfReceivedLocationsReadings.toString,
+      "unfilled_locations" -> (numberOfRequestedLocations - numberOfReceivedLocationsReadings).toString
+    )
+
+    val allReadingLabels = if (billingPeriodEndValueVariant) billingPeriodEndValueQuirkReadingLabels else mimoReadingLabels
+
+    val actualReadingLabelWithCounts: Map[String, String] =
+      mdrMimoReadings.groupBy(_.readingLabel.entryName)
+        .view.mapValues(_.size.toString).toMap
+
+    val readingLabelMetrics = allReadingLabels.map(label => label.entryName -> actualReadingLabelWithCounts.getOrElse(label.entryName, "0")).toMap
+
+    val meterPortMetrics = mdrMimoReadings.headOption.map(mdrMimoReading =>
+      Map(
+        "location_measurands_to_fill" -> mdrMimoReading.locationMeasurandsToFill.toString,
+        "ambiguous_location_measurands_to_fill" -> mdrMimoReading.ambiguousLocationMeasurandsToFill.toString,
+        "duplicated_devices_on_other_locations_considered" -> mdrMimoReading.duplicatedDevicesOnOtherLocationConsidered.toString
+      )).getOrElse(Map(
+      "location_measurands_to_fill" -> "0",
+      "ambiguous_location_measurands_to_fill" -> "0",
+      "duplicated_devices_on_other_locations_considered" -> "0"
+    ))
+
+    val totalMetrics = locationMetrics ++ readingLabelMetrics ++ meterPortMetrics
+
+    businessMetricsProducer.writeEvents(
+      MetricEvent(
+        metricName,
+        totalMetrics,
+        Instant.now(),
+        COUNTER,
+        mimoRequestCount.incrementAndGet()
+      )
+    )
+  }
+
+}
+
+object EmitterMdrRgcServiceImpl {
+
+  private sealed abstract class OpenApiMimoType(override val entryName: String) extends EnumEntry
+  private object OpenApiMimoType extends enumeratum.Enum[OpenApiMimoType] with PlayJsonEnum[OpenApiMimoType] {
+    val values: IndexedSeq[OpenApiMimoType] = findValues
+    case object IntermediateReading extends OpenApiMimoType("INTERMEDIATE_READING")
+    case object OtherReading extends OpenApiMimoType("OTHER_READING")
+    case object SelfReading extends OpenApiMimoType("SELF_READING")
+  }
+
+  private class MdrInvalidTimeZoneException(reason: String) extends Exception(reason)
+
+  private object PropertyReadingsMappings {
+
+    def mapToPropertyReadingsMeterPorts()(mdrMeterReadings: ArraySeq[MdrMeterReading]): ArraySeq[MeterPort] = {
+      //Group by (locationId, mainDeviceId, port, measurand and unit)
+      //so that all readings for the given criteria are lumped together in one MeterPort result structure.
+
+      mdrMeterReadings
+        .view
+        .groupMap(mdrReading => (mdrReading.locationId, mdrReading.port, mdrReading.mainDeviceId, mdrReading.unit, mdrReading.measurand))(mapToPropertyReading)
+        .map { case ((locationId, port, deviceId, unit, measurand), readings) =>
+          MeterPort(
+            locationId.value,
+            deviceId.value,
+            port.value,
+            measurand.entryName,
+            unit.entryName,
+            readings.to(ArraySeq)
+          )
+        }.to(ArraySeq)
+    }
+
+    private def mapToPropertyReading(mdrMeterReading: MdrMeterReading): Reading =
+      Reading(
+        readingDate = mdrMeterReading.consumptionDate.toLocalDate,
+        value = mdrMeterReading.value.doubleValue,
+        readingType = mdrMeterReading.readingType.entryName,
+        procedure = mdrMeterReading.readingProcedure.entryName
+      )
+  }
+
+  object MdrRdasMappings extends LazyLogging {
+    // this transforms ANY_... to all reading types
+    def mapRequestReadingTypes(in: Set[RdasRequestReadingType]): Set[MdrReadingType] = {
+      if (in.contains(RdasRequestReadingType.ANY_END_OF_DAY) || in.contains(RdasRequestReadingType.ANY_END_OF_MONTH))
+        Set.empty
+      else in.map {
+        case RdasRequestReadingType.INITIAL         => MdrReadingType.Initial
+        case RdasRequestReadingType.CURRENT         => MdrReadingType.Current
+        case RdasRequestReadingType.END_OF_DAY      => MdrReadingType.DayEnd
+        case RdasRequestReadingType.MIDDLE_OF_MONTH => MdrReadingType.MonthMid
+        case RdasRequestReadingType.END_OF_MONTH    => MdrReadingType.MonthEnd
+        case RdasRequestReadingType.DEADLINE        => MdrReadingType.Deadline
+        case RdasRequestReadingType.REMOVAL         => MdrReadingType.Removal
+        //noinspection NotImplementedCode
+        case _ => ??? // no need to implement as this is covered above
+      }
+    }
+
+    def mapResponseReadingType(in: MdrReadingType): RdasReadingType = in match {
+      case MdrReadingType.Initial  => RdasReadingType.INITIAL
+      case MdrReadingType.Current  => RdasReadingType.CURRENT
+      case MdrReadingType.DayEnd   => RdasReadingType.END_OF_DAY
+      case MdrReadingType.MonthMid => RdasReadingType.MIDDLE_OF_MONTH
+      case MdrReadingType.MonthEnd => RdasReadingType.END_OF_MONTH
+      case MdrReadingType.Deadline => RdasReadingType.DEADLINE
+      case MdrReadingType.Removal  => RdasReadingType.REMOVAL
+    }
+
+    def mapResponseChannelType(in: MdrTransportType): RdasChannelType = in match {
+      case MdrTransportType.AMM     => RdasChannelType.AMM
+      case MdrTransportType.PDA     => RdasChannelType.PDA
+      case MdrTransportType.MDE     => RdasChannelType.XMDE
+      case MdrTransportType.QC      => RdasChannelType.QUICK_DATA_CAPTURING
+      case MdrTransportType.FF      => RdasChannelType.FF_FILE
+      case MdrTransportType.CACTUS  => RdasChannelType.UNKNOWN // todo RDM-1161 RDAS service does not yet know a CACTUS channel type
+      case MdrTransportType.UNKNOWN => RdasChannelType.UNKNOWN
+    }
+
+    def mapResponseMediumType(in: MdrMediumType): Option[RdasMediumType] = in match {
+      case MdrMediumType.OPTICAL       => Some(RdasMediumType.OPTICAL)
+      case MdrMediumType.RADIO         => Some(RdasMediumType.RADIO)
+      case MdrMediumType.MANUAL        => Some(RdasMediumType.MANUAL)
+      case MdrMediumType.RADIO_CLASSIC => Some(RdasMediumType.RADIO_CLASSIC)
+      case MdrMediumType.OTHER         => None
+    }
+
+    // this implementation forgets about the original grouping by MeterPortID, thus it is difficult to test.
+    def mapToRdasMeterPorts(calibrationCheck: CalibrationCheck)
+      (mdrMeterReadings: Vector[MdrMeterReading]): Vector[RdasMeterPort] =
+      mapToMeterPortIdRdasMeterPortMap(calibrationCheck)(mdrMeterReadings).values.toVector
+
+    // TODO SQDD06-2147/SQDD06-2442 get rid of this grouping key
+    // it was introduced so that we can remove the aggregation of radio and unit without the need to change the
+    // source code too much, but it is probably not needed if we change more of the consuming source code
+    case class GroupingKey(
+      locationId: LocationId,
+      port: PortNr,
+      mainDeviceId: DeviceId,
+      mainArticleNr: ArticleNr,
+      mainSerialNr: SerialNr,
+      radioArticleNr: Option[ArticleNr],
+      radioSerialNr: Option[SerialNr],
+      measurand: MdrMeasurand,
+      unit: MdrUnitType
+    )
+
+    def groupingKey(mdrMeterReading: MdrMeterReading): GroupingKey =
+      GroupingKey(
+        mdrMeterReading.locationId,
+        mdrMeterReading.port,
+        mdrMeterReading.mainDeviceId,
+        mdrMeterReading.mainArticleNr,
+        mdrMeterReading.mainSerialNr,
+        mdrMeterReading.radioArticleNr,
+        mdrMeterReading.radioSerialNr,
+        mdrMeterReading.measurand,
+        mdrMeterReading.unit
+      )
+
+    // real implementation needed to be able to better reason about the mapping during testing.
+    def mapToMeterPortIdRdasMeterPortMap(calibrationCheck: CalibrationCheck)
+      (mdrMeterReadings: Vector[MdrMeterReading]): Map[GroupingKey, RdasMeterPort] = {
+      // Group by MeterPortID so that all readings for the same meter port are lumped together in one
+      // RdasMeterPort result structure.
+      // MeterPortID in MDR is a foreign key to meterports table's primary key "id", thus it is as well a primary key.
+      // As consequence, one RdasMeterPort entry contains one set of information which in theory should be the same
+      // for all readings from this meter port, but in practice may not be.
+      // In the MeterDataRepository the radioArticleNr, radioSerialNr, and unit are stored in table readings
+      // per reading, although they should normally be the same for all readings of a meter port.
+      // As the RdasMeterPort does not allow to give these 3 values as part of the reading but only as property of the
+      // meter port, one arbitrary reading is chosen from the meter port and its information is taken as reference.
+      // The downside is, if the MeterDataRepository would contain different information for different readings of
+      // the same meter port, then the different information is lost in the mapping.
+      // Actually we see during migration that inconsistent data really exists in the readings table.
+      // The alternative approach would group by the 4-tuple meterPortId, radioArticleNr, radioSerialNr, and unit,
+      // so that the information describing the meter port in the RdasMeterPort would be consistent.
+      // The downside here is that the client would potentially receive several RdasMeterPort structures for
+      // the same meter port, thus the fact that inconsistent data exists is made visible.
+      // For the moment we do not want to make inconsistencies visible, but rather first log a warning so that we can
+      // see how often this happens.
+      val rdasMeterPortsMap = mdrMeterReadings.groupBy(groupingKey).map {
+        case (meterPortId, readings) =>
+          val refReading = readings.head // take any, e.g. the first per group
+          val inconsistentReadings = readings.filterNot(r =>
+            r.radioArticleNr == refReading.radioArticleNr &&
+            r.radioSerialNr == refReading.radioSerialNr &&
+            r.unit == refReading.unit)
+          if (inconsistentReadings.nonEmpty) {
+            // log a warning, but do not throw an exception which would make the Try to return a Failure
+            logger.warn("MDR returned readings with inconsistent radioArticleNr, radioSerialNr or unit for the " +
+                        s"same meterPortId: refReading: $refReading, inconsistentReadings: $inconsistentReadings")
+          }
+          val rdasMeterPort = RdasMeterPort(
+            refReading.locationId.value,
+            refReading.port,
+            refReading.mainDeviceId.value,
+            refReading.mainArticleNr.value,
+            refReading.mainSerialNr.value,
+            None, // FIXME Can we obtain the radio component ID somehow here ?
+            refReading.radioArticleNr.map(_.value),
+            refReading.radioSerialNr.map(_.value),
+            refReading.measurand.entryName,
+            refReading.unit.entryName,
+            readings.map(mapToRdasReading(calibrationCheck))
+          )
+          (meterPortId, rdasMeterPort)
+      }
+      rdasMeterPortsMap
+    }
+
+    // The following time zone information exists:
+    //  - the time zone of the consumption date, which is derived from the time zone of the referenced meter port
+    //  - the time zone of the readings request
+    // => We use the timezone of the reading as this will match the timezone of the request
+    // Later in the RDAS adapter we drop the timezone again to not "confuse" any ista consumers like SAP, jabre or vonovia
+    private def mapToRdasReading(calibrationCheck: CalibrationCheck)(reading: MdrMeterReading): RdasReading = {
+      val isOutOfCalibrationResult = isOutOfCalibration(calibrationCheck)(reading)
+
+      RdasReading(
+        date = reading.consumptionDate.toZonedDateTime(reading.timeZone),
+        value = reading.value,
+        readingType = mapResponseReadingType(reading.readingType),
+        channel = Some(mapResponseChannelType(reading.transportType)),
+        medium = mapResponseMediumType(reading.mediumType),
+        flags = RdasReadingFlags(isOutOfCalibrationResult) // No estimations yet implemented in MDR
+      )
+    }
+
+    // Returns true if we know for sure the device is not calibrated anymore at the time of the reading.
+    // If we have no knowledge on the last certification date (i.e. reading.certificationDate is None),
+    // or the articles service has no knowledge on the article or on the article's certification validity duration
+    // (covered within CalibrationCheck), then the device is _not_ considered to be out of calibration,
+    // which does not mean it is within calibration but only that we do not know.
+    def isOutOfCalibration(calibrationCheck: CalibrationCheck)(reading: MdrMeterReading): Boolean = {
+      val maybeIsCalibrated = for {
+        lastCertificationDate <- reading.certificationDate
+        articleServiceAN = ArticleServiceAN(reading.mainArticleNr.value)
+        instantInQuestion = reading.consumptionDate
+        isCalibrated <-
+          calibrationCheck.isCalibrated(articleServiceAN, lastCertificationDate, instantInQuestion)
+      } yield isCalibrated
+      maybeIsCalibrated.contains(false)
+    }
+  }
+
+  private object MdrMimoMappings extends LazyLogging {
+    // @formatter:off
+    // compile-time type-safe mappings
+    private val mdrReadingTypeMap: Map[MdrReadingType, MimoReadingType] = MdrReadingType.values.map {
+      case m @ MdrReadingType.Initial => m -> MimoReadingType.INITIAL
+      case m @ MdrReadingType.Current => m -> MimoReadingType.CURRENT
+      case m @ MdrReadingType.DayEnd => m -> MimoReadingType.END_OF_DAY
+      case m @ MdrReadingType.MonthMid => m -> MimoReadingType.MIDDLE_OF_MONTH
+      case m @ MdrReadingType.MonthEnd => m -> MimoReadingType.END_OF_MONTH
+      case m @ MdrReadingType.Deadline => m -> MimoReadingType.DEADLINE
+      case m @ MdrReadingType.Removal => m -> MimoReadingType.REMOVAL
+    }.toMap
+
+    private val mdrUnitTypeMap: Map[MdrUnitType, MimoUnitType] = MdrUnitType.values.map {
+      case m @ MdrUnitType.UnitUndefined => m -> MimoUnitType.UNDEFINED
+      case m @ MdrUnitType.UnitDevice =>    m -> MimoUnitType.DEVICE_UNIT
+      case m @ MdrUnitType.UnitM3 =>        m -> MimoUnitType.M3
+      case m @ MdrUnitType.UnitL =>         m -> MimoUnitType.L
+      case m @ MdrUnitType.UnitMWH =>       m -> MimoUnitType.MWH
+      case m @ MdrUnitType.UnitKWH =>       m -> MimoUnitType.KWH
+      case m @ MdrUnitType.UnitKJ =>        m -> MimoUnitType.KJ
+      case m @ MdrUnitType.UnitGC =>        m -> MimoUnitType.GC
+      case m @ MdrUnitType.UnitGJ =>        m -> MimoUnitType.GJ
+      case m @ MdrUnitType.UnitJ =>         m -> MimoUnitType.J
+    }.toMap
+
+    private val mdrMeasurandMap: Map[MdrMeasurand, MimoMeasurand] = MdrMeasurand.values.map {
+      case m @ MdrMeasurand.Unknown =>        m -> MimoMeasurand.NONE
+      case m @ MdrMeasurand.HeatingHCA =>     m -> MimoMeasurand.HEATING_HCA
+      case m @ MdrMeasurand.HeatingHM =>      m -> MimoMeasurand.HEATING_HM
+      case m @ MdrMeasurand.HotwaterWM =>     m -> MimoMeasurand.HOTWATER_WM
+      case m @ MdrMeasurand.HotwaterHM =>     m -> MimoMeasurand.HOTWATER_HM
+      case m @ MdrMeasurand.HotwaterWCA =>    m -> MimoMeasurand.HOTWATER_WCA
+      case m @ MdrMeasurand.Coldwater =>      m -> MimoMeasurand.COLDWATER
+      case m @ MdrMeasurand.Boilerwater =>    m -> MimoMeasurand.BOILERWATER
+      case m @ MdrMeasurand.Cooling =>        m -> MimoMeasurand.COOLING
+      case m @ MdrMeasurand.HeatmeterFlow =>  m -> MimoMeasurand.HEATMETER_FLOW
+      case m @ MdrMeasurand.Oil =>            m -> MimoMeasurand.OIL
+      case m @ MdrMeasurand.Gas =>            m -> MimoMeasurand.GAS
+      case m @ MdrMeasurand.EnergyTariff1 =>  m -> MimoMeasurand.ENERGY_TARIFF1
+      case m @ MdrMeasurand.EnergyTariff2 =>  m -> MimoMeasurand.ENERGY_TARIFF2
+    }.toMap
+    // @formatter:on
+
+    private def mapResponseReadingType(mdrReadingType: MdrReadingType): MimoReadingType = mdrReadingTypeMap(mdrReadingType)
+
+    private def mapResponseUnitType(mdrUnitType: MdrUnitType): MimoUnitType = mdrUnitTypeMap(mdrUnitType)
+
+    private def mapResponseMeasurand(mdrMeasurand: MdrMeasurand): MimoMeasurand = mdrMeasurandMap(mdrMeasurand)
+
+    private def mapEstimationType(in: MdrEstimationType): MimoEstimationType = in match {
+      case MdrEstimationType.NoEstimation   => MimoEstimationType.NOT_ESTIMATED
+      case MdrEstimationType.SomeEstimation =>
+        logger.warn(s"Returning estimation flag, this is unknown business logic and unknown mapping logic !")
+        MimoEstimationType.ESTIMATED
+    }
+
+    def mapMimoReading(portResult: MdrMeterPortReadingsResult, reading: MdrMeterPortReading): MimoReadingRepr = MimoReadingRepr(
+      portResult.meterPort.locationId,
+      portResult.meterPort.articleNr,
+      reading.readingDate.toZonedDateTime(portResult.meterPort.timeZone), // TODO: Validate this when checking mimo again
+      reading.value,
+      mapResponseUnitType(reading.unit),
+      mapResponseReadingType(reading.readingType),
+      mapResponseMeasurand(portResult.meterPort.measurand),
+      mapEstimationType(reading.estimationType),
+      reading.serviceType == MdrReadingProcedure.Intermediate,
+      reading.serviceType == MdrReadingProcedure.CustomerSelfReading,
+    )
+  }
+
+  private object MdrUiMappings extends LazyLogging {
+
+    def mapRequestDeviceTypes(in: Vector[UiMdrDeviceClass]): Vector[MdrDeviceClass] = in.map {
+      case UiMdrDeviceClass.VOL     => MdrDeviceClass.VOL
+      case UiMdrDeviceClass.HCA     => MdrDeviceClass.HCA
+      case UiMdrDeviceClass.UNKNOWN => MdrDeviceClass.UNKNOWN
+    }
+
+    private def mapToDeviceTypeRepr(in: MdrDeviceClass): MdrDeviceClassRepr = in match {
+      case MdrDeviceClass.VOL     => MdrDeviceClassRepr.VOL
+      case MdrDeviceClass.HCA     => MdrDeviceClassRepr.HCA
+      case MdrDeviceClass.UNKNOWN => MdrDeviceClassRepr.UNKNOWN
+    }
+
+    @unused
+    private def mapResponseDeviceTypes(in: MdrDeviceClass): UiMdrDeviceClass = in match {
+      case MdrDeviceClass.VOL     => UiMdrDeviceClass.VOL
+      case MdrDeviceClass.HCA     => UiMdrDeviceClass.HCA
+      case MdrDeviceClass.UNKNOWN => UiMdrDeviceClass.UNKNOWN
+    }
+
+    def mapRequestReadingTypes(in: Vector[UiMdrReadingType]): Vector[MdrReadingType] = in.map {
+      case UiMdrReadingType.Initial  => MdrReadingType.Initial
+      case UiMdrReadingType.Current  => MdrReadingType.Current
+      case UiMdrReadingType.DayEnd   => MdrReadingType.DayEnd
+      case UiMdrReadingType.MonthMid => MdrReadingType.MonthMid
+      case UiMdrReadingType.MonthEnd => MdrReadingType.MonthEnd
+      case UiMdrReadingType.Deadline => MdrReadingType.Deadline
+      case UiMdrReadingType.Removal  => MdrReadingType.Removal
+    }
+
+    @unused
+    private def mapResponseReadingTypes(in: MdrReadingType): UiMdrReadingType = in match {
+      case MdrReadingType.Initial  => UiMdrReadingType.Initial
+      case MdrReadingType.Current  => UiMdrReadingType.Current
+      case MdrReadingType.DayEnd   => UiMdrReadingType.DayEnd
+      case MdrReadingType.MonthMid => UiMdrReadingType.MonthMid
+      case MdrReadingType.MonthEnd => UiMdrReadingType.MonthEnd
+      case MdrReadingType.Deadline => UiMdrReadingType.Deadline
+      case MdrReadingType.Removal  => UiMdrReadingType.Removal
+    }
+
+    private def mapToReadingTypeRepr(in: MdrReadingType): MdrReadingTypeRepr = in match {
+      case MdrReadingType.Initial  => MdrReadingTypeRepr.Initial
+      case MdrReadingType.Current  => MdrReadingTypeRepr.Current
+      case MdrReadingType.DayEnd   => MdrReadingTypeRepr.DayEnd
+      case MdrReadingType.MonthMid => MdrReadingTypeRepr.MonthMid
+      case MdrReadingType.MonthEnd => MdrReadingTypeRepr.MonthEnd
+      case MdrReadingType.Deadline => MdrReadingTypeRepr.Deadline
+      case MdrReadingType.Removal  => MdrReadingTypeRepr.Removal
+    }
+
+    def mapRequestMeasurand(in: Vector[UiMdrMeasurand]): Vector[MdrMeasurand] = in.map {
+      case UiMdrMeasurand.Unknown       => MdrMeasurand.Unknown
+      case UiMdrMeasurand.HeatingHCA    => MdrMeasurand.HeatingHCA
+      case UiMdrMeasurand.HeatingHM     => MdrMeasurand.HeatingHM
+      case UiMdrMeasurand.HotwaterWM    => MdrMeasurand.HotwaterWM
+      case UiMdrMeasurand.HotwaterWCA   => MdrMeasurand.HotwaterWCA
+      case UiMdrMeasurand.HotwaterHM    => MdrMeasurand.HotwaterHM
+      case UiMdrMeasurand.Coldwater     => MdrMeasurand.Coldwater
+      case UiMdrMeasurand.Boilerwater   => MdrMeasurand.Boilerwater
+      case UiMdrMeasurand.Cooling       => MdrMeasurand.Cooling
+      case UiMdrMeasurand.HeatmeterFlow => MdrMeasurand.HeatmeterFlow
+      case UiMdrMeasurand.Oil           => MdrMeasurand.Oil
+      case UiMdrMeasurand.Gas           => MdrMeasurand.Gas
+      case UiMdrMeasurand.EnergyTariff1 => MdrMeasurand.EnergyTariff1
+      case UiMdrMeasurand.EnergyTariff2 => MdrMeasurand.EnergyTariff2
+    }
+
+    private def mapToMeasurandRepr(in: MdrMeasurand): MdrMeasurandRepr = in match {
+      case MdrMeasurand.Unknown       => MdrMeasurandRepr.Unknown
+      case MdrMeasurand.HeatingHCA    => MdrMeasurandRepr.HeatingHCA
+      case MdrMeasurand.HeatingHM     => MdrMeasurandRepr.HeatingHM
+      case MdrMeasurand.HotwaterWM    => MdrMeasurandRepr.HotwaterWM
+      case MdrMeasurand.HotwaterWCA   => MdrMeasurandRepr.HotwaterWCA
+      case MdrMeasurand.HotwaterHM    => MdrMeasurandRepr.HotwaterHM
+      case MdrMeasurand.Coldwater     => MdrMeasurandRepr.Coldwater
+      case MdrMeasurand.Boilerwater   => MdrMeasurandRepr.Boilerwater
+      case MdrMeasurand.Cooling       => MdrMeasurandRepr.Cooling
+      case MdrMeasurand.HeatmeterFlow => MdrMeasurandRepr.HeatmeterFlow
+      case MdrMeasurand.Oil           => MdrMeasurandRepr.Oil
+      case MdrMeasurand.Gas           => MdrMeasurandRepr.Gas
+      case MdrMeasurand.EnergyTariff1 => MdrMeasurandRepr.EnergyTariff1
+      case MdrMeasurand.EnergyTariff2 => MdrMeasurandRepr.EnergyTariff2
+    }
+
+    private def mapToMdrTransportTypeRepr(in: MdrTransportType): MdrTransportTypeRepr = in match {
+      case MdrTransportType.AMM     => MdrTransportTypeRepr.AMM
+      case MdrTransportType.PDA     => MdrTransportTypeRepr.PDA
+      case MdrTransportType.MDE     => MdrTransportTypeRepr.MDE
+      case MdrTransportType.QC      => MdrTransportTypeRepr.QC
+      case MdrTransportType.FF      => MdrTransportTypeRepr.FF
+      case MdrTransportType.UNKNOWN => MdrTransportTypeRepr.UNKNOWN
+      case MdrTransportType.CACTUS  => MdrTransportTypeRepr.CACTUS
+    }
+
+    private def mapToMdrDataInputServiceRepr(in: DataInputService): MdrDataInputServiceTypeRepr = in match {
+      case DataInputService.LGSTRUGET_SERVICE           => MdrDataInputServiceTypeRepr.LGSTRUGET_SERVICE
+      case DataInputService.COMPETITOR_TAKEOVER_SERVICE => MdrDataInputServiceTypeRepr.COMPETITOR_TAKEOVER_SERVICE
+    }
+
+    private def mapToMdrMediumType(in: MdrMediumType): MdrMediumTypeRepr = in match {
+      case MdrMediumType.OPTICAL       => MdrMediumTypeRepr.OPTICAL
+      case MdrMediumType.RADIO         => MdrMediumTypeRepr.RADIO
+      case MdrMediumType.MANUAL        => MdrMediumTypeRepr.MANUAL
+      case MdrMediumType.RADIO_CLASSIC => MdrMediumTypeRepr.RADIO_CLASSIC
+      case MdrMediumType.OTHER         => MdrMediumTypeRepr.OTHER
+    }
+
+    private def mapToMdrUnitType(in: MdrUnitType): MdrUnitTypeRepr = in match {
+      case MdrUnitType.UnitGC        => MdrUnitTypeRepr.UnitGC
+      case MdrUnitType.UnitJ         => MdrUnitTypeRepr.UnitJ
+      case MdrUnitType.UnitKJ        => MdrUnitTypeRepr.UnitKJ
+      case MdrUnitType.UnitGJ        => MdrUnitTypeRepr.UnitGJ
+      case MdrUnitType.UnitKWH       => MdrUnitTypeRepr.UnitKWH
+      case MdrUnitType.UnitMWH       => MdrUnitTypeRepr.UnitMWH
+      case MdrUnitType.UnitM3        => MdrUnitTypeRepr.UnitM3
+      case MdrUnitType.UnitL         => MdrUnitTypeRepr.UnitL
+      case MdrUnitType.UnitDevice    => MdrUnitTypeRepr.UnitDevice
+      case MdrUnitType.UnitUndefined => MdrUnitTypeRepr.UnitUndefined
+    }
+
+    private def mapToMeterUseRepr(in: MdrMeterUse): MdrMeterUseRepr = in match {
+      case MdrMeterUse.MAIN_METER       => MdrMeterUseRepr.MAIN_METER
+      case MdrMeterUse.USER_GROUP_METER => MdrMeterUseRepr.USER_GROUP_METER
+      case MdrMeterUse.COMMON_METER     => MdrMeterUseRepr.COMMON_METER
+      case MdrMeterUse.USAGE_UNIT_METER => MdrMeterUseRepr.USAGE_UNIT_METER
+    }
+
+    def mapUiReadingsSearchDataToRepr(in: Vector[UiReadingsSearchData]): Vector[ReadingsSearchDataRepr] = in.map { v =>
+      ReadingsSearchDataRepr(
+        propertyNumber = PropertyNumberRepr(v.propertyNumber.value),
+        propertyId = PropertyIdRepr(v.propertyId.value),
+        usageUnitId = v.usageUnitId.map(id => UsageUnitIdRepr(id.value)),
+        locationNumber = v.locationNumber.map(s => LocationNumberRepr(s.value)),
+        locationId = LocationIdRepr(v.locationId.value),
+        mainDeviceId = DeviceIdRepr(v.mainDeviceId.value),
+        serialNumber = v.serialNumber.map(s => SerialNumberRepr(s.value)),
+        articleNumber = v.articleNumber.map(s => ArticleNumberRepr(s.value)),
+        consumptionDate = v.consumptionDate.map(v => LocalInstantRepr(v.time)),
+        readingValue = v.readingValue.map(ReadingValueRepr(_)),
+        unitType = v.unit.map(mapToMdrUnitType),
+        deviceType = Option(mapToDeviceTypeRepr(v.deviceType)),
+        readingType = v.readingType.map(mapToReadingTypeRepr),
+        transportType = v.transportType.map(mapToMdrTransportTypeRepr),
+        mediumType = v.mediumType.map(mapToMdrMediumType),
+        measurandType = Option(mapToMeasurandRepr(v.measurandType)),
+        trxSerialNumber = v.trxSerialNumber.map(s => SerialNumberRepr(s.value)),
+        trxArticleNumber = v.trxArticleNumber.map(s => ArticleNumberRepr(s.value)),
+        qualityIndicators = mapQualityIndicator(v.qualityIndicators),
+        inputService = Option(mapToMdrDataInputServiceRepr(v.inputService))
+      )
+    }
+
+    private def mapQualityIndicator(input: Option[JsObject]): Set[EmitterQualityIndicator] =
+      input.fold[Set[EmitterQualityIndicator]](Set.empty) { js =>
+        Try((js \ "indicators").as[List[QualityIndicator]]) match {
+          case Success(list) => list.map { obj =>
+            EmitterQualityIndicator(obj.entryName, obj.description)
+          }.toSet
+          case Failure(e)    =>
+            logger.warn("MDR returned readings with qualityIndicator but underlying payload has wrong " +
+                        s"format and could not be passed", "error" -> e)
+            Set.empty
+
+        }
+      }
+  }
+}
+
+trait EmitterMdrRgcServiceImplMetrics {
+  def rdmMeterRegistry: MeterRegistry
+
+  val rdasRequestsCounter: Counter = rdmMeterRegistry.counter("rdasRequests")
+  val mimoRequestsCounter: Counter = rdmMeterRegistry.counter("mimoRequests")
+  val mimoRequestCount = new AtomicLong(0)
+}

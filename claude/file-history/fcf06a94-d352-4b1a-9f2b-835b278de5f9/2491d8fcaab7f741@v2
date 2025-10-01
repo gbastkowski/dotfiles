@@ -1,0 +1,1274 @@
+package com.ista.rdm.emitter.mdr.impl.api
+
+import com.ista.rdm.articles.ArticlesRepo.{ArticleFinderByNrNoEntries, DefaultArticleFinderByNr}
+import com.ista.rdm.articles.{CalibrationCheck, CertificationDurationProvider, DeadlineDeviceCheck, ArticleNr => AsArticleNr}
+import com.ista.rdm.business.metrics.client.testHelpers.{BusinessMetricsRegistryFixture, TestBusinessMetricsRegistry}
+import com.ista.rdm.common.execorder.core.{BaseExecOrderExecutionContext, ExecOrderExecutor}
+import com.ista.rdm.common.execorder.impl.ExecOrderConverter
+import com.ista.rdm.common.execorder.repo.ExecOrderRepository
+import com.ista.rdm.common.play.http.ApiErrors
+import com.ista.rdm.common.processor.api.EmitterType
+import com.ista.rdm.common.processor.repo.ProcessorConfigAndStateRepository
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.types.{LocalInstant, ZoneIds}
+import com.ista.rdm.domain.shared.dataRetention.CompoundRetentionPolicy
+import com.ista.rdm.domain.shared.meterport.DataInputService.LGSTRUGET_SERVICE
+import com.ista.rdm.domain.shared.meterport._
+import com.ista.rdm.domain.shared.property.PropertyNumber
+import com.ista.rdm.emitter.extapi.model.ReadingsSearchRespRepr
+import com.ista.rdm.emitter.mdr.api.EmitterMdrRgcService
+import com.ista.rdm.emitter.mdr.api.mimo.MimoReadingsRequest
+import com.ista.rdm.emitter.mdr.api.propertyreadings.{MeterPort, Reading, Response}
+import com.ista.rdm.emitter.mdr.api.rdas._
+import com.ista.rdm.emitter.mdr.api.rdss._
+import com.ista.rdm.emitter.mdr.api.ui.ReadingsSearchReq
+import com.ista.rdm.emitter.mdr.impl.api.EmitterMdrRgcServiceImpl.MdrRdasMappings._
+import com.ista.rdm.outputchannel.mdr._
+import com.ista.rdm.outputchannel.mdr.api._
+import com.ista.rdm.outputchannel.mdr.impl.MdrInvalidParametersException
+import enumeratum.EnumEntry
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import org.mockito.ArgumentMatchers.{any, anyLong}
+import org.mockito.Mockito.{verify, when}
+import org.scalacheck.Gen
+import org.scalatest.Inside.inside
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{AppendedClues, Inspectors, TryValues}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+
+import java.time.{Instant, LocalDate, ZoneId, ZonedDateTime}
+import java.util.UUID
+import scala.collection.immutable.ArraySeq
+import scala.jdk.CollectionConverters.SetHasAsScala
+import scala.util.{Failure, Success, Try}
+
+class EmitterMdrRgcServiceImplSpec
+  extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers with MockitoSugar with TryValues with AppendedClues {
+
+  trait BaseSUT extends BusinessMetricsRegistryFixture {
+
+    lazy val genLong: Gen[Long] = Gen.chooseNum[Long](Long.MinValue, Long.MaxValue)
+    lazy val genInt: Gen[Int] = Gen.chooseNum[Int](Int.MinValue, Int.MaxValue)
+
+    def genString(maxLen: Int): Gen[String] = Gen.resize(maxLen, Gen.asciiPrintableStr)
+
+    lazy val genDouble: Gen[Double] = Gen.chooseNum[Double](Double.MinValue, Double.MaxValue)
+
+    // The part of a MdrMeterReading which should be consistent for a meter port,
+    // even though it partly comes from table "readings".
+    case class MdrMeterReadingPerMeterPort(
+      propertyId: PropertyID,
+      locationId: LocationId,
+      port: PortNr,
+      mainDeviceId: DeviceId,
+      mainArticleNr: ArticleNr,
+      mainSerialNr: SerialNr,
+      radioArticleNr: Option[ArticleNr],
+      radioSerialNr: Option[SerialNr],
+      unit: MdrUnitType,
+      measurand: MdrMeasurand,
+      timeZone: ZoneId,
+      certificationDate: Option[LocalInstant]
+    )
+
+    lazy val genUuid: Gen[UUID] = Gen.uuid
+    lazy val genPortNr: Gen[PortNr] = genInt.map(PortNr(_))
+    lazy val genArticleNrString: Gen[String] = genString(18)
+    lazy val genArticleNr: Gen[ArticleNr] = genArticleNrString.map(ArticleNr(_))
+    lazy val genSerialNrString: Gen[String] = genString(32)
+    lazy val genSerialNr: Gen[SerialNr] = genSerialNrString.map(SerialNr(_))
+    lazy val genPropertyID: Gen[PropertyID] = genUuid.map(PropertyID(_))
+    lazy val genPropertyNumber: Gen[PropertyNumber] = genInt.map(i => PropertyNumber(i.toString))
+    lazy val genUsageUnitId: Gen[UsageUnitId] = genUuid.map(UsageUnitId(_))
+
+    def genFromEnum[T <: enumeratum.EnumEntry](e: enumeratum.Enum[T]): Gen[T] = Gen.oneOf(e.values)
+
+    lazy val genZoneId: Gen[ZoneId] = Gen.oneOf(ZoneId.getAvailableZoneIds.asScala).map(ZoneId.of)
+    lazy val genInstant: Gen[Instant] = Gen.posNum[Long].map(Instant.ofEpochMilli)
+    lazy val genLocalInstant: Gen[LocalInstant] = genInstant.map(LocalInstant.ofInstantSameMillis)
+    lazy val genLocalDate: Gen[LocalDate] = {
+      // Define a range of dates you want to generate
+      val startDate = LocalDate.of(2020, 1, 1)
+      val endDate = LocalDate.now(ZoneId.of("UTC"))
+
+      // Generate random LocalDate values within the specified range
+      Gen.choose(startDate.toEpochDay, endDate.toEpochDay).map(epochDay => LocalDate.ofEpochDay(epochDay))
+    }
+
+    // Generator for the part of a MdrMeterReading which should be consistent for a meter port,
+    // even though it partly comes from table "readings".
+    // May have any time zone, which will be fixed to a well-known timezone during the tests if and when needed.
+    def genMdrMeterReadingPerMeterPortAnyTimeZone(
+      genCertificateDateToGenOption: Gen[LocalInstant] => Gen[Option[LocalInstant]]
+    ): Gen[MdrMeterReadingPerMeterPort] = for {
+      propertyId <- genUuid.map(PropertyID(_))
+      locationId <- genUuid.map(LocationId(_))
+      port <- genPortNr
+      mainDeviceId <- genUuid.map(DeviceId(_))
+      mainArticleNr <- genArticleNr
+      mainSerialNr <- genSerialNr
+      radioArticleNr <- Gen.option(genArticleNr)
+      radioSerialNr <- Gen.option(genSerialNr)
+      unit <- genFromEnum(MdrUnitType)
+      measurand <- genFromEnum(MdrMeasurand)
+      timeZone <- genZoneId
+      certificationDate <- genCertificateDateToGenOption(genLocalInstant)
+    } yield MdrMeterReadingPerMeterPort(propertyId, locationId, port, mainDeviceId, mainArticleNr,
+      mainSerialNr, radioArticleNr, radioSerialNr, unit, measurand, timeZone, certificationDate)
+
+    // The part of a MdrMeterReading which may differ for the same meter port.
+    case class MdrMeterReadingPerReading(
+      consumptionDate: LocalInstant,
+      value: BigDecimal,
+      readingType: MdrReadingType,
+      readingProcedure: MdrReadingProcedure,
+      transportType: MdrTransportType,
+      mediumType: MdrMediumType,
+      estimationType: MdrEstimationType
+    )
+
+    // Generator for the part of a MdrMeterReading which may differ for the same meter port.
+    lazy val genMdrMeterReadingPerReading: Gen[MdrMeterReadingPerReading] = for {
+      consumptionDate <- genLocalInstant
+      value <- genDouble.map(BigDecimal.valueOf)
+      readingType <- genFromEnum(MdrReadingType)
+      readingProcedure <- genFromEnum(MdrReadingProcedure)
+      transportType <- genFromEnum(MdrTransportType)
+      mediumType <- genFromEnum(MdrMediumType)
+      estimationType <- genFromEnum(MdrEstimationType)
+    } yield MdrMeterReadingPerReading(consumptionDate, value, readingType, readingProcedure, transportType,
+      mediumType, estimationType)
+
+    // Limit to max 5 ports to reduce log output for tests on failure scenarios which create log output.
+    lazy val genDisjunctMeterPorts: Gen[Set[MeterPortID]] =
+      Gen.resize(5, Gen.containerOf[Set, MeterPortID](genLong.map(MeterPortID(_))))
+
+    def genMdrMeterReadingsAnyTimeZone(genCertificateDateToGenOption: Gen[LocalInstant] => Gen[Option[LocalInstant]])
+    : Gen[Vector[MdrMeterReading]] = for {
+      meterPorts <- genDisjunctMeterPorts.map(_.toVector)
+      readingPerMeterPortsAnyTimeZone <-
+        Gen.listOfN(meterPorts.size, genMdrMeterReadingPerMeterPortAnyTimeZone(genCertificateDateToGenOption))
+      genReadingPerReadings = Gen.nonEmptyListOf(genMdrMeterReadingPerReading)
+      readingPerReadings <- Gen.listOfN(meterPorts.size, genReadingPerReadings)
+      readingsRaw = meterPorts.zip(readingPerMeterPortsAnyTimeZone).zip(readingPerReadings)
+      readings = readingsRaw.flatMap {
+        case ((meterPortId, rpmp), rprs) =>
+          rprs.map(rpr =>
+            MdrMeterReading(meterPortId, rpmp.propertyId, rpmp.locationId, rpmp.port, rpmp.mainDeviceId,
+              rpmp.mainArticleNr, rpmp.mainSerialNr, rpmp.radioArticleNr, rpmp.radioSerialNr, rpr.consumptionDate,
+              rpr.value, rpmp.unit, rpr.readingType, rpr.readingProcedure, rpr.transportType, rpr.mediumType,
+              rpr.estimationType, rpmp.measurand, rpmp.timeZone, rpmp.certificationDate, None))
+      }
+    } yield readings
+
+    lazy val genMdrMeterReadingsAnyTimeZone: Gen[Vector[MdrMeterReading]] = genMdrMeterReadingsAnyTimeZone(Gen.option)
+
+    lazy val mockMdr: MeterDataRepository = mock[MeterDataRepository]
+    lazy val rdmMeterRegistry: MeterRegistry = new SimpleMeterRegistry()
+
+    def calibrationCheckStub(result: Option[Boolean]): CalibrationCheck =
+      new ArticleFinderByNrNoEntries with CalibrationCheck with CertificationDurationProvider {
+        override def isCalibrated(articleNr: AsArticleNr, lastCertification: LocalInstant,
+          instantInQuestion: LocalInstant): Option[Boolean] = result
+      }
+
+    def newEmitterMdrRgcServiceImpl(deadlineDeviceCheck: DeadlineDeviceCheck): EmitterMdrRgcServiceImpl =
+      new EmitterMdrRgcServiceImpl(
+        mock[ExecOrderRepository],
+        mock[ProcessorConfigAndStateRepository],
+        mock[ExecOrderConverter],
+        mock[BaseExecOrderExecutionContext[EmitterType]],
+        mock[ExecOrderExecutor[EmitterType]],
+        mockMdr,
+        deadlineDeviceCheck,
+        mock[CalibrationCheck],
+        rdmMeterRegistry,
+        businessMetricsRegistry.asInstanceOf[TestBusinessMetricsRegistry].businessMetricsProducer)
+
+    lazy val emitterMdrRgcService: EmitterMdrRgcService[Try] = newEmitterMdrRgcServiceImpl(mock[DeadlineDeviceCheck])
+
+  }
+
+  trait SUTWithStubbedFindReadingsByProperty extends BaseSUT {
+    def stubMockMdr(mdrMeterReadings: Vector[MdrMeterReading]): Unit = {
+      val _ = when(mockMdr.findReadingsByProperty(
+        propertyId = PropertyID(any[UUID]), // trick to make Mockito work with Scala AnyVal
+        filterDevices = any,
+        filterExecPlan = any,
+        filterFrom = LocalInstant(anyLong), // trick to make Mockito work with Scala AnyVal
+        filterTo = LocalInstant(anyLong), // trick to make Mockito work with Scala AnyVal
+        filterReadingTypes = any,
+        filterServiceTypes = any,
+        filterTransportTypes = any,
+        filterEndOfMonth = any,
+        anyDayReplacement = any,
+        onlyLatest = any,
+        filterInstalled = any,
+      )).thenReturn(mdrMeterReadings)
+    }
+  }
+
+  "EmitterMdrRgcServiceImpl.getRdasReadings" should {
+
+    trait SUT extends SUTWithStubbedFindReadingsByProperty {
+
+      def genSetOfEnumTypes[T <: EnumEntry](`enum`: enumeratum.Enum[T]): Gen[Set[T]] =
+        Gen.containerOf[Set, T](Gen.oneOf(`enum`.values))
+
+      lazy val genRdasRequestReadingType: Gen[Set[RdasRequestReadingType]] = genSetOfEnumTypes(RdasRequestReadingType)
+      lazy val genSetUuids: Gen[Set[UUID]] = Gen.containerOf[Set, UUID](genUuid)
+      lazy val genBoolean: Gen[Boolean] = Gen.oneOf(true, false)
+
+      lazy val genValidRdasReadingsRequest: Gen[RdasReadingsRequest] = for {
+        propertyId <- genUuid
+        instant1 <- genInstant
+        instant2 <- genInstant
+        zoneId <- genZoneId
+        Seq(startTime, endTime) = Seq(instant1, instant2).sorted.map(ZonedDateTime.ofInstant(_, zoneId))
+        filterReadingTypes <- genRdasRequestReadingType
+        filterDevices <- genSetUuids
+        filterLastReading <- genBoolean
+        filterInstalled <- genBoolean
+      } yield RdasReadingsRequest(propertyId, startTime, endTime, filterReadingTypes, filterDevices, filterLastReading, filterInstalled)
+
+    }
+
+    "fail when given request startTime and endTime have different time zones" in new SUT {
+      private val genZonedDateTime: Gen[ZonedDateTime] = for {
+        instant <- genInstant
+        zoneId <- genZoneId
+      } yield ZonedDateTime.ofInstant(instant, zoneId)
+
+      private val genMoreThan6Parameters: Gen[(UUID, Set[UUID], ZonedDateTime, ZonedDateTime,
+        Set[RdasRequestReadingType], Boolean, Boolean)] = for {
+        propertyId <- genUuid
+        filterDevices <- genSetUuids
+        startTime <- genZonedDateTime
+        endTime <- genZonedDateTime suchThat (_.getZone != startTime.getZone)
+        filterReadingTypes <- genRdasRequestReadingType
+        filterLastReading <- genBoolean
+        filterInstalled <- genBoolean
+      } yield (propertyId, filterDevices, startTime, endTime, filterReadingTypes, filterLastReading, filterInstalled)
+
+      forAll(genMoreThan6Parameters) {
+        case (propertyId, filterDevices, startTime, endTime, filterReadingTypes, filterLastReading, filterInstalled) =>
+          whenever(startTime.getZone != endTime.getZone) {
+            val request = RdasReadingsRequest(propertyId, startTime, endTime, filterReadingTypes, filterDevices,
+              filterLastReading, filterInstalled)
+            val _try = emitterMdrRgcService.getRdasReadings(request)
+            inside(_try) {
+              case Failure(exception) =>
+                exception shouldBe a[MdrInvalidParametersException]
+                exception.getMessage shouldEqual "Only timespans with the same ZoneId in from and to are allowed."
+            }
+          }
+      }
+    }
+
+    "succeed when given request startTime and endTime have same time zones" in new SUT {
+      forAll(genValidRdasReadingsRequest) { rdasReadingsRequest =>
+        whenever(rdasReadingsRequest.startTime.getZone == rdasReadingsRequest.endTime.getZone) {
+          // We do not check the request parameters, as this is outside of the scope of this unit test.
+          // We return an empty readings set, as otherwise we would also need to test all transformation logic
+          // happening inside EmitterMdrRgcServiceImpl how to transform a MdrMeterReading to a
+          // RdasReadingsResponse, which is outside of the scope of this unit test.
+          stubMockMdr(Vector.empty)
+          val _try = emitterMdrRgcService.getRdasReadings(rdasReadingsRequest)
+          assert(_try.isSuccess)
+        }
+      }
+    }
+
+    "forward request parameters to MeterDataRepository.findReadingsByMainDeviceOrProperty method " +
+    "thereby transforming RdasReadingsRequest to correct request parameters, " +
+    "and interpreting ANY_END_OF_DAY and ANY_END_OF_MONTH" in new SUT {
+      forAll(genValidRdasReadingsRequest) { rdasReadingsRequest =>
+        whenever(rdasReadingsRequest.startTime.getZone == rdasReadingsRequest.endTime.getZone) {
+          val filterDevices = rdasReadingsRequest.filterDevices.map(DeviceId(_))
+          val propertyID = PropertyID(rdasReadingsRequest.propertyId)
+          val expectedFilterEndOfMonth = rdasReadingsRequest.filterReadingTypes
+            .contains(RdasRequestReadingType.ANY_END_OF_MONTH)
+          val expectedAnyDayReplacement = expectedFilterEndOfMonth ||
+                                          rdasReadingsRequest.filterReadingTypes
+                                            .contains(RdasRequestReadingType.ANY_END_OF_DAY)
+          val expectedMdrReadingType = mapRequestReadingTypes(rdasReadingsRequest.filterReadingTypes)
+          // RDM-1158, filtering transport type depending on the value of "limited/idx" was removed
+          // however, the findReadingsByProperty signature was kept as-is on purpose
+          // todo during SQDD06-2439
+          val expectedTransportTypes: Set[MdrTransportType] = Set.empty
+
+          // We do check the request parameters.
+          // But we return an empty readings set, as otherwise we would also need to test all transformation logic
+          // happening inside EmitterMdrRgcServiceImpl how to transform a MdrMeterReading to a
+          // RdasReadingsResponse, which is outside of the scope of this unit test.
+          when(mockMdr.findReadingsByProperty(
+            propertyID,
+            filterDevices,
+            filterExecPlan = None,
+            LocalInstant(rdasReadingsRequest.startTime),
+            LocalInstant(rdasReadingsRequest.endTime),
+            filterReadingTypes = expectedMdrReadingType,
+            filterServiceTypes = Set.empty,
+            filterTransportTypes = expectedTransportTypes,
+            expectedFilterEndOfMonth,
+            expectedAnyDayReplacement,
+            onlyLatest = rdasReadingsRequest.filterLastReading,
+            filterInstalled = rdasReadingsRequest.filterByInstallationDates
+          )).thenReturn(Vector.empty)
+
+          val _try = emitterMdrRgcService.getRdasReadings(rdasReadingsRequest)
+          assert(_try.isSuccess)
+        }
+      }
+    }
+
+    "fail when MDR returns a reading with a different timezone than used in startTime and endTime" in new SUT {
+      forAll(genValidRdasReadingsRequest, genMdrMeterReadingsAnyTimeZone) {
+        case (rdasReadingsRequest, mdrMeterReadings) =>
+          val requestTimeZone = rdasReadingsRequest.startTime.getZone
+          whenever(requestTimeZone == rdasReadingsRequest.endTime.getZone &&
+                   mdrMeterReadings.exists(_.timeZone != requestTimeZone)) {
+            // We do not check the request parameters, as this is outside of the scope of this unit test.
+            // but we check the reaction on the returned mdrMeterReadings which have a timezone problem
+            stubMockMdr(mdrMeterReadings)
+
+            val _try = emitterMdrRgcService.getRdasReadings(rdasReadingsRequest)
+            inside(_try) {
+              case Failure(exception) =>
+                exception.getMessage shouldEqual ("The timezone of at least one of the readings does not match " +
+                                                  "the timezone of the request. See log for details.")
+            }
+          }
+      }
+    }
+
+    "return replies from MeterDataRepository.findReadingsByMainDeviceOrProperty method " +
+    "transformed via given mapToRdasMeterPorts method" in new SUT {
+      // use the actual implementation rather than the trait so that the testable version of getRdasReadings is usable
+      private val emitterMdrRgcServiceImpl = newEmitterMdrRgcServiceImpl(mock[DeadlineDeviceCheck])
+
+      private val genRdasReading: Gen[RdasReading] = for {
+        zone <- genZoneId
+        date <- genInstant.map(ZonedDateTime.ofInstant(_, zone))
+        value <- genDouble.map(BigDecimal.valueOf)
+        readingType <- genFromEnum(RdasReadingType)
+        channel <- Gen.option(genFromEnum(RdasChannelType))
+        medium <- Gen.option(genFromEnum(RdasMediumType))
+        flags <- genBoolean.map(RdasReadingFlags(_))
+      } yield RdasReading(date, value, readingType, channel, medium, flags)
+
+      private val genRdasMeterPort: Gen[RdasMeterPort] = for {
+        locationId <- genUuid
+        port <- genPortNr
+        mainDeviceId <- genUuid
+        mainArticleNr <- genArticleNrString
+        mainSerialNr <- genSerialNrString
+        radioArticleNr <- Gen.option(genArticleNrString)
+        radioSerialNr <- Gen.option(genSerialNrString)
+        measurand <- genFromEnum(MdrMeasurand).map(_.entryName)
+        unit <- genFromEnum(MdrUnitType).map(_.entryName)
+        rdasReadings <- Gen.containerOf[Vector, RdasReading](genRdasReading)
+      } yield
+        RdasMeterPort(locationId, port, mainDeviceId, mainArticleNr, mainSerialNr,
+          None, radioArticleNr, radioSerialNr, measurand, unit, rdasReadings)
+
+      private val genRdasMeterPorts: Gen[Vector[RdasMeterPort]] = Gen.containerOf[Vector, RdasMeterPort](genRdasMeterPort)
+
+      forAll(genValidRdasReadingsRequest, genMdrMeterReadingsAnyTimeZone, genRdasMeterPorts) {
+        case (rdasReadingsRequest, mdrMeterReadings, rdasMeterPorts) =>
+          val requestTimeZone = rdasReadingsRequest.startTime.getZone
+          whenever(requestTimeZone == rdasReadingsRequest.endTime.getZone) {
+            val mdrMeterReadingsFixedTimezone = mdrMeterReadings.map(r => r.copy(timeZone = requestTimeZone))
+            // We do not check the request parameters, as this is outside of the scope of this unit test.
+            // but we check that the returned mdrMeterReadings are forwarded to given mapToRdasMeterPorts method.
+            stubMockMdr(mdrMeterReadingsFixedTimezone)
+
+            def verifyMapToRdasMeterPorts(mdrMeterReadings: Vector[MdrMeterReading]): Vector[RdasMeterPort] = {
+              mdrMeterReadings shouldEqual mdrMeterReadingsFixedTimezone
+              rdasMeterPorts
+            }
+
+            val _try = emitterMdrRgcServiceImpl.getRdasReadings(rdasReadingsRequest, verifyMapToRdasMeterPorts)
+            inside(_try) {
+              case Success(RdasReadingsResponse(propertyId, None, returnedRdasMeterPorts)) =>
+                propertyId shouldEqual rdasReadingsRequest.propertyId
+                returnedRdasMeterPorts shouldEqual rdasMeterPorts
+            }
+          }
+      }
+    }
+
+  }
+
+  // todo change these tests if the domain code is changed to better handle inconsistent readings
+  // We normally would need to test EmitterMdrRgcServiceImpl.MdrRdasMappings.mapToRdasMeterPorts, as this is used
+  // by EmitterMdrRgcServiceImpl.getRdasReadings, but that method removes the information on which MeterPortID the
+  // grouping happened, which would make it much more difficult to test it thoroughly. Thus we test mainly on
+  // EmitterMdrRgcServiceImpl.MdrRdasMappings.mapToMeterPortIDRdasMeterPortMap which conserves the grouping information.
+  // The mapping from mapToMeterPortIDRdasMeterPortMap to mapToRdasMeterPorts is simple enough that we can reason
+  // about it without the need for detailed unit tests.
+  // Still a quick check on the number of results is done here.
+  "EmitterMdrRgcServiceImpl.MdrRdasMappings.mapToRdasMeterPorts" should {
+
+    trait SUT extends BaseSUT {
+      lazy val stubCalibrationCheck: CalibrationCheck = calibrationCheckStub(None)
+    }
+
+    "group mdrMeterReadings by meterPortId - check grouping sizes" in new SUT {
+      forAll(genMdrMeterReadingsAnyTimeZone) { mdrMeterReadings =>
+        val rdasMeterPorts = mapToRdasMeterPorts(stubCalibrationCheck)(mdrMeterReadings)
+        rdasMeterPorts.size shouldEqual mdrMeterReadings.groupBy(_.meterPortId).size
+      }
+    }
+
+    "group mdrMeterReadings by meterPortId - check number of readings is correct" in new SUT {
+      forAll(genMdrMeterReadingsAnyTimeZone) { mdrMeterReadings =>
+        val rdasMeterPorts = mapToRdasMeterPorts(stubCalibrationCheck)(mdrMeterReadings)
+        val totalReadingsSize = rdasMeterPorts.foldLeft(0)((accSize, meterPort) => accSize + meterPort.readings.size)
+        totalReadingsSize shouldEqual mdrMeterReadings.size
+      }
+    }
+
+    "assign None to radioComponentId" in new SUT {
+      forAll(genMdrMeterReadingsAnyTimeZone) { mdrMeterReadings =>
+        val rdasMeterPorts = mapToRdasMeterPorts(stubCalibrationCheck)(mdrMeterReadings)
+        rdasMeterPorts.foreach(rmp => assertResult(None)(rmp.radioComponentId))
+      }
+    }
+
+  }
+
+  // todo change these tests if the domain code is changed to better handle inconsistent readings
+  // See comment above for testing mapToRdasMeterPorts why we test mainly mapToMeterPortIDRdasMeterPortMap.
+  // The following tests are a bit complicated because of a domain logic inconsistency.
+  // In EmitterMdrRgcServiceImpl.MdrRdasMappings.mapToMeterPortIDRdasMeterPortMap the RdasMeterPorts are built
+  // by first grouping per meter port, and then per group mostly by copying reference values from one reading into
+  // other readings.
+  // For locationId, port, mainDeviceId, mainArticleNr, mainSerialNr and measurand this is ok,
+  // as all of them come from the meterports table of the meter port used for the grouping.
+  // However, radioArticleNr, radioSerialNr and unit are overwritten by the values from a reference
+  // reading although they come from the readings table and thus - in theory - could be different for
+  // different readings.
+  // See also the comment at EmitterMdrRgcServiceImpl.MdrRdasMappings.mapToMeterPortIDRdasMeterPortMap.
+  // We know that during migration the situation can happen that different readings have different values for
+  // the fields which in the resulting RdasMeterPort are collapsed to a single value.
+  // Consequently these tests use generated values where indeed the values which are copied from a reference reading
+  // will differ between different readings.
+  // Thus the tests are designed to only be able to state what remains true if original values
+  // are replaced by different reference values.
+  "EmitterMdrRgcServiceImpl.MdrRdasMappings.mapToMeterPortIDRdasMeterPortMap" should {
+
+    trait SUT extends BaseSUT {
+      lazy val stubCalibrationCheck: CalibrationCheck = calibrationCheckStub(None)
+    }
+
+    "group mdrMeterReadings by meterPortId - check number of groups and size per group is correct" in new SUT {
+      forAll(genMdrMeterReadingsAnyTimeZone) { mdrMeterReadings =>
+        val mdrMeterReadingGroupsSizes = mdrMeterReadings
+          .groupBy(groupingKey)
+          .view.mapValues(_.size)
+          // .toMap is needed as shouldEqual for MapView falls back to == which is not defined on MapView and thus falls
+          // back to the default to compare object references instead of content.
+          .toMap
+
+        val meterPortIDRdasMeterPortMap = mapToMeterPortIdRdasMeterPortMap(stubCalibrationCheck)(mdrMeterReadings)
+        val rdasMeterPortReadingsSizes = meterPortIDRdasMeterPortMap.view.mapValues(_.readings.size).toMap
+        rdasMeterPortReadingsSizes shouldEqual mdrMeterReadingGroupsSizes
+      }
+    }
+
+    // Check that for each RdasMeterPort there exists inside the corresponding group of MdrMeterReading
+    // at least one MdrMeterReading which is the reference to this RdasMeterPort,
+    // i.e. all but radioComponentId and readings match.
+    "group mdrMeterReadings by meterPortId - check reference value exists per group" in new SUT {
+      private def isReference(rdasMeterPort: RdasMeterPort)(mdrMeterReading: MdrMeterReading): Boolean =
+        rdasMeterPort.locationId == mdrMeterReading.locationId.value &&
+        rdasMeterPort.port == mdrMeterReading.port &&
+        rdasMeterPort.mainDeviceId == mdrMeterReading.mainDeviceId.value &&
+        rdasMeterPort.mainArticleNr == mdrMeterReading.mainArticleNr.value &&
+        rdasMeterPort.mainSerialNr == mdrMeterReading.mainSerialNr.value &&
+        rdasMeterPort.radioArticleNr == mdrMeterReading.radioArticleNr.map(_.value) &&
+        rdasMeterPort.radioSerialNr == mdrMeterReading.radioSerialNr.map(_.value) &&
+        rdasMeterPort.measurand == mdrMeterReading.measurand.entryName
+
+      forAll(genMdrMeterReadingsAnyTimeZone) { mdrMeterReadings =>
+        val meterPortIdMdrMeterReadingsMap = mdrMeterReadings.groupBy(groupingKey)
+
+        val meterPortIdRdasMeterPortMap = mapToMeterPortIdRdasMeterPortMap(stubCalibrationCheck)(mdrMeterReadings)
+
+        meterPortIdRdasMeterPortMap.foreach {
+          case (groupingKey, rdasMeterPort) =>
+            val possibleSourceMdrMeterReadings = meterPortIdMdrMeterReadingsMap(groupingKey)
+            assert(possibleSourceMdrMeterReadings.exists(isReference(rdasMeterPort)))
+        }
+      }
+    }
+
+    // Check that for each RdasMeterPort all readings of the corresponding group of MdrMeterReading
+    // are converted correctly.
+    "group mdrMeterReadings by meterPortId - check reading values are converted correctly" in new SUT {
+      // This test for correct mapping re-uses domain code to map reading type, channel type and medium type.
+      // This means that these mappings themselves are not unit-tested.
+      // This may be acceptable seen that the mapping mechanics are straight-forward,
+      // thus the mapping implementation itself is the domain specification.
+      // This test also re-uses isOutOfCalibration from the domain code, which should be ok, as there are specific
+      // unit tests on this method.
+      private def isReadingSource(rdasReading: RdasReading)(mdrMeterReading: MdrMeterReading): Boolean =
+        rdasReading.date == mdrMeterReading.consumptionDate.toZonedDateTime(mdrMeterReading.timeZone) &&
+        rdasReading.value == mdrMeterReading.value &&
+        rdasReading.readingType == mapResponseReadingType(mdrMeterReading.readingType) &&
+        rdasReading.channel.contains(mapResponseChannelType(mdrMeterReading.transportType)) &&
+        rdasReading.medium == mapResponseMediumType(mdrMeterReading.mediumType) &&
+        rdasReading.flags == RdasReadingFlags(isOutOfCalibration(stubCalibrationCheck)(mdrMeterReading))
+
+      forAll(genMdrMeterReadingsAnyTimeZone) { mdrMeterReadings =>
+        val meterPortIdMdrMeterReadingsMap = mdrMeterReadings.groupBy(groupingKey)
+
+        val meterPortIdRdasMeterPortMap = mapToMeterPortIdRdasMeterPortMap(stubCalibrationCheck)(mdrMeterReadings)
+
+        meterPortIdRdasMeterPortMap.foreach {
+          case (groupingKey, rdasMeterPort) =>
+            val sourceMdrMeterReadings = meterPortIdMdrMeterReadingsMap(groupingKey)
+            rdasMeterPort.readings.foreach { rdasReading =>
+              assert(sourceMdrMeterReadings.exists(isReadingSource(rdasReading)))
+            }
+        }
+      }
+    }
+
+  }
+
+  "EmitterMdrRgcServiceImpl.MdrRdasMappings.isOutOfCalibration" when {
+    "certificationDate is None" should {
+      "return false and not call CalibrationCheck.isCalibrated" in new BaseSUT {
+        private val mockCalibrationCheck = mock[CalibrationCheck]
+        private val genMdrMeterReadingsNoCertificationDate = genMdrMeterReadingsAnyTimeZone(_ => Gen.const(None))
+
+        forAll(genMdrMeterReadingsNoCertificationDate) { mdrMeterReadings =>
+          mdrMeterReadings.foreach { reading =>
+            isOutOfCalibration(mockCalibrationCheck)(reading) shouldBe false
+          }
+        }
+      }
+    }
+
+    "certificationDate is Some()" should {
+
+      trait SUT extends BaseSUT {
+        lazy val genMdrMeterReadingsWithCertificationDate: Gen[Vector[MdrMeterReading]] =
+          genMdrMeterReadingsAnyTimeZone(gen => Gen.some(gen))
+      }
+
+      "forward correct parameters to CalibrationCheck" in new SUT {
+        forAll(genMdrMeterReadingsWithCertificationDate) { mdrMeterReadings =>
+          mdrMeterReadings.foreach { reading =>
+            val mockCalibrationCheck = mock[CalibrationCheck]
+            val expectedArticleNr = AsArticleNr(reading.mainArticleNr.value)
+            val expectedLastCertification = reading.certificationDate.getOrElse(fail())
+            val expectedInstantInQuestion = reading.consumptionDate
+            when(mockCalibrationCheck.isCalibrated(any, LocalInstant(anyLong), LocalInstant(anyLong)))
+              .thenReturn(None)
+            isOutOfCalibration(mockCalibrationCheck)(reading)
+            verify(mockCalibrationCheck)
+              .isCalibrated(expectedArticleNr, expectedLastCertification, expectedInstantInQuestion)
+          }
+        }
+      }
+
+      "return correctly mapped result from CalibrationCheck" in new SUT {
+        private val table = Table(
+          ("isCalibrated result", "isOutOfCalibration result"),
+          (None, false),
+          (Some(true), false),
+          (Some(false), true)
+        )
+
+        forAll(genMdrMeterReadingsWithCertificationDate) { mdrMeterReadings =>
+          forAll(table) { (isWithinO, expectedIsOut) =>
+            val stubCalibrationCheck = calibrationCheckStub(isWithinO)
+            mdrMeterReadings.foreach { reading =>
+              isOutOfCalibration(stubCalibrationCheck)(reading) shouldEqual expectedIsOut
+            }
+          }
+        }
+      }
+    }
+  }
+
+  "EmitterMdrRgcServiceImpl.getMimoReadings" should {
+
+    trait SUT extends BaseSUT {
+
+      lazy val locations: Set[LocationId] = (1 to 10).map(_ => LocationId.randomLocationId).toSet
+
+      def mdrMeterPortForLocation(plan: ExecPlanID, location: LocationId, tz: ZoneId): MdrMeterPort = MdrMeterPort(
+        id = Some(MeterPortID.randomId),
+        execPlanId = plan,
+        mainDeviceId = DeviceId.randomDeviceId,
+        portNr = PortNr(1),
+        propertyId = PropertyID.randomPropertyId,
+        locationId = location,
+        locationNumber = Option(LocationNumber.randomLocationNumber),
+        migrated = false,
+        retentionPolicy = CompoundRetentionPolicy.MONTH_MID_5_YEARS_OTHER_DEFAULT,
+        installed = LocalInstant.of(2015, 1, 1, 12, 0, 0),
+        uninstalled = None,
+        measurand = MdrMeasurand.HeatingHCA,
+        timeZone = tz,
+        articleNr = ArticleNr("11090"),
+        serialNr = SerialNr("123456789"),
+        inputService = LGSTRUGET_SERVICE,
+        meterUse = Some(MdrMeterUse.USAGE_UNIT_METER),
+        certificationDate = Some(LocalInstant.of(2018, 1, 1, 12, 0, 0))
+      )
+
+      def mdrMeterPortReading(mp: MdrMeterPort, idx: Int): MdrMeterPortReading = MdrMeterPortReading(
+        meterPortId = mp.id.get,
+        readingDate = mp.installed.plusDays(idx),
+        value = 0.1 * idx,
+        unit = MdrUnitType.UnitDevice,
+        readingType = MdrReadingType.DayEnd,
+        serviceType = MdrReadingProcedure.Regular,
+        transportType = MdrTransportType.AMM,
+        mediumType = MdrMediumType.RADIO,
+        estimationType = MdrEstimationType.NoEstimation,
+        identifier = None
+      )
+
+      def mdrMeterPortReadingResult(plan: ExecPlanID, location: LocationId, tz: ZoneId): MdrMeterPortReadingsResult = {
+        val mp = mdrMeterPortForLocation(plan, location, tz)
+        MdrMeterPortReadingsResult(mp, (1 to 2).map(mdrMeterPortReading(mp, _)).toVector)
+      }
+
+      lazy val mimoRequest: MimoReadingsRequest = MimoReadingsRequest(
+        tenantChangeDate = LocalDate.now(ZoneIds.EuropeBerlin),
+        zoneId = ZoneId.of("CET"),
+        daysMoveInMoveOut = 31,
+        daysOther = 14,
+        locationUUIDs = locations
+      )
+
+    }
+
+    "fail when the MDR returns a result with a different timezone than specified in the request" in new SUT {
+      private lazy val mimoReadingsResult = MdrReadingsResult(
+        Some(LocalDate.now(ZoneIds.EuropeBerlin).plusDays(2)),
+        locations.tail.map(l => mdrMeterPortReadingResult(ExecPlanID.randomId, l, ZoneId.of("CET"))) +
+        mdrMeterPortReadingResult(ExecPlanID.randomId, locations.head, ZoneId.of("Europe/Berlin"))
+      )
+
+      when(mockMdr.findMimoReadings(any, any, any, any, any, any, any, any)).thenReturn(mimoReadingsResult)
+
+      private val tryResponse = emitterMdrRgcService.getMimoReadings(mimoRequest)
+      tryResponse.failure.exception should have message "The timezone of at least one of the readings does not " +
+                                                        "match the timezone of the request. See log for details."
+    }
+
+    "succeed with an empty result when the MDR returns no results for the specified locations" in new SUT {
+      private lazy val mimoReadingsResult = MdrReadingsResult(None, Vector.empty)
+
+      when(mockMdr.findMimoReadings(any, any, any, any, any, any, any, any)).thenReturn(mimoReadingsResult)
+
+      private val tryResponse = emitterMdrRgcService.getMimoReadings(mimoRequest)
+      // expect max 2 readings per location
+      tryResponse.success.value.readings should have size 0
+    }
+
+    "succeed when the MDR returns readings and limit results per port to 2" in new SUT {
+      private lazy val mimoReadingsResult = MdrReadingsResult(
+        Some(LocalDate.now(ZoneIds.EuropeBerlin).plusDays(5)),
+        locations.map(l => mdrMeterPortReadingResult(ExecPlanID.randomId, l, ZoneId.of("CET")))
+      )
+
+      when(mockMdr.findMimoReadings(any, any, any, any, any, any, any, any)).thenReturn(mimoReadingsResult)
+
+      private val tryResponse = emitterMdrRgcService.getMimoReadings(mimoRequest)
+      // expect max 2 readings per location
+      tryResponse.success.value.readings should have size locations.size * 2
+      tryResponse.get.readings.groupBy(_.locationUuid).foreach { case (_, r) => r should have size 2 }
+    }
+
+  }
+
+  "EmitterMdrRgcServiceImpl.getPropertyReadingsStatus" should {
+
+    trait SUT extends BaseSUT {
+      lazy val propertyIds: Set[PropertyID] = Set(PropertyID.randomPropertyId, PropertyID.randomPropertyId)
+      lazy val rdssRequest: RdssPropertyStatusRequest = RdssPropertyStatusRequest(propertyIds)
+
+      def mdrRdssResult(idx: Int, p: PropertyID, tz: ZoneId): MdrPropertyReadingsStatus = MdrPropertyReadingsStatus(
+        execPlanId = ExecPlanID.randomId,
+        propertyId = p,
+        updated = LocalInstant.of(2020, 12, 12, 12, 12, 12),
+        timeZone = tz,
+        ppsYield = 0.1 * idx,
+        0,
+        0
+      )
+
+      def mdrRdssResults(properties: Iterable[PropertyID], tz: ZoneId): Vector[MdrPropertyReadingsStatus] =
+        properties.zipWithIndex.map { case (p, idx) => mdrRdssResult(idx, p, tz) }.toVector
+
+    }
+
+    "forward results from MDR" in new SUT {
+      when(mockMdr.getPropertyReadingsStatus(any)).thenReturn(mdrRdssResults(propertyIds, ZoneId.of("CET")))
+      private val tryResponse = emitterMdrRgcService.getPropertyReadingsStatus(rdssRequest)
+
+      tryResponse.success.value.resultList should have size propertyIds.size
+      tryResponse.success.value.resultList.map(_.ppsYield) should contain theSameElementsAs Seq(0.0, 0.1)
+      tryResponse.success.value.resultList.map(_.propertyId) should contain theSameElementsAs propertyIds
+    }
+
+    "forward an empty result if no result data is found in MDR" in new SUT {
+      when(mockMdr.getPropertyReadingsStatus(any)).thenReturn(mdrRdssResults(Vector.empty, ZoneId.of("UTC")))
+      private val tryResponse = emitterMdrRgcService.getPropertyReadingsStatus(rdssRequest)
+
+      tryResponse.success.value.resultList should have size 0
+    }
+
+  }
+
+  "EmitterMdrRgcServiceImpl.getDeviceReadingsStatus" should {
+
+    trait SUT extends BaseSUT {
+
+      // todo replace real DeadlineDeviceCheck with a stubbed/mocked one.
+      // This requires refactoring the tests such that they use the stub/mock to verify component interaction
+      // rather than overall outcome.
+      lazy val realDeadlineDeviceCheck = new DefaultArticleFinderByNr with DeadlineDeviceCheck
+      lazy val emitterMdrRgcServiceWithRealDeadlineDeviceCheck: EmitterMdrRgcService[Try] =
+        newEmitterMdrRgcServiceImpl(realDeadlineDeviceCheck)
+
+      // todo langerca 5 here and elsewhere. There may be a collision of ids, as deviceIds will be used as set. Not so likely, but could lead to flaky tests as there is no guarantee set up here
+      lazy val deviceIds: Seq[DeviceId] = (0 to 10).map(_ => DeviceId.randomDeviceId)
+
+      lazy val periodStart: LocalDate = LocalDate.of(2019, 1, 1)
+      lazy val periodEnd: LocalDate = LocalDate.of(2019, 12, 31)
+
+      def rdssRequest(devices: Set[DeviceId]): RdssDeviceStatusRequest = RdssDeviceStatusRequest(
+        periodStart.atStartOfDay(ZoneId.of("CET")),
+        periodEnd.plusDays(1).atStartOfDay(ZoneId.of("CET")),
+        devices
+      )
+
+      def singleMdrRdssResult(d: DeviceId, date: LocalDate, readingType: MdrReadingType, idx: Int = 0)
+      : MdrDeviceReadingsInfo = MdrDeviceReadingsInfo(
+        deviceId = d,
+        readingDate = LocalInstant(date),
+        readingType = readingType,
+        mainArticle = ArticleNr("11090"),
+        mainSerial = SerialNr(s"12345$idx"),
+        lastRadioArticle = Some(ArticleNr("12345")),
+        lastRadioSerial = Some(SerialNr(s"98765$idx"))
+      )
+
+      def mdrRdssResult(idx: Int, d: DeviceId): MdrDeviceReadingsInfo = singleMdrRdssResult(
+        d,
+        periodStart.plusDays(5 + idx),
+        if (idx % 2 == 0) MdrReadingType.Deadline else MdrReadingType.DayEnd,
+        idx
+      )
+
+      def mdrRdssResults(devices: Iterable[DeviceId]): Vector[MdrDeviceReadingsInfo] =
+        devices.zipWithIndex.map { case (d, idx) => mdrRdssResult(idx, d) }.toVector
+
+    }
+
+    "forward results from MDR" in new SUT {
+      // NOTE: The service implementation runs against solution which queries readings, not the RDSS device status table
+      when(mockMdr.existReadingsByMainDevice(any, any, any)).thenReturn(mdrRdssResults(deviceIds))
+      private val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest(deviceIds.toSet))
+
+      tryResponse.success.value.resultList should have size deviceIds.size
+      tryResponse.success.value.resultList.map(_.deviceId) should contain theSameElementsAs deviceIds
+      // todo langerca 1 this check originally assumed the returned resultList Iterable was a Vector,
+      //  but now it is a Set, as there is only 1 answer per device needed.
+      // The original check then used resultList.map(_.readingCompleteness) which collapses the set to
+      // only 2 values, as the resultList is a Set.
+      // Thus the linkage between the hard-coded device reading fixtures and this test does not hold through
+      // the types used in the method.
+      // Need to rethink what to test here // Goal: Deadline -> complete, other -> incomplete
+      // succeed
+      //      tryResponse.success.value.resultList.map(_.readingCompleteness) shouldBe
+      //      (1 to deviceIds.size).map(i =>
+      //        if (i % 2 == 0) RdssDeviceReadingsCompleteness.INCOMPLETE
+      //        else RdssDeviceReadingsCompleteness.COMPLETE
+      //      )
+    }
+
+    "forward an empty result if no result data is found in MDR" in new SUT {
+      // NOTE: The service implementation runs against solution which queries readings, not the RDSS device status table
+      when(mockMdr.existReadingsByMainDevice(any, any, any)).thenReturn(mdrRdssResults(Vector.empty))
+      private val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest(deviceIds.toSet))
+
+      tryResponse.success.value.resultList should have size deviceIds.size
+      tryResponse.success.value.resultList.map(_.deviceId) should contain theSameElementsAs deviceIds
+      // todo langerca 1 same problem as above -> goal: all 10 must be incomplete
+      // succeed
+      //      tryResponse.success.value.resultList.map(_.readingCompleteness) shouldBe
+      //      (1 to deviceIds.size).map(_ => RdssDeviceReadingsCompleteness.INCOMPLETE)
+    }
+
+    "fail with an exception when requesting with a timespan with diverging time zones" in new SUT {
+      private val rdssRequest = RdssDeviceStatusRequest(
+        periodStart.atStartOfDay(ZoneId.of("Europe/Berlin")),
+        periodEnd.plusDays(1).atStartOfDay(ZoneId.of("CET")),
+        deviceIds.toSet
+      )
+
+      when(mockMdr.existReadingsByMainDevice(any, any, any)).thenReturn(mdrRdssResults(Vector.empty))
+      private val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest)
+
+      tryResponse.failure.exception should have message "Only timespans with the same ZoneId in from and to are allowed."
+    }
+
+    "report COMPLETE device data if a deadline or current reading is available in the requested period" in new SUT with Inspectors {
+      forAll(Seq(MdrReadingType.Deadline, MdrReadingType.Current)) { readingType =>
+        // NOTE: The service implementation runs against solution which queries readings, not the RDSS device status table
+        when(mockMdr.existReadingsByMainDevice(any, any, any)).thenReturn(
+          Vector(singleMdrRdssResult(deviceIds.head, periodStart, readingType))
+        )
+        // todo langerca 1 same problem as before, perhaps here just get status from single device
+        // goal: test both groups (complete with 1 element, incomplete the others)
+        // val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest(deviceIds.toSet))
+        val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest(Set(deviceIds.head)))
+        tryResponse.success.value.resultList.head.readingCompleteness shouldBe RdssDeviceReadingsCompleteness.COMPLETE
+      }
+    }
+
+    "report INCOMPLETE device data if a non-deadline/non-current reading is available in the requested period" in new SUT with Inspectors {
+      forAll(MdrReadingType.values.diff(Seq(MdrReadingType.Deadline, MdrReadingType.Current))) { readingType =>
+        // NOTE: The service implementation runs against solution which queries readings, not the RDSS device status table
+        when(mockMdr.existReadingsByMainDevice(any, any, any)).thenReturn(
+          Vector(singleMdrRdssResult(deviceIds.head, periodStart, readingType))
+        )
+        val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest(deviceIds.toSet))
+        tryResponse.success.value.resultList.head.readingCompleteness shouldBe RdssDeviceReadingsCompleteness.INCOMPLETE
+      }
+    }
+
+    "report INCOMPLETE device data if a deadline or current reading is available but before the requested period" in new SUT {
+      // NOTE: The service implementation runs against solution which queries readings, not the RDSS device status table
+      when(mockMdr.existReadingsByMainDevice(any, any, any)).thenReturn(Vector.empty)
+      private val tryResponse = emitterMdrRgcServiceWithRealDeadlineDeviceCheck.getDeviceReadingsStatus(rdssRequest(deviceIds.toSet))
+      tryResponse.success.value.resultList.head.readingCompleteness shouldBe RdssDeviceReadingsCompleteness.INCOMPLETE
+    }
+
+  }
+
+  "EmitterMdrRgcServiceImpl.getPropertyReadings" should {
+
+    trait SUT extends SUTWithStubbedFindReadingsByProperty
+
+    "succeed when propertyId, fromDate and toDate are not empty" in new SUT {
+      forAll(genUuid, genLocalDate) {
+        case (propertyId, fromDate) =>
+          stubMockMdr(Vector.empty)
+          val _try = emitterMdrRgcService.getPropertyReadings(propertyId, fromDate, fromDate.plusYears(2L))
+          assert(_try.isSuccess)
+      }
+    }
+
+    "return replies from MeterDataRepository.findReadingsByMainDeviceOrProperty method " +
+    "transformed via given MapToMeterPorts method" in new SUT {
+      // use the actual implementation rather than the trait so that the testable version of getPropertyReadings is usable
+      private val emitterMdrRgcServiceImpl = newEmitterMdrRgcServiceImpl(mock[DeadlineDeviceCheck])
+
+      private val genPropertyReading: Gen[Reading] = for {
+        date <- genLocalDate
+        value <- genDouble
+        readingType <- genFromEnum(MdrReadingProcedure).map(_.entryName)
+        procedure <- genFromEnum(MdrReadingProcedure).map(_.entryName)
+      } yield Reading(date, value, readingType, procedure)
+
+      private val genPropertyReadingsMeterPort: Gen[MeterPort] = for {
+        locationId <- genUuid
+        mainDeviceId <- genUuid
+        port <- genPortNr
+        measurand <- genFromEnum(MdrMeasurand).map(_.entryName)
+        unit <- genFromEnum(MdrUnitType).map(_.entryName)
+        propertyReadings <- Gen.containerOf[ArraySeq, Reading](genPropertyReading)
+      } yield
+        MeterPort(locationId, mainDeviceId, port.value, measurand, unit, propertyReadings)
+
+      private val genMeterPorts: Gen[ArraySeq[MeterPort]] = Gen.containerOf[ArraySeq, MeterPort](genPropertyReadingsMeterPort)
+
+      forAll(genUuid, genLocalDate, genMdrMeterReadingsAnyTimeZone, genMeterPorts) {
+        case (genPropertyId, fromDate, genMdrMeterReadings, meterPorts) =>
+
+          stubMockMdr(genMdrMeterReadings)
+
+          def verifyMapToMeterPorts(mdrMeterReadings: Seq[MdrMeterReading]): ArraySeq[MeterPort] = {
+            mdrMeterReadings shouldEqual genMdrMeterReadings
+            meterPorts
+          }
+
+          val _try = emitterMdrRgcServiceImpl.getPropertyReadings(genPropertyId, fromDate, fromDate.plusYears(2L), verifyMapToMeterPorts)
+
+          inside(_try) {
+            case Success(Response(propertyId, startDate, endDate, returnedMeterPorts)) =>
+              propertyId shouldEqual genPropertyId
+              startDate shouldEqual fromDate
+              endDate shouldEqual fromDate.plusYears(2L)
+              returnedMeterPorts shouldEqual meterPorts
+          }
+
+      }
+    }
+
+  }
+
+  "EmitterMdrRgcServiceImpl.getUiReadings" should {
+    trait SUT extends BaseSUT {
+      lazy val readingCount: Int = Gen.choose(2, 13).sample.get
+
+      def stubMockMdr(uiReadingsSearchData: Vector[UiReadingsSearchData]): Unit = {
+        when(mockMdr.getUiReadings(
+          propertyIds = any,
+          propertyNumbers = any,
+          locationNumbers = any,
+          articleNumbers = any,
+          serialNumbers = any,
+          deviceTypes = any,
+          consumptionDateFrom = any,
+          consumptionDateTo = any,
+          readingTypes = any,
+          measurandTypes = any,
+          limit = any
+        )).thenReturn(uiReadingsSearchData)
+        ()
+      }
+
+      def genSearchRequest(propertyNumber: PropertyNumber,
+        consumptionDateFrom: Option[ZonedDateTime],
+        consumptionDateTo: Option[ZonedDateTime]): ReadingsSearchReq = ReadingsSearchReq(
+        propertyIds = Vector.empty,
+        propertyNumbers = Vector(propertyNumber),
+        locationNumbers = Vector.empty,
+        articleNumbers = Vector.empty,
+        serialNumbers = Vector.empty,
+        deviceTypes = Vector.empty,
+        consumptionDateFrom = consumptionDateFrom,
+        consumptionDateTo = consumptionDateTo,
+        readingTypes = Vector.empty,
+        measurandTypes = Vector.empty,
+        limit = None,
+      )
+
+      def generateSearchData(totalEntryCount: Int, addGapBetween: Boolean = false): Gen[(PropertyID, PropertyNumber, Vector[UiReadingsSearchData])] = {
+        val locationNumber = LocationNumber.randomLocationNumber
+
+        lazy val genDateWithUpperLimit: Gen[LocalDate] = {
+          // Define a range of dates you want to generate
+          val startDate = LocalDate.of(2020, 1, 1)
+          /*
+          * The most recent supported end date has to be at least 15 months in the past from now. Otherwise the restriction to not create
+          * any future readings will block specific test cases from succeeding.
+          * */
+          val endDate = LocalDate.now(ZoneId.of("UTC"))
+            .minusMonths(15)
+
+          // Generate random LocalDate values within the specified range
+          Gen.choose(startDate.toEpochDay, endDate.toEpochDay).map(epochDay => LocalDate.ofEpochDay(epochDay))
+        }
+
+        def consumptionDate(index: Int, referenceDate: LocalDate) = {
+          val i = index match {
+            case i if addGapBetween & i >= totalEntryCount / 2 => index + 1
+            case _                                             => index
+          }
+          LocalInstant(referenceDate
+            .plusMonths(i + 1)
+            .withDayOfMonth(1)
+            .minusDays(1)
+            .atStartOfDay())
+        }
+
+        for {
+          propertyID <- genPropertyID
+          propertyNumber <- genPropertyNumber
+          usageUnitId <- genUsageUnitId
+          meterPortId <- genLong.map(MeterPortID(_))
+          locationId <- genUuid.map(LocationId(_))
+          portNr <- Gen.choose(1, 10).map(PortNr(_))
+          mainDeviceId <- genUuid.map(DeviceId(_))
+          serialNumber <- genSerialNr
+          articleNumber <- genArticleNr
+          referenceDate <- genDateWithUpperLimit
+        } yield {
+          val readings = (0 until totalEntryCount).map { i =>
+            UiReadingsSearchData(
+              propertyNumber = propertyNumber,
+              propertyId = propertyID,
+              usageUnitId = Some(usageUnitId),
+              meterPortID = meterPortId,
+              locationNumber = Option(locationNumber),
+              locationId = locationId,
+              portNr = portNr,
+              mainDeviceId = mainDeviceId,
+              serialNumber = Option(serialNumber),
+              articleNumber = Option(articleNumber),
+              installDate = Option(LocalInstant(referenceDate.minusYears(1))),
+              uninstallDate = None,
+              consumptionDate = Option(consumptionDate(i, referenceDate)),
+              readingValue = Option(0.0 + 100 * i),
+              unit = None,
+              deviceType = MdrDeviceClass.VOL,
+              readingType = Option(MdrReadingType.MonthEnd),
+              transportType = Option(MdrTransportType.AMM),
+              mediumType = Option(MdrMediumType.RADIO),
+              measurandType = MdrMeasurand.Coldwater,
+              lastConsumptionDate = None,
+              trxSerialNumber = None,
+              trxArticleNumber = None,
+              qualityIndicators = None,
+              inputService = DataInputService.LGSTRUGET_SERVICE
+            )
+          }
+
+          (propertyID, propertyNumber, readings.toVector)
+        }
+      }
+    }
+
+    "not inject any fake readings when all relevant readings do exist already" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount).sample.get
+      searchData.size shouldBe readingCount
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, None, None)
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error shouldBe None
+          data.length shouldBe readingCount
+      }
+    }
+
+    "inject missing reading at the beginning for open consumption range" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount).sample.get
+      searchData.size shouldBe readingCount
+
+      val referenceDate: LocalInstant = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+        .head
+      val requestStartDate: ZonedDateTime = referenceDate
+        .toZonedDateTimeUTC
+        .minusMonths(1)
+        .minusDays(3)
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, Option(requestStartDate), None)
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading at the beginning for closed consumption range" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount).sample.get
+      searchData.size shouldBe readingCount
+
+      val requestStartDate: ZonedDateTime = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+        .head
+        .toZonedDateTimeUTC
+        .minusMonths(1)
+        .minusDays(3)
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, Option(requestStartDate), None)
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading in between for not defined consumption range" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount, addGapBetween = true).sample.get
+      searchData.size shouldBe readingCount
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, None, None)
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading in between for open consumption range with defined start date" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount, addGapBetween = true).sample.get
+      searchData.size shouldBe readingCount
+
+      val requestStartDate: ZonedDateTime = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+        .head
+        .toZonedDateTimeUTC
+        .withDayOfMonth(1)
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, Option(requestStartDate), None)
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading in between for open consumption range with defined end date" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount, addGapBetween = true).sample.get
+      searchData.size shouldBe readingCount
+
+      val requestEndDate: ZonedDateTime = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+        .last
+        .toZonedDateTimeUTC
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, None, Option(requestEndDate))
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading in between for closed consumption range" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount, addGapBetween = true).sample.get
+      searchData.size shouldBe readingCount
+
+      val datesSorted: Seq[LocalInstant] = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+
+      val requestStartDate: ZonedDateTime = datesSorted
+        .head
+        .toZonedDateTimeUTC
+        .withDayOfMonth(1)
+
+      val requestEndDate: ZonedDateTime = datesSorted
+        .last
+        .toZonedDateTimeUTC
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, Option(requestStartDate), Option(requestEndDate))
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading at the end for open consumption range with defined end date" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount).sample.get
+      searchData.size shouldBe readingCount
+
+      val requestEndDate: ZonedDateTime = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+        .last
+        .toZonedDateTimeUTC
+        .withDayOfMonth(1)
+        .plusMonths(2)
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, None, Option(requestEndDate))
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "inject missing reading at the end for closed consumption range" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount).sample.get
+      searchData.size shouldBe readingCount
+
+      val datesSorted: Seq[LocalInstant] = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+
+      val requestStartDate: ZonedDateTime = datesSorted
+        .head
+        .toZonedDateTimeUTC
+        .withDayOfMonth(1)
+
+      val requestEndDate: ZonedDateTime = datesSorted
+        .last
+        .toZonedDateTimeUTC
+        .withDayOfMonth(1)
+        .plusMonths(2)
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, Option(requestStartDate), Option(requestEndDate))
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+          data.length shouldBe readingCount + 1
+      }
+    }
+
+    "not inject missing readings that do reference the future" in new SUT {
+      val (_, propertyNumber, searchData) = generateSearchData(readingCount).sample.get
+      searchData.size shouldBe readingCount
+
+      val datesSorted: Seq[LocalInstant] = searchData.sortWith(_.consumptionDate.get isBefore _.consumptionDate.get)
+        .map(_.consumptionDate.get)
+
+      val requestStartDate: ZonedDateTime = datesSorted
+        .head
+        .toZonedDateTimeUTC
+        .withDayOfMonth(1)
+
+      val requestEndDate: ZonedDateTime = ZonedDateTime.now(ZoneIds.Utc)
+        .plusMonths(5)
+        .withDayOfMonth(1)
+
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, Option(requestStartDate), Option(requestEndDate))
+      stubMockMdr(searchData)
+
+      val _try: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      inside(_try) {
+        case Success(ReadingsSearchRespRepr(_, data, error)) =>
+          error.isEmpty shouldBe true
+
+          val lastConsumptionDate = data.maxBy(_.consumptionDate.get.time).consumptionDate.get
+          lastConsumptionDate.time <= LocalInstant.now(ZoneIds.Utc).time shouldBe true
+      }
+    }
+
+    "throw ApiErrors.BadRequest if no property nor location is defined in the request" in new SUT {
+      val (_, propertyNumber, _) = generateSearchData(readingCount).sample.get
+
+      val req: ReadingsSearchReq = genSearchRequest(propertyNumber, None, None)
+        .copy(propertyNumbers = Vector.empty, locationNumbers = Vector.empty)
+
+      val result: Try[ReadingsSearchRespRepr] = emitterMdrRgcService.getUiReadings(req)
+      result shouldBe Failure(ApiErrors.BadRequest("invalid request payload"))
+    }
+
+  }
+
+}

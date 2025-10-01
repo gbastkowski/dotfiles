@@ -1,0 +1,839 @@
+package com.ista.rdm.outputchannel.mdr
+
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.{Done, NotUsed}
+import com.ista.rdm.common.sharedkernel.common.LocalTimespan
+import com.ista.rdm.common.sharedkernel.contract.MandantID
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.types.LocalInstant
+import com.ista.rdm.domain.shared.dataRetention.CompoundRetentionPolicy
+import com.ista.rdm.domain.shared.meterport._
+import com.ista.rdm.domain.shared.property.PropertyNumber
+import com.ista.rdm.outputchannel.mdr.api._
+import play.api.libs.json.{JsObject, Json, OFormat}
+import slick.jdbc.JdbcBackend
+
+import java.time._
+import java.util.{TimeZone, UUID}
+import scala.concurrent.Future
+
+case class MeterPortID(value: Long) extends AnyVal
+object MeterPortID {
+  private val random = scala.util.Random
+  def randomId: MeterPortID = MeterPortID(Math.abs(random.nextLong()) % 1000000)
+}
+
+/**
+ * Note:
+ * This interface introduces a dependency on domain-reading.
+ * This dependency is only allowed for the packages below com.ista.rdm.emitter.channel.mdr.*
+ * as this package implements business logic specific to billing.
+ * The complete MDR channel should be moved to a separate module later.
+ */
+
+/**
+ * Represents one port of one device installed in one location
+ *
+ * The tuple (ExecPlanID, DeviceId, PortNr) identifies a "lifeline" of a meter port on a location in a contract position.
+ * (!) There may be multiple lifelines of the same meter port in separate contract positions (e.g. Billing, Portal)
+ * (!) There may be multiple lifelines for the same meter in the same contract position (different ports)
+ * (!) The same meter may exist in multiple contracts, but not at the same time.
+ */
+case class MdrMeterPort(
+  id: Option[MeterPortID],
+  // identification (pk)
+  execPlanId: ExecPlanID,
+  mainDeviceId: DeviceId,
+  portNr: PortNr,
+  // location references
+  propertyId: PropertyID,
+  locationId: LocationId,
+  locationNumber: Option[LocationNumber],
+  // config meta data
+  migrated: Boolean,
+  retentionPolicy: CompoundRetentionPolicy,
+  // device info
+  installed: LocalInstant,
+  uninstalled: Option[LocalInstant],
+  measurand: MdrMeasurand,
+  timeZone: ZoneId,
+  articleNr: ArticleNr,
+  serialNr: SerialNr,
+  inputService: DataInputService,
+  meterUse: Option[MdrMeterUse],
+  // last known certification date for this meter port
+  certificationDate: Option[LocalInstant]
+)
+
+/**
+ * Represents a configuration of a meter port.
+ * The configuration extends a meter port by a number of device specific attributes which may change over time.
+ */
+case class MdrMeterPortConfig(
+  // PK fields
+  meterPort: MdrMeterPort,
+  validFrom: LocalInstant,
+  // common config fields for HCA and VOL
+  deadline: Option[DeadlineDay],
+  deviceType: MdrDeviceClass,
+  usageUnitId: Option[UsageUnitId],
+  radioArticleNr: Option[ArticleNr],
+  radioSerialNr: Option[SerialNr],
+  radioDeviceId: Option[DeviceId],
+  migrated: Boolean,
+  // HCA only fields
+  hcaScale: Option[BigDecimal],
+  hcaScaleFactor: Option[BigDecimal],
+  hcaScaleType: Option[MdrScaleType],
+  hcaZeroSetter: Option[Boolean],
+  hcaSensorMode: Option[MdrSensorMode],
+  // VOL only fields
+  volDisplayUnit: Option[MdrUnitType],
+  volPulseCapacity: Option[BigDecimal],
+  volPulsePerUnit: Option[Boolean],
+  volMbusAddress: Option[MbusAddress],
+) {
+  // The following assertions are identical to the check constraints with the same name in the database
+
+  /*
+    - if the device is a HCA
+      - Scale type must always be defined
+      - Scale and ZeroSetter must be defined if the scale type is not MIGRATED_UNKNOWN
+      - If SensorMode is defined, scale type may not be MIGRATED_UNKNOWN (??? where does this requirement come from)
+
+  CONSTRAINT meterport_configs_hca_positive CHECK(
+      hca_scale_type = 'MIGRATED_UNKNOWN'
+      OR device_type <> 'HCA'
+      OR (
+         hca_scale IS NOT NULL
+         AND hca_scale_type IS NOT NULL
+         AND hca_zero_setter IS NOT NULL
+         )
+)
+   */
+  assert(
+    deviceType != MdrDeviceClass.HCA ||
+    hcaScaleType.get == MdrScaleType.MIGRATED_UNKNOWN ||
+    migrated ||
+    (
+      hcaScaleType.isDefined &&
+      hcaScale.isDefined &&
+      hcaZeroSetter.isDefined
+      ),
+    s"CONSTRAINT meterport_configs_hca_positive violated: ${pprint.apply(this)}"
+  )
+
+  /*
+    - if the device is NOT a HCA, neither Scale, ScaleType, ZeroSetter or SensorMode may be defined
+
+    CONSTRAINT meterport_configs_hca_negative CHECK (device_type = 'HCA' OR (
+      hca_scale IS NULL AND
+      hca_scale_type IS NULL AND
+      hca_zero_setter IS NULL AND
+      hca_sensor_mode IS NULL))
+   */
+  assert(
+    deviceType == MdrDeviceClass.HCA ||
+    (hcaScale.isEmpty && hcaScaleType.isEmpty && hcaScaleFactor.isEmpty && hcaZeroSetter.isEmpty && hcaSensorMode.isEmpty),
+    s"CONSTRAINT meterport_configs_hca_negative violated: ${pprint.apply(this)}"
+  )
+}
+
+object MdrMeterPortConfig {
+
+  def createHcaConfig(
+    // PK fields
+    meterPort: MdrMeterPort,
+    validFrom: LocalInstant,
+    // common config fields for HCA and VOL
+    deadline: Option[DeadlineDay],
+    deviceType: MdrDeviceClass,
+    usageUnitId: Option[UsageUnitId],
+    radioArticleNr: Option[ArticleNr],
+    radioSerialNr: Option[SerialNr],
+    radioDeviceId: Option[DeviceId],
+    migrated: Boolean,
+    // HCA only fields
+    hcaScale: Option[BigDecimal],
+    hcaScaleFactor: Option[BigDecimal],
+    hcaScaleType: Option[MdrScaleType],
+    hcaZeroSetter: Option[Boolean],
+    hcaSensorMode: Option[MdrSensorMode],
+  ): MdrMeterPortConfig = MdrMeterPortConfig(
+    meterPort, validFrom,
+    deadline, deviceType, usageUnitId, radioArticleNr, radioSerialNr, radioDeviceId, migrated,
+    hcaScale, hcaScaleFactor, hcaScaleType, hcaZeroSetter, hcaSensorMode,
+    None, None, None, None
+  )
+
+  def createVolConfig(
+    // PK fields
+    meterPort: MdrMeterPort,
+    validFrom: LocalInstant,
+    // common config fields for HCA and VOL
+    deadline: Option[DeadlineDay],
+    deviceType: MdrDeviceClass,
+    usageUnitId: Option[UsageUnitId],
+    radioArticleNr: Option[ArticleNr],
+    radioSerialNr: Option[SerialNr],
+    radioDeviceId: Option[DeviceId],
+    migrated: Boolean,
+    // VOL only fields
+    volDisplayUnit: Option[MdrUnitType],
+    volPulseCapacity: Option[BigDecimal],
+    volPulsePerUnit: Option[Boolean],
+    volMbusAddress: Option[MbusAddress],
+  ): MdrMeterPortConfig = MdrMeterPortConfig(
+    meterPort, validFrom,
+    deadline, deviceType, usageUnitId, radioArticleNr, radioSerialNr, radioDeviceId, migrated,
+    None, None, None, None, None,
+    volDisplayUnit, volPulseCapacity, volPulsePerUnit, volMbusAddress
+  )
+
+}
+
+/**
+ * Full representation of reading in query result, including meter port information
+ *
+ * It contains all the information required to group readings at meter port level.
+ * An alternative would be to retrieve only readings with meter port IDs and then do a grouping and do a second
+ * read for the meter ports.
+ */
+case class MdrMeterReading(
+  meterPortId: MeterPortID,
+  propertyId: PropertyID,
+  locationId: LocationId,
+  port: PortNr,
+  mainDeviceId: DeviceId,
+  mainArticleNr: ArticleNr,
+  mainSerialNr: SerialNr,
+  radioArticleNr: Option[ArticleNr],
+  radioSerialNr: Option[SerialNr],
+  consumptionDate: LocalInstant,
+  value: BigDecimal,
+  unit: MdrUnitType,
+  readingType: MdrReadingType,
+  readingProcedure: MdrReadingProcedure,
+  transportType: MdrTransportType,
+  mediumType: MdrMediumType,
+  estimationType: MdrEstimationType,
+  measurand: MdrMeasurand,
+  timeZone: ZoneId,
+  certificationDate: Option[LocalInstant],
+  identifier: Option[JsObject]
+)
+
+/**
+ * Short reading data representation without meter port information
+ */
+case class MdrMeterPortReading(
+  meterPortId: MeterPortID,
+  readingDate: LocalInstant,
+  value: BigDecimal,
+  unit: MdrUnitType,
+  readingType: MdrReadingType,
+  serviceType: MdrReadingProcedure,
+  transportType: MdrTransportType,
+  mediumType: MdrMediumType,
+  estimationType: MdrEstimationType,
+  identifier: Option[JsObject]
+)
+
+case class MdrMeterPortReadingsResult(
+  meterPort: MdrMeterPort,
+  readings: Iterable[MdrMeterPortReading]
+)
+
+case class MdrMimoReading(
+  locationId: LocationId,
+  measurand: MdrMeasurand,
+  readingLocalInstant: LocalInstant,
+  readingValue: BigDecimal,
+  readingUnit: MdrUnitType,
+  readingType: MdrReadingType,
+  readingProcedure: MdrReadingProcedure,
+  mainSerialNr: Option[SerialNr],
+  readingLabel: MdrMimoReadingLabel,
+  locationMeasurandsToFill: Int,
+  ambiguousLocationMeasurandsToFill: Int,
+  duplicatedDevicesOnOtherLocationConsidered: Int
+)
+
+case class MdrReadingsResult(
+  resultDate: Option[LocalDate], // None if no result was found
+  portResults: Iterable[MdrMeterPortReadingsResult]
+)
+
+/**
+ * Status structure for device readings.
+ * Enables checking for the last readings for a device with specific type.
+ * Also returns device information for last meter port config (radio article / serial).
+ * Required for device status requests based on query against readings DB.
+ *
+ * TODO: Replace by MdrDeviceReadingsStatus calculated in Collector
+ */
+case class MdrDeviceReadingsInfo(
+  deviceId: DeviceId,
+  readingDate: LocalInstant,
+  readingType: MdrReadingType,
+  mainArticle: ArticleNr,
+  mainSerial: SerialNr,
+  lastRadioArticle: Option[ArticleNr],
+  lastRadioSerial: Option[SerialNr]
+)
+
+//btree (meter_port_id, reading_date, reading_type)
+/**
+ * Quality Indicator structure for readings
+ */
+case class MdrReadingQualityIndicator(
+  meterPortId: MeterPortID,
+  readingDate: LocalInstant,
+  readingType: MdrReadingType,
+  transportType: MdrTransportType,
+  payload: JsObject,
+  createdAt: Instant,
+  updatedAt: Option[Instant]
+)
+//This class is just for debugging purposes, some fields may have not the proper type
+case class MdrRawReading(
+  meterPortId: Long,
+  readingDate: LocalInstant,
+  readingType: MdrReadingType,
+  value: BigDecimal,
+  unit: MdrUnitType,
+  serviceType: MdrReadingProcedure,
+  estimationType: MdrEstimationType,
+  mediumType: MdrMediumType,
+  transportType: MdrTransportType,
+  transmittingRadioSerial: Option[SerialNr],
+  transmittingRadioArticle: Option[ArticleNr],
+  createdAt: Instant,
+  migrated: Boolean,
+  readerType: MdrReaderType,
+  identifier: Option[String],
+  qualityIndicators: Option[String],
+  updatedAt: Option[Instant]
+)
+
+//This class is just for debugging purposes, some fields may have not the proper type
+case class MdrRawMeterport(
+  id: Int,
+  execPlanID: ExecPlanID,
+  mainDeviceId: DeviceId,
+  meterPort: PortNr,
+  propertyID: PropertyID,
+  locationId: LocationId,
+  installed: LocalInstant,
+  uninstalled: Option[LocalInstant],
+  measurand: Measurand,
+  timeZone: TimeZone,
+  articleNr: ArticleNr,
+  serialNr: SerialNr,
+  inputService: DataInputService,
+  retentionPolicy: CompoundRetentionPolicy,
+  initialRetentionPolicy: CompoundRetentionPolicy,
+  migrated: Boolean,
+  certificationDate: Option[LocalInstant],
+  locationNumber: Option[LocationNumber],
+  lastConsumptionDate: Option[LocalInstant],
+  meterUse: Option[MeterUse],
+  readingFrequency: Option[String],
+  radioComponentUninstalled: Option[LocalInstant]
+)
+
+//This class is just for debugging purposes, some fields may have not the proper type
+case class MdrRawMeterportConfig(
+  meterPortId: Long,
+  validFrom: Instant,
+  deadlineDay: Option[DeadlineDay],
+  deviceType: String,
+  usageUnitId: Option[UsageUnitId],
+  radioArticle: Option[ArticleNr],
+  radioSerial: Option[SerialNr],
+  radioDeviceId: Option[DeviceId],
+  hcaScale: Option[String],
+  hcaScaleType: Option[String],
+  hcaZeroSetter: Option[Boolean],
+  hcaSensorMode: Option[String],
+  migratedConfig: Option[Boolean],
+  hcaScaleFactor: Option[Float],
+  volPulseCapacity: Option[Float],
+  volPulsePerUnit: Option[Boolean],
+  volDisplayUnit: Option[String],
+  volMbusAddress: Option[Int]
+)
+
+/**
+ * Status structure for ui search readings functionality response.
+ */
+case class UiReadingsSearchData(
+  propertyNumber: PropertyNumber,
+  propertyId: PropertyID,
+  usageUnitId: Option[UsageUnitId],
+  meterPortID: MeterPortID,
+  locationNumber: Option[LocationNumber],
+  locationId: LocationId,
+  portNr: PortNr,
+  mainDeviceId: DeviceId,
+  serialNumber: Option[SerialNr],
+  articleNumber: Option[ArticleNr],
+  installDate: Option[LocalInstant],
+  uninstallDate: Option[LocalInstant],
+  consumptionDate: Option[LocalInstant],
+  readingValue: Option[BigDecimal],
+  unit: Option[MdrUnitType],
+  deviceType: MdrDeviceClass,
+  readingType: Option[MdrReadingType],
+  transportType: Option[MdrTransportType],
+  mediumType: Option[MdrMediumType],
+  measurandType: MdrMeasurand,
+  lastConsumptionDate: Option[LocalInstant],
+  trxSerialNumber: Option[SerialNr],
+  trxArticleNumber: Option[ArticleNr],
+  inputService: DataInputService,
+  qualityIndicators: Option[JsObject]
+)
+
+case class UiReadingsExportRequest(
+  propertyNumbers: Vector[PropertyNumber],
+  locationNumbers: Vector[LocationNumber],
+  articleNumbers: Vector[ArticleNr],
+  serialNumbers: Vector[SerialNr],
+  deviceTypes: Vector[MdrDeviceClass],
+  consumptionDateFrom: LocalInstant,
+  consumptionDateTo: LocalInstant,
+  readingTypes: Vector[MdrReadingType],
+  measurandTypes: Vector[MdrMeasurand]
+) {
+  def toJson: JsObject = Json.toJson(this).as[JsObject]
+}
+
+object UiReadingsExportRequest {
+  implicit val format: OFormat[com.ista.rdm.outputchannel.mdr.UiReadingsExportRequest] = Json.format[UiReadingsExportRequest]
+}
+
+case class UiReadingExportReference(
+  id: UUID,
+  request: UiReadingsExportRequest,
+  createdAt: Instant
+)
+
+case class ReadingsExportIdNotFound(id: String) extends Throwable
+
+case class UiReadingsSearchDataMeterportRef(
+  meterPortID: MeterPortID,
+  locationId: LocationId,
+  portNr: PortNr,
+  installDate: Option[LocalInstant],
+  uninstallDate: Option[LocalInstant]
+)
+
+object UiReadingsSearchDataMeterportRef {
+  def apply(searchData: UiReadingsSearchData): UiReadingsSearchDataMeterportRef = UiReadingsSearchDataMeterportRef(
+    meterPortID = searchData.meterPortID,
+    locationId = searchData.locationId,
+    portNr = searchData.portNr,
+    installDate = searchData.installDate,
+    uninstallDate = searchData.uninstallDate
+  )
+}
+
+trait MeterDataRepository {
+
+  def db: JdbcBackend#DatabaseDef
+  def dbReadOnly: JdbcBackend#DatabaseDef
+
+  /**
+   * Create meter ports or update if they already exist. Idempotent - multiple calls with the same parameters
+   * lead to the same result as calling once.
+   *
+   * This call OVERWRITES attributes of an existing meter port in the order of input configs,
+   * i.e. for multiple meter port configs referring to the same meter port, the last meter port config
+   * will determine the attributes of the meter port.
+   *
+   * Note that this call does not delete existing meter ports which are not updated.
+   * So this call should be preceded by a deleteMeterPorts if the set of meter ports should be completely
+   * reset.
+   *
+   * For now, we keep the existing ports and add new port versions.
+   */
+  def upsertMeterPorts(mpc: Iterable[MeterPortConfig]): Future[Done]
+
+  /**
+   * Insert the mandant for a given exec plan.
+   * This makes a mandant for the plan available to views which relate the mandant to meterports, e.g.
+   * for mandant specific data retention settings.
+   * If a mandant mapping already exists, it is not updated.
+   */
+  def upsertMandantForExecPlan(execPlanId: ExecPlanID, mandantId: MandantID): Future[Done]
+
+  /**
+   * Look up the mandant registered for an execution plan
+   */
+  def lookupMandantForExecPlan(execPlanId: ExecPlanID): Future[Option[MandantID]]
+
+  /**
+   * Create meter port configs or update if the already exist. If the related meter port does not exist, it is created.
+   *
+   * This call DOES NOT OVERWRITE attributes of existing meterports EXCEPT FOR THE CERTIFICATION DATE IF IT IS NEWER.
+   */
+  def upsertMeterPortConfigs(mpc: Iterable[MeterPortConfig]): Future[Done]
+
+  /**
+   * For a set of meter port configs, update the validity date
+   *
+   * @param configValidityUpdates A list of tuples with meter port id, current validFrom and target validFrom
+   */
+  def updateMeterPortConfigValidities(configValidityUpdates: Iterable[(MeterPortID, LocalInstant, LocalInstant)]): Future[Done]
+
+  /**
+   * Enforce data retention policy for all meterports of a given property.
+   * This includes the meterports which are not part of the current execution plan any more, e.g. because a device was
+   * replaced.
+   *
+   * @param propertyId              The property ID to use as search key
+   * @param compoundRetentionPolicy The data retention policy to enforce
+   */
+  def updatePropertyDataRetention(propertyId: PropertyID, compoundRetentionPolicy: CompoundRetentionPolicy): Future[Done]
+
+  /**
+   * Insert readings to the MDR.
+   * Readings are automatically assigned to the correct meter port and meter port configuration based on
+   * their main device ID, port number and reading date.
+   *
+   * @param meterReadings The reading data
+   */
+  def insertReadings(meterReadings: Iterable[MdrMeterPortReadingInput], overwrite: Boolean): Unit
+
+  /**
+   * Applies the given reading events which contain a reading identifier to the readings table. This can be currently
+   * Revoke or Readings with an Id.
+   *
+   * The identifier contains a version part and an ID part. We use this to allow revokes of the IDs for a specific version which will not
+   * let in any readings with an older version
+   * This allows us to apply the events out of order into the database. This is not a strict requirement because kafka keeps the order
+   * of the events but we use this to increase throughout and so we have more meta data available about what readings have been revoked or applied
+   */
+  def applyReadingEventsWithIdentifier(readingEventsWithIdentifier: Vector[MdrOutputChannelEvent]): Unit
+
+  /**
+   * Find meter ports by internal ID
+   */
+  def findMeterPortsById(ids: Set[MeterPortID]): Future[Vector[MdrMeterPort]]
+
+  /**
+   * Get data retention policies count
+   */
+  def dataRetentionPoliciesCount(): Map[CompoundRetentionPolicy, Long]
+
+  /**
+   * For a set of meter locations, find all known meter ports.
+   */
+  def findMeterPortsByLocation(execPlanId: Option[ExecPlanID], locations: Set[LocationId]): Future[Vector[MdrMeterPort]]
+
+  /**
+   * For a property, find all known meter ports
+   */
+  def findMeterPortsByProperty(execPlanId: Option[ExecPlanID], propertyId: PropertyID): Vector[MdrMeterPort]
+
+  /**
+   * For an execution plan ID, find all related meter port IDs
+   */
+  def findMeterPortIdsByExecPlanId(execPlanId: ExecPlanID): Vector[MeterPortID]
+
+  /**
+   * Retrieve all readings for one device-meter-port for a given timespan
+   */
+  def findReadingsByMeterPort(
+    execPlanId: ExecPlanID,
+    mainDeviceId: DeviceId,
+    meterPort: PortNr,
+    timespan: LocalTimespan
+  ): Future[Vector[MdrMeterReading]]
+
+  /**
+   * For an execution plan ID, find all internal meter port IDs by main device ID.
+   * If no exec plan ID is given, find all meter ports with matching device ID for any exec plan ID.
+   *
+   * Note that this includes all port numbers for all matching devices.
+   */
+  def findMeterPortIdsByMainDeviceIds(
+    execPlanId: Option[ExecPlanID],
+    devices: Set[DeviceId]
+  ): Future[Vector[MeterPortID]]
+
+  /**
+   * For an execution plan ID, find all meter ports by main device ID.
+   * If no exec plan ID is given, find all meter ports with matching device ID for any exec plan ID.
+   *
+   * Note that this includes all port numbers for all matching devices.
+   */
+  def findMeterPortsByMainDeviceIds(
+    execPlanId: Option[ExecPlanID],
+    devices: Set[DeviceId]
+  ): Future[Vector[MdrMeterPort]]
+
+  /**
+   * Get all known configurations of a meter port
+   */
+  def getMeterPortConfigs(
+    id: MeterPortID
+  ): Future[Vector[MdrMeterPortConfig]]
+
+  /**
+   * For an exec plan, find all first known meter port configurations with date of first available reading
+   * (required for migration)
+   *
+   * @return A list of tuples containing (first meterport config, first reading date)
+   */
+  def getFirstMeterPortConfigsWithReadingsStartByExecPlan(
+    execPlanId: ExecPlanID
+  ): Future[Vector[(MdrMeterPortConfig, Option[LocalInstant])]]
+
+  /**
+   * For a given set of locations, find readings from all ports of all devices
+   * which are before and after the request date and within a given timespan.
+   *
+   * Note that for two main devices or two ports, only one result pair will be returned per location !
+   * For some use cases, this may not be desired, a query based on execPlanId:main_device:port
+   * or meterPortId would be required for this.
+   */
+  def findSurroundingReadingsByLocation(
+    filterLocations: Set[LocationId],
+    filterExecPlan: Option[ExecPlanID],
+    filterTimespan: LocalTimespan,
+    requestDate: LocalInstant
+  ): Future[Vector[MdrMeterPortReading]]
+
+  /**
+   * For a given set of locations, find readings from all ports of all devices
+   * which are nearest to a given timestamp within a given timespan.
+   *
+   * Note that for two main devices or two ports, only one result will be returned !
+   * For some use cases, this may not be desired, a query based on execPlanId:main_device:port
+   * or meterPortId would be required for this.
+   */
+  def findNearestReadingByLocation(
+    filterLocations: Set[LocationId],
+    filterExecPlan: Option[ExecPlanID],
+    filterTimespan: LocalTimespan,
+    requestDate: LocalInstant
+  ): Future[Vector[MdrMeterPortReading]]
+
+  /**
+   * Retrieve readings for all ports of all main devices according to filter criteria.
+   * Used by RDAS.
+   *
+   * @param propertyId              A property UUID for which to filter the readings.
+   * @param filterDevices           A set of main device ids for which to filter the readings.
+   * @param filterExecPlan          An optional execution plan id to filter the readings.
+   * @param filterFrom              The local instant start time (inclusive) for filtering the readings.
+   * @param filterTo                The local instant end time (exclusive) for filtering the readings
+   * @param filterReadingTypes      A set of reading types. If empty, readings with any readings type will match,
+   *                                else only readings will match having a type contained in the set.
+   * @param filterServiceTypes      A set of service types. If empty, readings with any service type will match,
+   *                                else only readings will match having a type contained in the set.
+   * @param filterTransportTypes    A set of transport types. If empty, readings with any transport type will match,
+   *                                else only readings will match having a type contained in the set.
+   * @param filterEndOfMonth        If `false`, no effect. If `true`, only select those days which represent
+   *                                the last day of the  month respectively.
+   * @param anyDayReplacement       If `false`, no effect.  If `true`, per day and meter port id, only return
+   *                                1 reading value from those selected by the other filters above
+   *                                (without `onlyLatest`) in the priority from highest to lowest of:
+   *                                - `MdrReadingType.Deadline`
+   *                                - `MdrReadingType.DayEnd`
+   *                                - `MdrReadingType.MonthMid`
+   *                                - `MdrReadingType.MonthEnd`
+   *                                - `MdrReadingType.Current`
+   *                                - `MdrReadingType.Initial`
+   *                                - `MdrReadingType.Removal`.
+   *
+   *                                Then apply `onlyLatest` if given.
+   * @param onlyLatest              If `true`, returns per meter port id only the latest reading matching the other
+   *                                filters, else returns all readings matching the other filters.
+   * @param filterInstalled         If `true`, returns per meter port id only the latest reading matching the other
+   *                                filters, else returns all readings matching the other filters.
+   */
+  def findReadingsByProperty(
+    propertyId: PropertyID,
+    filterDevices: Set[DeviceId],
+    filterExecPlan: Option[ExecPlanID],
+    filterFrom: LocalInstant,
+    filterTo: LocalInstant,
+    filterReadingTypes: Set[MdrReadingType],
+    filterServiceTypes: Set[MdrReadingProcedure],
+    filterTransportTypes: Set[MdrTransportType],
+    filterEndOfMonth: Boolean,
+    anyDayReplacement: Boolean,
+    onlyLatest: Boolean,
+    filterInstalled: Boolean,
+  ): Vector[MdrMeterReading]
+
+  /**
+   * Retrieve all readings for all ports of all devices on a given set of locations for a given timespan
+   */
+  def findReadingsByLocations(
+    locations: Set[LocationId],
+    filterExecPlan: Option[ExecPlanID],
+    timespan: LocalTimespan,
+    readingTypes: Set[MdrReadingType],
+    serviceTypes: Set[MdrReadingProcedure]
+  ): Future[Vector[MdrMeterPortReading]]
+
+  /**
+   * Retrieve relevant readings for move in / move out.
+   *
+   * Note that the following assumptions apply for this method call:
+   *  - Multiple meter ports can exist for one main device ID if a device is referenced in more than one execution plan
+   *  - Multiple meter ports can exist for one main device ID if a device exposes more than one port number (variable type)
+   *  - Nevertheless, this call will return MIMO readings for _all_ meter ports from all given main devices
+   *
+   * @param execPlanID            Reference to an execution plan, if any. If none is given, all meter ports are considered
+   * @param locations             Set of metering points / meter locations (each may relate to more than one device)
+   * @param date                  The target date
+   * @param prioDaysSpan          Days before and after the target date to include into query for prio type readings
+   * @param prioReadingProcedures Reading procedures to look for first
+   * @param prioReadingType       Reading type to look for first
+   * @param otherDaysSpan         Days before and after the target date to include into query for other type readings
+   * @param fallbackSpan          Days before and after the target date to query in case no prio/other values are found for a device
+   * @return Matching readings grouped by channel
+   */
+  def findMimoReadings(
+    execPlanID: Option[ExecPlanID],
+    locations: Set[LocationId],
+    date: LocalDate,
+    prioDaysSpan: Int,
+    prioReadingProcedures: Set[MdrReadingProcedure],
+    prioReadingType: MdrReadingType,
+    otherDaysSpan: Int,
+    fallbackSpan: Int
+  ): MdrReadingsResult
+
+  /** Retrieve relevant readings for move in / move out. */
+  def findMimoReadings2(mimoDate: LocalDate, locations: Set[LocationId]): Seq[MdrMimoReading]
+
+  /** Retrieve relevant readings for billing period end value quirk. */
+  def findBillingPeriodEndValueQuirk(requestDate: LocalDate, locations: Set[LocationId]): Seq[MdrMimoReading]
+
+  /**
+   * Retrieve data retention schedule records by id
+   *
+   * @param id Reference to an executed data retention process
+   * @return Matching records for the id, or all record list for None id
+   */
+  def findMdrDataRetentionScheduleByIds(id: Option[Long]): Future[Vector[MdrDataRetentionSchedule]]
+
+  /**
+   * Retrieve data retention executors records
+   *
+   * @return Executors scheduled
+   */
+  def findMdrDataRetentionExecutors(): Future[Vector[MdrDataRetentionExecutor]]
+
+  /**
+   * Delete meter ports, meter port configs and readings for a given exec plan
+   */
+  def deleteExecPlan(execPlanId: ExecPlanID): Unit
+
+  ///////////////////////////////////////////////////////////////
+  // Section for readings status at property / device level
+  ///////////////////////////////////////////////////////////////
+
+  /**
+   * Add property readings status information to database (insert if not exist, else update)
+   */
+  def upsertPropertyReadingsStatus(statuus: Iterable[MdrPropertyReadingsStatus]): Future[Done]
+
+  /**
+   * Retrieve property status information by property IDs
+   */
+  def getPropertyReadingsStatus(properties: Set[PropertyID]): Vector[MdrPropertyReadingsStatus]
+
+  /**
+   * Retrieve monthly property reading status for a single property
+   */
+  def getMonthlyPropertyReadingsStatus(propertyId: PropertyID): Vector[MdrPropertyReadingsStatusMonthly]
+
+  /**
+   * Add or update device status events, also maintaining the latest device status
+   */
+  def upsertMeterPortStatusEvents(events: Vector[MdrMeterPortStatusChangeEvent]): Unit
+
+  /**
+   * Retrieve n latest device status events
+   */
+  def getMeterPortStatusEvents(
+    filterDevices: Iterable[DeviceId],
+    filterTimespan: Option[LocalTimespan],
+    limit: Option[Int]
+  ): Vector[MdrMeterPortStatusChangeEvent]
+
+  /**
+   * Retrieve latest readings status for a set of devices
+   */
+  def getMeterPortReadingsStatus(
+    filterDevices: Iterable[DeviceId]
+  ): Vector[MdrMeterPortReadingsStatus]
+
+  /**
+   * Retrieve latest readings status for all meterports of a property
+   */
+  def getMeterPortReadingsStatus(
+    execPlanId: ExecPlanID
+  ): Vector[MdrMeterPortReadingsStatus]
+
+  // todo langerca 5 From name this should return a Map[DeviceId, Boolean], but from SQL implementation
+  // this should return a Map[(DeviceId, MdrReadingType), MdrDeviceReadingsInfo]
+  // and be called anyReadingByMainDeviceAndReadingType
+  /**
+   * Check whether specific readings exist for a main device within a timeframe.
+   * Used to check readings completeness.
+   */
+  def existReadingsByMainDevice(
+    filterDevices: Set[DeviceId],
+    filterTimespan: LocalTimespan,
+    filterReadingTypes: Set[MdrReadingType]
+  ): Vector[MdrDeviceReadingsInfo]
+
+  /*
+   * Given the set of dates, check which of them are present on the database as end of month readings
+   */
+  def endOfMonthsReadings(
+    execPlanId: ExecPlanID,
+    dates: Set[LocalInstant]
+  ): Vector[(MeterPortID, LocalInstant)]
+
+  def getRawReadings(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawReading]
+  def getRawMeterports(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawMeterport]
+  def getRawMeterportConfigs(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawMeterportConfig]
+
+  def getUiReadings(
+    propertyIds: Vector[PropertyID],
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: Option[ZonedDateTime],
+    consumptionDateTo: Option[ZonedDateTime],
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand],
+    limit: Option[Int]
+  ): Vector[UiReadingsSearchData]
+
+  def saveRequestForUiReadingsExport(
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: ZonedDateTime,
+    consumptionDateTo: ZonedDateTime,
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand]
+  ): Option[String]
+
+  def getUiReadingsForExport(id: String): Source[UiReadingsSearchData, NotUsed]
+  def deleteRequestsForUiReadingsExport(createdBefore: ZonedDateTime): Unit
+}

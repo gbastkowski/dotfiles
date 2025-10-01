@@ -1,0 +1,171 @@
+package com.ista.rdm.ui.backend.readings
+
+import org.apache.pekko.actor.ActorSystem
+import com.ista.rdm.common.logging.LazyLogging
+import com.ista.rdm.contractintegrator.extapi.httpclient.ContractIntegratorHttpClient
+import com.ista.rdm.contractintegrator.extapi.model.{ExtendedDeviceAttributesDataRespRepr, ExtendedDeviceAttributesReqRepr, ExtendedDeviceAttributesRespRepr, FilterDeviceAttributesRepr}
+import com.ista.rdm.emitter.extapi.httpclient.EmitterHttpClient
+import com.ista.rdm.emitter.extapi.jsonformats.EmitterReprJsonFormats
+import com.ista.rdm.emitter.extapi.model.{ErrorDto, ExtendedDeviceAttributesData, ExtendedMeterPortDataRepr, ExtendedReadingsDataRepr, ReadingsExtendedRepr, ReadingsExtendedRespRepr, ReadingsSearchDataRepr, ReadingsSearchReqRepr, ReadingsSearchRespRepr}
+import com.ista.rdm.ui.shared.AutowireApi
+import com.ista.rdm.ui.shared.readings.ReadingsApi
+import com.ista.rdm.ui.backend.futureWithTimeoutOf
+import com.ista.rdm.ui.shared.config.FrontendConfig
+
+import java.io.{PrintWriter, StringWriter}
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
+
+class ReadingsApiImpl(
+  clientEmitter: EmitterHttpClient[Future],
+  clientContractIntegrator: ContractIntegratorHttpClient[Future],
+  frontendConfig: FrontendConfig
+)(
+  implicit val ec: ExecutionContext,
+  actorSystem: ActorSystem
+)
+  extends ReadingsApi
+    with AutowireApi
+    with EmitterReprJsonFormats
+    with LazyLogging {
+
+  import boopickle.DefaultBasic._
+  import com.ista.rdm.ui.backend.pickling.BackendPicklers._
+  import ReadingsApiImplHelper._
+
+  override def apiTraitName: String = classOf[ReadingsApi].getSimpleName
+
+  override def router: Router = route[ReadingsApi](this)
+
+  private implicit val timeout: scala.concurrent.duration.FiniteDuration = frontendConfig.readingsComponents.timeout
+
+  /**
+   * Retrieve and aggregate the readings and device attributes, respectively.
+   *
+   * @param readingsSearchReqRepr
+   * @param token
+   * @return
+   */
+  override def getReadings(readingsSearchReqRepr: ReadingsSearchReqRepr, token: Option[String]): Future[ReadingsExtendedRespRepr] =
+    for {
+      emitter <- clientEmitter.getReadings(readingsSearchReqRepr, token.getOrElse("")) //get the readings
+      emitterEnriched = enrichReadingsResponse(emitter)
+      contractReqs = contractIntegratorRequestComposer(readingsSearchReqRepr, emitterEnriched) // compose the contract integrator request for device attributes
+      contractIntegrator <- requestDeviceAttributes(contractReqs) //perform the request for device attributes
+    } yield readingsAggregator(readingsSearchReqRepr, emitterEnriched, contractIntegrator)
+
+  object ReadingsApiImplHelper {
+
+    def enrichReadingsResponse(input: ReadingsSearchRespRepr): ReadingsSearchRespRepr =
+      if (input.data.size >= frontendConfig.readingsComponents.outputLimit) {
+        val error = ErrorDto(code = "MAX_OUTPUT_LIMIT_REACHED", message = s"Max readings output limit [${frontendConfig.readingsComponents.outputLimit}] exceeded")
+        input.copy(error = Option(error))
+      } else input
+
+
+    def futureToFutureTry[T](f: Future[T], hint: String)(implicit timeout: FiniteDuration, actorSystem: ActorSystem): Future[Either[String, T]] =
+      futureWithTimeoutOf(f, hint).map(Right(_))
+        .recover { case ex =>
+          logger.warn(s"Could not retrieve extended attributes from contract integrator with propertyNumber = $hint", ex, "propertyNumber" -> hint)
+          val sw = new StringWriter
+          ex.printStackTrace(new PrintWriter(sw))
+          Left("Error loading data from contract integrator")
+        }
+
+    /**
+     * Aggregate the contract integrator device attributes into the corresponding emitter readings devices if they match
+     * In case of having extended device attributes filtering, we filter strictly only if they exists, discarding readings in case of no data retrieved from contract integrator for the device
+     *
+     * @param readingsSearchReqRepr
+     * @param emitter
+     * @param contractIntegratorResponses
+     * @return
+     */
+    def readingsAggregator(
+      readingsSearchReqRepr: ReadingsSearchReqRepr,
+      emitter: ReadingsSearchRespRepr,
+      contractIntegratorResponses: Iterable[ExtendedDeviceAttributesRespRepr]): ReadingsExtendedRespRepr = {
+
+      //We match the readings with the potential extended device attribute info retrieved from contract integrator
+      val aggregatedResponses = for {
+        emitterValue <- emitter.data
+        contractIntegratorValue = contractIntegratorResponses
+          .find(p => p.propertyId == emitterValue.propertyId)
+          .flatMap(d => d.deviceAttributes.find(a => a.id == emitterValue.mainDeviceId))
+      } yield (emitterValue, contractIntegratorValue)
+
+      //apply potential contract integrator filled filters (currently only `usageUnits`)
+      val aggregatedFilteredResponses =
+        if (readingsSearchReqRepr.usageUnits.isEmpty) aggregatedResponses
+        else aggregatedResponses.filter(_._2.isDefined)
+
+
+      ReadingsExtendedRespRepr(
+        metaData = emitter.metaData,
+        data = if (emitter.error.isDefined && readingsSearchReqRepr.usageUnits.nonEmpty) Vector.empty[ReadingsExtendedRepr] else aggregatedFilteredResponses.map(aggregateResponses),
+        //In case we retrieve the max limit from readings and we are using any contract integrator filter like usage units, we enforce to adjust the filters to the user
+        error = if (emitter.error.isDefined && readingsSearchReqRepr.usageUnits.nonEmpty) emitter.error else None
+      )
+    }
+
+    def contractIntegratorRequestComposer(
+      readingsSearchReqRepr: ReadingsSearchReqRepr,
+      emitter: ReadingsSearchRespRepr
+    ): Iterable[ExtendedDeviceAttributesReqRepr] = {
+      val groupedData = emitter.data.map(w => (w.propertyId, w.mainDeviceId)).groupBy(_._1)
+      groupedData.map(v => ExtendedDeviceAttributesReqRepr(
+        propertyId = v._1,
+        mainDeviceIds = v._2.map(_._2).toSet,
+        filter = Option(FilterDeviceAttributesRepr(readingsSearchReqRepr.usageUnits))
+      ))
+    }
+
+    //call contract integrator per every property, failing is not a stopper for the returning of the bussiness logic
+    //We only retrieve extended attributes if needed
+    def requestDeviceAttributes(
+      contractReqs: Iterable[ExtendedDeviceAttributesReqRepr]
+    ): Future[Iterable[ExtendedDeviceAttributesRespRepr]] =
+      Future.sequence(contractReqs.map(v => futureToFutureTry(clientContractIntegrator.getDeviceAttributesList(v), v.propertyId.value.toString)))
+        .map(v => v.collect { case Right(h) => h })
+
+    //combine/aggregate results from contractIntegrator into the emitter for the response
+    def aggregateResponses: PartialFunction[(ReadingsSearchDataRepr, Option[ExtendedDeviceAttributesDataRespRepr]), ReadingsExtendedRepr] = {
+      case (emitterValue, contractIntegratorValue) =>
+        ReadingsExtendedRepr(
+          propertyNumber = emitterValue.propertyNumber,
+          propertyId = emitterValue.propertyId,
+          extendedMeterPortDataRepr = ExtendedMeterPortDataRepr(
+            usageUnitId = emitterValue.usageUnitId,
+            locationNumber = emitterValue.locationNumber.fold(contractIntegratorValue.flatMap(_.locationNumber))(v => emitterValue.locationNumber),
+            locationId = emitterValue.locationId,
+            mainDeviceId = emitterValue.mainDeviceId,
+            serialNumber = emitterValue.serialNumber,
+            articleNumber = emitterValue.articleNumber,
+            deviceType = emitterValue.deviceType,
+            measurandType = emitterValue.measurandType,
+            lastConsumptionDate = emitterValue.lastConsumptionDate,
+            inputService = emitterValue.inputService
+          ),
+          extendedReadingsDataRepr = ExtendedReadingsDataRepr(
+            consumptionDate = emitterValue.consumptionDate,
+            readingValue = emitterValue.readingValue,
+            qualityIndicators = emitterValue.qualityIndicators,
+            unitType = emitterValue.unitType,
+            readingType = emitterValue.readingType,
+            transportType = emitterValue.transportType,
+            mediumType = emitterValue.mediumType,
+            trxSerialNumber = emitterValue.trxSerialNumber,
+            trxArticleNumber = emitterValue.trxArticleNumber
+          ),
+          extendedDeviceAttributes = ExtendedDeviceAttributesData(
+            buildingConsecutiveNumber = contractIntegratorValue.flatMap(_.buildingConsecutiveNumber),
+            usageUnitConsecutiveNumber = contractIntegratorValue.flatMap(_.usageUnitConsecutiveNumber),
+            devicePosition = contractIntegratorValue.flatMap(_.devicePosition),
+            usageUnitInternalNumber = contractIntegratorValue.flatMap(_.usageUnitInternalNumber),
+            roomType = contractIntegratorValue.flatMap(_.roomType),
+            nonExecutionReason = contractIntegratorValue.flatMap(_.nonExecutionReason)),
+          isFailingExtendedFromCp = contractIntegratorValue.isEmpty,
+        )
+    }
+  }
+}

@@ -1,0 +1,89 @@
+import com.ista.rdm.sbt.basesettings.BaseDeps
+import sbt._
+
+object Deps extends BaseDeps {
+
+  object Versions {
+
+    // external dependencies
+    val pekkoStreamKafka = "1.1.0"
+    val gatling = "3.5.0"
+    val kafka = "3.9.1"
+    val retry = "0.3.3"
+    val scalaCsv = "1.3.6"
+    val scopt = "3.7.1"
+    val soaRdis = "1.2"
+    val cats = "2.9.0"
+    val wiremock = "2.26.3"
+    val jaxb = "2.3.1"
+    val poi = "5.4.1"
+    val log4jToSlf4j = "2.24.3"
+
+    // RDM-internal dependencies
+    val articles = "2.101"
+    val common = "1.690"
+    val errors = "1.149"
+    val extApi = "0.214"
+    val mandants = "0.0.37"
+    val businessMetrics = "0.21"
+
+    val scalaTest = "3.2.19"
+    val scalacheck = "1.18.0"
+  }
+
+
+  // Override these dependencies here, because updating these dependencies in base-settings leads to incompatibilities
+  // with the ScalaJS version we are currently forced to use. baseSettings declares to use scalatest 3.2.9, which should
+  // be binary-compatible with 3.2.17 on the JVM.
+  // The advantage of updating scalacheck >= 1.17.0 and scalatest >= 3.2.16 is that we can reproduce failing
+  // property-based tests by providing a seed value.
+  //  assume(BaseVersions.scalaTest == "3.2.9", "reconsider this hack in dependencies")
+  //  override val scalaTest: Seq[sbt.ModuleID] = Seq("org.scalatest" %% "scalatest" % Versions.scalaTest)
+  //  override val scalacheck: Seq[ModuleID] = Seq("org.scalacheck" %% "scalacheck" % Versions.scalacheck)
+  //  override val scalaTestPlusScalaCheck: Seq[ModuleID] = Seq("org.scalatestplus" %% "scalacheck-1-18" % (Versions.scalaTest + ".0"))
+
+
+  // external dependencies
+  val pekkoStreamKafka: Seq[ModuleID] = Seq("org.apache.pekko" %% "pekko-connectors-kafka" % Versions.pekkoStreamKafka)
+  val kafka: Seq[ModuleID] = Seq("org.apache.kafka" %% "kafka" % Versions.kafka)
+  val poiOoxml: Seq[ModuleID] = Seq("org.apache.poi" % "poi-ooxml" % Versions.poi)
+  val log4jToSlf4j: Seq[ModuleID] = Seq("org.apache.logging.log4j" % "log4j-to-slf4j" % Versions.log4jToSlf4j) // poi uses log4j
+  val gatling: Seq[ModuleID] = Seq("io.gatling.highcharts" % "gatling-charts-highcharts" % Versions.gatling)
+  val playFiltersHelpers: Seq[ModuleID] = Seq("org.playframework" %% "play-filters-helpers" % BaseVersions.play)
+  val playTest: Seq[ModuleID] = Seq("org.playframework" %% "play-test" % BaseVersions.play)
+  val retry: Seq[ModuleID] = Seq("com.softwaremill.retry" %% "retry" % Versions.retry)
+  val soaRdis2_2: Seq[ModuleID] = Seq("com.ista.rdm.soa" % "reading-data-insert-service-2_2" % Versions.soaRdis)
+  val scalaCsv: Seq[ModuleID] = Seq("com.github.tototoshi" %% "scala-csv" % Versions.scalaCsv)
+  val scopt: Seq[ModuleID] = Seq("com.github.scopt" %% "scopt" % Versions.scopt)
+  val scalaParallelCollections: Seq[ModuleID] = Seq("org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4")
+  val jaxb: Seq[ModuleID] = Seq(
+    "javax.xml.bind" % "jaxb-api" % Versions.jaxb,
+    "org.glassfish.jaxb" % "jaxb-runtime" % Versions.jaxb
+  )
+  val jwtPlayJson: Seq[ModuleID] = Seq("com.github.jwt-scala" %% "jwt-play-json" % "8.0.2")
+
+  val businessMetrics: Seq[ModuleID] = Seq(
+    "com.ista.rdm.business.metrics" %% "client" % Versions.businessMetrics
+  )
+
+  val wiremock: Seq[ModuleID] = Seq("com.github.tomakehurst" % "wiremock" % Versions.wiremock)
+
+  val cats: Seq[ModuleID] = Seq(
+    "org.typelevel" %% "cats-core" % Versions.cats
+  )
+
+  // RDM-internal dependencies
+  val articles: Deps.ArticlesDeps = super.articles(Versions.articles)
+  val common: Deps.CommonDeps = super.common(Versions.common)
+  val errors: Deps.ErrorsDeps = super.errors(Versions.errors)
+  val extApi: Deps.ExtApiDeps = super.extApi(Versions.extApi)
+  val mandants: Deps.MandantsDeps = super.mandants(Versions.mandants)
+
+  val cucumber: Seq[ModuleID] = Seq(
+    "io.cucumber" %% "cucumber-scala" % "8.21.0",
+    "io.cucumber" % "cucumber-junit" % "7.16.1",
+    "junit" % "junit" % "4.13.2",
+    "com.github.sbt" % "junit-interface" % "0.13.3"
+  )
+
+}

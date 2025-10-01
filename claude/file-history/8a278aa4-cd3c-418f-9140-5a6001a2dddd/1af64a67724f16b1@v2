@@ -1,0 +1,163 @@
+package com.ista.rdm.ui.backend.readings
+
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.util.ByteString
+import com.ista.rdm.common.logging.LazyLogging
+import com.ista.rdm.contractintegrator.extapi.httpclient.ContractIntegratorHttpClient
+import com.ista.rdm.contractintegrator.extapi.model.{ExtendedDeviceAttributesDataRespRepr, ExtendedDeviceAttributesReqRepr, ExtendedDeviceAttributesRespRepr, FilterDeviceAttributesRepr}
+import com.ista.rdm.emitter.extapi.httpclient.EmitterReadingsExportClient
+import com.ista.rdm.emitter.extapi.jsonformats.EmitterReprJsonFormats
+import com.ista.rdm.emitter.extapi.model.{ExtendedDeviceAttributesData, ExtendedMeterPortDataRepr, ExtendedReadingsDataRepr, ReadingsExportRespRepr, ReadingsExtendedRepr, ReadingsSearchDataRepr, ReadingsSearchReqRepr}
+import com.ista.rdm.ui.backend.futureWithTimeoutOf
+import com.ista.rdm.ui.shared.AutowireApi
+import com.ista.rdm.ui.shared.config.FrontendConfig
+import com.ista.rdm.ui.shared.readings.{CsvGenerator, ReadingsExportApi, ReadingsExportConsumeApi}
+import play.api.libs.json.Json
+
+import java.io.{PrintWriter, StringWriter}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.FiniteDuration
+import scala.util.Try
+
+class ReadingsExportApiImpl(
+  exportEmitter: EmitterReadingsExportClient[Future],
+  clientContractIntegrator: ContractIntegratorHttpClient[Future],
+  frontendConfig: FrontendConfig
+)(
+  implicit ec: ExecutionContext,
+  actorSystem: ActorSystem
+) extends ReadingsExportApi
+  with ReadingsExportConsumeApi
+  with AutowireApi
+  with EmitterReprJsonFormats
+  with LazyLogging {
+
+  import boopickle.DefaultBasic._
+  import com.ista.rdm.ui.backend.pickling.BackendPicklers._
+
+  override def apiTraitName: String = classOf[ReadingsExportApi].getSimpleName
+
+  override def router: Router = route[ReadingsExportApi](this)
+
+  private implicit val timeout: scala.concurrent.duration.FiniteDuration = frontendConfig.readingsComponents.timeout
+
+  override def saveReadingsExportRequest(readingsSearchReqRepr: ReadingsSearchReqRepr, token: Option[String]): Future[ReadingsExportRespRepr] = {
+    exportEmitter.triggerReadingsExport(readingsSearchReqRepr, token.getOrElse(""))
+  }
+
+  override def getReadingsForExport(id: String, token: Option[String], csvGenerator: CsvGenerator): Future[Source[ByteString, Any]] = {
+    exportEmitter.handleReadingsExport(id, token.getOrElse("")).map { source =>
+      source
+        // split into smaller pieces - e.g. split by line
+        .via(Framing.delimiter(ByteString("\n"), 4096, true))
+        // map to string
+        .map(_.utf8String)
+        // parse to ReadingsSearchDataRepr
+        .map { line =>
+          Try(Json.parse(line))
+            .toOption
+            .flatMap(_.asOpt[ReadingsSearchDataRepr])
+        }
+        // only take successfully mapped lines into account
+        .collect {
+          case Some(r) => r
+        }
+        // Fetch device attributes and create an extended reading with a max parallelism of 5
+        .mapAsync(5)(DeviceAttributeFetcher.fetchDeviceAttributes)
+        // build the CSV line representation
+        .map(csvGenerator.buildRow)
+        // Create byte representation
+        .map(ByteString(_))
+    }
+  }
+
+  object DeviceAttributeFetcher {
+    private var cachedAttributes: Option[ExtendedDeviceAttributesRespRepr] = None
+
+    def fetchDeviceAttributes(reading: ReadingsSearchDataRepr): Future[ReadingsExtendedRepr] = {
+      val cachedData = synchronized {
+        cachedAttributes.find(attr =>
+          attr.propertyId == reading.propertyId &&
+          attr.deviceAttributes.exists(_.id == reading.mainDeviceId))
+      }
+
+      cachedData match {
+        case Some(attributes) =>
+          Future.successful(aggregateResponses((reading, attributes.deviceAttributes.find(_.id == reading.mainDeviceId))))
+        case None             =>
+          val req = ExtendedDeviceAttributesReqRepr(
+            propertyId = reading.propertyId,
+            mainDeviceIds = Set(reading.mainDeviceId),
+            filter = None
+          )
+
+          futureToFutureTry(requestDeviceAttributes(Seq(req)), reading.propertyId.value.toString)
+            .map {
+              case Left(_)  => None
+              case Right(h) =>
+                synchronized {
+                  cachedAttributes = h.headOption
+                }
+                Some(h)
+            }
+            .map(d => aggregateResponses((reading, d.flatMap(_.headOption).flatMap(_.deviceAttributes.find(_.id == reading.mainDeviceId)))))
+      }
+    }
+
+    //call contract integrator per every property, failing is not a stopper for the returning of the bussiness logic
+    //We only retrieve extended attributes if needed
+    def requestDeviceAttributes(
+      contractReqs: Iterable[ExtendedDeviceAttributesReqRepr]
+    ): Future[Iterable[ExtendedDeviceAttributesRespRepr]] =
+      Future.sequence(contractReqs.map(v => futureToFutureTry(clientContractIntegrator.getDeviceAttributesList(v), v.propertyId.value.toString)))
+        .map(v => v.collect { case Right(h) => h })
+
+    def futureToFutureTry[T](f: Future[T], hint: String)(implicit timeout: FiniteDuration, actorSystem: ActorSystem): Future[Either[String, T]] =
+      futureWithTimeoutOf(f, hint).map(Right(_))
+        .recover { case ex =>
+          logger.warn(s"Could not retrieve extended attributes from contract integrator with propertyNumber = $hint", ex, "propertyNumber" -> hint)
+          val sw = new StringWriter
+          ex.printStackTrace(new PrintWriter(sw))
+          Left("Error loading data from contract integrator")
+        }
+
+    def aggregateResponses: PartialFunction[(ReadingsSearchDataRepr, Option[ExtendedDeviceAttributesDataRespRepr]), ReadingsExtendedRepr] = {
+      case (emitterValue, contractIntegratorValue) =>
+        ReadingsExtendedRepr(
+          propertyNumber = emitterValue.propertyNumber,
+          propertyId = emitterValue.propertyId,
+          extendedMeterPortDataRepr = ExtendedMeterPortDataRepr(
+            usageUnitId = emitterValue.usageUnitId,
+            locationNumber = emitterValue.locationNumber.fold(contractIntegratorValue.flatMap(_.locationNumber))(v => emitterValue.locationNumber),
+            locationId = emitterValue.locationId,
+            mainDeviceId = emitterValue.mainDeviceId,
+            serialNumber = emitterValue.serialNumber,
+            articleNumber = emitterValue.articleNumber,
+            deviceType = emitterValue.deviceType,
+            measurandType = emitterValue.measurandType,
+            inputService = emitterValue.inputService
+          ),
+          extendedReadingsDataRepr = ExtendedReadingsDataRepr(
+            consumptionDate = emitterValue.consumptionDate,
+            readingValue = emitterValue.readingValue,
+            qualityIndicators = emitterValue.qualityIndicators,
+            unitType = emitterValue.unitType,
+            readingType = emitterValue.readingType,
+            transportType = emitterValue.transportType,
+            mediumType = emitterValue.mediumType,
+            trxSerialNumber = emitterValue.trxSerialNumber,
+            trxArticleNumber = emitterValue.trxArticleNumber
+          ),
+          extendedDeviceAttributes = ExtendedDeviceAttributesData(
+            buildingConsecutiveNumber = contractIntegratorValue.flatMap(_.buildingConsecutiveNumber),
+            usageUnitConsecutiveNumber = contractIntegratorValue.flatMap(_.usageUnitConsecutiveNumber),
+            devicePosition = contractIntegratorValue.flatMap(_.devicePosition),
+            usageUnitInternalNumber = contractIntegratorValue.flatMap(_.usageUnitInternalNumber),
+            roomType = contractIntegratorValue.flatMap(_.roomType),
+            nonExecutionReason = contractIntegratorValue.flatMap(_.nonExecutionReason)),
+          isFailingExtendedFromCp = contractIntegratorValue.isEmpty,
+        )
+    }
+  }
+}

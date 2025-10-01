@@ -1,0 +1,2394 @@
+package com.ista.rdm.outputchannel.mdr.impl
+
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.{Done, NotUsed}
+import com.ista.rdm.common.logging.LazyLogging
+import com.ista.rdm.common.sharedkernel.common.LocalTimespan
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.types.LocalInstant
+import com.ista.rdm.common.utils.{AwaitWithContext, LogKeys}
+import com.ista.rdm.domain.shared.meterport._
+import com.ista.rdm.domain.shared.property.PropertyNumber
+import com.ista.rdm.outputchannel.mdr._
+import com.ista.rdm.outputchannel.mdr.api._
+import com.ista.rdm.outputchannel.mdr.tableDefinitions.ColumnTypeDefinitions
+import io.micrometer.core.instrument.{DistributionSummary, MeterRegistry}
+import slick.jdbc.{ResultSetConcurrency, ResultSetType, SQLActionBuilder, TransactionIsolation}
+import slick.sql.{SqlAction, SqlStreamingAction}
+
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters.firstDayOfMonth
+import java.time.{LocalDate, ZonedDateTime}
+import java.util.UUID
+import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.{Future, TimeoutException}
+
+class MdrInvalidParametersException(reason: String) extends Exception(reason)
+
+trait ReadingsMeterDataRepoImplMetrics {
+  def rdmMeterRegistry: MeterRegistry
+
+  protected val readingsPerInsertionSummary: DistributionSummary = rdmMeterRegistry.summary("numInsertedReadings")
+  protected val meterportsPerInsertionSummary: DistributionSummary = rdmMeterRegistry.summary("meterportsPerInsertion")
+  protected val meterportsPerReadingsSummary: DistributionSummary = rdmMeterRegistry.summary("meterportsPerReadings")
+}
+
+trait ReadingsMeterDataRepoImpl
+  extends LazyLogging
+    with ColumnTypeDefinitions
+    with ReadingsMeterDataRepoImplMetrics {
+
+  self: MeterDataRepositoryImplBase =>
+
+  import com.ista.rdm.common.postgres.RdmPostgresProfile.api._
+
+  def rdmMeterRegistry: MeterRegistry
+
+  // An interpolation like
+  // sqlu"set local work_mem = '$workMem'"
+  // does not work as the sqlu macro would replace the parameter with a ? and thus send the command over to Postgres as
+  // set local work_mem = '?'
+  // and then try to set the ? parameter, but the set command does not accept parameters and fails with
+  // "The column index is out of range: 1, number of columns: 0.".
+  // Therefore we need to hardcode the various variants with work_mems strings.
+  private val setLocalWorkMemTo64M = sqlu"set local work_mem = '64MB'"
+  private val setLocalWorkMemTo4G = sqlu"set local work_mem = '4GB'"
+  private val setLocalJitOff = sqlu"set local jit = off"
+  // The sqlu macro interpolation for numbers causes a similar problem with the set command, here the command fails with
+  // "ERROR: syntax error at or near "$1"". Thus we again need to hardcode the various worker numbers.
+  private val setLocalMaxParallelWorkersPerGatherTo0 = sqlu"set local max_parallel_workers_per_gather = 0"
+  private val setLocalMaxParallelWorkersPerGatherTo4 = sqlu"set local max_parallel_workers_per_gather = 4"
+  private val qualityIndicatorsFutureQueryPath: String = s"""'$$.indicators[*] ? (@.name == "${QualityIndicator.FutureReading.entryName}")'"""
+  private val qualityIndicatorsDemountedQueryPath: String = s"""'$$.indicators[*] ? (@.name == "${QualityIndicator.DemountedRadioReading.entryName}")'"""
+
+  /**
+   * Combines a SQL query with several settings. This is meant to prepend an SQL query with some SET LOCAL command.
+   * It does so by combining a series of sql statements via SQL combinators (flatmap), then at the end add
+   * `.transactionally`. This will:
+   * a) implicitly execute all statements in the same database session, which is a prerequisite of the settings
+   * set as side effect of the first statements being used in the final statement.
+   * b) remove the special settings at the end of the transaction, so that the database session used to execute
+   * the transaction is using its normal settings again.
+   *
+   * @param query        The main query, i.e. SqlAction or SqlStreamingAction, typically created with sql".." interpolator
+   * @param setting      A setting, i.e. SqlAction, typically created with sqlu"..." interpolator
+   * @param moreSettings optionally more settings
+   * @tparam R Return type of the main query
+   * @tparam S NoStream or streaming type of the main query
+   * @return the DBIOAction
+   */
+  private def dbIoActionWithLocalSetting[R, S <: NoStream](
+    query: SqlAction[R, S, Effect],
+    setting: SqlAction[Int, NoStream, Effect],
+    moreSettings: SqlAction[Int, NoStream, Effect]*
+  ): DBIOAction[R, S, Effect.Transactional] =
+    moreSettings
+      .foldLeft[DBIOAction[Int, NoStream, Effect]](setting) { case (a1, a2) => a1.flatMap(_ => a2) }
+      .flatMap(_ => query)
+      .transactionally
+
+  private def readingValueStmt(input: MdrMeterPortReadingInput, portId: MeterPortID)
+  : SQLActionBuilder =
+    sql"""($portId, ${input.consumptionDate}, ${input.readingType}, ${input.value}, ${input.unit},
+           ${input.readingProcedure}, ${input.estimationType}, ${input.transportType}, ${input.mediumType},
+           ${input.radioArticle}, ${input.radioSerial}, ${input.migrated}, ${input.readerType}::reader_type,
+           ${input.identifier.map(_.toJson)}::jsonb) """
+
+
+  /**
+   * This method compose a query to insert readings and quality indicators for a given portId.
+   * The composition of the query is done with CTE statements so we can do the inserts chained
+   * qualityIndicatorsCTEQuery => creates a CTE with a virtual table with auality indicators payloads and a flag indicating if is a demounted reading
+   * insertReadingCTEQuery => creates a CTE with the inserts for readings in batches, but can reference the previous quality indicator CTE in order to know if is processing DemountedReading's within the readings batch
+   *
+   * @param portId
+   * @param rs
+   * @param overwrite
+   * @return
+   */
+  private def upsertReadingsAndQualityindicatorsStmts(
+    portId: MeterPortID,
+    rs: IndexedSeq[MdrMeterPortReadingInput],
+    overwrite: Boolean
+  ): SqlStreamingAction[Vector[Int], Int, Effect]#ResultAction[Int, NoStream, Effect] = {
+
+    val qualityIndicatorsCTEQuery: SQLActionBuilder = {
+      val headQualityIndicatorsCTEQuery = sql"""WITH QUALITY_INDICATORS_DEMOUNTED AS(
+         SELECT meter_port_id, reading_date, reading_type, transport_type, payload, is_demounted FROM (VALUES"""
+
+      //compose the fake rows so we have a reference over the payload content of the quality idnicators per reading
+      rs.init.foldLeft(headQualityIndicatorsCTEQuery) { (query, reading) =>
+        query ++
+        sql"""($portId,
+              ${reading.consumptionDate},
+              ${reading.readingType},
+              ${reading.transportType},
+              ${reading.qualityIndicatorsAsJson}::jsonb,
+              jsonb_path_exists(${reading.qualityIndicatorsAsJson}::jsonb,#$qualityIndicatorsDemountedQueryPath)),"""
+      } ++ sql"""(${portId.value},
+              ${rs.last.consumptionDate},
+              ${rs.last.readingType},
+              ${rs.last.transportType},
+              ${rs.last.qualityIndicatorsAsJson}::jsonb,
+              jsonb_path_exists(${rs.last.qualityIndicatorsAsJson}::jsonb,#$qualityIndicatorsDemountedQueryPath)))
+              t(meter_port_id, reading_date, reading_type, transport_type, payload, is_demounted))"""
+    }
+
+    val upsertReadingsCTEQuery: SQLActionBuilder = {
+      val headInsertReadingCTEQuery =
+        sql""", READINGS_TO_INSERT AS (
+            INSERT INTO readings
+            (meter_port_id, reading_date, reading_type, value, unit, service_type, estimation_type, transport_type,
+            medium_type, transmitting_radio_article, transmitting_radio_serial, migrated, reader_type, identifier)
+            SELECT * FROM (VALUES """
+
+      val closeInsertReadingCTEQuery = sql"""
+          returning meter_port_id, reading_date, reading_type, transport_type) """
+
+      val onConflictInsertReadingCTEQuery = if (overwrite) {
+        // currently we overwrite intermediate readings if other readings with same type and date come in.
+        // TODO: decide whether we want to keep intermediate readings: case when excluded.service_type = 'INT' then 'INT' else service_type end,
+        sql""" on conflict (meter_port_id, reading_date, reading_type) do update set
+            value = excluded.value,
+            unit = excluded.unit,
+            service_type = excluded.service_type,
+            estimation_type = excluded.estimation_type,
+            transport_type = excluded.transport_type,
+            medium_type = excluded.medium_type,
+            transmitting_radio_article = excluded.transmitting_radio_article,
+            transmitting_radio_serial = excluded.transmitting_radio_serial,
+            migrated = excluded.migrated,
+            reader_type = excluded.reader_type,
+            identifier = excluded.identifier,
+            updated_at = current_timestamp
+            where (readings.transport_type  != 'PDA' or excluded.transport_type = 'PDA') AND
+              (NOT exists (select 1 from QUALITY_INDICATORS_DEMOUNTED  qid
+                  where qid.meter_port_id = excluded.meter_port_id
+                  and qid.reading_date = excluded.reading_date
+                  and qid.reading_type = excluded.reading_type
+                  and qid.is_demounted
+              ) OR  exists (
+                select 1
+                from reading_quality_indicators as rqi,
+                     QUALITY_INDICATORS_DEMOUNTED  qid
+                where rqi.meter_port_id = excluded.meter_port_id
+                  and rqi.reading_date = excluded.reading_date
+                  and rqi.reading_type = excluded.reading_type
+                  and qid.meter_port_id = excluded.meter_port_id
+                  and qid.reading_date = excluded.reading_date
+                  and qid.reading_type = excluded.reading_type
+                  and jsonb_path_exists(rqi.payload,#$qualityIndicatorsDemountedQueryPath)
+                  and qid.is_demounted
+              ))"""
+      } else {
+        sql""" on conflict (meter_port_id, reading_date, reading_type) do nothing"""
+      }
+
+      rs.init.foldLeft(headInsertReadingCTEQuery) { (query, reading) =>
+        query ++
+        readingValueStmt(reading, portId) ++ sql","
+      } ++ readingValueStmt(rs.last, portId) ++ sql") t" ++ onConflictInsertReadingCTEQuery ++ closeInsertReadingCTEQuery
+    }
+
+    val upsertReadingQualityIndicatorsQuery: SQLActionBuilder = {
+      val headUpsertReadingQualityIndicatorsQuery = sql"""INSERT INTO reading_quality_indicators
+            (meter_port_id, reading_date, reading_type, transport_type, payload)
+            SELECT qid.meter_port_id, qid.reading_date, qid.reading_type, qid.transport_type, qid.payload
+            FROM  READINGS_TO_INSERT rti, QUALITY_INDICATORS_DEMOUNTED qid
+            WHERE rti.meter_port_id = qid.meter_port_id
+              AND rti.reading_date = qid.reading_date
+              AND rti.reading_type = qid.reading_type
+              AND (jsonb_array_length(qid.payload -> 'indicators') > 0
+                       OR jsonb_array_length(qid.payload -> 'indicators') = 0  AND exists (
+                       select 1
+                       from reading_quality_indicators as rqi
+                       where rqi.meter_port_id = qid.meter_port_id
+                         and rqi.reading_date = qid.reading_date
+                         and rqi.reading_type = qid.reading_type
+              ))
+              """
+
+      def onConflictUpsertReadingQualityIndicatorsQuery = if (!overwrite) {
+        sql" ON CONFLICT (meter_port_id, reading_date, reading_type) DO NOTHING"
+      } else {
+        sql""" ON CONFLICT (meter_port_id, reading_date, reading_type)
+               DO UPDATE SET (transport_type, payload, updated_at) = (excluded.transport_type, excluded.payload, CURRENT_TIMESTAMP)
+                WHERE (jsonb_array_length(excluded.payload -> 'indicators') > 0
+                       OR jsonb_array_length(excluded.payload -> 'indicators') = 0  AND exists (
+                       select 1
+                       from reading_quality_indicators as rqi
+                       where rqi.meter_port_id = excluded.meter_port_id
+                         and rqi.reading_date = excluded.reading_date
+                         and rqi.reading_type = excluded.reading_type
+              ))"""
+      }
+
+      headUpsertReadingQualityIndicatorsQuery ++ onConflictUpsertReadingQualityIndicatorsQuery
+    }
+
+    (qualityIndicatorsCTEQuery ++ upsertReadingsCTEQuery ++ upsertReadingQualityIndicatorsQuery)
+      .asUpdate
+  }
+
+
+  private[impl] def generateMdrMeterPortReadingsUniqueGroups(
+    rs: Iterable[MdrMeterPortReadingInput],
+    portId: MeterPortID,
+    maxSize: Int
+  ): Vector[Iterable[MdrMeterPortReadingInput]] = {
+    var duplicatesMap: Map[(MeterPortID, LocalInstant, MdrReadingType), MdrMeterPortReadingInput] = Map.empty
+    var duplicatesMapComplete: Map[(MeterPortID, LocalInstant, MdrReadingType), MdrMeterPortReadingInput] = Map.empty
+    var output: Vector[Iterable[MdrMeterPortReadingInput]] = Vector.empty
+    var currentGroup: Vector[MdrMeterPortReadingInput] = Vector.empty[MdrMeterPortReadingInput]
+
+    for (it <- rs) {
+      if (duplicatesMapComplete.contains(portId, it.consumptionDate, it.readingType)) {
+        logger.warn("There is a duplicated MdrMeterPortReadingInput",
+          LogKeys.previous -> duplicatesMapComplete.get(portId, it.consumptionDate, it.readingType),
+          LogKeys.current -> it
+        )
+      }
+      if (duplicatesMap.contains(portId, it.consumptionDate, it.readingType) || currentGroup.size == maxSize) {
+        output = output :+ currentGroup
+        currentGroup = Vector.empty
+        duplicatesMap = Map.empty
+      }
+      currentGroup = currentGroup :+ it
+      duplicatesMap += ((portId, it.consumptionDate, it.readingType) -> it)
+      duplicatesMapComplete += ((portId, it.consumptionDate, it.readingType) -> it)
+    }
+
+    output :+ currentGroup
+  }
+
+  /**
+   * Insert multiple readings per meterport plus aggregated reading status update
+   */
+  private def insertQueries(
+    portId: MeterPortID,
+    rs: Iterable[MdrMeterPortReadingInput],
+    statusUpdate: MdrMeterPortReadingsStatusUpdate,
+    overwrite: Boolean
+  ): DBIOAction[Iterable[Int], NoStream, Effect] = {
+    val grouped = generateMdrMeterPortReadingsUniqueGroups(rs, portId, 10)
+    val statusUpdateQuery = upsertReadingsStatusQuery(portId, statusUpdate)
+    DBIO.sequence(
+      statusUpdateQuery +:
+      grouped.map { readingInputs =>
+        upsertReadingsAndQualityindicatorsStmts(portId, readingInputs.toIndexedSeq, overwrite)
+      }
+    )
+  }
+
+  /**
+   * Write last reading dates for radio and non-radio readings.
+   * Support separate conditional update for radio and non-radio:
+   *  - if no record exists for the meterport, insert a new record with new data
+   *  - if last radio reading time is null or older than new radio data, update record with new radio data
+   *  - if last nonradio reading time is null or older than new nonradio data, update record with new nonradio data
+   */
+  private def upsertReadingsStatusQuery(portId: MeterPortID, statusUpdate: MdrMeterPortReadingsStatusUpdate) =
+    sqlu"""
+      insert into meterport_readings_status as mrs (
+        meter_port_id,
+        last_nonradio_reading_time,
+        last_nonradio_reading_transport,
+        last_radio_reading_time,
+        last_radio_reading_transport
+      ) values (
+        ${portId.value},
+        ${statusUpdate.nonradioReadingDate},
+        ${statusUpdate.nonradioReadingTransport.map(_.entryName)},
+        ${statusUpdate.radioReadingDate},
+        ${statusUpdate.radioReadingTransport.map(_.entryName)}
+      ) on conflict (meter_port_id) do update set
+        last_nonradio_reading_time = case when mrs.last_nonradio_reading_time is null or mrs.last_nonradio_reading_time < excluded.last_nonradio_reading_time then excluded.last_nonradio_reading_time else mrs.last_nonradio_reading_time end,
+        last_nonradio_reading_transport = case when mrs.last_nonradio_reading_time is null or mrs.last_nonradio_reading_time < excluded.last_nonradio_reading_time then excluded.last_nonradio_reading_transport else mrs.last_nonradio_reading_transport end,
+        last_radio_reading_time = case when mrs.last_radio_reading_time is null or mrs.last_radio_reading_time < excluded.last_radio_reading_time then excluded.last_radio_reading_time else mrs.last_radio_reading_time end,
+        last_radio_reading_transport = case when mrs.last_radio_reading_time is null or mrs.last_radio_reading_time < excluded.last_radio_reading_time then excluded.last_radio_reading_transport else mrs.last_radio_reading_transport end
+    """
+
+  /** Partition a set of inputs by a given predicate, then map each partition by the given function if not empty */
+  private def partitionAndMap[T, U](tp: Iterable[T], p: T => Boolean, f: Iterable[T] => Option[U]): (Option[U], Option[U]) =
+    tp.partition(p) match {
+      case (a, b) => (if (a.nonEmpty) f(a) else None, if (b.nonEmpty) f(b) else None)
+    }
+
+  /** In a set of readings from the same meter port, find the latest radio and nonradio readings and build port status update */
+  private def deriveReadingsStatusUpdate(
+    mp: (ExecPlanID, DeviceId, PortNr),
+    rs: Iterable[MdrMeterPortReadingInput]
+  ): MdrMeterPortReadingsStatusUpdate = {
+    def isRadioReading(r: MdrMeterPortReadingInput): Boolean = r.radioArticle.isDefined
+
+    val (lastRadio, lastNonradio) = partitionAndMap[MdrMeterPortReadingInput, MdrMeterPortReadingInput](rs, isRadioReading, _.maxByOption(_.consumptionDate))
+
+    MdrMeterPortReadingsStatusUpdate(
+      mp._1, mp._2, mp._3,
+      lastNonradio.map(_.consumptionDate),
+      lastNonradio.map(_.transportType),
+      lastRadio.map(_.consumptionDate),
+      lastRadio.map(_.transportType)
+    )
+  }
+
+  private def selectMeterPortIdStatement(execPlan: ExecPlanID, mainDevice: DeviceId, port: PortNr) = {
+    sql"""SELECT id
+         |FROM meterports
+         |WHERE exec_plan_id = $execPlan
+         |  AND main_device_id = $mainDevice
+         |  AND meter_port = $port""".stripMargin.as[MeterPortID]
+  }
+
+  /* Find meterport ID for given exec plan, main device and port */
+  override private[impl] def selectMeterPortIds(execPlan: ExecPlanID, mainDevice: DeviceId, port: PortNr): Future[Vector[MeterPortID]] =
+    db.run(selectMeterPortIdStatement(execPlan, mainDevice, port))
+
+  def insertReadings(mris: Iterable[MdrMeterPortReadingInput], overwrite: Boolean = true): Unit = monitor {
+    logger.trace(s"Insert readings", LogKeys.input -> mris)
+    if (mris.isEmpty) return
+
+    val portReadings: Map[(ExecPlanID, DeviceId, PortNr), (Iterable[MdrMeterPortReadingInput], MdrMeterPortReadingsStatusUpdate)] =
+      mris
+        .groupBy(r => (r.execPlanId, r.mainDeviceId, r.port))
+        .map { case (mp, rs) => (mp, (rs, deriveReadingsStatusUpdate(mp, rs))) }
+
+    val numReadings = mris.size
+    val numMeterPorts = portReadings.size
+
+    readingsPerInsertionSummary.record(numReadings)
+    meterportsPerInsertionSummary.record(numMeterPorts)
+    meterportsPerReadingsSummary.record(numMeterPorts.toDouble / numReadings)
+
+    processForMeterports(portReadings, (_: Iterable[Iterable[Int]]) => ()) { case (meterPortId, (readings, statusUpdate)) =>
+      db.run(
+        insertQueries(meterPortId, readings, statusUpdate, overwrite)
+          .transactionally
+          .withTransactionIsolation(TransactionIsolation.ReadUncommitted) // lowest isolation level required as we are only inserting
+      )
+    }
+  }
+
+  def applyReadingEventsWithIdentifier(readingEventsWithIdentifier: Vector[MdrOutputChannelEvent]): Unit = {
+    if (readingEventsWithIdentifier.isEmpty)
+      return
+
+    def genRevocationStmts(revokedReadings: Vector[MdrMeterPortReadingRevoke]) = DBIO.sequence(
+      revokedReadings.map { revokedReading =>
+        for {
+          deletedReadings <- deleteRevokedReadingsStmt(revokedReading)
+          _ <- if (deletedReadings > 0) insertRevokeStmt(revokedReading) else DBIO.successful(0)
+        } yield ()
+      }
+    )
+
+    def genRevocationPreviousVersionsStmts(revokedReadings: Vector[MdrMeterPortReadingRevoke]) = DBIO.sequence(
+      revokedReadings.map { revokedReading =>
+        for {
+          deletedReadings <- deletePreviousVersionsRevokedReadingsStmt(revokedReading)
+          _ <- if (deletedReadings > 0) insertRevokeStmt(revokedReading) else DBIO.successful(0)
+        } yield ()
+      }
+    )
+
+    // The identifier contains a version part and an ID part. We use this to allow revokes of the IDs for a specific version which will not
+    // let in any readings with an older version
+    // This allows us to apply the events out of order into the database. This is not a strict requirement because kafka keeps the order
+    // of the events but we use this to increase throughout and so we have more meta data available about what readings have been revoked or applied
+
+    val revokedReadings: Vector[MdrMeterPortReadingRevoke] = readingEventsWithIdentifier.collect { case e: MdrMeterPortReadingRevoke => e }
+    // transactionally delete all readings for the given reading identifier and all smaller versions (in case of replays or out of order events)
+    // we need to be able to run multiple
+    val revocationStmts = genRevocationStmts(revokedReadings)
+
+    // insert all readings. Group them by ID first so we can insert readings which belong together in one batch in one transaction
+    // we do this via the
+    val insertionStmts =
+      readingEventsWithIdentifier
+        .collect { case e: MdrMeterPortReadingInput => e }
+        .groupBy(_.identifier.get)
+        .toList
+        .map { case (identifier, readings) =>
+          //we are regenerating readings with every cactus reading event that arrives for the identifier
+          val revocationEvents = Vector(MdrMeterPortReadingRevoke(identifier, readings.head.eventTime))
+          //after having revoked existing ones we regenerate with fresh new readings from the event
+          val readingsByMeterport = readings.groupBy(r => (r.execPlanId, r.mainDeviceId, r.port))
+          (genRevocationPreviousVersionsStmts(revocationEvents), DBIO.sequence(
+            readingsByMeterport.map {
+              case (mp @ (execPlan: ExecPlanID, mainDevice: DeviceId, port: PortNr), rs) =>
+                insertReadingsForOneMeterportStmt(execPlan, mainDevice, port, rs, deriveReadingsStatusUpdate(mp, rs), Some(identifier))
+            }
+          ))
+        }
+
+    AwaitWithContext.result(db.run(
+      DBIO
+        .seq(revocationStmts, DBIO.sequence(insertionStmts.map(_._1)), DBIO.sequence(insertionStmts.map(_._2)))
+        .transactionally
+    ), Duration.Inf)
+
+    ()
+  }
+
+  /**
+   * build stmt to insert readings for one meterport
+   *
+   * @param identifier optional identifier for the reading, if given will be used to check if readings actually need
+   *                   to be inserted of if they have been revoked already. The identifier must be the same for all readings of
+   *                   the given meterport
+   * @return
+   */
+  private def insertReadingsForOneMeterportStmt(
+    execPlan: ExecPlanID,
+    mainDevice: DeviceId,
+    port: PortNr,
+    rs: Iterable[MdrMeterPortReadingInput],
+    statusUpdate: MdrMeterPortReadingsStatusUpdate,
+    identifier: Option[MdrReadingIdentifier]
+  ): DBIOAction[Unit, NoStream, Effect with Effect with Effect.Transactional] = {
+    assert(rs.map(_.execPlanId).forall(_ == execPlan), "all reading exec plans should be for the given exec plan")
+    assert(rs.map(_.mainDeviceId).forall(_ == mainDevice), "all reading main devices should be for the given main device")
+    assert(rs.map(_.port).forall(_ == port), "all reading ports should be for the given port")
+
+    for {
+      meterPortIdList <- selectMeterPortIdStatement(execPlan, mainDevice, port)
+      _ <- meterPortIdList.headOption match {
+        case None              =>
+          logger.error(s"Could not find meter port. Most probably the meter port has not been configured by a execution order yet.",
+            LogKeys.execPlanId -> execPlan, LogKeys.deviceId -> mainDevice, LogKeys.portNr -> port, LogKeys.content -> "ReadingsMeterDataRepoImpl")
+          DBIO.successful(())
+        case Some(meterPortId) =>
+          insertQueries(meterPortId, rs, statusUpdate, overwrite = true)
+      }
+    } yield {
+      ()
+    }
+  }
+
+  private def insertReadingQualityIndicators(
+    portId: MeterPortID,
+    rs: IndexedSeq[MdrMeterPortReadingInput],
+    overwriteAllowed: Boolean) = {
+    /*
+    * Updates are only allowed if:
+    *
+    * case 1:
+    * - The original reading is not a PDA reading
+    * - Updates received for non PDA readings are allowed to get overwritten
+    *
+    * case 2:
+    * - the original reading and incoming update are a PDA reading
+    * - It's not allowed to overwrite a PDA reading with data from another transport type
+    * */
+    def createDeleteStatement(i: MdrMeterPortReadingInput) = {
+      val hasPdaTransportType = i.transportType == MdrTransportType.PDA
+      val readingDate = i.consumptionDate
+      val readingType = i.readingType
+
+      val dropStm = sql"""
+           DELETE FROM
+             reading_quality_indicators
+           WHERE
+             meter_port_id = $portId AND
+             reading_date = $readingDate AND
+             reading_type = $readingType
+         """
+      val fullDropStmt = if (hasPdaTransportType) {
+        dropStm
+      } else {
+        (dropStm ++ sql""" AND NOT EXISTS(
+           SELECT FROM readings r WHERE
+             r.meter_port_id = $portId AND
+             r.reading_date = $readingDate AND
+             r.reading_type = $readingType AND
+             r.transport_type = 'PDA'
+         )""")
+      }
+
+      fullDropStmt.asUpdate
+    }
+
+    def createInsertStatement(readings: Seq[MdrMeterPortReadingInput]) = {
+      def conflictStmt(isWithDemountedQI: Boolean = false) = if (!overwriteAllowed) {
+        sql" ON CONFLICT (meter_port_id, reading_date, reading_type) DO NOTHING"
+      } else {
+        sql""" ON CONFLICT (meter_port_id, reading_date, reading_type)
+               DO UPDATE SET (transport_type, payload, updated_at) = (excluded.transport_type, excluded.payload, CURRENT_TIMESTAMP)
+                WHERE (NOT EXISTS (
+                  SELECT FROM
+                    readings r
+                  WHERE
+                    r.meter_port_id = excluded.meter_port_id AND
+                    r.reading_date = excluded.reading_date AND
+                    r.reading_type = excluded.reading_type AND
+                    r.transport_type = 'PDA'
+                ) OR excluded.transport_type = 'PDA') AND
+                (NOT $isWithDemountedQI OR  $isWithDemountedQI AND exists (
+                  select 1
+                  from reading_quality_indicators as rqi
+                  where rqi.meter_port_id = excluded.meter_port_id
+                    and rqi.reading_date = excluded.reading_date
+                    and rqi.reading_type = excluded.reading_type
+                    and jsonb_path_exists(rqi.payload,#$qualityIndicatorsDemountedQueryPath)
+              ))
+      """
+      }
+
+      val head =
+        sql"""INSERT INTO reading_quality_indicators
+            (meter_port_id, reading_date, reading_type, transport_type, payload)
+            SELECT * FROM (VALUES """
+
+      //We only overwrite readings quality indicators that are not coming with quality indicator Demounted attached
+      //If Demounted is coming as quality indicator we only insert if is a new reading, but never overwrite except if the existing reading is already a Demounted entry one
+      //We split the readings with Demounted quality indicator discriminator
+      val (rsWithDemountedQIStmt, rsWithoutDemountedQIStmt) =
+        rs.partition(_.qualityIndicators.contains(QualityIndicator.DemountedRadioReading))
+
+
+      def createInsertQualityIndicators(readingsInput: Seq[MdrMeterPortReadingInput], isWithDemountedQI: Boolean): Option[SQLActionBuilder] = {
+        if (readingsInput.nonEmpty) {
+          Some(readingsInput.init.foldLeft(head) { (stmt, reading) =>
+            stmt ++ qualityIndicatorValues(reading, portId) ++ sql","
+          } ++ qualityIndicatorValues(readings.last, portId) ++ sql") t(meter_port_id, reading_date, reading_type, transport_type, payload) " ++
+               sql""" WHERE NOT $isWithDemountedQI OR  $isWithDemountedQI AND NOT exists (
+                  select 1
+                  from readings as ri
+                  where ri.meter_port_id = t.meter_port_id
+                    and ri.reading_date = t.reading_date
+                    and ri.reading_type = t.reading_type
+              )""" ++ conflictStmt(isWithDemountedQI = isWithDemountedQI))
+        } else None
+      }
+
+      val createInsertWithDemountedQIStmt = createInsertQualityIndicators(rsWithDemountedQIStmt, isWithDemountedQI = true)
+      val createInsertWithoutDemountedQIStmt = createInsertQualityIndicators(rsWithoutDemountedQIStmt, isWithDemountedQI = false)
+
+      Seq(createInsertWithDemountedQIStmt, createInsertWithoutDemountedQIStmt)
+        .flatten
+        .map(_.asUpdate)
+    }
+
+    def qualityIndicatorValues(input: MdrMeterPortReadingInput, portId: MeterPortID): SQLActionBuilder =
+      sql"""($portId, ${input.consumptionDate}, ${input.readingType}, ${input.transportType}, ${input.qualityIndicatorsAsJson}::jsonb) """
+
+    val (deleteGroup, insertGroup) = rs.span(_.qualityIndicators.isEmpty)
+
+    val deleteStmts = if (overwriteAllowed) deleteGroup.map(createDeleteStatement) else Seq.empty
+    if (insertGroup.isEmpty) {
+      deleteStmts
+    } else {
+      createInsertStatement(insertGroup) ++ deleteStmts
+    }
+  }
+
+  private def deleteRevokedReadingsStmt(revokedReading: MdrMeterPortReadingRevoke) = {
+    val query = sqlu"""
+                DELETE FROM readings WHERE
+                    (identifier ->> 'billingRecipientId')::uuid = ${revokedReading.identifier.billingRecipientId.value}
+                    AND (identifier -> 'version')::int <= ${revokedReading.identifier.version}
+                    AND identifier is not null"""
+    dbIoActionWithLocalSetting(query, setLocalJitOff, setLocalMaxParallelWorkersPerGatherTo4)
+  }
+
+  private def deletePreviousVersionsRevokedReadingsStmt(revokedReading: MdrMeterPortReadingRevoke) = {
+    val query = sqlu"""
+                    DELETE FROM readings WHERE
+                        (identifier ->> 'billingRecipientId')::uuid = ${revokedReading.identifier.billingRecipientId.value}
+                        AND (identifier -> 'version')::int < ${revokedReading.identifier.version}
+                        AND identifier is not null"""
+    dbIoActionWithLocalSetting(query, setLocalJitOff, setLocalMaxParallelWorkersPerGatherTo4)
+  }
+
+  private def insertRevokeStmt(revokedReading: MdrMeterPortReadingRevoke) = {
+    sqlu"""
+                    INSERT INTO revoked_readings (reading_identifier)
+                    VALUES (${revokedReading.identifier.toJson}::jsonb)
+                    ON CONFLICT (reading_identifier) DO UPDATE SET (reading_identifier, last_revoke_at) = (excluded.reading_identifier, current_timestamp)"""
+  }
+
+  /**
+   * @param filterTimespan needs to be in the timezone of the meterport
+   * @param requestDate    needs to be in the timezone of the meterport
+   * @return
+   */
+  override def findSurroundingReadingsByLocation(filterLocations: Set[LocationId],
+    filterExecPlan: Option[ExecPlanID], filterTimespan: LocalTimespan, requestDate: LocalInstant)
+  : Future[Vector[MdrMeterPortReading]] = monitor {
+    // find readings within timespan which surround the request date (the reading before and after the date, if any)
+
+    // ignore case lge='e' meaning that timestamps are exactly equal
+    val query = sql"""
+      select distinct on (mp.location_id, lg)
+        r.meter_port_id,
+        r.reading_date,
+        r.value,
+        r.unit,
+        r.reading_type,
+        r.service_type,
+        r.transport_type,
+        r.medium_type,
+        r.estimation_type,
+        r.identifier,
+        mp.location_id,
+        abs(extract(epoch from ($requestDate - r.reading_date))) as delta,
+        case
+          when $requestDate > r.reading_date then 'l'
+          when $requestDate < r.reading_date then 'g'
+          else 'e'
+        end as lg
+      from
+        readings as r,
+        meterports as mp
+      where
+        mp.id = r.meter_port_id
+      """
+      .+?(filterExecPlan)(execPlanID => sql" and mp.exec_plan_id = $execPlanID")
+      .++(sql"""
+          and mp.location_id = any($filterLocations)
+          and r.reading_date >= ${filterTimespan.from}
+          and r.reading_date < ${filterTimespan.to}
+          and (case
+            when $requestDate > r.reading_date then 'l'
+            when $requestDate < r.reading_date then 'g'
+            else 'e'
+          end) != 'e'
+        order by
+          mp.location_id asc,
+          lg asc,
+          delta asc,
+          reading_date asc
+        """).as[MdrMeterPortReading]
+    // We deactivate JIT and parallel query execution to help the planner build a fast query
+    // (JIT adds 2s overhead, the parallel execution another 2s)
+    // There is no way to deal with this on a more global level.
+    // We need postgres metrics and see what happens when we i.e. disable jit globally
+    dbReadOnly.run(dbIoActionWithLocalSetting(query, setLocalJitOff, setLocalWorkMemTo64M, setLocalMaxParallelWorkersPerGatherTo0))
+  }
+
+  /**
+   * findNearestReadingByLocation
+   *
+   * @param filterTimespan has to be in the timezone of the meterport which is requested
+   * @param requestDate    has to be in the timezone of the meterport which is requested
+   * @return
+   */
+  override def findNearestReadingByLocation(
+    filterLocations: Set[LocationId],
+    filterExecPlan: Option[ExecPlanID],
+    filterTimespan: LocalTimespan,
+    requestDate: LocalInstant
+  ): Future[Vector[MdrMeterPortReading]] = monitor {
+    val query = sql"""
+      select distinct on (mp.location_id)
+        r.meter_port_id,
+        r.reading_date,
+        r.value,
+        r.unit,
+        r.reading_type,
+        r.service_type,
+        r.transport_type,
+        r.medium_type,
+        r.estimation_type,
+        r.identifier,
+        mp.location_id,
+        abs(EXTRACT(EPOCH FROM ($requestDate - r.reading_date))) as delta
+      from
+        readings as r,
+        meterports as mp
+      where
+        mp.id = r.meter_port_id
+      """
+      .+?(filterExecPlan)(execPlanID => sql" and mp.exec_plan_id = $execPlanID")
+      .++(sql"""
+          and mp.location_id = any($filterLocations)
+          and r.reading_date >= ${filterTimespan.from}
+          and r.reading_date < ${filterTimespan.to}
+        order by
+          mp.location_id asc, delta asc, reading_date asc
+        """).as[MdrMeterPortReading]
+    // We deactivate JIT and parallel query execution to help the planner build a fast query
+    // (JIT adds 2s overhead, the parallel execution another 2s)
+    // There is no way to deal with this on a more global level.
+    // We need postgres metrics and see what happens when we i.e. disable jit globally
+    dbReadOnly.run(dbIoActionWithLocalSetting(query, setLocalJitOff, setLocalWorkMemTo64M, setLocalMaxParallelWorkersPerGatherTo0))
+  }
+
+  /** Retrieve relevant readings for move in / move out. */
+  override def findMimoReadings2(mimoDate: LocalDate, locations: Set[LocationId]): Seq[MdrMimoReading] = monitor {
+    logger.debug(s"MDR query findMimoReadings2 with mimoDate=$mimoDate, locations=$locations")
+    // For reasons we do not support sending a "LocalDate" to Postgres, thus use a LocalInstant.
+    // Also, the column "reading_date" in table "readings" has type "timestamp without TZ", which matches to LocalInstant.
+    val requestTimestamp: LocalInstant = LocalInstant(mimoDate)
+    val query =
+      sql"""|-- findMimoReadings2
+            |with
+            |
+            |-- Find per location id the last installation date at or before the MIMO date.
+            |location_ids_with_relevant_installed as (
+            |  select location_id, max(installed) as installed
+            |  from meterports
+            |  where location_id = any($locations)
+            |    and installed < $requestTimestamp + interval '1 day'
+            |  group by location_id
+            |),
+            |
+            |-- Find per location id the best device as mitigation for migrated data and incorrect jAbre data changes.
+            |-- In meterports it is guaranteed by a constraint that a combo of exec_plan_id and main_device_id and
+            |-- meter_port is unique, thus selecting an arbitrary combo of exec_plan_id and main_device_id per location
+            |-- is the base to select all corresponding meter_port per location in the next steps.
+            |location_ids_with_relevant_exec_plan_main_device_installed as (
+            |  select distinct on (location_id)
+            |    location_id, exec_plan_id, main_device_id, installed
+            |  from location_ids_with_relevant_installed
+            |    inner join meterports using (location_id, installed)
+            |  order by
+            |    location_id,
+            |    location_number is not null desc, -- true > false
+            |    not migrated desc, -- true > false
+            |    id desc
+            |),
+            |
+            |-- Find per location all meter ports (id) belonging to the device described by the selected
+            |-- exec_plan_id/main_device_id combo with respect to the installed date.
+            |original_meterports as (
+            |  select
+            |    id,
+            |    exec_plan_id,
+            |    location_id,
+            |    measurand,
+            |    article_nr,
+            |    serial_nr,
+            |    data_input_service,
+            |    installed
+            |  from location_ids_with_relevant_exec_plan_main_device_installed
+            |    inner join meterports using (location_id, exec_plan_id, main_device_id, installed)
+            |),
+            |
+            |-- For jAbre, if a device on a location has the same article_nr and serial_nr and the serial_nr is not
+            |-- empty, then it is the same device, even if it has several main_device_ids and thus several meter port
+            |-- ids in RDM. To fix part of the problems with migrated and incorrect jAbre/PPS data, all meter port ids
+            |-- are used which seem to be describe the same unchanged main device, even if RDM knows this device with
+            |-- several installed dates and several main_device_ids, as long, as article and serial number match (and
+            |-- serial number is not empty) and the installed dates are all adjacent to each other so that the data
+            |-- suggests that no real device exchange took place but rather corrections of the installed date.
+            |-- Therefore, the alternative meter port ids must have either the same installed date or an adjacent
+            |-- installed date, i.e. there must not be another meter port id belonging to another main device
+            |-- (different article or serial number) being installed in between the originally found main device and the
+            |-- alternative meter port ids describing the same main device.
+            |-- As a safety net, we also check for the same exec_plan_id, which is a proxy for the property.
+            |-- This is the base set of meter port ids for which readings are searched.
+            |equivalent_meterports as (
+            |  select
+            |    m2.id as meter_port_id,
+            |    exec_plan_id,
+            |    location_id,
+            |    measurand,
+            |    serial_nr,
+            |    article_nr,
+            |    m1.data_input_service,
+            |    m2.meter_port,  -- only needed for CSR2 readings
+            |    m1.id = m2.id as is_original_meterport,
+            |    m1.article_nr not in (
+            |     '10000', '10100', '10200', '10300', '10310', '10350', '10400', '10410', '10420', '10450', '10480', '10500', '10501', '10510', '10994',
+            |     '10996', '12627', '12944', '12945', '12946', '13023', '13123', '19000', '19030', '46100', '46199', '46810', '46930'
+            |    ) as is_modern_article,
+            |    is_trivial_serial_nr(m1.serial_nr) as has_trivial_serial_nr,
+            |    m2.installed::date,
+            |    min(m2.installed::date) over (partition by exec_plan_id, location_id, article_nr, serial_nr) as installed_min,
+            |    max(m2.installed) over (partition by exec_plan_id, location_id, article_nr, serial_nr) as installed_max
+            |  from original_meterports as m1
+            |    inner join meterports as m2 using (exec_plan_id, location_id, measurand, article_nr, serial_nr) as m
+            |  where (serial_nr != '' or m1.id = m2.id)
+            |    and not exists (
+            |      select 1
+            |      from meterports as m3
+            |      where m3.id != m1.id
+            |        and m3.id != m2.id
+            |        and m3.exec_plan_id = m.exec_plan_id
+            |        and m3.location_id = m.location_id
+            |        and not (m3.article_nr = m.article_nr and m3.serial_nr = m.serial_nr)
+            |        and (
+            |          (m1.installed < m3.installed and m3.installed < m2.installed)
+            |          or (m2.installed < m3.installed and m3.installed < m1.installed)
+            |        )
+            |    )
+            |),
+            |
+            |-- Add the installation date of the next non-equivalent device as installation validity end date.
+            |relevant_meterports as (
+            |  select
+            |    m1.meter_port_id,
+            |    m1.location_id,
+            |    m1.measurand,
+            |    m1.meter_port,
+            |    m1.serial_nr,
+            |    m1.article_nr,
+            |    m1.data_input_service,
+            |    m1.exec_plan_id,
+            |    m1.is_original_meterport,
+            |    m1.is_modern_article,
+            |    m1.has_trivial_serial_nr,
+            |    m1.installed,
+            |    m1.installed_min,
+            |    coalesce(min(m2.installed::date), '9999-12-31') as installed_next
+            |  from equivalent_meterports m1
+            |    left join meterports as m2 on (
+            |      m1.exec_plan_id = m2.exec_plan_id
+            |      and m1.location_id = m2.location_id
+            |      and m1.installed_max < m2.installed
+            |    )
+            |  group by m1.meter_port_id, m1.location_id, m1.measurand, m1.meter_port, m1.serial_nr, m1.article_nr, m1.data_input_service, m1.exec_plan_id, m1.is_original_meterport, m1.is_modern_article, m1.has_trivial_serial_nr, m1.installed, m1.installed_min
+            |),
+            |
+            |-- Find all meter ports which have the same article_nr and serial_nr as the original meter ports, but
+            |-- installed at a different location in the same property (same exec_plan_id) for all the meterports
+            |-- that are modern, don't have a trivial serial number in use, and are not a competitor takeover device.
+            |relevant_meterports_on_different_location as (
+            |  select
+            |    m2.id as meter_port_id,
+            |    m2.location_id,
+            |    m2.measurand,
+            |    m1.meter_port,
+            |    m1.serial_nr,
+            |    m1.article_nr,
+            |    m1.data_input_service,
+            |    m1.exec_plan_id,
+            |    m1.is_original_meterport,
+            |    m1.is_modern_article,
+            |    m1.has_trivial_serial_nr,
+            |    m1.installed,
+            |    m1.installed_min,
+            |    m1.installed_next,
+            |    m1.meter_port_id as original_meter_port_id,
+            |    m1.location_id as original_location_id
+            |    from relevant_meterports as m1, meterports as m2
+            |    where m1.is_modern_article
+            |      and m1.has_trivial_serial_nr = false
+            |      and m1.article_nr = m2.article_nr
+            |      and m1.serial_nr = m2.serial_nr
+            |      and m1.data_input_service = 'LGSTRUGET_SERVICE'
+            |      and m1.measurand = m2.measurand
+            |      and m1.exec_plan_id = m2.exec_plan_id
+            |      and m1.location_id != m2.location_id
+            |),
+            |
+            |-- Combine the original meter ports with the meter ports installed at a different location.
+            |-- This combination is used to find readings for all relevant meter ports, including those
+            |-- installed at a different location.
+            |relevant_meterports_combined as (
+            |  select * from relevant_meterports_on_different_location
+            |  union
+            |  select m1.*, null, null from relevant_meterports as m1
+            |),
+            |-- Determine relevant reading quality indicators upfront, as they are used in a lot of the following
+            |-- queries, the underlying table may be growing over time, and the relevant subset is very small.
+            |-- First determine the indicators for the +/- 31 days span as CTE, as they are used once directly and
+            |-- serve as basis to determine the +/- 15 days span indicators.
+            |relevant_reading_quality_indicators_31 as (
+            |  select meter_port_id, reading_date, reading_type, payload
+            |  from reading_quality_indicators
+            |  where $requestTimestamp - interval '31 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '31 day'
+            |),
+            |
+            |-- Next determine the indicators for the reduced +/- 15 days span as CTE, as they are used several times.
+            |relevant_reading_quality_indicators_15 as (
+            |  select meter_port_id, reading_date, reading_type, payload
+            |  from relevant_reading_quality_indicators_31
+            |  where $requestTimestamp - interval '15 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '15 day'
+            |),
+            |
+            |-- Find all removal readings linked to a device for all relevant location_ids
+            |-- This information will be used to filter out removal readings that have been linked to the newly installed
+            |-- device as a result of a replaced main device re-using the radio component installed on the original
+            |-- main device
+            |-- First determine the readings for the +/- 31 days span as CTE, as they are used once directly and
+            |-- serve as basis to determine the +/- 15 days span indicators.
+            |relevant_removal_readings_31 as (
+            |  select r.reading_date, r.reading_type, r.value, m.installed, m.location_id
+            |  from readings_with_prio as r
+            |    inner join meterports as m on r.meter_port_id = m.id
+            |  where m.location_id in (select location_id from relevant_meterports_combined)
+            |    and r.reading_date >= $requestTimestamp - interval '31 day'
+            |    and r.reading_date < $requestTimestamp + interval '1 day' + interval '31 day'
+            |    and r.reading_type = 'RM'
+            |),
+            |
+            |-- Next determine the removal readings for the reduced +/- 15 days span as CTE, as they are used several times.
+            |relevant_removal_readings_15 as (
+            |  select reading_date, reading_type, value, installed, location_id
+            |  from relevant_removal_readings_31
+            |  where $requestTimestamp - interval '15 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '15 day'
+            |),
+            |
+            |-- Find customer self readings on the MIMO date from meter ports installed at the MIMO date.
+            |readings_csr1 as (
+            |  select distinct on (coalesce(original_location_id, location_id), measurand)
+            |    location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type
+            |  from relevant_meterports_combined
+            |    inner join readings as r using (meter_port_id)
+            |  where $requestTimestamp <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day'
+            |    and service_type = 'CSR' -- reading procedure = customer self reading
+            |    and not exists (
+            |      select 1
+            |      from relevant_reading_quality_indicators_15 as rqi
+            |      where rqi.meter_port_id = r.meter_port_id
+            |        and rqi.reading_date = r.reading_date
+            |        and rqi.reading_type = r.reading_type
+            |        and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |    )
+            |  order by coalesce(original_location_id, location_id), measurand, is_original_meterport desc, original_location_id is null desc -- true > false
+            |),
+            |
+            |-- Find meter ports for those location/measurand combos which are not filled after adding CSR readings
+            |-- from the meter ports relevant for the MIMO date.
+            |mps_for_unfilled_location_measurand_combos_after_csr1 as (
+            |  select meter_port_id, location_id, original_location_id, measurand, meter_port, is_original_meterport, installed_min, installed_next
+            |  from relevant_meterports_combined
+            |  where not row(coalesce(original_location_id, location_id), measurand) in (
+            |    -- If a reading for a duplicated meter port was found, we also consider the original location it belongs to,
+            |    -- Otherwise the original location would be considered for the fallback reading search.
+            |    -- We also have to consider the duplicated location for these meter ports, to not continue searching on these
+            |    -- duplicated locations.
+            |    select location_id, measurand from readings_csr1
+            |    union
+            |    select original_location_id, measurand from readings_csr1 where original_location_id is not null
+            |  )
+            |),
+            |
+            |-- Find customer self readings on the MIMO date from the best alternative meter port on the location (quick-and-dirty fix for SQDD06-3135).
+            |-- First, find the meter ports eligible for reporting a fallback assignment. A meter port is eligible if
+            |-- a) for the whole location of that meter port no CSR reading yet was found in the first step.
+            |-- b) it is a meter port of the original device, not of an equivalent device
+            |-- c) it is the meter port for the lowest port number of that device.
+            |meterports_eligible_for_reporting_fallback_csr as (
+            |  select distinct on (location_id, installed_min, installed_next)
+            |    meter_port_id, location_id, original_location_id, measurand, installed_min, installed_next
+            |  from mps_for_unfilled_location_measurand_combos_after_csr1
+            |  where not location_id in (
+            |    select location_id from readings_csr1
+            |    union
+            |    select original_location_id from readings_csr1 where original_location_id is not null
+            |    )
+            |    and is_original_meterport
+            |  order by location_id, installed_min, installed_next, meter_port
+            |),
+            |
+            |-- Second, for all eligible meter ports, search if for their respective location there is any CSR reading
+            |-- on the MIMO request date on any other meter port for that location.
+            |-- If found, use the unit of the found reading (as it belongs to the reading), but keep the measurand of
+            |-- the original meter port. If CSR readings are found on several meter ports, use the reading of the meter
+            |-- port installed earliest and with the lowest port number.
+            |readings_csr2 as (
+            |  select distinct on (coalesce(original_location_id, location_id), m1.measurand)
+            |    location_id, original_location_id, m1.measurand, reading_date, value, unit, reading_type, service_type
+            |  from meterports_eligible_for_reporting_fallback_csr as m1
+            |    inner join meterports as m2 using (location_id)
+            |    inner join readings as r on (m2.id = r.meter_port_id)
+            |  where $requestTimestamp <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day'
+            |    and service_type = 'CSR' -- reading procedure = customer self reading
+            |    and not exists (
+            |      select 1
+            |      from relevant_reading_quality_indicators_15 as rqi
+            |      where rqi.meter_port_id = r.meter_port_id
+            |        and rqi.reading_date = r.reading_date
+            |        and rqi.reading_type = r.reading_type
+            |        and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |    )
+            |  order by coalesce(original_location_id, location_id), m1.measurand, m2.installed, m2.meter_port
+            |),
+            |
+            |-- Find the location/measurand combos which are still not filled after adding CSR2 readings.
+            |mps_for_unfilled_location_measurand_combos_after_csr2 as (
+            |  select meter_port_id, location_id, original_location_id, measurand, is_original_meterport, installed_min, installed_next
+            |  from mps_for_unfilled_location_measurand_combos_after_csr1
+            |  where not row(location_id, measurand) in (
+            |    -- If a reading for a duplicated meter port was found, we also consider the original location it belongs to,
+            |    -- Otherwise the original location would be considered for the fallback reading search.
+            |    -- We also have to consider the duplicated location for these meter ports explicitly, to not continue searching on these
+            |    -- duplicated locations.
+            |    select location_id, measurand from readings_csr2
+            |    union
+            |    select original_location_id, measurand from readings_csr2 where original_location_id is not null
+            |  )
+            |),
+            |
+            |-- For the still unfilled location/measurand combos, search for all meter ports for readings in the period
+            |-- of +/- 15 days around the MIMO request date. Search if a location has at least one reading on any meter
+            |-- port, i.e. on any original or equivalent device and any measurand/port.
+            |-- The fact that a location is part of the result set for some date shows that at least one (any) reading
+            |-- exists for that location on that date.
+            |-- If also the flag has_intermediate_readings is true, at least one of these readings is an intermediate
+            |-- reading.
+            |readings_exist_per_location as (
+            |  select
+            |    reading_date::date as search_date,
+            |    location_id,
+            |    original_location_id,
+            |    count(*) filter (where reading_type = 'CR' and service_type = 'INT') > 0 as has_intermediate_readings
+            |  from mps_for_unfilled_location_measurand_combos_after_csr2 as mp
+            |    inner join readings as r using (meter_port_id)
+            |  where $requestTimestamp - interval '15 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '15 day'
+            |    and installed_min <= reading_date
+            |    and (reading_date < installed_next or (reading_date = installed_next and reading_type = 'RM'))
+            |    and not exists (
+            |      select 1
+            |      from relevant_reading_quality_indicators_15 as rqi
+            |      where rqi.meter_port_id = r.meter_port_id
+            |        and rqi.reading_date = r.reading_date
+            |        and rqi.reading_type = r.reading_type
+            |        and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |    )
+            |    and not exists (
+            |      select 1
+            |      from relevant_removal_readings_15 as rr
+            |      where rr.location_id = mp.location_id
+            |        and rr.reading_date = r.reading_date
+            |        and rr.reading_type = r.reading_type
+            |        and rr.value = r.value
+            |        and rr.installed <= mp.installed_min
+            |        and date(mp.installed_min) >= date(rr.reading_date)
+            |    )
+            |  group by search_date, location_id, original_location_id
+            |),
+            |
+            |-- From the previous search per location, count per date the number of locations with intermediate readings
+            |-- and any readings.
+            |locations_with_readings_counts as (
+            |  select
+            |    search_date,
+            |    count(*) filter (where has_intermediate_readings) as locations_with_intermediate_readings,
+            |    count(*) as locations_with_any_readings
+            |  from readings_exist_per_location rl1
+            |  where not exists (
+            |    select 1 from readings_exist_per_location rl2
+            |    where rl2.search_date = rl1.search_date
+            |      and rl2.original_location_id is not null
+            |      and rl1.location_id = rl2.original_location_id
+            |      and rl2.has_intermediate_readings = rl1.has_intermediate_readings
+            |  )
+            |  group by search_date
+            |),
+            |
+            |-- Find the bundle date from intermediate readings. May be empty if no intermediate readings were found.
+            |-- Is mutually exclusive with bundle_date_any.
+            |bundle_date_intermediate as (
+            |  select search_date as bd_intermediate
+            |  from locations_with_readings_counts
+            |  where locations_with_intermediate_readings > 0
+            |  order by locations_with_intermediate_readings desc, abs($requestTimestamp::date - search_date), search_date
+            |  limit 1
+            |),
+            |
+            |-- Find the alternative bundle date from any readings. Will be empty if some intermediate readings were found.
+            |-- Is mutually exclusive with bundle_date_intermediate.
+            |bundle_date_any as (
+            |  select search_date as bd_any
+            |  from locations_with_readings_counts
+            |  where not exists (select 1 from bundle_date_intermediate)
+            |  order by locations_with_any_readings desc, abs($requestTimestamp::date - search_date), search_date
+            |  limit 1
+            |),
+            |
+            |-- For the location/measurand combos which are still not filled after adding CSR2 readings, find readings
+            |-- for a bundle date, either for intermediate or for any readings.
+            |-- As both bundle dates are mutually exclusive, the two queries can be combined into one.
+            |readings_from_bundle_date as (
+            |  select distinct on (coalesce(original_location_id, location_id), measurand)
+            |    location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type
+            |  from mps_for_unfilled_location_measurand_combos_after_csr2 as mp
+            |    inner join readings_with_prio as r using (meter_port_id)
+            |  where $requestTimestamp - interval '15 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '15 day'
+            |    and (
+            |      (reading_date::date = (select bd_intermediate from bundle_date_intermediate) and service_type = 'INT') -- intermediate reading
+            |      or reading_date::date = (select bd_any from bundle_date_any) -- any reading
+            |    )
+            |    and not exists (
+            |      select 1
+            |      from relevant_reading_quality_indicators_15 as rqi
+            |      where rqi.meter_port_id = r.meter_port_id
+            |        and rqi.reading_date = r.reading_date
+            |        and rqi.reading_type = r.reading_type
+            |        and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |    )
+            |    and not exists (
+            |      select 1
+            |      from relevant_removal_readings_15 as rr
+            |      where rr.location_id = mp.location_id
+            |        and rr.reading_date = r.reading_date
+            |        and rr.reading_type = r.reading_type
+            |        and rr.value = r.value
+            |        and rr.installed <= mp.installed_min
+            |        and date(mp.installed_min) >= date(rr.reading_date)
+            |    )
+            |  order by
+            |    coalesce(original_location_id, location_id),
+            |    measurand,
+            |    not migrated desc, -- true > false
+            |    is_original_meterport desc, -- true > false
+            |    reading_prio desc
+            |),
+            |
+            |-- Find the location/measurand combos which are still not filled after adding readings on the bundle date.
+            |mps_for_unfilled_location_measurand_combos_after_bundle_date as (
+            |  select meter_port_id, location_id, original_location_id, measurand, is_original_meterport, installed_min, installed_next
+            |  from mps_for_unfilled_location_measurand_combos_after_csr2
+            |  where not row(coalesce(original_location_id, location_id), measurand) in (
+            |    -- If a reading for a duplicated meter port was found, we also consider the original location it belongs to,
+            |    -- Otherwise the original location would be considered for the fallback search.
+            |    -- We also have to consider the duplicated location for these meter ports, to not continue searching on these
+            |    -- duplicated locations.
+            |    select location_id, measurand from readings_from_bundle_date
+            |    union
+            |    select original_location_id, measurand from readings_from_bundle_date where original_location_id is not null
+            |  )
+            |),
+            |
+            |-- Find readings without a bundle date, for any readings.
+            |readings_without_bundle_date as (
+            |  select distinct on (coalesce(original_location_id, location_id), measurand)
+            |    location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type
+            |  from mps_for_unfilled_location_measurand_combos_after_bundle_date as mp
+            |    inner join readings_with_prio as r using (meter_port_id)
+            |  where $requestTimestamp - interval '15 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '15 day'
+            |    and installed_min <= reading_date
+            |    and (reading_date < installed_next or (reading_date = installed_next and reading_type = 'RM'))
+            |    and not exists (
+            |      select 1
+            |      from relevant_reading_quality_indicators_15 as rqi
+            |      where rqi.meter_port_id = r.meter_port_id
+            |        and rqi.reading_date = r.reading_date
+            |        and rqi.reading_type = r.reading_type
+            |        and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |    )
+            |    and not exists (
+            |      select 1
+            |      from relevant_removal_readings_15 as rr
+            |      where rr.location_id = mp.location_id
+            |        and rr.reading_date = r.reading_date
+            |        and rr.reading_type = r.reading_type
+            |        and rr.value = r.value
+            |        and rr.installed <= mp.installed_min
+            |        and date(mp.installed_min) >= date(rr.reading_date)
+            |    )
+            |  order by
+            |    coalesce(original_location_id, location_id),
+            |    measurand,
+            |    not migrated desc, -- true > false
+            |    abs($requestTimestamp::date - reading_date::date),
+            |    reading_date::date,
+            |    is_original_meterport desc, -- true > false
+            |    reading_prio desc
+            |),
+            |
+            |-- Find the location/measurand combos which are still not filled after adding readings without a bundle date.
+            |mps_for_unfilled_location_measurand_combos_after_wo_bundle_date as (
+            |  select meter_port_id, original_location_id, location_id, measurand, is_original_meterport, installed_min, installed_next
+            |  from mps_for_unfilled_location_measurand_combos_after_bundle_date
+            |  where not row(location_id, measurand) in (
+            |    -- If a reading for a duplicated meter port was found, we also consider the original location it belongs to,
+            |    -- Otherwise the original location would be considered for the fallback search.
+            |    -- We also have to consider the duplicated location for these meter ports, to not continue searching on these
+            |    -- duplicated locations.
+            |    select location_id, measurand from readings_without_bundle_date
+            |    union
+            |    select original_location_id, measurand from readings_without_bundle_date where original_location_id is not null
+            |  )
+            |),
+            |
+            |-- For the remaining location/measurand combos, find readings from the extended range, i.e. find one
+            |-- nearest readings before and one after the MIMO date.
+            |readings_from_extended_range as (
+            |  select distinct on (location_id, measurand, is_before)
+            |    location_id,
+            |    original_location_id,
+            |    measurand,
+            |    reading_date,
+            |    value,
+            |    unit,
+            |    reading_type,
+            |    'REG' as service_type, -- overwrite service type (= reading procedure) so that these readings get mapped to MIMO type OTHER_READING
+            |    $requestTimestamp < reading_date as is_before -- only defined as output column so that it can be reused in both the distinct on and the order by
+            |  from mps_for_unfilled_location_measurand_combos_after_wo_bundle_date as mp
+            |    inner join readings_with_prio as r using (meter_port_id)
+            |  where $requestTimestamp - interval '31 day' <= reading_date
+            |    and reading_date < $requestTimestamp + interval '1 day' + interval '31 day'
+            |    and installed_min <= reading_date
+            |    and (reading_date < installed_next or (reading_date = installed_next and reading_type = 'RM'))
+            |    and not exists (
+            |      select 1
+            |      from relevant_reading_quality_indicators_31 as rqi
+            |      where rqi.meter_port_id = r.meter_port_id
+            |        and rqi.reading_date = r.reading_date
+            |        and rqi.reading_type = r.reading_type
+            |        and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |    )
+            |    and not exists (
+            |      select 1
+            |      from relevant_removal_readings_31 as rr
+            |      where rr.location_id = mp.location_id
+            |        and rr.reading_date = r.reading_date
+            |        and rr.reading_type = r.reading_type
+            |        and rr.value = r.value
+            |        and rr.installed <= mp.installed_min
+            |        and date(mp.installed_min) >= date(rr.reading_date)
+            |    )
+            |  order by
+            |    location_id,
+            |    measurand,
+            |    is_before,
+            |    not migrated desc, -- true > false
+            |    abs($requestTimestamp::date - reading_date::date),
+            |    is_original_meterport desc, -- true > false
+            |    reading_prio desc
+            |)
+            |
+            |select
+            |    coalesce(combined_results.original_location_id, combined_results.location_id) as location_id,
+            |    measurand,
+            |    reading_date,
+            |    value,
+            |    unit,
+            |    reading_type,
+            |    service_type,
+            |    null as serial_nr,
+            |    reading_label,
+            |    (select count(*) from original_meterports) as location_measurands_to_fill,
+            |    ((select count(*) from relevant_meterports) - (select count(*) from original_meterports)) as ambiguous_location_measurands_to_fill,
+            |    (select count(*) from relevant_meterports_on_different_location) as meterports_on_duplicated_locations
+            |from (
+            |    -- Combine all found readings.
+            |    select location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type, 'readings_csr1' as reading_label from readings_csr1
+            |    union all
+            |    select location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type, 'readings_csr2' as reading_label from readings_csr2
+            |    union all
+            |    select location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type, 'readings_with_bundle_date' as reading_label from readings_from_bundle_date
+            |    union all
+            |    select location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type, 'readings_without_bundle_date' as reading_label from readings_without_bundle_date
+            |    union all
+            |    select location_id, original_location_id, measurand, reading_date, value, unit, reading_type, service_type, 'readings_with_extended_range' as reading_label from readings_from_extended_range
+            |) as combined_results
+            |""".stripMargin.as[MdrMimoReading]
+
+    val mimoReadingsF: Future[Seq[MdrMimoReading]] = dbReadOnly.run(dbIoActionWithLocalSetting(query, setLocalWorkMemTo4G))
+    AwaitWithContext.result(mimoReadingsF, Duration.Inf)
+  }
+
+  /** Retrieve relevant readings for billing period end value quirk. */
+  override def findBillingPeriodEndValueQuirk(requestDate: LocalDate, locations: Set[LocationId]): Seq[MdrMimoReading] = monitor {
+    logger.debug(s"MDR query findBillingPeriodEndValueQuirk with requestDate=$requestDate, locations=$locations")
+    // For reasons we do not support sending a "LocalDate" to Postgres, thus use a LocalInstant.
+    // Also, the column "reading_date" in table "readings" has type "timestamp without TZ", which matches to LocalInstant.
+    val requestTimestamp: LocalInstant = LocalInstant(requestDate)
+    val query =
+      sql"""|-- findBillingPeriodEndValueQuirk
+            |with
+            |
+            |-- Find per location id the last installation date at or before the request date.
+            |location_ids_with_relevant_installed as (
+            |  select location_id, max(installed) as installed
+            |  from meterports
+            |  where location_id = any($locations)
+            |    and installed < $requestTimestamp + interval '1 day'
+            |  group by location_id
+            |),
+            |
+            |-- Find per location id the best device as mitigation for migrated data and incorrect jAbre data changes.
+            |-- In meterports it is guaranteed by a constraint that a combo of exec_plan_id and main_device_id and
+            |-- meter_port is unique, thus selecting an arbitrary combo of exec_plan_id and main_device_id per location
+            |-- is the base to select all corresponding meter_port per location in the next steps.
+            |location_ids_with_relevant_exec_plan_main_device_installed as (
+            |  select distinct on (location_id)
+            |    location_id, exec_plan_id, main_device_id, installed
+            |  from location_ids_with_relevant_installed
+            |    inner join meterports using (location_id, installed)
+            |  order by
+            |    location_id,
+            |    location_number is not null desc, -- true > false
+            |    not migrated desc, -- true > false
+            |    id desc
+            |),
+            |
+            |-- Find per location all meter ports (id) belonging to the device described by the selected
+            |-- exec_plan_id/main_device_id combo with respect to the installed date.
+            |original_meterports as (
+            |  select
+            |    id,
+            |    exec_plan_id,
+            |    location_id,
+            |    measurand,
+            |    article_nr,
+            |    serial_nr,
+            |    installed
+            |  from location_ids_with_relevant_exec_plan_main_device_installed
+            |    inner join meterports using (location_id, exec_plan_id, main_device_id, installed)
+            |),
+            |
+            |-- For jAbre, if a device on a location has the same article_nr and serial_nr and the serial_nr is not
+            |-- empty, then it is the same device, even if it has several main_device_ids and thus several meter port
+            |-- ids in RDM. To fix part of the problems with migrated and incorrect jAbre/PPS data, all meter port ids
+            |-- are used which seem to be describe the same unchanged main device, even if RDM knows this device with
+            |-- several installed dates and several main_device_ids, as long, as article and serial number match (and
+            |-- serial number is not empty) and the installed dates are all adjacent to each other so that the data
+            |-- suggests that no real device exchange took place but rather corrections of the installed date.
+            |-- Therefore, the alternative meter port ids must have either the same installed date or an adjacent
+            |-- installed date, i.e. there must not be another meter port id belonging to another main device
+            |-- (different article or serial number) being installed in between the originally found main device and the
+            |-- alternative meter port ids describing the same main device.
+            |-- As a safety net, we also check for the same exec_plan_id, which is a proxy for the property.
+            |-- This is the base set of meter port ids for which readings are searched.
+            |equivalent_meterports as (
+            |  select
+            |    m2.id as meter_port_id,
+            |    exec_plan_id,
+            |    location_id,
+            |    measurand,
+            |    serial_nr,
+            |    article_nr,
+            |    m1.id = m2.id as is_original_meterport,
+            |    m1.article_nr not in (
+            |     '10000', '10100', '10200', '10300', '10310', '10350', '10400', '10410', '10420', '10450', '10480', '10500', '10501', '10510', '10994',
+            |     '10996', '12627', '12944', '12945', '12946', '13023', '13123', '19000', '19030', '46100', '46199', '46810', '46930'
+            |    ) as is_modern_article,
+            |    is_trivial_serial_nr(m1.serial_nr) as has_trivial_serial_nr,
+            |    min(m2.installed::date) over (partition by exec_plan_id, location_id, article_nr, serial_nr) as installed_min,
+            |    max(m2.installed) over (partition by exec_plan_id, location_id, article_nr, serial_nr) as installed_max
+            |  from original_meterports as m1
+            |    inner join meterports as m2 using (exec_plan_id, location_id, measurand, article_nr, serial_nr) as m
+            |  where (serial_nr != '' or m1.id = m2.id)
+            |    and not exists (
+            |      select 1
+            |      from meterports as m3
+            |      where m3.id != m1.id
+            |        and m3.id != m2.id
+            |        and m3.exec_plan_id = m.exec_plan_id
+            |        and m3.location_id = m.location_id
+            |        and not (m3.article_nr = m.article_nr and m3.serial_nr = m.serial_nr)
+            |        and (
+            |          (m1.installed < m3.installed and m3.installed < m2.installed)
+            |          or (m2.installed < m3.installed and m3.installed < m1.installed)
+            |        )
+            |    )
+            |),
+            |
+            |-- Add the installation date of the next non-equivalent device as installation validity end date.
+            |relevant_meterports as (
+            |  select
+            |    m1.meter_port_id,
+            |    m1.location_id,
+            |    m1.measurand,
+            |    m1.serial_nr,
+            |    m1.article_nr,
+            |    m1.exec_plan_id,
+            |    m1.is_original_meterport,
+            |    m1.is_modern_article,
+            |    m1.has_trivial_serial_nr,
+            |    m1.installed_min,
+            |    coalesce(min(m2.installed::date), '9999-12-31') as installed_next
+            |  from equivalent_meterports m1
+            |    left join meterports as m2 on (
+            |      m1.exec_plan_id = m2.exec_plan_id
+            |      and m1.location_id = m2.location_id
+            |      and m1.installed_max < m2.installed
+            |    )
+            |  group by m1.meter_port_id, m1.location_id, m1.measurand, m1.serial_nr, m1.article_nr, m1.exec_plan_id, m1.is_original_meterport, m1.is_modern_article, m1.has_trivial_serial_nr, m1.installed_min
+            |),
+            |
+            |-- Find all meter ports which have the same article_nr and serial_nr as the original meter ports, but
+            |-- which are installed at a different location in the same property (same exec_plan_id)
+            |-- for all the meterports that are modern and don't have a trivial serial number in use.
+            |relevant_meterports_on_different_location as (
+            |  select
+            |    m2.id as meter_port_id,
+            |    m2.location_id,
+            |    m2.measurand,
+            |    m1.serial_nr,
+            |    m1.article_nr,
+            |    m1.exec_plan_id,
+            |    m1.is_original_meterport,
+            |    m1.is_modern_article,
+            |    m1.has_trivial_serial_nr,
+            |    m1.installed_min,
+            |    m1.installed_next,
+            |    m1.meter_port_id as original_meter_port_id,
+            |    m1.location_id as original_location_id,
+            |    m2.installed as duplicated_installed
+            |    from relevant_meterports as m1, meterports as m2
+            |    where m1.is_modern_article
+            |      and m1.has_trivial_serial_nr = false
+            |      and m1.article_nr = m2.article_nr
+            |      and m1.serial_nr = m2.serial_nr
+            |      and m1.exec_plan_id = m2.exec_plan_id
+            |      and m1.location_id != m2.location_id
+            |),
+            |
+            |-- Combine the original meter ports with the meter ports installed at a different location.
+            |-- This combination is used to find readings for all relevant meter ports, including those
+            |-- installed at a different location.
+            |relevant_meterports_combined as (
+            |  select * from relevant_meterports_on_different_location
+            |  union
+            |  select m1.*, null, null, null from relevant_meterports as m1
+            |),
+            |
+            |-- Find all removal readings linked to a device for all relevant location_ids
+            |-- This information will be used to filter out removal readings that have been linked to the newly installed
+            |-- device as a result of a replaced main device re-using the radio component installed on the original
+            |-- main device
+            |relevant_removal_readings as (
+            |  select
+            |    r.reading_date,
+            |    r.reading_type,
+            |    r.value,
+            |    m.installed,
+            |    m.location_id
+            |  from readings_with_prio as r
+            |    inner join meterports as m on r.meter_port_id = m.id
+            |  where
+            |    m.location_id in (select location_id from relevant_meterports)
+            |    and r.reading_date >= $requestTimestamp - interval '31 day'
+            |    and r.reading_date < $requestTimestamp + interval '1 day' + interval '0 day'
+            |    and r.reading_type = 'RM'
+            |),
+            |
+            |relevant_removal_readings_duplicated_meterports as (
+            |  select
+            |    r.reading_date,
+            |    r.reading_type,
+            |    r.value,
+            |    m.installed,
+            |    rm.original_location_id as location_id
+            |  from relevant_meterports_on_different_location as rm, readings_with_prio as r
+            |    inner join meterports as m on r.meter_port_id = m.id
+            |  where
+            |    m.location_id in (select location_id from relevant_meterports_on_different_location)
+            |    and r.reading_date >= $requestTimestamp - interval '31 day'
+            |    and r.reading_date < $requestTimestamp + interval '1 day' + interval '0 day'
+            |    and r.reading_type = 'RM'
+            |),
+            |
+            |-- Combine the removal readings from the original meter ports and the duplicated meter ports.
+            |relevant_removal_readings_combined as (
+            |  select * from relevant_removal_readings
+            |  union
+            |  select * from relevant_removal_readings_duplicated_meterports
+            |)
+            |
+            |-- Find readings within the -31/+0 days period.
+            |select distinct on (location_id, measurand)
+            |  coalesce(rm.original_location_id, rm.location_id) as location_id,
+            |  measurand,
+            |  reading_date,
+            |  value,
+            |  unit,
+            |  reading_type,
+            |  service_type,
+            |  serial_nr,
+            |  case
+            |    when reading_date < $requestTimestamp
+            |      then 'readings_before_requested_date'
+            |      else 'readings_on_requested_date'
+            |  end as reading_label,
+            |  (select count(*) from original_meterports) as location_measurands_to_fill,
+            |  ((select count(*) from relevant_meterports) - (select count(*) from original_meterports)) as ambiguous_location_measurands_to_fill,
+            |  (select count(*) from relevant_meterports_on_different_location) as meterports_on_duplicated_locations
+            |from relevant_meterports_combined as rm
+            |  inner join readings_with_prio as r using (meter_port_id)
+            |where $requestTimestamp - interval '31 day' <= reading_date
+            |  and reading_date < $requestTimestamp + interval '1 day' + interval '0 day'
+            |  and installed_min <= reading_date
+            |  and (reading_date < installed_next or (reading_date = installed_next and reading_type = 'RM'))
+            |  and not exists (
+            |    select 1
+            |    from reading_quality_indicators as rqi
+            |    where rqi.meter_port_id = r.meter_port_id
+            |      and rqi.reading_date = r.reading_date
+            |      and rqi.reading_type = r.reading_type
+            |      and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+            |  )
+            |  and not exists (
+            |    select 1
+            |    from relevant_removal_readings_combined as rr
+            |    where (rr.location_id = rm.location_id or rr.location_id = rm.original_location_id)
+            |      and rr.reading_date = r.reading_date
+            |      and rr.reading_type = r.reading_type
+            |      and rr.value = r.value
+            |      and rr.installed <= rm.installed_min
+            |      and date(rm.installed_min) >= date(rr.reading_date)
+            |  )
+            |order by
+            |  location_id,
+            |  measurand,
+            |  not migrated desc, -- true > false
+            |  abs($requestTimestamp::date - reading_date::date),
+            |  is_original_meterport desc, -- true > false
+            |  reading_prio desc
+            |""".stripMargin.as[MdrMimoReading]
+
+    val mimoReadingsF: Future[Seq[MdrMimoReading]] = dbReadOnly.run(dbIoActionWithLocalSetting(query, setLocalWorkMemTo4G))
+    AwaitWithContext.result(mimoReadingsF, Duration.Inf)
+  }
+
+  /**
+   * Find readings by location
+   *
+   * @return
+   */
+  override def findReadingsByLocations(
+    filterLocations: Set[LocationId],
+    filterExecPlan: Option[ExecPlanID],
+    filterTimespan: LocalTimespan,
+    filterReadingTypes: Set[MdrReadingType],
+    filterServiceTypes: Set[MdrReadingProcedure]
+  ): Future[Vector[MdrMeterPortReading]] = monitor {
+    logger.debug(s"MDR query findReadingsByLocations", "filterLocations" -> filterLocations,
+      "filterTimespan" -> filterTimespan, "filterReadingTypes" -> filterReadingTypes,
+      "filterServiceTypes" -> filterServiceTypes)
+
+    val query = sql"""
+      select
+        r.meter_port_id,
+        r.reading_date,
+        r.value,
+        r.unit,
+        r.reading_type,
+        r.service_type,
+        r.transport_type,
+        r.medium_type,
+        r.estimation_type,
+        r.identifier
+      from
+        readings as r,
+        meterports as mp
+      where
+        mp.id = r.meter_port_id
+        and mp.location_id = any($filterLocations)
+        and r.reading_date >= ${filterTimespan.from}
+        and r.reading_date < ${filterTimespan.to}
+      """
+      .+?(filterExecPlan)(execPlanID => sql" and mp.exec_plan_id = $execPlanID")
+      .+?(filterReadingTypes)(mdrReadingTypes => sql" and r.reading_type = any($mdrReadingTypes)")
+      .+?(filterServiceTypes)(readingProcedures => sql" and r.service_type = any($readingProcedures)")
+      .as[MdrMeterPortReading]
+    // We deactivate JIT and parallel query execution to help the planner build a fast query
+    // (JIT adds 2s overhead, the parallel execution another 2s)
+    // There is no way to deal with this on a more global level.
+    // We need postgres metrics and see what happens when we i.e. disable jit globally
+    dbReadOnly.run(dbIoActionWithLocalSetting(query, setLocalJitOff, setLocalWorkMemTo64M, setLocalMaxParallelWorkersPerGatherTo0))
+  }
+
+  /**
+   * Check whether readings exist for a main device
+   *
+   * @param filterTimespan has to be in the timezone of the meterport which is requested
+   * @return
+   */
+  override def existReadingsByMainDevice(filterDevices: Set[DeviceId], filterTimespan: LocalTimespan,
+    filterReadingTypes: Set[MdrReadingType]): Vector[MdrDeviceReadingsInfo] = monitor {
+    logger.debug(s"MDR query existReadingsByMainDevice",
+      "filterTimespan" -> filterTimespan, "filterReadingTypes" -> filterReadingTypes,
+      "filterDevices" -> filterDevices)
+
+    val mdrDeviceReadingsInfo = dbReadOnly.run(
+      sql"""
+        select distinct on (mp.main_device_id, r.reading_type)
+          mp.main_device_id,
+          r.reading_date,
+          r.reading_type,
+          mp.article_nr,
+          mp.serial_nr,
+          r.radio_article,
+          r.radio_serial
+        from
+          readings_with_config as r,
+          meterports as mp
+        where
+          mp.id = r.meter_port_id
+          and mp.main_device_id = any($filterDevices)
+          and r.reading_date >= ${filterTimespan.from}
+          and r.reading_date < ${filterTimespan.to}
+          and r.reading_type = any($filterReadingTypes)
+          -- we don't want to take any readings into account that are marked as future readings
+          and not exists (
+            select 1
+            from reading_quality_indicators as rqi
+            where rqi.meter_port_id = r.meter_port_id
+              and rqi.reading_date = r.reading_date
+              and rqi.reading_type = r.reading_type
+              and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+          )
+        order by
+          mp.main_device_id, r.reading_type, reading_date desc
+        """.as[MdrDeviceReadingsInfo]
+    )
+    AwaitWithContext.result(mdrDeviceReadingsInfo, Duration.Inf)
+  }
+
+  private[impl] def findReadingsByPropertyStmt(
+    propertyId: PropertyID,
+    filterDevices: Set[DeviceId],
+    filterExecPlan: Option[ExecPlanID],
+    filterFrom: LocalInstant,
+    filterTo: LocalInstant,
+    filterReadingTypes: Set[MdrReadingType],
+    filterServiceTypes: Set[MdrReadingProcedure],
+    filterTransportTypes: Set[MdrTransportType],
+    filterEndOfMonth: Boolean,
+    anyDayReplacement: Boolean,
+    onlyLatest: Boolean,
+    filterInstalled: Boolean,
+    additionalWhereClause: Option[SQLActionBuilder]) = {
+    val selectStart = (anyDayReplacement, onlyLatest) match {
+      case (false, false) => sql"select"
+      case (true, false)  => sql"select distinct on (r.meter_port_id, reading_day)"
+      case (false, true)  => sql"select distinct on (r.meter_port_id)"
+      case (true, true)   => sql"""select distinct on (meter_port_id) *
+                                 from (
+                                   select distinct on (r.meter_port_id, reading_day)
+                              """
+    }
+
+    val selectEnd = (anyDayReplacement, onlyLatest) match {
+      case (false, false) => sql" order by r.reading_date asc"
+      case (true, false)  => sql" order by r.meter_port_id, reading_day, reading_prio desc"
+      case (false, true)  => sql" order by r.meter_port_id, reading_date desc, reading_prio desc"
+      case (true, true)   => sql"""  order by r.meter_port_id, reading_day, reading_prio desc, reading_date desc
+                                 ) as readings_with_and_end_of_day_logic
+                                 order by meter_port_id, reading_date desc
+                              """
+    }
+
+    val needsDuplicateRemovalFilter = filterReadingTypes.isEmpty || filterReadingTypes.contains(MdrReadingType.Removal)
+
+    lazy val cteQuery =
+      sql"""
+        with removal_readings as materialized (
+          select
+            r.reading_date,
+            r.reading_type,
+            r.value,
+            m.installed
+          from
+            readings_with_prio r
+          inner join
+            meterports m
+          on
+            r.meter_port_id = m.id
+          where
+            m.property_id = $propertyId
+            and r.reading_date >= $filterFrom
+            and r.reading_date < $filterTo
+            and r.reading_type = 'RM'
+        )
+      """
+
+    lazy val removalReadingFilter =
+      sql"""
+        and not exists (
+          select 1
+          from removal_readings rr
+          where
+            rr.reading_date = r.reading_date
+            and rr.reading_type = r.reading_type
+            and rr.value = r.value
+            and rr.installed < mp.installed
+            and date(mp.installed) >= date(rr.reading_date)
+        )
+      """
+
+    val queryHead = if (needsDuplicateRemovalFilter) {
+      cteQuery
+        .++(selectStart)
+    } else {
+      selectStart
+    }
+
+    queryHead
+      .++(
+        sql"""
+              r.meter_port_id,
+              mp.property_id,
+              mp.location_id,
+              mp.meter_port,
+              mp.main_device_id,
+              mp.article_nr,
+              mp.serial_nr,
+              r.transmitting_radio_article,
+              r.transmitting_radio_serial,
+              r.reading_date,
+              r.value,
+              r.unit,
+              r.reading_type,
+              r.service_type,
+              r.transport_type,
+              r.medium_type,
+              r.estimation_type,
+              mp.measurand,
+              mp.time_zone,
+              mp.certification_date,
+              r.identifier
+            """)
+      .+?(anyDayReplacement || onlyLatest,
+        sql"""
+            , date_trunc('day', r.reading_date) as reading_day
+            , reading_prio
+            """)
+      .++(
+        sql"""
+                from
+                  readings_with_prio as r
+                inner join
+                  meterports as mp
+                on
+                  r.meter_port_id = mp.id
+                where
+                  mp.property_id = $propertyId
+                  and r.reading_date >= $filterFrom
+                  and r.reading_date < $filterTo
+                   -- we don't want to take any readings into account that are marked as future readings
+                  and not exists (
+                    select 1
+                    from
+                      reading_quality_indicators as rqi
+                    where
+                      rqi.meter_port_id = r.meter_port_id
+                      and rqi.reading_date = r.reading_date
+                      and rqi.reading_type = r.reading_type
+                      and jsonb_path_exists(rqi.payload,#$qualityIndicatorsFutureQueryPath)
+                  )
+        """)
+      .+?(needsDuplicateRemovalFilter, removalReadingFilter)
+      .+?(filterEndOfMonth, sql" and date_trunc('month', r.reading_date) != date_trunc('month', r.reading_date + interval '1 days')")
+      .+?(filterDevices)(deviceIds => sql" and mp.main_device_id = any($deviceIds)")
+      .+?(filterExecPlan)(execPlanID => sql" and mp.exec_plan_id = $execPlanID")
+      .+?(filterReadingTypes)(mdrReadingTypes => sql" and r.reading_type = any($mdrReadingTypes)")
+      .+?(filterServiceTypes)(readingProcedures => sql" and r.service_type = any($readingProcedures)")
+      .+?(filterTransportTypes)(transportTypes => sql" and r.transport_type = any($transportTypes)")
+      .+?(filterInstalled,
+        sql"""
+             | and r.reading_date >= mp.installed
+             | and date_trunc('day', r.reading_date) <= (
+             |   select date_trunc('day', coalesce(min(installed), r.reading_date))
+             |   from meterports mpi
+             |   where mpi.location_id = mp.location_id and mpi.exec_plan_id = mp.exec_plan_id and mpi.installed > mp.installed
+             |   -- we might have an additional meterport with the same article/serial combination due to installation date corrections
+             |   -- which could result in readings not being returned if the corrected installation date is after the original installation
+             |   -- date but before the reading date and the reading itself has been linked to the original meterport
+             |   and not (mp.serial_nr = mpi.serial_nr and mp.article_nr = mpi.article_nr)
+             |   and (mpi.migrated = false or mpi.migrated = mp.migrated)
+             | )""".stripMargin) // migration handling necessary due to broken installation date for migrated meterports - see RDM-1182 for details
+      .+?(additionalWhereClause)(clause => sql" and " ++ clause)
+      .++(selectEnd)
+  }
+
+  private[impl] def findReadingsByPropertyInTwoStepsStmt(
+    propertyId: PropertyID,
+    filterDevices: Set[DeviceId],
+    filterExecPlan: Option[ExecPlanID],
+    filterFrom: LocalInstant,
+    filterStepBoundary: LocalInstant,
+    filterTo: LocalInstant,
+    filterReadingTypes: Set[MdrReadingType],
+    filterServiceTypes: Set[MdrReadingProcedure],
+    filterTransportTypes: Set[MdrTransportType],
+    filterEndOfMonth: Boolean,
+    anyDayReplacement: Boolean,
+    onlyLatest: Boolean,
+    filterInstalled: Boolean
+  ) = {
+
+    val shortTermQuery = findReadingsByPropertyStmt(propertyId, filterDevices, filterExecPlan,
+      filterStepBoundary, filterTo, filterReadingTypes, filterServiceTypes, filterTransportTypes, filterEndOfMonth,
+      anyDayReplacement, onlyLatest, filterInstalled, additionalWhereClause = None)
+
+    val longTermQuery = findReadingsByPropertyStmt(propertyId, filterDevices, filterExecPlan,
+      filterFrom, filterStepBoundary, filterReadingTypes, filterServiceTypes, filterTransportTypes, filterEndOfMonth,
+      anyDayReplacement, onlyLatest, filterInstalled,
+      additionalWhereClause = Some(sql"not mp.id in (select meter_port_id from short_term_results)"))
+
+    sql"""WITH short_term_results AS (""" ++
+    shortTermQuery ++
+    sql""") SELECT * FROM short_term_results UNION ALL (""" ++
+    longTermQuery ++
+    sql""")"""
+  }
+
+  override def findReadingsByProperty(
+    propertyId: PropertyID,
+    filterDevices: Set[DeviceId],
+    filterExecPlan: Option[ExecPlanID],
+    filterFrom: LocalInstant,
+    filterTo: LocalInstant,
+    filterReadingTypes: Set[MdrReadingType],
+    filterServiceTypes: Set[MdrReadingProcedure],
+    filterTransportTypes: Set[MdrTransportType],
+    filterEndOfMonth: Boolean,
+    anyDayReplacement: Boolean,
+    onlyLatest: Boolean,
+    filterInstalled: Boolean
+  ): Vector[MdrMeterReading] = monitor {
+
+    logger.debug(s"MDR query findReadingsByProperty with " +
+                 s"propertyId=$propertyId filterDevices=$filterDevices filterExecplan=$filterExecPlan " +
+                 s"filterFrom=$filterFrom filterTo=$filterTo filterReadingTypes=$filterReadingTypes " +
+                 s"filterServiceTypes=$filterServiceTypes filterTransportTypes=$filterTransportTypes " +
+                 s"filterEndOfMonth=$filterEndOfMonth anyDayReplacement=$anyDayReplacement onlyLatest=$onlyLatest")
+
+    val fromDate = filterFrom.toLocalDate
+    val toDate = filterTo.toLocalDate
+    val query =
+      if (onlyLatest && ChronoUnit.MONTHS.between(fromDate, toDate) >= 5) {
+        val boundaryDate = toDate.`with`(firstDayOfMonth()).minus(2, ChronoUnit.MONTHS)
+        findReadingsByPropertyInTwoStepsStmt(propertyId, filterDevices, filterExecPlan, filterFrom,
+          LocalInstant(boundaryDate), filterTo, filterReadingTypes, filterServiceTypes, filterTransportTypes,
+          filterEndOfMonth, anyDayReplacement, onlyLatest, filterInstalled)
+          .as[MdrMeterReading]
+      } else {
+        findReadingsByPropertyStmt(propertyId, filterDevices, filterExecPlan, filterFrom, filterTo,
+          filterReadingTypes, filterServiceTypes, filterTransportTypes, filterEndOfMonth,
+          anyDayReplacement, onlyLatest, filterInstalled, None)
+          .as[MdrMeterReading]
+      }
+
+    // TODO: This query returns the unit from the readings. There is also the display unit in the meter port config, could be a fallback ?
+    // We deactivate JIT and parallel query execution to help the planner build a fast query
+    // (JIT adds 2s overhead, the parallel execution another 2s)
+    // There is no way to deal with this on a more global level.
+    // We need postgres metrics and see what happens when we i.e. disable jit globally
+    val meterReadingsF: Future[Vector[MdrMeterReading]] = dbReadOnly.run(
+      dbIoActionWithLocalSetting(query, setLocalWorkMemTo4G, setLocalJitOff, setLocalMaxParallelWorkersPerGatherTo0)
+    )
+    AwaitWithContext.result(meterReadingsF, Duration.Inf)
+  }
+
+  /**
+   * Find readings by meter port
+   *
+   * @return
+   */
+  override def findReadingsByMeterPort(
+    execPlanId: ExecPlanID,
+    mainDeviceId: DeviceId,
+    meterPort: PortNr,
+    filterTimespan: LocalTimespan
+  ): Future[Vector[MdrMeterReading]] = monitor {
+    logger.debug(s"MDR query findReadingsByMeterPort with contractPosId=$execPlanId mainDeviceId=$mainDeviceId " +
+                 s"meterPort=$meterPort filterTimespan=$filterTimespan")
+
+    db.run(
+      sql"""
+         select
+           r.meter_port_id,
+           mp.property_id,
+           mp.location_id,
+           mp.meter_port,
+           mp.main_device_id,
+           mp.article_nr,
+           mp.serial_nr,
+           r.transmitting_radio_article,
+           r.transmitting_radio_serial,
+           r.reading_date,
+           r.value,
+           r.unit,
+           r.reading_type,
+           r.service_type,
+           r.transport_type,
+           r.medium_type,
+           r.estimation_type,
+           mp.measurand,
+           mp.time_zone,
+           mp.certification_date,
+           r.identifier
+         from
+           readings as r,
+           meterports as mp
+         where
+           mp.id = r.meter_port_id
+           and mp.exec_plan_id = $execPlanId
+           and mp.main_device_id = $mainDeviceId
+           and mp.meter_port = $meterPort
+           and r.reading_date >= ${filterTimespan.from}
+           and r.reading_date < ${filterTimespan.to}
+         order by
+           r.reading_date
+         """
+        .as[MdrMeterReading]
+    )
+  }
+
+  override def endOfMonthsReadings(
+    execPlanId: ExecPlanID,
+    dates: Set[LocalInstant]
+  ): Vector[(MeterPortID, LocalInstant)] = monitor {
+    val dts = dates.mkString("('", "','", "')")
+
+    val query = sql"""
+      select distinct
+        meter_port_id,
+        reading_date
+      from last_reading_month
+      where exec_plan_id = ${execPlanId.value}
+            and reading_date in #$dts
+      order by meter_port_id, reading_date asc
+      """.as[(MeterPortID, LocalInstant)]
+
+    AwaitWithContext.result(db.run(query), 2.minute)
+  }
+
+  override def getRawReadings(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawReading] = {
+    val inner =
+      sql"""Select r.* from
+             readings r, meterports m
+            where
+              m.id = r.meter_port_id
+      """
+        .+?(execPlanId)(e => sql" AND m.exec_plan_id = $e")
+        .+?(propertyId)(p => sql" AND m.property_id = $p")
+
+    val query =
+      sql"""
+        SELECT
+          r.meter_port_id,
+          r.reading_date,
+          r.reading_type,
+          r.value,
+          r.unit,
+          r.service_type,
+          r.estimation_type,
+          r.medium_type,
+          r.transport_type,
+          r.transmitting_radio_article,
+          r.transmitting_radio_serial,
+          r.created_at,
+          r.migrated,
+          r.reader_type,
+          r.identifier,
+          q.payload,
+          r.updated_at
+        FROM (""" ++ inner ++ sql""") r
+                                    LEFT JOIN reading_quality_indicators q
+                                    ON r.meter_port_id = q.meter_port_id AND
+                                    r.reading_date = q.reading_date AND
+                                    r.reading_type = q.reading_type
+                                    """
+
+    AwaitWithContext.result(db.run(query.as[MdrRawReading]), Duration.Inf)
+  }
+
+  override def getRawMeterports(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawMeterport] = {
+    val query =
+      sql"""Select
+                      m.id,
+                      m.exec_plan_id,
+                      m.main_device_id,
+                      m.meter_port,
+                      m.property_id,
+                      m.location_id,
+                      m.installed,
+                      m.uninstalled,
+                      m.measurand,
+                      m.time_zone,
+                      m.article_nr,
+                      m.serial_nr,
+                      m.data_input_service,
+                      m.retention_policy,
+                      m.initial_retention_policy,
+                      m.migrated,
+                      m.certification_date,
+                      m.location_number,
+                      m.last_consumption_date,
+                      m.meter_use,
+                      m.reading_frequency,
+                      m.radio_component_uninstalled
+                    from meterports m
+                    where 1 = 1 """
+
+        .+?(execPlanId)(e => sql" AND m.exec_plan_id = $e")
+        .+?(propertyId)(p => sql" AND m.property_id = $p")
+
+    AwaitWithContext.result(db.run(query.as[MdrRawMeterport]), Duration.Inf)
+  }
+
+  override def getRawMeterportConfigs(propertyId: Option[PropertyID], execPlanId: Option[ExecPlanID]): Vector[MdrRawMeterportConfig] = {
+    val query =
+      sql"""Select
+                      mc.meter_port_id,
+                      mc.valid_from,
+                      mc.deadline,
+                      mc.device_type,
+                      mc.usage_unit_id,
+                      mc.radio_article,
+                      mc.radio_serial,
+                      mc.radio_device_id,
+                      mc.hca_scale,
+                      mc.hca_scale_type,
+                      mc.hca_zero_setter,
+                      mc.hca_sensor_mode,
+                      mc.migrated_config,
+                      mc.hca_scale_factor,
+                      mc.vol_pulse_capacity,
+                      mc.vol_pulse_per_unit,
+                      mc.vol_display_unit,
+                      mc.vol_mbus_address
+                    from meterports m, meterport_configs mc
+                    where m.id = mc.meter_port_id """
+
+        .+?(execPlanId)(e => sql" AND m.exec_plan_id = $e")
+        .+?(propertyId)(p => sql" AND m.property_id = $p")
+
+    AwaitWithContext.result(db.run(query.as[MdrRawMeterportConfig]), Duration.Inf)
+  }
+
+  override def saveRequestForUiReadingsExport(
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: ZonedDateTime,
+    consumptionDateTo: ZonedDateTime,
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand]): Option[String] = {
+
+    val readingsExportRequest = UiReadingsExportRequest(
+      propertyNumbers,
+      locationNumbers,
+      articleNumbers,
+      serialNumbers,
+      deviceTypes,
+      LocalInstant(consumptionDateFrom),
+      LocalInstant(consumptionDateTo),
+      readingTypes,
+      measurandTypes
+    )
+
+    insertReadingsExportRequest(readingsExportRequest)
+      .map(_.toString)
+  }
+
+  override def getUiReadingsForExport(id: String): Source[UiReadingsSearchData, NotUsed] = {
+    try {
+      getAndDeleteReadingsExportReference(id) match {
+        case None      => throw ReadingsExportIdNotFound(id)
+        case Some(ref) =>
+          val query = buildUiReadingsQuery(
+            propertyIds = Vector.empty,
+            propertyNumbers = ref.request.propertyNumbers,
+            locationNumbers = ref.request.locationNumbers,
+            articleNumbers = ref.request.articleNumbers,
+            serialNumbers = ref.request.serialNumbers,
+            deviceTypes = ref.request.deviceTypes,
+            consumptionDateFrom = Some(ref.request.consumptionDateFrom.toZonedDateTimeUTC),
+            consumptionDateTo = Some(ref.request.consumptionDateTo.toZonedDateTimeUTC),
+            readingTypes = ref.request.readingTypes,
+            measurandTypes = ref.request.measurandTypes,
+            limit = None,
+            dataIsforReadingsExportFeature = true)
+
+          val publisher = dbReadOnly.stream(
+            query
+              .withStatementParameters(
+                fetchSize = 1000,
+                rsType = ResultSetType.ForwardOnly,
+                rsConcurrency = ResultSetConcurrency.ReadOnly,
+                statementInit = _.setQueryTimeout(120),
+              )
+              .transactionally
+          )
+          Source.fromPublisher(publisher)
+      }
+    } catch {
+      case e @ (_: ReadingsExportIdNotFound | _: TimeoutException) =>
+        throw e.withMeta("requestReferenceId" -> id)
+    }
+  }
+
+  override def deleteRequestsForUiReadingsExport(createdBefore: ZonedDateTime): Unit = monitor {
+    val query = sqlu"DELETE FROM readings_export_requests WHERE created_at < $createdBefore"
+
+    AwaitWithContext.result(db.run(query).map(_ => Done), Duration.Inf)
+    ()
+  }
+
+  override def getUiReadings(
+    propertyIds: Vector[PropertyID],
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: Option[ZonedDateTime],
+    consumptionDateTo: Option[ZonedDateTime],
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand],
+    limit: Option[Int]
+  ): Vector[UiReadingsSearchData] = {
+
+    val queryWithDeserializer = buildUiReadingsQuery(propertyIds, propertyNumbers, locationNumbers, articleNumbers, serialNumbers,
+      deviceTypes, consumptionDateFrom, consumptionDateTo, readingTypes, measurandTypes, limit, dataIsforReadingsExportFeature = false)
+
+
+    try {
+      AwaitWithContext.result(
+        dbReadOnly.run(queryWithDeserializer.withStatementParameters(statementInit = _.setQueryTimeout(120))),
+        2.minute)
+    } catch {
+      case e: TimeoutException =>
+        throw e.withMeta(
+          "locationNumbers" -> locationNumbers.map(_.value).mkString(","),
+          "articleNumbers" -> articleNumbers.map(_.value).mkString(","),
+          "serialNumbers" -> serialNumbers.map(_.value).mkString(","),
+          "deviceTypes" -> deviceTypes.map(_.value).mkString(","),
+          "consumptionDateTo" -> consumptionDateTo.toString,
+          "consumptionDateFrom" -> consumptionDateFrom.toString,
+          "readingTypes" -> readingTypes.map(_.entryName).mkString(","),
+          "measurandTypes" -> measurandTypes.map(_.entryName).mkString(","),
+          "limit" -> limit.toString
+        )
+    }
+  }
+
+  private def buildUiReadingsQuery(
+    propertyIds: Vector[PropertyID],
+    propertyNumbers: Vector[PropertyNumber],
+    locationNumbers: Vector[LocationNumber],
+    articleNumbers: Vector[ArticleNr],
+    serialNumbers: Vector[SerialNr],
+    deviceTypes: Vector[MdrDeviceClass],
+    consumptionDateFrom: Option[ZonedDateTime],
+    consumptionDateTo: Option[ZonedDateTime],
+    readingTypes: Vector[MdrReadingType],
+    measurandTypes: Vector[MdrMeasurand],
+    limit: Option[Int],
+    dataIsforReadingsExportFeature: Boolean
+  ): SqlStreamingAction[Vector[UiReadingsSearchData], UiReadingsSearchData, Effect] = {
+    val serialNumbersWithoutLeadingZeros = serialNumbers.map(v => v.value.replaceFirst("^0+(?!$)", ""))
+    val locationNumbersWithoutLeadingZeros = locationNumbers.map(v => v.value.replaceFirst("^0+(?!$)", ""))
+
+    lazy val cteQuery =
+      sql"""
+        with removal_readings as materialized (
+          select
+            r.reading_date,
+            r.reading_type,
+            r.value,
+            m.installed
+          from
+            property_number_lookup pnl,
+            readings r
+          inner join
+            meterports m
+          on
+            r.meter_port_id = m.id
+          where
+            m.exec_plan_id = pnl.exec_plan_id
+            and SUBSTRING(pnl.property_number, 1, 9) = any($propertyNumbers)
+            and r.reading_type = 'RM'
+        """
+        .+?(consumptionDateFrom)(from => sql" and r.reading_date >= $from")
+        .+?(consumptionDateTo)(to => sql" and r.reading_date <= $to")
+        .++(sql")")
+
+    lazy val removalReadingFilter =
+      sql"""
+        and not exists (
+          select 1
+          from removal_readings rr
+          where
+            rr.reading_date = r.reading_date
+            and rr.reading_type = r.reading_type
+            and rr.value = r.value
+            and rr.installed < mp.installed
+            and date(mp.installed) >= date(rr.reading_date)
+        )
+      """
+
+    val propertyNumberOrUuid = (propertyIds.toList, propertyNumbers.toList) match {
+      case (Nil, Nil)     => sql""
+      case (ids, Nil)     => sql" and pnl.property_id = any($ids)"
+      case (Nil, numbers) => sql" and SUBSTRING(pnl.property_number, 1, 9) = any($numbers)"
+      case (ids, numbers) => sql" and (pnl.property_id = any($ids) or SUBSTRING(pnl.property_number, 1, 9) = any($numbers))"
+    }
+    val inner =
+      sql"""
+      SELECT
+        pnl.property_number,
+        pnl.property_id,
+        mpcm.usage_unit_id,
+        mp.id,
+        mp.location_number,
+        mp.location_id,
+        mp.meter_port,
+        mp.main_device_id,
+        mp.serial_nr,
+        mp.article_nr,
+        mp.installed,
+        mp.uninstalled,
+        r.reading_date,
+        r.value,
+        r.unit,
+        mpcm.device_type,
+        r.reading_type,
+        r.transport_type,
+        r.medium_type,
+        mp.measurand,
+        mp.uninstalled,
+        r.transmitting_radio_serial,
+        r.transmitting_radio_article,
+        mp.data_input_service
+      FROM readings r RIGHT JOIN meterports mp
+            on mp.id = r.meter_port_id
+    """
+        .+?(consumptionDateFrom)(from => sql" and r.reading_date >= $from")
+        .+?(consumptionDateTo)(to => sql" and r.reading_date <= $to")
+        .++(
+          sql""",
+           property_number_lookup pnl,
+           LATERAL (SELECT DISTINCT ON (mpc.meter_port_id)
+              mpc.meter_port_id,
+              mpc.device_type,
+              mpc.usage_unit_id,
+              max(mpc.valid_from) OVER (PARTITION BY mpc.meter_port_id) as max_valid_from
+          FROM meterport_configs mpc where mp.id = mpc.meter_port_id) mpcm
+      WHERE mp.exec_plan_id = pnl.exec_plan_id AND
+            mp.property_id = pnl.property_id
+      """ ++ propertyNumberOrUuid
+        )
+        .+?(locationNumbersWithoutLeadingZeros)(locationNumbersVector => sql" and LTRIM(mp.location_number, '0') = any($locationNumbersVector)")
+        .+?(articleNumbers)(articleNumbersVector => sql" and (mp.article_nr = any($articleNumbersVector) OR r.transmitting_radio_article = any($articleNumbersVector))")
+        .+?(serialNumbersWithoutLeadingZeros)(serialNumbersVector => sql" and (LTRIM(mp.serial_nr, '0') = any($serialNumbersVector)  OR LTRIM(r.transmitting_radio_serial, '0') = any($serialNumbersVector))")
+        .+?(readingTypes)(readingTypesVector => sql" and r.reading_type = any($readingTypesVector)")
+        .+?(deviceTypes)(deviceTypesVector => sql" and mpcm.device_type = any($deviceTypesVector::device_type[])")
+        .+?(measurandTypes)(measurandTypesVector => sql" and mp.measurand = any($measurandTypesVector)")
+        .+?(dataIsforReadingsExportFeature, removalReadingFilter)
+        .+?(limit)(outputLimit => sql" limit $outputLimit")
+
+    val query =
+      if (!dataIsforReadingsExportFeature)
+        sql"""
+          SELECT r.*, q.payload
+          FROM (""" ++ inner ++ sql""") r
+                                      LEFT JOIN reading_quality_indicators q
+                                      ON r.id = q.meter_port_id AND
+                                      r.reading_date = q.reading_date AND
+                                      r.reading_type = q.reading_type
+                                      """
+      else cteQuery ++ sql"SELECT r.*, null FROM (" ++ inner ++ sql") r"
+    query.as[UiReadingsSearchData]
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////
+  // NOT PART OF MeterDataRepo TRAIT
+  //////////////////////////////////////////////////////////////////////////////////////
+
+  private def insertReadingsExportRequest(uiReadingsExportRequest: UiReadingsExportRequest): Option[UUID] = monitor {
+    val query = sql"""INSERT INTO readings_export_requests (request)
+                      VALUES (${uiReadingsExportRequest.toJson}::jsonb)
+                      RETURNING id
+                   """
+    AwaitWithContext.result(db.run(query.as[UUID]), Duration.Inf)
+      .headOption
+  }
+
+  private def getAndDeleteReadingsExportReference(id: String): Option[UiReadingExportReference] = monitor {
+    val query = sql"DELETE FROM readings_export_requests WHERE id = $id::uuid RETURNING *"
+
+    AwaitWithContext.result(db.run(query.as[UiReadingExportReference]), Duration.Inf)
+      .headOption
+  }
+
+  /**
+   * Delete meter ports, meter port configs and related readings
+   */
+  def deleteMeterPortsForExecPlanCascade(execPlanId: ExecPlanID): Unit = monitor {
+    val deletePorts = sqlu"DELETE FROM meterports WHERE exec_plan_id = $execPlanId"
+    val deleteMandant = sqlu"DELETE FROM exec_plan_mandants WHERE exec_plan_id = $execPlanId"
+    val deleteProperty = sqlu"DELETE FROM property_number_lookup WHERE exec_plan_id = $execPlanId"
+    AwaitWithContext.result(db.run(DBIO.seq(deletePorts, deleteMandant, deleteProperty)), Duration.Inf)
+    ()
+  }
+
+  /**
+   * Truncate readings table, for testing only
+   */
+  def truncateReadings(): Future[Done] = monitor {
+    logger.debug("MDR truncating readings table")
+    db.run(sqlu"""truncate table readings cascade""").map { _ => Done }
+  }
+
+  def truncateReadingsExportRequests(): Future[Done] = monitor {
+    logger.debug("MDR truncating readings export request table")
+    db.run(sqlu"""truncate table readings_export_requests""").map(_ => Done)
+  }
+  /**
+   * Truncate readings and device status tables, for testing only
+   */
+  def truncateReadingsStatus(): Future[Done] = monitor {
+    logger.debug("MDR truncating readings status tables")
+    db.run(DBIO.seq(
+      sqlu"""truncate table meterport_status_events cascade""",
+      sqlu"""truncate table meterport_readings_status cascade"""
+    )).map { _ => Done }
+  }
+
+  // Implemented according to documentation https://www.postgresql.org/docs/current/ddl-partitioning.html
+  // In each run, will only create one partition.
+  def createPartitionIfNeeded(tablename: String = "readings", date: => LocalInstant = LocalInstant.nowInGmtPlus1()): () => DBIOAction[Unit, NoStream, Effect] = () => {
+
+    if (date.toLocalDateTime.toLocalTime.getHour > 4) {
+      // It is dawning, so we skip the run
+      DBIO.successful(())
+    } else {
+      val datefmt = DateTimeFormatter.ofPattern("uuuu_MM")
+
+      val maybeNextBounds = sql"""
+                 select max as lower, max + interval '1 month' as upper
+                 from
+                   (select max(regexp_replace(pg_get_expr(partition.relpartbound, partition.oid), '.*TO...(.*)..', '\1')::timestamp) as max
+                   from pg_class parent, pg_class partition, pg_inherits rel
+                   where rel.inhparent = parent.oid and partition.oid = rel.inhrelid
+                     and parent.relname = '#$tablename'
+                     and pg_get_expr(partition.relpartbound, partition.oid) != 'DEFAULT') as upper_bound
+                 where upper_bound.max is not null
+                 """.as[(LocalInstant, LocalInstant)].headOption
+
+      maybeNextBounds
+        .map {
+          case None =>
+            // no partitions there -> start at the first of current month
+            Some(date.withDayOfMonth(1), LocalInstant(date.toLocalDate.plusMonths(1)).withDayOfMonth(1))
+          //noinspection ScalaUnusedSymbol
+          case Some((lowerInstant, upperInstant)) if lowerInstant.toLocalDate isAfter date.toLocalDate.plusMonths(3) =>
+            // happens when the existing partition max upper bound is more than 1 month in the future
+            None
+          //noinspection ScalaUnusedSymbol
+          case mnb @ Some((lowerInstant, upperInstant)) =>
+            // next calculated partition slice
+            mnb
+        }
+        .flatMap {
+          case None                               =>
+
+            DBIO.successful(())
+          case Some((lowerInstant, upperInstant)) =>
+            val lower = lowerInstant.toLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val upper = upperInstant.toLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val partitionname = tablename + "_p" + lowerInstant.toLocalDate.format(datefmt)
+
+            sql"select create_new_partition('#$tablename', '#$partitionname', '#$lower'::timestamp, '#$upper'::timestamp) is null"
+              .as[Boolean]
+              .map(_ => ())
+
+        }
+    }
+  }
+}

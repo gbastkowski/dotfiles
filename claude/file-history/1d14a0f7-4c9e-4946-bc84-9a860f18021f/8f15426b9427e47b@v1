@@ -1,0 +1,2076 @@
+package com.ista.rdm.outputchannel.mdr
+
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Flow, Keep, Sink}
+import com.ista.rdm.common.logging.LazyLogging
+import com.ista.rdm.common.sharedkernel.common.LocalTimespan
+import com.ista.rdm.common.sharedkernel.contract.MandantID
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.types.{LocalInstant, ZoneIds}
+import com.ista.rdm.domain.shared.dataRetention.CompoundRetentionPolicy
+import com.ista.rdm.domain.shared.meterport.DataInputService
+import com.ista.rdm.domain.shared.meterport.DataInputService.{COMPETITOR_TAKEOVER_SERVICE, LGSTRUGET_SERVICE}
+import com.ista.rdm.domain.shared.meterport.QualityIndicator.{DemountedRadioReading, FutureReading}
+import com.ista.rdm.domain.shared.meterport._
+import com.ista.rdm.domain.shared.property.PropertyNumber
+import com.ista.rdm.outputchannel.mdr.api.MdrReadingType.Initial
+import com.ista.rdm.outputchannel.mdr.api._
+import com.ista.rdm.outputchannel.mdr.impl.{MeterDataRepositoryConfig, MeterDataRepositoryImpl}
+import com.ista.rdm.outputchannel.mdr.tableDefinitions.ColumnTypeDefinitions
+import com.ista.rdm.test.base.db.PostgresSpec
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import org.scalacheck.{Gen, Shrink}
+import org.scalatest.concurrent.IntegrationPatience
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import slick.jdbc.PostgresProfile.api._
+
+import java.time.LocalDate
+import java.util.UUID
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+import scala.util.{Random, Try}
+
+class MeterDataRepositorySpec
+  extends PostgresSpec
+    with MeterDataRepoFixtures
+    with MdrReadingFixtures
+    with MdrReadingFixturesAnyEndOf
+    with LazyLogging
+    with IntegrationPatience
+    with ScalaCheckDrivenPropertyChecks
+    with ColumnTypeDefinitions {
+
+  // todo remove after fix in common makes false the default
+  override def dropDatabaseBeforeTest = true
+
+  // todo remove "flyway_schema_history" after fix in common adds it by default
+  override val tablesToBeIgnoredWhenTruncating: List[String] = List("data_retention_lookup", "flyway_schema_history")
+
+  // must be lazy as it is used in parent trait MdrReadingFixtures
+  override lazy val mdr = new MeterDataRepositoryImpl(postgresDb, postgresDbReadOnly, MeterDataRepositoryConfig(5), new CompositeMeterRegistry)
+
+  // The reconfiguration of PropertyCheckConfiguration.minSuccessful is disabled on purpose so that the default
+  // configuration is used, which is minSuccessful = 10.
+  // The minSuccessful = 50 was introduced at commit 391e22af0ef5cccdcf811637eff0094237709ea5, probably to validate the
+  // critical change of the domain implementation. However, the 50 increases the test run time by a factor of 5 and does
+  // not add much value, as the generator-driven ScalaCheck tests are mainly around the ANY implementation of method
+  // findReadingsByProperty(). These tests use a fixture where all relevant scenarios are explicitly part of each test
+  // run, and only the irrelevant fields are filled via the generators. Generating more test runs does not increase the
+  // coverage of relevant scenarios as a single test run already covers all relevant scenarios.
+  // Also one UI test case uses the generators. This is the single most expensive test case of the whole test suite.
+  // Here limiting to the default 10 test runs helps with the performance, even if it may be a bit of a compromise in
+  // test coverage. As this test suite and thus the UI test case is run in every core test pipeline, over time we will
+  // have enough coverage of all relevant cases/scenarios.
+  // This comment and the commented-out next line stay as a reminder that it is a conscious decision not to increase the
+  // min number of runs.
+  //implicit override val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 50)
+
+  "MDR" should {
+
+    "store and retrieve meter ports by location ID" in {
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        p1 <- mdr.findMeterPortsByLocation(None, Set(location1))
+        p2 <- mdr.findMeterPortsByLocation(None, Set(location2))
+        p3 <- mdr.findMeterPortsByLocation(None, Set(location3))
+      } yield {
+        p1.map(e => e.serialNr) should (contain(SerialNr("101")) and contain(SerialNr("104")) and have size 2)
+        p2.map(e => e.serialNr) should (contain(SerialNr("102")) and contain(SerialNr("105")) and have size 2)
+        p3 should have size 1
+
+        p3.head should matchPattern {
+          case MdrMeterPort(
+          _, // id
+          _, // execPlanId
+          _, // mainDeviceId
+          _, // portNr
+          `property1`,
+          `location3`,
+          `locationNumber1`,
+          false,
+          CompoundRetentionPolicy.DEFAULT,
+          `instDate1`,
+          None,
+          MdrMeasurand.HeatingHCA,
+          `meterPortZoneId`,
+          ArticleNr("00003"),
+          SerialNr("103"),
+          LGSTRUGET_SERVICE,
+          Some(MdrMeterUse.USAGE_UNIT_METER),
+          _ // cert date
+          ) =>
+        }
+      }
+    }
+
+    "store and retrieve meterports with correctly referenced data input service correctly" in {
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterportConfigsForDataInputServiceTest)
+        p1 <- mdr.findMeterPortsByLocation(None, Set(location1))
+        p2 <- mdr.findMeterPortsByLocation(None, Set(location2))
+        p3 <- mdr.findMeterPortsByLocation(None, Set(location3))
+      } yield {
+        p1.head.inputService shouldBe LGSTRUGET_SERVICE
+        p2.head.inputService shouldBe LGSTRUGET_SERVICE
+        p3.head.inputService shouldBe COMPETITOR_TAKEOVER_SERVICE
+      }
+    }
+
+    "create only one meter port on multiple upserts" in {
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        p1 <- mdr.findMeterPortsByLocation(None, Set(location1))
+        p2 <- mdr.findMeterPortsByLocation(None, Set(location2))
+        p3 <- mdr.findMeterPortsByLocation(None, Set(location3))
+      } yield {
+        p1.map(e => e.serialNr) should (contain(SerialNr("101")) and contain(SerialNr("104")) and have size 2)
+        p2.map(e => e.serialNr) should (contain(SerialNr("102")) and contain(SerialNr("105")) and have size 2)
+        p3 should have size 1
+
+        p3.head should matchPattern {
+          case MdrMeterPort(
+          _, // id
+          ExecPlanID(123),
+          DeviceId(_),
+          PortNr(2),
+          `property1`,
+          `location3`,
+          `locationNumber1`,
+          false,
+          CompoundRetentionPolicy.DEFAULT,
+          `instDate1`,
+          None,
+          MdrMeasurand.HeatingHCA,
+          `meterPortZoneId`,
+          ArticleNr("00003"),
+          SerialNr("103"),
+          LGSTRUGET_SERVICE,
+          Some(MdrMeterUse.USAGE_UNIT_METER),
+          _ // cert date
+          ) =>
+        }
+      }
+    }
+
+    "update data retention for all meter ports in the same property" in {
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs2)
+        p1 = mdr.findMeterPortsByProperty(None, property1)
+        p2 = mdr.findMeterPortsByProperty(None, property2)
+        _ <- mdr.updatePropertyDataRetention(property1, CompoundRetentionPolicy.MONTH_END_VALUES_DEFAULT)
+        p3 = mdr.findMeterPortsByProperty(None, property1)
+        p4 = mdr.findMeterPortsByProperty(None, property2)
+        _ <- mdr.updatePropertyDataRetention(property2, CompoundRetentionPolicy.MONTH_MID_5_YEARS_OTHER_DEFAULT)
+        p5 = mdr.findMeterPortsByProperty(None, property1)
+        p6 = mdr.findMeterPortsByProperty(None, property2)
+      } yield {
+        p1 should have size 5
+        super[PostgresSpec].forAll(p1) { p => p.retentionPolicy shouldBe CompoundRetentionPolicy.DEFAULT }
+
+        p2 should have size 5
+        p2.find(_.serialNr == SerialNr("101")).get.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_END_VALUES_DEFAULT
+        p2.find(_.serialNr == SerialNr("102")).get.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_MID_5_YEARS_OTHER_DEFAULT
+        p2.find(_.serialNr == SerialNr("103")).get.retentionPolicy shouldBe CompoundRetentionPolicy.NO_DAILY_VALUES_OTHER_DEFAULT
+        p2.find(_.serialNr == SerialNr("104")).get.retentionPolicy shouldBe CompoundRetentionPolicy.DAILY_VALUES_5_YEARS_OTHER_DEFAULT
+        p2.find(_.serialNr == SerialNr("105")).get.retentionPolicy shouldBe CompoundRetentionPolicy.DEFAULT
+
+        p3 should have size 5
+        super[PostgresSpec].forAll(p3) { p => p.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_END_VALUES_DEFAULT }
+
+        p4 should have size 5
+        p4.find(_.serialNr == SerialNr("101")).get.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_END_VALUES_DEFAULT
+        p4.find(_.serialNr == SerialNr("102")).get.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_MID_5_YEARS_OTHER_DEFAULT
+        p4.find(_.serialNr == SerialNr("103")).get.retentionPolicy shouldBe CompoundRetentionPolicy.NO_DAILY_VALUES_OTHER_DEFAULT
+        p4.find(_.serialNr == SerialNr("104")).get.retentionPolicy shouldBe CompoundRetentionPolicy.DAILY_VALUES_5_YEARS_OTHER_DEFAULT
+        p4.find(_.serialNr == SerialNr("105")).get.retentionPolicy shouldBe CompoundRetentionPolicy.DEFAULT
+
+        p5 should have size 5
+        super[PostgresSpec].forAll(p5) { p => p.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_END_VALUES_DEFAULT }
+
+        p6 should have size 5
+        super[PostgresSpec].forAll(p6) { p => p.retentionPolicy shouldBe CompoundRetentionPolicy.MONTH_MID_5_YEARS_OTHER_DEFAULT }
+      }
+    }
+
+    "set initial and current data retention correctly" in {
+      val device = createDevice("00003", "103")
+      // first config with default policy: set current and initial to DEFAULT
+      val mpc1 = createHcaMeterPortConfig(device, Some(createDevice("10001", "201")), property1, propertyNumber1, usageUnit1, location3, locationNumber1, instDate1, meterPortZoneId)
+      // second config with default policy: keep DEFAULT
+      val mpc2 = mpc1.copy(retentionPolicy = CompoundRetentionPolicy.DEFAULT)
+      // third config with non-default policy: keep DEFAULT in initial and update current
+      val mpc3 = mpc1.copy(retentionPolicy = CompoundRetentionPolicy.NO_DAILY_VALUES_OTHER_DEFAULT)
+      // 4th config with non-default policy: keep DEFAULT in initial and update current
+      val mpc4 = mpc1.copy(retentionPolicy = CompoundRetentionPolicy.DAILY_VALUES_5_YEARS_OTHER_DEFAULT)
+
+      // initial setup with default retention, update with default retention
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(Vector(mpc1))
+        vs1 <- mdr.getInitialAndCurrentRetentionPolicy(Some(mpc1.execPlanId), Set(mpc1.mainDeviceId))
+        _ <- mdr.upsertMeterPorts(Vector(mpc2))
+        vs2 <- mdr.getInitialAndCurrentRetentionPolicy(Some(mpc2.execPlanId), Set(mpc2.mainDeviceId))
+        _ <- mdr.upsertMeterPorts(Vector(mpc3))
+        vs3 <- mdr.getInitialAndCurrentRetentionPolicy(Some(mpc3.execPlanId), Set(mpc3.mainDeviceId))
+        _ <- mdr.upsertMeterPorts(Vector(mpc4))
+        vs4 <- mdr.getInitialAndCurrentRetentionPolicy(Some(mpc4.execPlanId), Set(mpc4.mainDeviceId))
+      } yield {
+        vs1 should contain theSameElementsAs Vector((mpc1.mainDeviceId, CompoundRetentionPolicy.DEFAULT, CompoundRetentionPolicy.DEFAULT))
+        vs2 should contain theSameElementsAs Vector((mpc2.mainDeviceId, CompoundRetentionPolicy.DEFAULT, CompoundRetentionPolicy.DEFAULT))
+        vs3 should contain theSameElementsAs Vector((mpc3.mainDeviceId, CompoundRetentionPolicy.DEFAULT, CompoundRetentionPolicy.NO_DAILY_VALUES_OTHER_DEFAULT))
+        vs4 should contain theSameElementsAs Vector((mpc4.mainDeviceId, CompoundRetentionPolicy.DEFAULT, CompoundRetentionPolicy.DAILY_VALUES_5_YEARS_OTHER_DEFAULT))
+      }
+    }
+
+    "allow to update the certification date" in {
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs2)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs3)
+        p1 = mdr.findMeterPortsByProperty(None, property1)
+        p2 = mdr.findMeterPortsByProperty(None, property2)
+      } yield {
+        p1 should have size 5
+
+        p2 should have size 8
+
+        // HCAs should have no cert date set
+        p2.find(_.serialNr == SerialNr("101")).get.certificationDate shouldBe None
+        p2.find(_.serialNr == SerialNr("102")).get.certificationDate shouldBe None
+        p2.find(_.serialNr == SerialNr("103")).get.certificationDate shouldBe None
+        p2.find(_.serialNr == SerialNr("104")).get.certificationDate shouldBe None
+        p2.find(_.serialNr == SerialNr("105")).get.certificationDate shouldBe None
+
+        // VOLs should have cert dates if set in initial configs
+        p2.find(_.serialNr == SerialNr("301")).get.certificationDate shouldBe None
+        p2.find(_.serialNr == SerialNr("302")).get.certificationDate shouldBe Some(certificationDate1)
+        p2.find(_.serialNr == SerialNr("303")).get.certificationDate shouldBe Some(certificationDate2)
+      }
+    }
+
+    "allow to update the meter use" in {
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs2)
+        _ <- mdr.upsertMeterPorts(meterPortConfigs3)
+        p1 = mdr.findMeterPortsByProperty(None, property1)
+        p2 = mdr.findMeterPortsByProperty(None, property2)
+        // update
+        _ <- mdr.upsertMeterPorts(Iterable(meterPortConfigs2.head.copy(meterUse = Some(MdrMeterUse.MAIN_METER))))
+        _ <- mdr.upsertMeterPorts(Iterable(meterPortConfigs3.head.copy(meterUse = Some(MdrMeterUse.USER_GROUP_METER))))
+        p4 = mdr.findMeterPortsByProperty(None, property2)
+      } yield {
+        p1 should have size 5
+        p2 should have size 8
+
+        // HCAs should have no cert date set
+        p2.find(_.serialNr == SerialNr("101")).get.meterUse shouldBe None
+        p2.find(_.serialNr == SerialNr("102")).get.meterUse shouldBe Some(MdrMeterUse.USAGE_UNIT_METER)
+        p2.find(_.serialNr == SerialNr("103")).get.meterUse shouldBe Some(MdrMeterUse.MAIN_METER)
+        p2.find(_.serialNr == SerialNr("104")).get.meterUse shouldBe Some(MdrMeterUse.USER_GROUP_METER)
+        p2.find(_.serialNr == SerialNr("105")).get.meterUse shouldBe Some(MdrMeterUse.COMMON_METER)
+
+        // VOLs should have cert dates if set in initial configs
+        p2.find(_.serialNr == SerialNr("301")).get.meterUse shouldBe None
+        p2.find(_.serialNr == SerialNr("302")).get.meterUse shouldBe Some(MdrMeterUse.USAGE_UNIT_METER)
+        p2.find(_.serialNr == SerialNr("303")).get.meterUse shouldBe Some(MdrMeterUse.MAIN_METER)
+
+        //// After update
+
+        p4 should have size 8
+
+        // HCAs should have no cert date set
+        p4.find(_.serialNr == SerialNr("101")).get.meterUse shouldBe Some(MdrMeterUse.MAIN_METER)
+        p4.find(_.serialNr == SerialNr("102")).get.meterUse shouldBe Some(MdrMeterUse.USAGE_UNIT_METER)
+        p4.find(_.serialNr == SerialNr("103")).get.meterUse shouldBe Some(MdrMeterUse.MAIN_METER)
+        p4.find(_.serialNr == SerialNr("104")).get.meterUse shouldBe Some(MdrMeterUse.USER_GROUP_METER)
+        p4.find(_.serialNr == SerialNr("105")).get.meterUse shouldBe Some(MdrMeterUse.COMMON_METER)
+
+        // VOLs should have cert dates if set in initial configs
+        p4.find(_.serialNr == SerialNr("301")).get.meterUse shouldBe Some(MdrMeterUse.USER_GROUP_METER)
+        p4.find(_.serialNr == SerialNr("302")).get.meterUse shouldBe Some(MdrMeterUse.USAGE_UNIT_METER)
+        p4.find(_.serialNr == SerialNr("303")).get.meterUse shouldBe Some(MdrMeterUse.MAIN_METER)
+      }
+    }
+
+    "store and retrieve reading values for a meter port" in {
+      val readingsCount = 10
+      val intervalSeconds = 60
+      val valueStep = 0.1
+
+      val readings = meterPortConfigs1
+        .flatMap(mp => createReadings(mp, readingsCount, instDate1, intervalSeconds, valueStep))
+
+      val timespan = LocalTimespan(instDate1, instDate1.plusSeconds((intervalSeconds * readingsCount) + 1))
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        result = mdr.insertReadings(readings)
+        _ = mdr.insertReadings(readings) // inserting them twice to also check here that duplicates are not allowed
+        retrieved <- Future.traverse(meterPortConfigs1) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+      } yield {
+        result shouldBe()
+        super[PostgresSpec].forAll(retrieved) { results =>
+          results should have size 10
+          super[PostgresSpec].forAll(results) { r =>
+            // check static attributes of readings
+            r.readingType shouldBe MdrReadingType.DayEnd
+            r.unit shouldBe MdrUnitType.UnitUndefined
+            r.measurand shouldBe MdrMeasurand.HeatingHCA
+            r.port shouldBe PortNr(2)
+            r.propertyId shouldBe property1
+            r.estimationType shouldBe MdrEstimationType.NoEstimation
+          }
+          // check readings
+          results.map(_.value) shouldBe Range.BigDecimal.apply(valueStep, valueStep * (readingsCount + 1), valueStep)
+          // check dates
+          results.map(_.consumptionDate) shouldBe (0 until readingsCount).map(i => instDate1.plusSeconds(i * intervalSeconds))
+        }
+      }
+    }
+
+    "overwrite existing readings if transport_type != PDA " in {
+      val originalReadingValue = BigDecimal(100.0)
+      val updatedReadingValue = BigDecimal(200.0)
+
+      val readingInstDate1AMM = singleMeterPortConfig
+        .flatMap(mp => createSingleReading(mp, instDate3, originalReadingValue, transportType = MdrTransportType.AMM))
+      val updatedReadingInstDate1AMM = singleMeterPortConfig
+        .flatMap(mp => {
+          createSingleReading(mp, instDate3, updatedReadingValue, transportType = MdrTransportType.AMM)
+        })
+
+      val timespan = LocalTimespan(instDate3, instDate3.plusSeconds(1))
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+        result = mdr.insertReadings(readingInstDate1AMM)
+        _ = mdr.insertReadings(updatedReadingInstDate1AMM) // inserting update value
+        retrieved <- Future.traverse(singleMeterPortConfig) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+      } yield {
+        result shouldBe()
+        super[PostgresSpec].forAll(retrieved) { results =>
+          results should have size 1
+          super[PostgresSpec].forAll(results) { r =>
+            // check static attributes of readings
+            r.readingType shouldBe MdrReadingType.DayEnd
+            r.unit shouldBe MdrUnitType.UnitUndefined
+            r.measurand shouldBe MdrMeasurand.HeatingHCA
+            r.port shouldBe PortNr(2)
+            r.propertyId shouldBe property1
+            r.estimationType shouldBe MdrEstimationType.NoEstimation
+            r.consumptionDate shouldBe instDate3
+          }
+          // check readings
+          results.head.value shouldBe updatedReadingValue.value
+        }
+      }
+    }
+
+    "do not overwrite existing readings if transport_type == PDA " in {
+
+      val originalReadingValue = BigDecimal(100.0)
+      val updateReadingValue = BigDecimal(242.0)
+
+      val readingInstDate1PDA: Seq[MdrMeterPortReadingInput] = singleMeterPortConfig
+        .flatMap(mp => createSingleReading(mp, instDate3, originalReadingValue, transportType = MdrTransportType.PDA))
+      val updatedReadingInstDate1AMM = singleMeterPortConfig
+        .flatMap(mp => {
+          createSingleReading(mp, instDate3, updateReadingValue, transportType = MdrTransportType.AMM)
+        })
+
+      val timespan = LocalTimespan(instDate3, instDate3.plusSeconds(1))
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+        result = mdr.insertReadings(readingInstDate1PDA)
+        _ = mdr.insertReadings(updatedReadingInstDate1AMM) // inserting update value
+        retrieved <- Future.traverse(singleMeterPortConfig) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+      } yield {
+        result shouldBe()
+        super[PostgresSpec].forAll(retrieved) { results =>
+          results should have size 1
+          super[PostgresSpec].forAll(results) { r =>
+            // check static attributes of readings
+            r.readingType shouldBe MdrReadingType.DayEnd
+            r.unit shouldBe MdrUnitType.UnitUndefined
+            r.measurand shouldBe MdrMeasurand.HeatingHCA
+            r.port shouldBe PortNr(2)
+            r.propertyId shouldBe property1
+            r.estimationType shouldBe MdrEstimationType.NoEstimation
+            r.consumptionDate shouldBe instDate3
+          }
+          // check readings
+          results.head.value shouldBe originalReadingValue
+        }
+      }
+    }
+
+    "do overwrite existing readings if transport_type == PDA but the changed reading has transport type PDA as well" in {
+
+      val originalReadingValue = BigDecimal(100.0)
+      val updateReadingValue = BigDecimal(242.0)
+
+      val readingInstDate1PDA: Seq[MdrMeterPortReadingInput] = singleMeterPortConfig
+        .flatMap(mp => createSingleReading(mp, instDate3, originalReadingValue, transportType = MdrTransportType.PDA))
+      val updatedReadingInstDate1AMM = singleMeterPortConfig
+        .flatMap(mp => {
+          createSingleReading(mp, instDate3, updateReadingValue, transportType = MdrTransportType.PDA)
+        })
+
+      val timespan = LocalTimespan(instDate3, instDate3.plusSeconds(1))
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+        result = mdr.insertReadings(readingInstDate1PDA)
+        _ = mdr.insertReadings(updatedReadingInstDate1AMM) // inserting update value
+        retrieved <- Future.traverse(singleMeterPortConfig) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+      } yield {
+        result shouldBe()
+        super[PostgresSpec].forAll(retrieved) { results =>
+          results should have size 1
+          super[PostgresSpec].forAll(results) { r =>
+            // check static attributes of readings
+            r.readingType shouldBe MdrReadingType.DayEnd
+            r.unit shouldBe MdrUnitType.UnitUndefined
+            r.measurand shouldBe MdrMeasurand.HeatingHCA
+            r.port shouldBe PortNr(2)
+            r.propertyId shouldBe property1
+            r.estimationType shouldBe MdrEstimationType.NoEstimation
+            r.consumptionDate shouldBe instDate3
+          }
+          // check readings
+          results.head.value shouldBe updateReadingValue
+        }
+      }
+    }
+
+    "overwrite existing readings only if overwrite is requested" in {
+      val readingsCount = 10
+      val intervalSeconds = 60
+      val valueStep = 0.1
+
+      val readings1 = meterPortConfigs1.flatMap(mp => createReadings(mp, readingsCount, instDate1, intervalSeconds, valueStep))
+      val readings2 = readings1.map(r => r.copy(value = r.value + 1.0))
+
+      val timespan = LocalTimespan(instDate1, instDate1.plusSeconds((intervalSeconds * readingsCount) + 1))
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+        _ = mdr.insertReadings(readings1, overwrite = false)
+        retrieved1 <- Future.traverse(meterPortConfigs1) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+        _ = mdr.insertReadings(readings2, overwrite = false)
+        retrieved2 <- Future.traverse(meterPortConfigs1) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+        _ = mdr.insertReadings(readings2)
+        retrieved3 <- Future.traverse(meterPortConfigs1) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+      } yield {
+        super[PostgresSpec].forAll(retrieved1) { results =>
+          results should have size 10
+          // check readings
+          results.map(_.value) shouldBe Range.BigDecimal.apply(valueStep, valueStep * (readingsCount + 1), valueStep)
+          // check dates
+          results.map(_.consumptionDate) shouldBe (0 until readingsCount).map(i => instDate1.plusSeconds(i * intervalSeconds))
+        }
+
+        super[PostgresSpec].forAll(retrieved2) { results =>
+          results should have size 10
+          // check readings
+          results.map(_.value) shouldBe Range.BigDecimal.apply(valueStep, valueStep * (readingsCount + 1), valueStep)
+          // check dates
+          results.map(_.consumptionDate) shouldBe (0 until readingsCount).map(i => instDate1.plusSeconds(i * intervalSeconds))
+        }
+
+        super[PostgresSpec].forAll(retrieved3) { results =>
+          results should have size 10
+          // check readings
+          results.map(_.value) shouldBe Range.BigDecimal.apply(valueStep + 1.0, (valueStep * (readingsCount + 1)) + 1.0, valueStep)
+          // check dates
+          results.map(_.consumptionDate) shouldBe (0 until readingsCount).map(i => instDate1.plusSeconds(i * intervalSeconds))
+        }
+      }
+    }
+
+    "handle quality indicators correctly" when {
+
+      "no quality indicator is linked to the reading" in {
+        val readingValue = 100.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          qiCount <- Future {
+            Await.result(postgresDb.run(sql"""select count(*) from reading_quality_indicators""".as[Int]), Duration("1m"))
+          }
+        } yield {
+          qiCount.head shouldBe 0
+        }
+      }
+
+      "reading has linked quality indicator" in {
+        val readingValue = 100.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue))
+          .map(_.copy(qualityIndicators = Set(FutureReading)))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          qualityIndicators <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+        } yield {
+          qualityIndicators.size shouldBe 1
+        }
+      }
+
+      "source has transportType != PDA and update has transportType != PDA" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.AMM))
+          .map(_.copy(qualityIndicators = Set(FutureReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(transportType = MdrTransportType.MDE, value = updatedValue1))
+        val readingsUpdate2 = readingsUpdate1
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select jsonb_array_length(payload -> 'indicators') from reading_quality_indicators""".as[Int].head), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 1
+          total shouldBe 0
+        }
+      }
+
+      "source has transportType != PDA and update has transportType != PDA mixing future and demounted quality indicators in update" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.AMM))
+          .map(_.copy(qualityIndicators = Set(FutureReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(qualityIndicators = Set(FutureReading, DemountedRadioReading), transportType = MdrTransportType.MDE, value = updatedValue1))
+        val readingsUpdate2 = readingsUpdate1
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future { //we don't update readings with demounted radio reading flag
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select jsonb_array_length(payload -> 'indicators') from reading_quality_indicators""".as[Int].head), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 0
+          total shouldBe 0
+        }
+      }
+
+      "source has transportType != PDA and update has transportType != PDA with demounted quality indicators in update" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.AMM))
+        val readingsUpdate1 = readings
+          .map(_.copy(qualityIndicators = Set(DemountedRadioReading), transportType = MdrTransportType.MDE, value = updatedValue1))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future { //we don't update readings with demounted radio reading flag
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 0
+          updates.size shouldBe 0
+        }
+      }
+
+      "source has transportType != PDA and update has transportType != PDA mixing future and demounted quality indicators since original creation" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.AMM))
+          .map(_.copy(qualityIndicators = Set(FutureReading, DemountedRadioReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(qualityIndicators = Set(FutureReading, DemountedRadioReading), transportType = MdrTransportType.MDE, value = updatedValue1))
+        val readingsUpdate2 = readingsUpdate1
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future { //we allow updating readings originally demounted radio reading flag
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select jsonb_array_length(payload -> 'indicators') from reading_quality_indicators""".as[Int].head), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 1
+          total shouldBe 0
+        }
+      }
+
+      "source has transportType != PDA and update has transportType != PDA demounted quality indicators since original creation" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.AMM))
+          .map(_.copy(qualityIndicators = Set(DemountedRadioReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(qualityIndicators = Set(DemountedRadioReading), transportType = MdrTransportType.MDE, value = updatedValue1))
+        val readingsUpdate2 = readingsUpdate1
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future { //we allow updating readings originally demounted radio reading flag
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select jsonb_array_length(payload -> 'indicators') from reading_quality_indicators""".as[Int].head), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 1
+          total shouldBe 0
+        }
+      }
+
+      "source has transportType != PDA and update has transportType = PDA" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.AMM))
+          .map(_.copy(qualityIndicators = Set(FutureReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(transportType = MdrTransportType.PDA, value = updatedValue1))
+        val readingsUpdate2 = readingsUpdate1
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select jsonb_array_length(payload -> 'indicators') from reading_quality_indicators""".as[Int].head), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 1
+          total shouldBe 0
+        }
+      }
+
+      "source has transportType = PDA and update has transportType = PDA" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.PDA))
+          .map(_.copy(qualityIndicators = Set(FutureReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(value = updatedValue1))
+        val readingsUpdate2 = readings
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select jsonb_array_length(payload -> 'indicators') from reading_quality_indicators""".as[Int].head), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 1
+          total shouldBe 0
+        }
+      }
+
+      "source has transportType = PDA and update has transportType != PDA" in {
+        val readingValue = 100.0
+        val updatedValue1 = 200.0
+        val updatedValue2 = 300.0
+
+        val readings = singleMeterPortConfig
+          .flatMap(createSingleReading(_, instDate1, readingValue, MdrTransportType.PDA))
+          .map(_.copy(qualityIndicators = Set(FutureReading)))
+        val readingsUpdate1 = readings
+          .map(_.copy(transportType = MdrTransportType.AMM, value = updatedValue1))
+        val readingsUpdate2 = readingsUpdate1
+          .map(_.copy(value = updatedValue2, qualityIndicators = Set.empty))
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(singleMeterPortConfig)
+          _ = mdr.insertReadings(readings)
+          inserts <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate1)
+          updates <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators where updated_at IS NOT NULL""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+          _ = mdr.insertReadings(readingsUpdate2)
+          total <- Future {
+            Await.result(postgresDb.run(sql"""select * from reading_quality_indicators""".as[MdrReadingQualityIndicator]), Duration("1m"))
+          }
+        } yield {
+          inserts.size shouldBe 1
+          updates.size shouldBe 0
+          total.size shouldBe 1
+        }
+      }
+    }
+
+    "store and retrieve correct reading attributes" in {
+      val meterPort = meterPortConfigsWith1Migrated(0)
+
+      val startTime = LocalInstant.nowInUtc()
+      var lastReadingTime = startTime
+
+      def nextReadingTime: LocalInstant = {
+        lastReadingTime = lastReadingTime.plusSeconds(1)
+        lastReadingTime
+      }
+
+      val startValue = BigDecimal(0.1735)
+      var lastValue = startValue
+
+      def nextReadingValue = {
+        lastValue = lastValue + BigDecimal(0.1)
+        lastValue
+      }
+
+      val baseReading = MdrMeterPortReadingInput(
+        meterPort.execPlanId,
+        nextReadingTime,
+        None,
+        meterPort.mainDeviceId,
+        meterPort.portNr,
+        nextReadingValue,
+        MdrUnitType.UnitDevice,
+        MdrReadingType.Current, //readingType,
+        MdrReadingProcedure.Intermediate, // procedure
+        MdrTransportType.AMM, // transport,
+        MdrMediumType.RADIO, // medium,
+        MdrEstimationType.NoEstimation, // estimation
+        meterPort.radioArticleNr,
+        meterPort.radioSerialNr,
+        migrated = false,
+        MdrReaderType.Ista,
+        None,
+        startTime.toInstantSameMillis(),
+        Set.empty
+      )
+
+      // create list of readings with all enum attribute values used once
+      val readings =
+        MdrUnitType.values.map(u => baseReading.copy(unit = u, consumptionDate = nextReadingTime, value = nextReadingValue)) ++
+        MdrReadingType.values.map(t => baseReading.copy(readingType = t, consumptionDate = nextReadingTime, value = nextReadingValue)) ++
+        MdrReadingProcedure.values.map(p => baseReading.copy(readingProcedure = p, consumptionDate = nextReadingTime, value = nextReadingValue)) ++
+        MdrTransportType.values.map(t => baseReading.copy(transportType = t, consumptionDate = nextReadingTime, value = nextReadingValue)) ++
+        MdrMediumType.values.map(m => baseReading.copy(mediumType = m, consumptionDate = nextReadingTime, value = nextReadingValue)) ++
+        MdrEstimationType.values.map(e => baseReading.copy(estimationType = e, consumptionDate = nextReadingTime, value = nextReadingValue, migrated = true))
+
+      logger.info(s"Combinations of reading attributes: ${readings.size}. Readings timespan: $startTime - $lastReadingTime values: $startValue - $lastValue")
+
+      val propertyId = meterPortConfigs1.head.propertyId
+      val filterDevices = meterPortConfigs1.map(_.mainDeviceId).toSet
+      val from = startTime.minusSeconds(10)
+      val to = lastReadingTime.plusSeconds(10)
+
+      // and write them
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigsWith1Migrated)
+        _ = mdr.insertReadings(readings)
+        retrievedNoFilters = mdr.findReadingsByProperty(propertyId, filterDevices = Set(meterPort.mainDeviceId), filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = false)
+        readingResult: Seq[Boolean] = Await.result(postgresDb.run(sql"""select migrated from readings """.as[Boolean]), Duration("1m"))
+        meterPortResult: Seq[Boolean] = Await.result(postgresDb.run(sql"""select migrated from meterports """.as[Boolean]), Duration("1m"))
+      } yield {
+        retrievedNoFilters should have size readings.size
+
+        super[PostgresSpec].forAll(readings zip retrievedNoFilters) {
+          case (expect, retrieved) => compare(expect, retrieved) shouldBe true
+        }
+        val readingTrueFalseTuple = readingResult.partition((bool: Boolean) => bool)
+        readingTrueFalseTuple._1.size shouldBe 2
+        readingTrueFalseTuple._2.size shouldBe readings.size - 2 //both estimation types contain estimated true
+        val meterportTrueFalseTuple = meterPortResult.partition((bool: Boolean) => bool)
+        meterportTrueFalseTuple._1.size shouldBe 1
+        meterportTrueFalseTuple._2.size shouldBe meterPortResult.size - 1
+      }
+    }
+
+    "store and retrieve certificate date" in {
+      val meterPortConfigs: Seq[MeterPortConfig] = meterPortConfigs3
+
+      val startTime = LocalInstant.nowInUtc()
+      var lastReadingTime = startTime
+
+      def nextReadingTime: LocalInstant = {
+        lastReadingTime = lastReadingTime.plusSeconds(1)
+        lastReadingTime
+      }
+
+      val startValue = BigDecimal(0.1735)
+      var lastValue = startValue
+
+      def nextReadingValue = {
+        lastValue = lastValue + BigDecimal(0.1)
+        lastValue
+      }
+
+      def baseReading(mpc: MeterPortConfig) = MdrMeterPortReadingInput(
+        mpc.execPlanId,
+        consumptionDate = nextReadingTime,
+        readingDate = None,
+        mpc.mainDeviceId,
+        mpc.portNr,
+        value = nextReadingValue,
+        MdrUnitType.UnitDevice,
+        MdrReadingType.Current,
+        MdrReadingProcedure.Intermediate,
+        MdrTransportType.AMM,
+        MdrMediumType.RADIO,
+        MdrEstimationType.NoEstimation,
+        mpc.radioArticleNr,
+        mpc.radioSerialNr,
+        migrated = false,
+        MdrReaderType.Ista,
+        None,
+        startTime.toInstantSameMillis(),
+        Set.empty
+      )
+
+      // create list of readings with different certification dates
+      val readings: Seq[MdrMeterPortReadingInput] = meterPortConfigs.map(baseReading)
+
+      logger.info(s"Number of readings: ${readings.size}. " +
+                  s"Readings timespan: $startTime - $lastReadingTime values: $startValue - $lastValue")
+
+      val from = startTime.minusSeconds(10)
+      val to = lastReadingTime.plusSeconds(10)
+
+      // and write them
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigs)
+        _ = mdr.insertReadings(readings)
+        retrievedNoFilters = mdr.findReadingsByProperty(propertyId = meterPortConfigs.head.propertyId, filterDevices = meterPortConfigs.map(_.mainDeviceId).toSet, filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = false)
+      } yield {
+        readings.size shouldEqual meterPortConfigs.size
+        retrievedNoFilters.size shouldEqual meterPortConfigs.size
+
+        val expectedCertificateDates = meterPortConfigs.map(mpc => (mpc.mainDeviceId, mpc.meterType.certificationDate))
+        val retrievedCertificateDates = retrievedNoFilters.map(r => (r.mainDeviceId, r.certificationDate))
+        retrievedCertificateDates.toSet shouldEqual expectedCertificateDates.toSet
+      }
+    }
+
+    def withoutGenerativeFixtures = afterWord("without generative fixtures retrieves readings")
+
+    "insert readings and retrieve them via findReadingsByProperty()" which withoutGenerativeFixtures {
+
+      "by device with onlyLatest = true, filterEndOfMonth = false, anyDayReplacement = false" in {
+        val readingsStartDate = instDate2.plusDays(3) // readings start 3 days after installation of last device
+
+        val readingsCount = 10
+        val intervalSeconds = 60
+        val valueStep = 0.1
+
+        val readings = meterPortConfigs1
+          .take(4) // do not generate readings for device 5
+          .flatMap(mp => createReadings(mp, readingsCount, readingsStartDate, intervalSeconds, valueStep))
+
+        val propertyId = meterPortConfigs1.head.propertyId
+        val filterDevices = meterPortConfigs1.map(_.mainDeviceId).toSet
+        val from = readingsStartDate.minusYears(5)
+        val to = readingsStartDate.plusYears(5)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterPortConfigs1)
+          _ = mdr.insertReadings(readings)
+          retrievedNoFilters = mdr.findReadingsByProperty(propertyId, filterDevices, filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = true, filterInstalled = false)
+        } yield {
+          retrievedNoFilters should have size 4 // expecting results from 4 devices with only 1 (latest) reading per device
+          retrievedNoFilters.find(_.mainDeviceId == meterPortConfigs1(4).mainDeviceId) shouldBe None // expect not to find something for device 5
+          super[PostgresSpec].forAll(retrievedNoFilters) { lastReading =>
+            lastReading.readingType shouldBe MdrReadingType.DayEnd
+            lastReading.unit shouldBe MdrUnitType.UnitUndefined
+            lastReading.readingProcedure shouldBe MdrReadingProcedure.Regular
+            lastReading.transportType shouldBe MdrTransportType.AMM
+            lastReading.mediumType shouldBe MdrMediumType.RADIO
+            lastReading.estimationType shouldBe MdrEstimationType.NoEstimation
+            lastReading.measurand shouldBe MdrMeasurand.HeatingHCA
+            lastReading.value shouldBe 1.0
+            lastReading.consumptionDate shouldBe readingsStartDate.plusSeconds((readingsCount - 1) * intervalSeconds) // check it is the latest reading that was generated
+          }
+        }
+      }
+
+      "with filterByInstallationDates = true, anyDayReplacement = false, onlyLatest = false" in {
+        // create readings with individual reading values per device and year
+        // in format dyr with d = device (1 to 4), y = year (0 to 3), r = reading (1 to 3)
+        val readings = meterPortConfigs4.zipWithIndex.flatMap { case (mp, idx) =>
+          (0 to 3).flatMap { year =>
+            val b = 100 * (idx + 1) + 10 * year
+            Vector(
+              createSingleReading(mp, instDate4.plusYears(year).minusDays(1), b + 1),
+              createSingleReading(mp, instDate4.plusYears(year), b + 2),
+              createSingleReading(mp, instDate4.plusYears(year).plusDays(1), b + 3),
+            )
+          }
+        }.flatten
+
+        val from = instDate4.minusYears(5)
+        val to = instDate4.plusYears(5)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterPortConfigs4)
+          _ = mdr.insertReadings(readings)
+          retrieved = mdr.findReadingsByProperty(property1, filterDevices = Set.empty, filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = true)
+        } yield {
+          retrieved.map(_.value).sorted should contain theSameElementsAs Vector(
+            // returns readings from the installation of first device till the installation of second device (inclusive)
+            // (reading 101 is before installation, reading 113 is after the installation of second device)
+            102, 103, 111, 112,
+            // returns readings from the installation of second device till the installation of third device (inclusive)
+            212, 213, 221, 222,
+            // returns readings from the installation of third device onwards because it's not replaced
+            322, 323, 331, 332, 333,
+            // fourth device has no successor and returns all readings from first year on
+            402, 403, 411, 412, 413, 421, 422, 423, 431, 432, 433
+          )
+        }
+      }
+
+      "by device with filterByInstallationDates = true, anyDayReplacement = false, onlyLatest = false" in {
+        // create readings with individual reading values per device and year
+        // in format dyr with d = device (1 to 4), y = year (0 to 3), r = reading (1 to 3)
+        val readings = meterPortConfigs4.zipWithIndex.flatMap { case (mp, idx) =>
+          (0 to 3).flatMap { year =>
+            val b = 100 * (idx + 1) + 10 * year
+            Vector(
+              createSingleReading(mp, instDate4.plusYears(year).minusDays(1), b + 1),
+              createSingleReading(mp, instDate4.plusYears(year), b + 2),
+              createSingleReading(mp, instDate4.plusYears(year).plusDays(1), b + 3),
+            )
+          }
+        }.flatten
+
+        val propertyId = meterPortConfigs4.head.propertyId
+        val from = instDate4.minusYears(5)
+        val to = instDate4.plusYears(5)
+        val devices = meterPortConfigs4.map(_.mainDeviceId)
+
+        def findReadings(d: DeviceId) = mdr.findReadingsByProperty(propertyId, filterDevices = Set(d), filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = true)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterPortConfigs4)
+          _ = mdr.insertReadings(readings)
+          r1 = findReadings(devices(0))
+          r2 = findReadings(devices(1))
+          r3 = findReadings(devices(2))
+          r4 = findReadings(devices(3))
+        } yield {
+          // returns readings from the installation of first device till the installation of second device (inclusive)
+          // (reading 101 is before installation, reading 113 is after the installation of second device)
+          r1.map(_.value).sorted should contain theSameElementsAs Vector(102, 103, 111, 112)
+          // returns readings from the installation of second device till the installation of third device (inclusive)
+          r2.map(_.value).sorted should contain theSameElementsAs Vector(212, 213, 221, 222)
+          // third device returns readings in and after third year
+          r3.map(_.value).sorted should contain theSameElementsAs Vector(322, 323, 331, 332, 333)
+          // fourth device has no successor and returns all readings from first year on
+          r4.map(_.value).sorted should contain theSameElementsAs Vector(402, 403, 411, 412, 413, 421, 422, 423, 431, 432, 433)
+        }
+      }
+
+      "by device with filterByInstallationDates = true and non-default retention policy" in {
+        val meterPortConfigs4WithRetentionPolicy = meterPortConfigs4.map(
+          _.copy(retentionPolicy = CompoundRetentionPolicy.DAILY_MONTH_MID_5_YEARS_OTHER_6_YEARS))
+        // create readings with individual reading values per device and year
+        // in format dyr with d = device (1 to 4), y = year (0 to 3), r = reading (1 to 3)
+        val readings = meterPortConfigs4WithRetentionPolicy
+          .zipWithIndex.flatMap { case (mp, idx) =>
+            (0 to 3).flatMap { year =>
+              val b = 100 * (idx + 1) + 10 * year
+              Vector(
+                createSingleReading(mp, instDate4.plusYears(year).minusDays(1), b + 1),
+                createSingleReading(mp, instDate4.plusYears(year), b + 2),
+                createSingleReading(mp, instDate4.plusYears(year).plusDays(1), b + 3),
+              )
+            }
+          }.flatten
+
+        val propertyId = meterPortConfigs4.head.propertyId
+        val from = instDate4.minusYears(5)
+        val to = instDate4.plusYears(5)
+        val devices = meterPortConfigs4.map(_.mainDeviceId)
+
+        def findReadings(d: DeviceId) = mdr.findReadingsByProperty(propertyId, filterDevices = Set(d), filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = true)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterPortConfigs4WithRetentionPolicy)
+          _ = mdr.insertReadings(readings)
+          r1 = findReadings(devices(0))
+          r2 = findReadings(devices(1))
+          r3 = findReadings(devices(2))
+          r4 = findReadings(devices(3))
+        } yield {
+          // returns readings from the installation of first device till the installation of second device (inclusive)
+          // (reading 101 is before installation, reading 113 is after the installation of second device)
+          r1.map(_.value).sorted should contain theSameElementsAs Vector(102, 103, 111, 112)
+          // returns readings from the installation of second device till the installation of third device (inclusive)
+          r2.map(_.value).sorted should contain theSameElementsAs Vector(212, 213, 221, 222)
+          // third device returns readings in and after third year
+          r3.map(_.value).sorted should contain theSameElementsAs Vector(322, 323, 331, 332, 333)
+          // fourth device has no successor and returns all readings from first year on
+          r4.map(_.value).sorted should contain theSameElementsAs Vector(402, 403, 411, 412, 413, 421, 422, 423, 431, 432, 433)
+        }
+      }
+
+      "[duplicate removal reading test] for: by device with onlyLatest = true, filterEndOfMonth = false, anyDayReplacement = false" in {
+        val meterportConfigs = meterportConfigsForDuplicateRemovalReadings1
+        val mainDeviceIds = meterportConfigs.map(_.mainDeviceId).toSet
+        val meterportUnderTest = meterportConfigs.maxBy(_.installed)
+        val propertyId = meterportConfigs.head.propertyId
+        val removalReadingTime = instDate2.minusSeconds(10000)
+        val installReadingTime = instDate2
+        val consumptionDateFrom = instDate2.minusDays(2).atStartOfDay().toZonedDateTime(meterPortZoneId)
+        val consumptionDateTo = consumptionDateFrom.plusDays(10)
+
+        val removalReadings: Vector[MdrMeterPortReadingInput] = meterportConfigs
+          .flatMap(mp => createReadings(
+            meterPort = mp,
+            readingCount = 1,
+            startTime = removalReadingTime,
+            startValue = Some(BigDecimal(4.5)),
+            readingType = MdrReadingType.Removal,
+            transportType = MdrTransportType.MDE))
+
+        val initialReadings: Vector[MdrMeterPortReadingInput] =
+          createReadings(
+            meterPort = meterportUnderTest,
+            readingCount = 1,
+            startTime = installReadingTime,
+            startValue = Some(BigDecimal(0.01)),
+            readingType = MdrReadingType.Initial,
+            transportType = MdrTransportType.MDE
+          )
+        val readings = removalReadings ++ initialReadings
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterportConfigs)
+          _ = mdr.insertReadings(readings)
+          retrievedNoFilters = mdr.findReadingsByProperty(propertyId, mainDeviceIds, filterExecPlan = None, LocalInstant(consumptionDateFrom), LocalInstant(consumptionDateTo), filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = true, filterInstalled = false)
+        } yield {
+          retrievedNoFilters should have size 2
+          retrievedNoFilters.filter(_.mainDeviceId != meterportUnderTest.mainDeviceId).head.readingType shouldBe MdrReadingType.Removal
+          retrievedNoFilters.filter(_.mainDeviceId == meterportUnderTest.mainDeviceId).head.readingType shouldBe MdrReadingType.Initial
+        }
+      }
+
+      "[duplicate removal readings test] for: with filterByInstallationDates = true, anyDayReplacement = false, onlyLatest = false" in {
+        val meterportConfigs = meterportConfigsForDuplicateRemovalReadings1
+        val meterportUnderTest = meterportConfigs.maxBy(_.installed)
+        val propertyId = meterportConfigs.head.propertyId
+        val removalReadingTime = instDate2.minusSeconds(10000)
+        val installReadingTime = instDate2
+
+        val normalReadings = meterportConfigs.zipWithIndex.flatMap { case (mp, idx) =>
+          (0 to 3).flatMap { rc =>
+            val b = 100 * (idx + 1)
+            createSingleReading(mp, mp.installed.plusDays(1 + rc), b + rc)
+          }
+        }
+
+        val removalReadings: Vector[MdrMeterPortReadingInput] = meterportConfigs
+          .flatMap(mp => createSingleReading(
+            meterPort = mp,
+            time = removalReadingTime,
+            value = 110,
+            readingType = MdrReadingType.Removal,
+            transportType = MdrTransportType.MDE
+          ))
+
+        val initialReading: Vector[MdrMeterPortReadingInput] =
+          createSingleReading(
+            meterPort = meterportUnderTest,
+            time = installReadingTime,
+            value = 0,
+            readingType = MdrReadingType.Initial,
+            transportType = MdrTransportType.MDE
+          )
+        val readings = normalReadings ++ removalReadings ++ initialReading
+        val from = instDate1.minusYears(1)
+        val to = instDate2.plusYears(1)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterportConfigs)
+          _ = mdr.insertReadings(readings)
+          retrieved = mdr.findReadingsByProperty(propertyId, filterDevices = Set.empty, filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = true)
+        } yield {
+          val (r1, r2) = retrieved.span(_.mainDeviceId != meterportUnderTest.mainDeviceId)
+          // All readings for the first device until removal
+          r1.map(_.value).sorted should contain theSameElementsAs Vector(100, 101, 102, 103, 110)
+          // All readings from the installation of second device without the removal reading
+          r2.map(_.value).sorted should contain theSameElementsAs Vector(0, 200, 201, 202, 203)
+        }
+      }
+
+      "[duplicate removal readings test] for: by device with filterByInstallationDates = true, anyDayReplacement = false, onlyLatest = false" in {
+        // create readings with individual reading values per device and year
+        // in format dyr with d = device (1 to 4), y = year (0 to 3), r = reading (1 to 3)
+        val meterportConfigs = meterportConfigsForDuplicateRemovalReadings1
+        val meterportUnderTest = meterportConfigs.maxBy(_.installed)
+        val propertyId = meterportConfigs.head.propertyId
+        val removalReadingTime = instDate2.minusSeconds(10000)
+        val installReadingTime = instDate2
+
+        val normalReadings = meterportConfigs.zipWithIndex.flatMap { case (mp, idx) =>
+          (0 to 3).flatMap { rc =>
+            val b = 100 * (idx + 1)
+            createSingleReading(mp, mp.installed.plusDays(1 + rc), b + rc)
+          }
+        }
+
+        val removalReadings: Vector[MdrMeterPortReadingInput] = meterportConfigs
+          .flatMap(mp => createSingleReading(
+            meterPort = mp,
+            time = removalReadingTime,
+            value = 110,
+            transportType = MdrTransportType.MDE,
+            readingType = MdrReadingType.Removal)
+          )
+
+        val initialReading: Vector[MdrMeterPortReadingInput] =
+          createSingleReading(
+            meterPort = meterportUnderTest,
+            time = installReadingTime,
+            value = 0,
+            transportType = MdrTransportType.MDE,
+            readingType = MdrReadingType.Initial
+          )
+        val readings = normalReadings ++ removalReadings ++ initialReading
+        val devices = meterportConfigs.map(_.mainDeviceId)
+        val from = instDate1.minusYears(1)
+        val to = instDate2.plusYears(1)
+
+        def findReadings(d: DeviceId) = mdr.findReadingsByProperty(propertyId, filterDevices = Set(d), filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = true)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterportConfigs)
+          _ = mdr.insertReadings(readings)
+          r1 = findReadings(devices(0))
+          r2 = findReadings(devices(1))
+        } yield {
+          // returns readings from the installation of first device till the installation of second device (inclusive)
+          // (reading 101 is before installation, reading 113 is after the installation of second device)
+          r1.map(_.value).sorted should contain theSameElementsAs Vector(100, 101, 102, 103, 110)
+          // returns readings from the installation of second device till the installation of third device (inclusive)
+          r2.map(_.value).sorted should contain theSameElementsAs Vector(0, 200, 201, 202, 203)
+        }
+      }
+
+      "[duplicate removal readings test] for: same device on multiple locations with different installation date" in {
+
+        val meterportConfigs = meterportConfigsForDuplicateRemovalReadings2
+        val (meterPortLoc1, meterPortLoc2) = meterportConfigs.span(_.locationId == location1)
+
+
+        val propertyId = meterportConfigs.head.propertyId
+        val removalReadingTime = instDate2
+
+        val removalReadingLoc1 = createSingleReading(
+          meterPort = meterPortLoc1.head,
+          time = removalReadingTime,
+          value = 110,
+          readingType = MdrReadingType.Removal,
+          transportType = MdrTransportType.MDE
+        )
+        val removalReadingLoc2 = createSingleReading(
+          meterPort = meterPortLoc2.head,
+          time = removalReadingTime,
+          value = 110,
+          readingType = MdrReadingType.Removal,
+          transportType = MdrTransportType.MDE
+        )
+
+        val readings = removalReadingLoc1 ++ removalReadingLoc2
+        val from = instDate1.minusYears(1)
+        val to = instDate2.plusYears(1)
+
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterportConfigs)
+          _ = mdr.insertReadings(readings)
+          retrieved = mdr.findReadingsByProperty(propertyId, filterDevices = Set.empty, filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = false)
+        } yield {
+          retrieved should have size 2
+        }
+      }
+    }
+
+    def withGenerativeFixtures = afterWord("with generative fixtures retrieves correct readings")
+
+    //import scala.annotation.nowarn
+    //implicit def noShrinking[A]: Shrink[A] = Shrink(_ => Stream.empty[A]): @nowarn
+
+    "insert readings and retrieve them via findReadingsByProperty()" which withGenerativeFixtures {
+
+      "for non-empty transport types" in {
+        implicit def shrinkNonEmptySet[A]: Shrink[Set[A]] = Shrink.shrinkContainer[Set, A].suchThat(_.nonEmpty)
+
+        // Each reading input must have a unique key of (meter_port_id, reading_date, reading_type) in the readings database
+        // table. Thus to generate the reading input values such that they are not overwritten during inserting, they must
+        // also have such unique key.
+        // These test fixtures only use a single meter port id, thus only the combination of consumptionDate
+        // (called reading_date in the database) and readingType must be unique.
+        // This type describes a unique key for a reading input.
+        type ReadingInputKey = (LocalInstant, MdrReadingType)
+
+        // A generator for a single reading input key (consumptionDate, readingType) tuple.
+        val genReadingInputKey: Gen[ReadingInputKey] = Gen.zip(genLocalInstant, genMdrReadingType)
+
+        // From a set of unique reading input key tuples, generate the unique reading inputs.
+        // First, for each tuple of (consumptionDate, readingType), create a generator which transforms that single
+        // (consumptionDate, readingType) tuple to a single reading input.
+        // Then transform that set of generators to a single generator of an iterable of reading inputs.
+        def genUniqueReadingInputs(uniqueReadingInputKeys: Set[ReadingInputKey]): Gen[Seq[MdrMeterPortReadingInput]] = {
+          val gensOfReadingInput = uniqueReadingInputKeys.map {
+            case (consumptionDate, readingType) => genMdrMeterPortReadingInput(consumptionDate, readingType)
+          }
+
+          Gen.sequence[Seq[MdrMeterPortReadingInput], MdrMeterPortReadingInput](gensOfReadingInput)
+        }
+
+        // First create a non-empty set of such key tuples. Then from these tuples, create the readings.
+        val genNonEmptyReadingInputs: Gen[Iterable[MdrMeterPortReadingInput]] = for {
+          uniqueKeys <- Gen.nonEmptyContainerOf[Set, ReadingInputKey](genReadingInputKey)
+          readingInputs <- genUniqueReadingInputs(uniqueKeys)
+        } yield readingInputs
+
+        val genMdrTransportType: Gen[MdrTransportType] = Gen.oneOf(MdrTransportType.values)
+        val genNonemptyMdrTransportTypes = Gen.nonEmptyContainerOf[Set, MdrTransportType](genMdrTransportType)
+
+        super[ScalaCheckDrivenPropertyChecks].forAll(genNonEmptyReadingInputs, genNonemptyMdrTransportTypes) {
+          case (readingInputs, transportTypes) =>
+            val mdrUnderTest = createFilledMdrUnderTest(readingInputs)
+            val readingsReceived = mdrUnderTest.findReadingsByProperty(
+              propertyId = meterPortConfig.propertyId,
+              filterDevices = Set.empty,
+              filterExecPlan = None, // typically not asked for
+              filterFrom,
+              filterTo,
+              filterReadingTypes = Set.empty, // filtering out of scope for this test
+              filterServiceTypes = Set.empty, // typically not asked for
+              filterTransportTypes = transportTypes,
+              filterEndOfMonth = false,
+              anyDayReplacement = false,
+              onlyLatest = false,
+              filterInstalled = false
+            )
+            val expectedReadings = readingInputs.filter(_.transportType.in(transportTypes.toSeq))
+
+            readingsReceived.size shouldEqual expectedReadings.size
+        }
+      }
+
+      "for anyDayReplacement = true, filterEndOfMonth = both, onlyLatest = false, i.e." +
+      "filterEndOfMonth = false OR (filterEndOfMonth = true AND input dates are at end of month)" in {
+        super[ScalaCheckDrivenPropertyChecks].forAll(genScenariosWithReadingInputs) {
+          case (scenariosWithReadingInputs, filterEndOfMonth) =>
+            logger.debug("scenariosWithReadingInputs: " + scenariosWithReadingInputs)
+            logger.debug("filterEndOfMonth: " + filterEndOfMonth)
+            val mdrUnderTest = createFilledMdrUnderTestFromScenarios(scenariosWithReadingInputs)
+            val readingsReceived = mdrUnderTest.findReadingsByProperty(
+              propertyId = meterPortConfig.propertyId,
+              filterDevices = Set.empty,
+              filterExecPlan = None, // typically not asked for
+              filterFrom,
+              filterTo,
+              filterReadingTypes = Set.empty, // filtering out of scope for this test
+              filterServiceTypes = Set.empty, // typically not asked for
+              filterTransportTypes = Set.empty, // filtering out of scope for this test
+              filterEndOfMonth = filterEndOfMonth,
+              anyDayReplacement = true,
+              onlyLatest = false,
+              filterInstalled = false
+            )
+
+            readingsReceived.size shouldEqual scenariosWithReadingInputs.size
+            // Most checks are done in this for comprehension.
+            // Any check using matchers like "shouldBe" is a side-effect check anyway, as when the check fails,
+            // a TestFailedException is thrown which is caught by the AsyncWordSpec.
+            // The for comprehension would return a Set[Assertion]. This is something that the CheckerAsserting
+            // could not interpret and thus would return Unit. This would make forAll return Unit.
+            // However, the AsyncWordSpec requires the test to return an Assertion or Future[Assertion].
+            // Thus we can safely return succeeded (which is of type Assertion) below, because if it reached there,
+            // all checks succeeded, and if a test failed, an exception was thrown already which makes the test fail.
+            for {
+              (date, expectedReadingCandidates, _) <- scenariosWithReadingInputs
+            } yield {
+              expectedReadingCandidates.size shouldBe 2
+              val readingsForScenarioDate = readingsReceived.filter(_.consumptionDate.toLocalDate == date)
+              readingsForScenarioDate.size shouldBe 1
+              assert(expectedReadingCandidates.exists(compare(_, readingsForScenarioDate.head)))
+            }
+            // return succeed because the for-comprehension returns a type that would make forAll return Unit
+            // and any test failure will be a side effect of throwing an exception anyway
+            succeed
+        }
+      }
+
+      "for anyDayReplacement = true, filterEndOfMonth = true, onlyLatest = any, " +
+      "but input dates are not at end of month" in {
+        super[ScalaCheckDrivenPropertyChecks].forAll(genScenariosWithReadingInputs(forEndOfMonth = false), genBoolean) {
+          case (scenariosWithReadingInputs, onlyLatest) =>
+            logger.debug("scenariosWithReadingInputs: " + scenariosWithReadingInputs)
+            logger.debug("onlyLatest: " + onlyLatest)
+            val mdrUnderTest = createFilledMdrUnderTestFromScenarios(scenariosWithReadingInputs)
+            val readingsReceived = mdrUnderTest.findReadingsByProperty(
+              propertyId = meterPortConfig.propertyId,
+              filterDevices = Set.empty,
+              filterExecPlan = None, // typically not asked for
+              filterFrom,
+              filterTo,
+              filterReadingTypes = Set.empty, // filtering out of scope for this test
+              filterServiceTypes = Set.empty, // typically not asked for
+              filterTransportTypes = Set.empty, // filtering out of scope for this test
+              filterEndOfMonth = true,
+              anyDayReplacement = true,
+              onlyLatest = onlyLatest,
+              filterInstalled = false
+            )
+
+            readingsReceived shouldBe empty // empty, as none of the input days were at end of month
+        }
+      }
+
+      // For all following tests with onlyLatest = true, instead of testing in parallel various scenarios which differ
+      // in date, here all the scenarios (which are all for the same single meterport) are used to simulate different
+      // readings at different dates.
+      // We expect that the returned value is part of the scenario with the latest date.
+      // The business meaning of "onlyLatest = true" is defined like this:
+      // - with anyDayReplacement = false, first the last reading according to the consumptionDate (reading_date in
+      //   database table) shall be returned. If there are several readings with the same date/time, the ANY algorithm
+      //   kicks in to break ties by the ANY selection priority. As the test fixture guarantees that all readings of all
+      //   scenarios have a distinct date/time, there will only be one such reading in the readings databse table.
+      // - with anyDayReplacement = true, first the normal ANY algorithm kicks in, i.e. selects per day part of the
+      //   consumptionDate (reading_date in database table) the readings with highest priority. From those readings with
+      //   the highest selection priority, the reading with the highest date/time is returned. As the test fixture
+      //   guarantees that all readings of all scenarios have a distinct date/time, there will only be one such reading
+      //   in the readings database table.
+
+      "for anyDayReplacement = false, filterEndOfMonth = false, onlyLatest = true, " +
+      "for the case that there is exactly one onlyLatest value" in {
+        super[ScalaCheckDrivenPropertyChecks].forAll(genScenariosWithReadingInputs(forEndOfMonth = false)) {
+          scenariosWithReadingInputs =>
+            logger.debug("scenariosWithReadingInputs: " + scenariosWithReadingInputs)
+            val mdrUnderTest = createFilledMdrUnderTestFromScenarios(scenariosWithReadingInputs)
+            val readingsReceived = mdrUnderTest.findReadingsByProperty(
+              propertyId = meterPortConfig.propertyId,
+              filterDevices = Set.empty,
+              filterExecPlan = None, // typically not asked for
+              filterFrom,
+              filterTo,
+              filterReadingTypes = Set.empty, // filtering out of scope for this test
+              filterServiceTypes = Set.empty, // typically not asked for
+              filterTransportTypes = Set.empty, // filtering out of scope for this test
+              filterEndOfMonth = false,
+              anyDayReplacement = false,
+              onlyLatest = true,
+              filterInstalled = false
+            )
+            // The test setup is mainly designed to test the ANY algorithm and thus creates "expected" and "other"
+            // readings. For the onlyLatest test without anyDayReplacement, the reading with highest consumptionDate
+            // shall be returned, even if that is from a test setup point of view an "other" reading.
+            // The primary key for inserting the readings to the readings database table contains
+            // (meterport, consumption date (in the readings table called reading_date), readings type), while
+            // for the test setup we only use a single meterport, thus the (consumptionDate, readingType) build the
+            // unique key which decides if a new reading is inserted to the table or a previous reading is updated.
+            // During setup of the to-be-inserted readings it is guaranteed that each reading has its own date/time,
+            // and thus no reading will overwrite another reading, even if both have the same reading type.
+            // Therefore, there is exactly one reading with the highest date/time, and this is expected to be returned.
+            val expectedReading = scenariosWithReadingInputs
+              .flatMap { case (_, expectedReadings, otherReadings) => expectedReadings ++ otherReadings }
+              .maxBy(_.consumptionDate)
+
+            readingsReceived.size shouldBe 1
+            assert(compare(expectedReading, readingsReceived.head))
+        }
+      }
+
+      "for anyDayReplacement = false, filterEndOfMonth = false, onlyLatest = true, " +
+      "for the case that even with anyDayReplacement = false the selection priority algorithm breaks ties" in {
+        super[ScalaCheckDrivenPropertyChecks].forAll(genScenariosWithReadingInputs(forEndOfMonth = false)) {
+          scenariosWithReadingInputs =>
+            logger.debug("scenariosWithReadingInputs: " + scenariosWithReadingInputs)
+            // We want to create a situation where we know from the scenario generation a scenario which has the latest
+            // day (as all scenarios use different days). Within this scenario we know that the expected readings
+            // will get priority over the other readings when requesting them via method findReadingsByProperty().
+            // We need a setup that we know the latest expected reading, and that all other readings have no later
+            // date/time than this latest expected reading. At the same time, we want that for that latest date/time
+            // there are many readings, so that we can test the the prio algorithm breaks ties. Thus we must make sure
+            // that there are other readings for this same latest date/time.
+            // The implementation of this setup is: per scenario find from the expected readings the one with the latest
+            // consumptionDate (date/time), then copy over that consumption date to all the other readings of this
+            // scenario. This modifies all scenarios, while it would only be needed for the scenario on the latest day,
+            // but it is easier to implement and does not harm.
+            // These new other readings per scenario would not be expected to be returned, as they have a lower prio.
+            // However, the prio is a convoluted result of reading type, transport type and medium type. And the
+            // readings database table has a primary key including reading type (and date/time and meterport), but not
+            // including transport type nor medium type. Thus, when the readings are inserted to the database table,
+            // care must be taken that no expected readings are overwritten by "other" readings.
+            // One idea would be to insert the "other" readings before inserting the expected readings, as otherwise the
+            // "other" readings may overwrite the expected readings. With the full cross-product of all possible "other"
+            // readings there would be many "other" readings which would overwrite other "other" readings.
+            // But using createFilledMdrUnderTestFromScenarios(), which under the hood uses
+            // MeterDataRepositoryImpl.insertReadings(), with a sequence of first "other" and then "expected" readings
+            // does not work, as it will not in all cases guarantee that the readings later in the sequence will
+            // overwrite a reading earlier in the sequence. There is especially a special domain rule to not overwrite
+            // a PDA value with a non-PDA value. This breaks the idea to let the readings overwrite each other during
+            // insert.
+            // Thus we need to upfront make sure to order and select the "other" readings such that the insertReadings()
+            // would not kick in by filtering out readings, nor the readings database table to kick in by overwriting
+            // readings. We simulate the database table primary key via a groupBy and we simulate to insert first the
+            // other readings and then the expected readings by adding to the grouped-by Map of "other" readings the
+            // grouped-by Map of expected readings, so that the expected readings overwrite the "other" readings in the
+            // Map. This way we create a sequence of readings where we selected a subset of "other" readings such that
+            // they neither overwrite expected readings nor other "other" readings.
+            // The test then checks that the single returned value is from the scenario with the latest consumptionDate
+            // and that despite the fact that there are other readings with that same date/time still the expected
+            // reading is returned. This proves that the prio is used for onlyLatest even without anyDayReplacement.
+            val expectedReadings = scenariosWithReadingInputs
+              .flatMap { case (_, expectedReadings, _) => expectedReadings }
+            val expectedReadingInputs = expectedReadings
+              .groupBy(readingInput => (readingInput.consumptionDate, readingInput.readingType))
+              .map { case (key, readings) => (key, readings.head) } // as there is only one reading per key anyway
+            val otherReadingInputs = scenariosWithReadingInputs
+              .flatMap { case (_, expectedReadings, otherReadings) =>
+                val latestConsumptionDate = expectedReadings.map(_.consumptionDate).max
+                otherReadings.map(_.copy(consumptionDate = latestConsumptionDate))
+              }
+              .groupBy(readingInput => (readingInput.consumptionDate, readingInput.readingType))
+              .map { case (key, readings) => (key, Random.shuffle(readings).head) } // take one randomly, as the others would be overwritten in the database anyway
+            val uniqueReadingInputs = otherReadingInputs.concat(expectedReadingInputs).values // let expected readings overwrite other readings
+            val mdrUnderTest = createFilledMdrUnderTestFromScenarios(uniqueReadingInputs)
+            val readingsReceived = mdrUnderTest.findReadingsByProperty(
+              propertyId = meterPortConfig.propertyId,
+              filterDevices = Set.empty,
+              filterExecPlan = None, // typically not asked for
+              filterFrom,
+              filterTo,
+              filterReadingTypes = Set.empty, // filtering out of scope for this test
+              filterServiceTypes = Set.empty, // typically not asked for
+              filterTransportTypes = Set.empty, // filtering out of scope for this test
+              filterEndOfMonth = false,
+              anyDayReplacement = false,
+              onlyLatest = true,
+              filterInstalled = false
+            )
+            // The test setup creates 2 expected readings with regards to the ANY prio algorithm.
+            // Due to the primary key of the readings database table and with the current creation of random test data
+            // (see above) both readings are guaranteed to be inserted to the readings database table.
+            // With onlyLatest = true will return the latest reading. Therefore, there is exactly one of the 2 expected
+            // readings with highest date/time, which is the one expected to be returned.
+            val expectedReading = expectedReadings.maxBy(_.consumptionDate)
+            readingsReceived.size shouldBe 1
+            assert(compare(expectedReading, readingsReceived.head))
+        }
+      }
+
+      "for anyDayReplacement = true, filterEndOfMonth = both, onlyLatest = true" in {
+        super[ScalaCheckDrivenPropertyChecks].forAll(genScenariosWithReadingInputs) {
+          case (scenariosWithReadingInputs, filterEndOfMonth) =>
+            logger.debug("scenariosWithReadingInputs: " + scenariosWithReadingInputs)
+            logger.debug("filterEndOfMonth: " + filterEndOfMonth)
+            val mdrUnderTest = createFilledMdrUnderTestFromScenarios(scenariosWithReadingInputs)
+            val readingsReceived = mdrUnderTest.findReadingsByProperty(
+              propertyId = meterPortConfig.propertyId,
+              filterDevices = Set.empty,
+              filterExecPlan = None, // typically not asked for
+              filterFrom,
+              filterTo,
+              filterReadingTypes = Set.empty, // filtering out of scope for this test
+              filterServiceTypes = Set.empty, // typically not asked for
+              filterTransportTypes = Set.empty, // filtering out of scope for this test
+              filterEndOfMonth = filterEndOfMonth,
+              anyDayReplacement = true,
+              onlyLatest = true,
+              filterInstalled = false
+            )
+            // The test setup creates 2 expected readings with regards to the ANY prio algorithm.
+            // Due to the primary key of the readings database table and with the current creation of random test data
+            // (see above) both readings are guaranteed to be inserted to the readings database table.
+            // With anyDayReplacement = true, onlyLatest = true will return the latest reading from those being highest
+            // from the ANY prioritization. Therefore, there is exactly one of the 2 expected readings with highest
+            // date/time, which is the one expected to be returned.
+            val expectedReading = scenariosWithReadingInputs
+              .flatMap { case (_, expectedReadings, _) => expectedReadings }
+              .maxBy(_.consumptionDate)
+
+            readingsReceived.size shouldBe 1
+            assert(compare(expectedReading, readingsReceived.head))
+        }
+      }
+
+    }
+
+    "retrieve readings by main device: match only readings where the datetime matches, close to another timezone" in {
+      val readingsCount = 1
+
+      val instDateEuropeBerlin = LocalInstant.of(2018, 1, 2, 2, 0, 0) // europe/berlin,
+      val instDateUTC = LocalInstant.of(2018, 1, 2, 0, 0, 0) // utc
+
+      val europeBerlinMeterport = createHcaMeterPortConfig(createDevice("00001", "101"), None, property1, propertyNumber1, usageUnit1, location1, locationNumber1, instDateEuropeBerlin, europeBerlin)
+      val utcMeterPort = createHcaMeterPortConfig(createDevice("00001", "102"), None, property1, propertyNumber1, usageUnit2, location2, locationNumber1, instDateUTC, ZoneIds.Utc)
+
+      val meterPortConfigs = Vector(europeBerlinMeterport, utcMeterPort)
+
+      val readings = Vector(
+        createReadings(europeBerlinMeterport, readingsCount, instDateEuropeBerlin, intervalSeconds = 0, valueStep = 1),
+        createReadings(utcMeterPort, readingsCount, instDateUTC, intervalSeconds = 0, valueStep = 1)
+      ).flatten
+
+      val filterDevices = meterPortConfigs.map(_.mainDeviceId).toSet
+
+      // UTC date will not match because the europe/berlin date ist winter time with a +1 offset, so the UTC date is one hour before the
+      // given timespan
+      val from = instDateEuropeBerlin
+      val to = instDateEuropeBerlin.plusSeconds(3600)
+
+      //noinspection ScalaUnusedSymbol
+      super[PostgresSpec].forAll(Seq(true, false))(onlyLatest =>
+        for {
+          _ <- mdr.truncateReadings()
+          _ <- mdr.truncateMeterPortsTable()
+          _ <- mdr.upsertMeterPorts(meterPortConfigs)
+          _ = mdr.insertReadings(readings)
+          foundReadings = mdr.findReadingsByProperty(property1, filterDevices, filterExecPlan = None, from, to, filterReadingTypes = Set.empty, filterServiceTypes = Set.empty, filterTransportTypes = Set.empty, filterEndOfMonth = false, anyDayReplacement = false, onlyLatest = false, filterInstalled = false)
+        } yield {
+          foundReadings should have size 1 // the utc date should not be returned
+          foundReadings.head.timeZone should be(europeBerlin)
+          foundReadings.head.mainDeviceId should be(europeBerlinMeterport.mainDeviceId)
+        }
+      )
+    }
+
+    "write and delete mandants for exec plans" in {
+      val mandantDE = MandantID("DE")
+      val mandantLU = MandantID("LU")
+      val eplid1 = ExecPlanID(17)
+      val eplid2 = ExecPlanID(123)
+      val eplid3 = ExecPlanID(98763)
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMandantForExecPlan(eplid1, mandantDE)
+        _ <- mdr.upsertMandantForExecPlan(eplid2, mandantLU)
+        m1_0 <- mdr.lookupMandantForExecPlan(eplid1)
+        m2_0 <- mdr.lookupMandantForExecPlan(eplid2)
+        m3_0 <- mdr.lookupMandantForExecPlan(eplid3)
+        _ <- mdr.upsertMandantForExecPlan(eplid1, mandantLU)
+        _ <- mdr.upsertMandantForExecPlan(eplid3, mandantDE)
+        m1_1 <- mdr.lookupMandantForExecPlan(eplid1)
+        m3_1 <- mdr.lookupMandantForExecPlan(eplid3)
+        _ = mdr.deleteExecPlan(eplid2)
+        m1_2 <- mdr.lookupMandantForExecPlan(eplid1)
+        m2_2 <- mdr.lookupMandantForExecPlan(eplid2)
+        m3_2 <- mdr.lookupMandantForExecPlan(eplid3)
+      } yield {
+        m1_0 shouldBe Some(mandantDE)
+        m2_0 shouldBe Some(mandantLU)
+        m3_0 shouldBe empty
+
+        m1_1 shouldBe Some(mandantLU)
+        m3_1 shouldBe Some(mandantDE)
+
+        m1_2 shouldBe Some(mandantLU)
+        m2_2 shouldBe empty
+        m3_2 shouldBe Some(mandantDE)
+      }
+    }
+
+    "delete readings for an execution plan" in {
+      val readingsCount = 10
+      val intervalSeconds = 60
+      val valueStep = 0.1
+
+      val mpcs = meterPortConfigs1.zipWithIndex.map { case (pc, idx) => pc.copy(execPlanId = ExecPlanID(idx)) }
+      val readings = mpcs.flatMap(mp => createReadings(mp, readingsCount, instDate1, intervalSeconds, valueStep))
+      val timespan = LocalTimespan(instDate1, instDate1.plusSeconds((intervalSeconds * readingsCount) + 1))
+
+      def findAllReadings: Future[Vector[(ExecPlanID, Vector[MdrMeterReading])]] = Future.traverse(mpcs) { mp =>
+        mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan).map(r => (mp.execPlanId, r))
+      }
+
+      def findAllPorts: Vector[(ExecPlanID, MeterPortID)] = mpcs.flatMap { mpc =>
+        mdr.findMeterPortIdsByExecPlanId(mpc.execPlanId).map(r => (mpc.execPlanId, r))
+      }
+
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(mpcs)
+        _ = mdr.insertReadings(readings)
+        readings1 <- findAllReadings
+        ports1 = findAllPorts
+        _ = mdr.deleteMeterPortsForExecPlanCascade(ExecPlanID(2))
+        readings2 <- findAllReadings
+        ports2 = findAllPorts
+      } yield {
+        super[PostgresSpec].forAll(readings1) { results => results._2 should have size 10 }
+        super[PostgresSpec].forAll(readings2) { results =>
+          if (results._1 == ExecPlanID(2))
+            results._2 should have size 0
+          else
+            results._2 should have size 10
+        }
+        ports1 should have size 5
+        ports2 should contain theSameElementsAs ports1.filterNot(_._1 == ExecPlanID(2))
+      }
+    }
+
+    "handle readings export requests correctly" when {
+      "valid id is requested" in {
+        val readingsCount = 20
+        val intervalSeconds = 60
+        val valueStep = 0.1
+        val now = LocalDate.now(ZoneIds.Utc)
+        val consumptionDateStart = LocalInstant.of(now.getYear - 1, 1, 1, 11, 0, 0)
+        val consumptionDateEnd = LocalInstant.of(now.getYear - 1, 2, 1, 11, 0, 0)
+
+        val meterportsConfigsForUi: Vector[MeterPortConfig] = meterPortConfigs2 ++ meterPortConfigs3
+        val readings: Vector[MdrMeterPortReadingInput] = meterportsConfigsForUi
+          .flatMap(mp => createReadings(mp, readingsCount, consumptionDateStart, intervalSeconds, valueStep))
+
+        val meterportUnderTest = Random.shuffle(meterportsConfigsForUi).head
+
+        val mdrUnderTest = createFilledMdrUiUnderTest(meterportsConfigsForUi, readings)
+
+        val requestId = mdrUnderTest.saveRequestForUiReadingsExport(
+          propertyNumbers = Vector(meterportUnderTest.propertyNumber),
+          locationNumbers = Vector.empty,
+          articleNumbers = Vector.empty,
+          serialNumbers = Vector.empty,
+          deviceTypes = Vector.empty,
+          consumptionDateFrom = consumptionDateStart.atStartOfDay().toZonedDateTimeUTC,
+          consumptionDateTo = consumptionDateEnd.atStartOfDay().toZonedDateTimeUTC,
+          readingTypes = Vector(MdrReadingType.DayEnd),
+          measurandTypes = Vector.empty,
+          lastConsumptionDateFrom = None,
+          lastConsumptionDateTo = None
+        )
+
+        val expectedResult = readings
+          .filter(_.execPlanId == meterportUnderTest.execPlanId)
+          .map(r => (meterportUnderTest.propertyNumber, Option(r.value)))
+
+        implicit val system: ActorSystem = ActorSystem("ui-export-testing")
+
+        val sink = Flow[UiReadingsSearchData]
+          .toMat(Sink.fold(Seq.empty[(PropertyNumber, Option[BigDecimal])]) { case (list, reading) =>
+            list :+ (reading.propertyNumber, reading.readingValue)
+          })(Keep.right)
+
+        for {
+          result <- mdrUnderTest.getUiReadingsForExport(requestId.get)
+            .runWith(sink)
+        } yield {
+          result.size shouldBe expectedResult.size
+          result should contain theSameElementsAs expectedResult
+          // once the data for the id was fetched, the request should not exist anymore
+          val secondTry = Try(mdrUnderTest.getUiReadingsForExport(requestId.get))
+          secondTry.isFailure shouldBe true
+          secondTry.failed.get shouldBe ReadingsExportIdNotFound(requestId.get)
+        }
+      }
+
+      "unknown id is requested" in {
+        val id = UUID.randomUUID().toString
+
+        for {
+          _ <- mdr.truncateReadingsExportRequests()
+          result = Try {
+            mdr.getUiReadingsForExport(id)
+          }
+        } yield {
+          result.isFailure shouldBe true
+          result.failed.get shouldBe ReadingsExportIdNotFound(id)
+        }
+      }
+    }
+
+    "retrieve readings for UI via getUiReadings for every filter input from request using generative fixtures" in {
+      val genNonemptyMdrDeviceClassTypes = Gen.nonEmptyContainerOf[Set, MdrDeviceClass](Gen.oneOf(Set(MdrDeviceClass.HCA, MdrDeviceClass.VOL)))
+      val genNonemptyMdrReadingTypes = Gen.nonEmptyContainerOf[Set, MdrReadingType](genMdrReadingType)
+      val genNonemptyMdrMeasurandTypes = Gen.nonEmptyContainerOf[Set, MdrMeasurand](Gen.oneOf(MdrMeasurand.values))
+
+      super[ScalaCheckDrivenPropertyChecks].forAll(genNonemptyMdrDeviceClassTypes, genNonemptyMdrReadingTypes, genNonemptyMdrMeasurandTypes) {
+        case (mdrDeviceClassTypes, mdrReadingTypes, mdrMeasurandTypes) =>
+          val queryLimit = 99999999
+          val readingsCount = 10
+          val intervalSeconds = 60
+          val valueStep = 0.1
+          val now = LocalDate.now(ZoneIds.Utc)
+          val instDateStart = LocalInstant.of(now.getYear, now.getMonthValue, now.getDayOfMonth, 11, 0, 0)
+
+
+          val meterportsConfigsForUi: Vector[MeterPortConfig] = meterPortConfigs2 ++ meterPortConfigs3
+          val readings: Vector[MdrMeterPortReadingInput] = meterportsConfigsForUi
+            .flatMap(mp => createReadings(mp, readingsCount, instDateStart, intervalSeconds, valueStep))
+
+          val propertyIdSet = meterportsConfigsForUi.map(_.propertyId)
+          val propertySet = Random.shuffle(meterportsConfigsForUi.map(_.propertyNumber)).take(1)
+          val locationNrSet = Random.shuffle(meterportsConfigsForUi.filter(_.locationNumber.isDefined).map(_.locationNumber.get)).take(1)
+          val articleNrSet = Random.shuffle(meterportsConfigsForUi.map(_.articleNr)).take(1)
+          val serialNrSet = Random.shuffle(meterportsConfigsForUi.map(_.serialNr)).take(1)
+
+          val mdrUnderTest = createFilledMdrUiUnderTest(meterportsConfigsForUi, readings)
+
+          val uiReadingsReceivedByPropertyId = mdrUnderTest.getUiReadings(propertyIdSet, Vector.empty, Vector.empty, Vector.empty, Vector.empty, Vector.empty, None, None, Vector.empty, Vector.empty, None, None, Option(queryLimit))
+          val uiReadingsReceivedByProperty = mdrUnderTest.getUiReadings(Vector.empty, propertySet, Vector.empty, Vector.empty, Vector.empty, Vector.empty, None, None, Vector.empty, Vector.empty, None, None, Option(queryLimit))
+          val uiReadingsReceivedByLocation = mdrUnderTest.getUiReadings(Vector.empty, Vector.empty, locationNrSet, Vector.empty, Vector.empty, Vector.empty, None, None, Vector.empty, Vector.empty, None, None, Option(queryLimit))
+          val uiReadingsReceivedByArticle = mdrUnderTest.getUiReadings(Vector.empty, Vector.empty, Vector.empty, articleNrSet, Vector.empty, Vector.empty, None, None, Vector.empty, Vector.empty, None, None, Option(queryLimit))
+          val uiReadingsReceivedBySerial = mdrUnderTest.getUiReadings(Vector.empty, Vector.empty, Vector.empty, Vector.empty, serialNrSet, Vector.empty, None, None, Vector.empty, Vector.empty, None, None, Option(queryLimit))
+          val uiReadingsReceivedByDevice = mdrUnderTest.getUiReadings(Vector.empty, Vector.empty, Vector.empty, Vector.empty, Vector.empty, mdrDeviceClassTypes.toVector, None, None, Vector.empty, Vector.empty, None, None, Option(queryLimit))
+          val uiReadingsReceivedByMeasurand = mdrUnderTest.getUiReadings(Vector.empty, Vector.empty, Vector.empty, Vector.empty, Vector.empty, Vector.empty, None, None, Vector.empty, mdrMeasurandTypes.toVector, None, None, Option(queryLimit))
+          val uiReadingsReceivedByReadings = mdrUnderTest.getUiReadings(Vector.empty, Vector.empty, Vector.empty, Vector.empty, Vector.empty, Vector.empty, None, None, mdrReadingTypes.toVector, Vector.empty, None, None, Option(queryLimit))
+
+          def readingsFlatMap: Vector[MeterPortConfig] => Vector[MdrMeterPortReadingInput] = m =>
+            m.flatMap(m => readings.filter(w => w.execPlanId.value == m.execPlanId.value && w.mainDeviceId.value == m.mainDeviceId.value && w.port.value == m.portNr.value))
+
+          val expectedUiMeterportsByPropertyId = meterportsConfigsForUi.filter(w => propertyIdSet.map(_.value).contains(w.propertyId.value))
+          val expectedUiMeterportsByPropertyNumber = meterportsConfigsForUi.filter(w => propertySet.map(_.value).contains(w.propertyNumber.value))
+          val expectedUiMeterportsByLocationNumber = meterportsConfigsForUi.filter(w => locationNrSet.map(_.value).contains(w.locationNumber.get.value))
+          val expectedUiMeterportsByArticleNumber = meterportsConfigsForUi.filter(w => articleNrSet.map(_.value).contains(w.articleNr.value))
+          val expectedUiMeterportsBySerialNumber = meterportsConfigsForUi.filter(w => serialNrSet.map(_.value).contains(w.serialNr.value))
+          val expectedUiMeterportsByDeviceType = meterportsConfigsForUi.map { w =>
+            w.meterType match {
+              //noinspection ScalaUnusedSymbol
+              case device: MdrHcaDeviceConfig       => (MdrDeviceClass.HCA, w)
+              case device: MdrVolumeterDeviceConfig => (MdrDeviceClass.VOL, w)
+            }
+          }.filter(w => mdrDeviceClassTypes.contains(w._1)).map(_._2)
+          val expectedUiMeterportsByMeasurandType = meterportsConfigsForUi.filter(w => w.measurand.in(mdrMeasurandTypes.toSeq))
+          val expectedUiReadingsType = readings.filter(w => w.readingType.in(mdrReadingTypes.toSeq))
+
+          val expectedUiReadingsPropertyId = readingsFlatMap(expectedUiMeterportsByPropertyId)
+          val expectedUiReadingsPropertyNumber = readingsFlatMap(expectedUiMeterportsByPropertyNumber)
+          val expectedUiReadingsLocationNumber = readingsFlatMap(expectedUiMeterportsByLocationNumber)
+          val expectedUiReadingsArticleNumber = readingsFlatMap(expectedUiMeterportsByArticleNumber)
+          val expectedUiReadingsSerialNumber = readingsFlatMap(expectedUiMeterportsBySerialNumber)
+          val expectedUiReadingsDeviceType = readingsFlatMap(expectedUiMeterportsByDeviceType)
+          val expectedUiReadingsMeasurandType = readingsFlatMap(expectedUiMeterportsByMeasurandType)
+
+          uiReadingsReceivedByPropertyId.size shouldEqual expectedUiReadingsPropertyId.size
+          uiReadingsReceivedByProperty.size shouldEqual expectedUiReadingsPropertyNumber.size
+          uiReadingsReceivedByLocation.size shouldEqual expectedUiReadingsLocationNumber.size
+          uiReadingsReceivedByArticle.size shouldEqual expectedUiReadingsArticleNumber.size
+          uiReadingsReceivedBySerial.size shouldEqual expectedUiReadingsSerialNumber.size
+          uiReadingsReceivedByDevice.size shouldEqual expectedUiReadingsDeviceType.size
+          uiReadingsReceivedByMeasurand.size shouldEqual expectedUiReadingsMeasurandType.size
+          uiReadingsReceivedByReadings.size shouldEqual expectedUiReadingsType.size
+          succeed
+      }
+    }
+
+    "not return duplicate removal reading linked to a newly meterport re-using the replaced radio component" in {
+      val meterportConfigs: Vector[MeterPortConfig] = meterportConfigsForDuplicateRemovalReadings1
+      val meterportUnderTest = meterportConfigs.maxBy(_.installed)
+      val removalReadingTime = instDate2.minusSeconds(10000)
+      val installReadingTime = instDate2
+      val consumptionDateFrom = instDate2.minusDays(2).atStartOfDay().toZonedDateTime(meterPortZoneId)
+      val consumptionDateTo = consumptionDateFrom.plusDays(10)
+
+      val removalReadings: Vector[MdrMeterPortReadingInput] = meterportConfigs
+        .flatMap(mp => createReadings(
+          meterPort = mp,
+          readingCount = 1,
+          startTime = removalReadingTime,
+          startValue = Some(BigDecimal(4.5)),
+          readingType = MdrReadingType.Removal,
+          transportType = MdrTransportType.MDE))
+
+      val initialReadings: Vector[MdrMeterPortReadingInput] =
+        createReadings(
+          meterPort = meterportUnderTest,
+          readingCount = 1,
+          startTime = installReadingTime,
+          startValue = Some(BigDecimal(0.01)),
+          readingType = MdrReadingType.Initial,
+          transportType = MdrTransportType.MDE
+        )
+      val readings = removalReadings ++ initialReadings
+
+      val mdrUnderTest = createFilledMdrUiUnderTest(meterportConfigs, readings)
+
+      val requestId = mdrUnderTest.saveRequestForUiReadingsExport(
+        propertyNumbers = Vector(meterportUnderTest.propertyNumber),
+        locationNumbers = Vector.empty,
+        articleNumbers = Vector.empty,
+        serialNumbers = Vector.empty,
+        deviceTypes = Vector.empty,
+        consumptionDateFrom = consumptionDateFrom,
+        consumptionDateTo = consumptionDateTo,
+        readingTypes = Vector(MdrReadingType.Removal, MdrReadingType.Initial),
+        measurandTypes = Vector.empty,
+        lastConsumptionDateFrom = None,
+        lastConsumptionDateTo = None
+      )
+
+      // Filter out the removal reading linked to the new main device
+      val expectedResult = readings
+        .filterNot(r => r.readingType == MdrReadingType.Removal && r.mainDeviceId == meterportUnderTest.mainDeviceId)
+        .map(r => (meterportUnderTest.propertyNumber, Option(r.value)))
+
+      implicit val system: ActorSystem = ActorSystem("ui-export-testing")
+
+      val sink = Flow[UiReadingsSearchData]
+        .toMat(Sink.fold(Seq.empty[(PropertyNumber, Option[BigDecimal])]) { case (list, reading) =>
+          list :+ (reading.propertyNumber, reading.readingValue)
+        })(Keep.right)
+
+      for {
+        result <- mdrUnderTest.getUiReadingsForExport(requestId.get)
+          .runWith(sink)
+      } yield {
+        result.size shouldBe expectedResult.size
+        result should contain theSameElementsAs expectedResult
+      }
+    }
+
+    "store and retrieve reading values for a meter port with critical DE value dates on 28th 29th February" in {
+      val readingsCount = 1
+      val intervalSeconds = 60
+      val valueStep = 0.1
+
+      val readings = meterPortConfigsTest001
+                       .flatMap(mp => createReadings(mp, readingsCount, februaryNonLeapYear, intervalSeconds, valueStep)) ++
+                     meterPortConfigsTest001
+                       .flatMap(mp => createReadings(mp, readingsCount, februaryLeapYear, intervalSeconds, valueStep))
+
+      val timespan = LocalTimespan(februaryNonLeapYear, februaryNonLeapYear.plusDays(2))
+      for {
+        _ <- mdr.truncateReadings()
+        _ <- mdr.truncateMeterPortsTable()
+        _ <- mdr.upsertMeterPorts(meterPortConfigsTest001)
+        result = mdr.insertReadings(readings)
+        retrieved <- Future.traverse(meterPortConfigsTest001) { mp =>
+          mdr.findReadingsByMeterPort(mp.execPlanId, mp.mainDeviceId, mp.portNr, timespan)
+        }
+      } yield {
+        result shouldBe()
+        super[PostgresSpec].forAll(retrieved) { results =>
+          results should have size 2
+          super[PostgresSpec].forAll(results) { r =>
+            // check static attributes of readings
+            r.unit shouldBe MdrUnitType.UnitUndefined
+            r.measurand shouldBe MdrMeasurand.HeatingHCA
+            r.port shouldBe PortNr(2)
+            r.propertyId shouldBe property1
+            r.estimationType shouldBe MdrEstimationType.NoEstimation
+          }
+        }
+      }
+    }
+
+    "give priority to data_input_source COMPETITOR_TAKEOVER_SERVICE when upserting meter ports (1)" in {
+      val meterPortConfigs = Vector(meterPortConfigs1(0))
+      val location = meterPortConfigs.head.locationId
+
+      for {
+        _ <- mdr.upsertMeterPorts(meterPortConfigs)
+        p1 <- mdr.findMeterPortsByLocation(None, Set(location))
+        _ <- mdr.upsertMeterPorts(Vector(meterPortConfigs.head.copy(inputService = COMPETITOR_TAKEOVER_SERVICE)))
+        p2 <- mdr.findMeterPortsByLocation(None, Set(location))
+      } yield {
+        p1(0).inputService shouldBe LGSTRUGET_SERVICE
+        p2(0).inputService shouldBe COMPETITOR_TAKEOVER_SERVICE
+      }
+
+    }
+
+    "give priority to data_input_source COMPETITOR_TAKEOVER_SERVICE when upserting meter ports (2)" in {
+      val meterPortConfigs = Vector(meterPortConfigs1(1))
+      val location = meterPortConfigs.head.locationId
+
+      for {
+        _ <- mdr.upsertMeterPorts(Vector(meterPortConfigs.head.copy(inputService = COMPETITOR_TAKEOVER_SERVICE)))
+        p1 <- mdr.findMeterPortsByLocation(None, Set(location))
+        _ <- mdr.upsertMeterPorts(meterPortConfigs)
+        p2 <- mdr.findMeterPortsByLocation(None, Set(location))
+      } yield {
+        p1(0).inputService shouldBe COMPETITOR_TAKEOVER_SERVICE
+        p2(0).inputService shouldBe COMPETITOR_TAKEOVER_SERVICE
+      }
+
+    }
+  }
+
+  // Compare MDR input data with retrieved data, matching relevant domain attributes
+  private def compare(in: MdrMeterPortReadingInput, res: MdrMeterReading): Boolean = {
+    in.consumptionDate == res.consumptionDate &&
+    in.mainDeviceId == res.mainDeviceId &&
+    in.port == res.port &&
+    in.value == res.value &&
+    in.unit == res.unit &&
+    in.readingType == res.readingType &&
+    in.readingProcedure == res.readingProcedure &&
+    in.transportType == res.transportType &&
+    in.mediumType == res.mediumType &&
+    in.estimationType == res.estimationType &&
+    in.radioArticle == res.radioArticleNr &&
+    in.radioSerial == res.radioSerialNr
+  }
+}

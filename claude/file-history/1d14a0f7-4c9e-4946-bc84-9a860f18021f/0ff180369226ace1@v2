@@ -1,0 +1,145 @@
+package com.ista.rdm.emitter.extapi.model
+
+import com.ista.rdm.common.extapi.model._
+
+import java.time.ZonedDateTime
+
+case class ReadingsSearchReqRepr(
+  propertyIds: Vector[PropertyIdRepr],
+  propertyNumbers: Vector[PropertyNumberRepr],
+  locationNumbers: Vector[LocationNumberRepr],
+  articleNumbers: Vector[ArticleNumberRepr],
+  serialNumbers: Vector[SerialNumberRepr],
+  deviceTypes: Vector[MdrDeviceClassRepr],
+  consumptionDateFrom: Option[ZonedDateTime],
+  consumptionDateTo: Option[ZonedDateTime],
+  readingTypes: Vector[MdrReadingTypeRepr],
+  measurandTypes: Vector[MdrMeasurandRepr],
+  usageUnits: Vector[UsageUnitNumberRepr],
+  limit: Option[Int]
+)
+
+/*
+ Some values are Optional to allow to be retrieved or not based on the role of the user
+ Limited result: propertyNumber, deviceIdentifier, serialNumber, articleNumber, consumptionDate, readingValue
+ Extended result: deviceType, readingType, transportType, mediumType, measurandType, lastConsumptionDateTo
+ */
+case class ReadingsSearchDataRepr(
+  propertyNumber: PropertyNumberRepr,
+  propertyId: PropertyIdRepr,
+  usageUnitId: Option[UsageUnitIdRepr],
+  locationNumber: Option[LocationNumberRepr],
+  locationId: LocationIdRepr,
+  mainDeviceId: DeviceIdRepr,
+  qualityIndicators: Set[QualityIndicator],
+  serialNumber: Option[SerialNumberRepr],
+  articleNumber: Option[ArticleNumberRepr],
+  consumptionDate: Option[LocalInstantRepr],
+  readingValue: Option[ReadingValueRepr],
+  unitType: Option[MdrUnitTypeRepr],
+  deviceType: Option[MdrDeviceClassRepr],
+  readingType: Option[MdrReadingTypeRepr],
+  transportType: Option[MdrTransportTypeRepr],
+  mediumType: Option[MdrMediumTypeRepr],
+  measurandType: Option[MdrMeasurandRepr],
+  lastConsumptionDate: Option[LocalInstantRepr],
+  trxSerialNumber: Option[SerialNumberRepr],
+  trxArticleNumber: Option[ArticleNumberRepr],
+  inputService: Option[MdrDataInputServiceTypeRepr]
+)
+
+case class ReadingsMetaData(
+  isOutputLimited: Boolean
+)
+
+case class ErrorDto(
+  code: String,
+  message: String
+)
+
+case class ReadingsSearchRespRepr(
+  metaData: ReadingsMetaData,
+  data: Vector[ReadingsSearchDataRepr],
+  error: Option[ErrorDto] = None
+)
+
+case class ReadingsExportRespRepr(
+  id: String
+)
+
+case class ExtendedDeviceAttributesData(
+  buildingConsecutiveNumber: Option[BuildingNumberRepr],
+  usageUnitConsecutiveNumber: Option[UsageUnitNumberRepr],
+  devicePosition: Option[DevicePositionRepr],
+  usageUnitInternalNumber: Option[UsageUnitNumberRepr],
+  roomType: Option[RoomTypeRepr],
+  nonExecutionReason: Option[NonExecutionReasonRepr],
+)
+
+/*
+        pnl.property_number,
+        pnl.property_id,
+        mpcm.usage_unit_id,
+        mp.id,
+        mp.location_number,
+        mp.location_id,
+        mp.meter_port,
+        mp.main_device_id,
+        mp.serial_nr,
+        mp.article_nr,
+        mp.installed,
+        mp.uninstalled,
+        r.reading_date,
+        r.value,
+        r.unit,
+        mpcm.device_type,
+        r.reading_type,
+        r.transport_type,
+        r.medium_type,
+        mp.measurand,
+        mp.uninstalled,
+        r.transmitting_radio_serial,
+        r.transmitting_radio_article,
+        mp.data_input_service
+ */
+
+case class ExtendedMeterPortDataRepr(
+  usageUnitId: Option[UsageUnitIdRepr],
+  locationNumber: Option[LocationNumberRepr],
+  locationId: LocationIdRepr,
+  mainDeviceId: DeviceIdRepr,
+  serialNumber: Option[SerialNumberRepr],
+  articleNumber: Option[ArticleNumberRepr],
+  deviceType: Option[MdrDeviceClassRepr],
+  measurandType: Option[MdrMeasurandRepr],
+  lastConsumptionDate: Option[LocalInstantRepr],
+  inputService: Option[MdrDataInputServiceTypeRepr]
+)
+
+case class ExtendedReadingsDataRepr(
+  consumptionDate: Option[LocalInstantRepr],
+  readingValue: Option[ReadingValueRepr],
+  qualityIndicators: Set[QualityIndicator],
+  unitType: Option[MdrUnitTypeRepr],
+  readingType: Option[MdrReadingTypeRepr],
+  transportType: Option[MdrTransportTypeRepr],
+  mediumType: Option[MdrMediumTypeRepr],
+  trxSerialNumber: Option[SerialNumberRepr],
+  trxArticleNumber: Option[ArticleNumberRepr],
+)
+
+case class ReadingsExtendedRepr(
+  propertyNumber: PropertyNumberRepr,
+  propertyId: PropertyIdRepr,
+  extendedMeterPortDataRepr: ExtendedMeterPortDataRepr,
+  extendedReadingsDataRepr: ExtendedReadingsDataRepr,
+  extendedDeviceAttributes: ExtendedDeviceAttributesData,
+  isFailingExtendedFromCp: Boolean
+)
+
+case class ReadingsExtendedRespRepr(
+  metaData: ReadingsMetaData,
+  data: Vector[ReadingsExtendedRepr],
+  error: Option[ErrorDto] = None
+)
+

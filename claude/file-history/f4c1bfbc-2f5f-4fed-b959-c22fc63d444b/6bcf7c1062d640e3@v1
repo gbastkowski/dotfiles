@@ -1,0 +1,40 @@
+pullRequests.frequency = "7 days"
+
+updates.allow = [
+  { groupId = "com.typesafe.play" },
+  { groupId = "org.apache.kafka" },
+  { groupId = "org.postgresql" },
+  { groupId = "com.typesafe.akka" },
+  { groupId = "ch.qos.logback" },
+  { groupId = "com.typesafe.scala-logging" },
+  { groupId = "org.scalatest" },
+  { groupId = "org.scalatestplus" },
+  { groupId = "org.apache.commons" },
+  { groupId = "com.fasterxml.jackson.core" },
+  # Internal RDM dependencies
+  { groupId = "com.ista.rdm.common" },
+  { groupId = "com.ista.rdm.core" }
+]
+
+updates.ignore = [
+  # Pin Play Framework to 2.8.x for compatibility
+  { groupId = "com.typesafe.play", version = { contains = "2.9" } },
+  # Skip snapshot versions
+  { version = { contains = "SNAPSHOT" } }
+]
+
+updates.pin = [
+  # Keep Scala version pinned to 2.13.x
+  { groupId = "org.scala-lang", artifactId = "scala-library", version = "2.13." }
+]
+
+pullRequests.customLabels = ["dependencies", "scala-steward"]
+pullRequests.grouping = [
+  { name = "play-framework", "title" = "Update Play Framework dependencies", "filter" = [{"groupId" = "com.typesafe.play"}] },
+  { name = "akka", "title" = "Update Akka dependencies", "filter" = [{"groupId" = "com.typesafe.akka"}] },
+  { name = "test-deps", "title" = "Update test dependencies", "filter" = [{"groupId" = "org.scalatest"}, {"groupId" = "org.scalatestplus"}] },
+  { name = "rdm-internal", "title" = "Update RDM internal dependencies", "filter" = [{"groupId" = "com.ista.rdm.common"}, {"groupId" = "com.ista.rdm.core"}] }
+]
+
+assignees = ["Gunnar.Bastkowski"]
+reviewers = ["Jean-Marie.Gaillourdet.extern"]

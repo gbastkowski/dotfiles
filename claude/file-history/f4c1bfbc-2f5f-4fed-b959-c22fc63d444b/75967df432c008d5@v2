@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "platform": "gitlab",
+  "assignees": ["Gunnar.Bastkowski"],
+  "commitMessagePrefix": "SQDD06-3885:",
+  "enabledManagers": ["sbt"]
+}

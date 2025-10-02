@@ -1,0 +1,88 @@
+package com.ista.rdm.emitter.mdr.api.other
+
+import com.ista.rdm.common.sharedkernel.execPlan.{ExecPlanID, SharedKernelExecPlanJsonFormats}
+import com.ista.rdm.common.types.LocalInstant
+import com.ista.rdm.domain.shared.meterport._
+import play.api.libs.json.{Format, Json}
+
+import java.time.Instant
+
+//As this type is used just for testing purposes, to do not overcomplicate solution, complex enums have been translated to string
+case class MdrRawReadingRepr(
+  meterPortId: Long,
+  readingDate: LocalInstant,
+  readingType: String,
+  value: BigDecimal,
+  unit: String,
+  serviceType: String,
+  estimationType: String,
+  mediumType: String,
+  transportType: String,
+  transmittingRadioSerial: Option[SerialNr],
+  transmittingRadioArticle: Option[ArticleNr],
+  createdAt: Instant,
+  migrated: Boolean,
+  readerType: String,
+  identifier: Option[String],
+  qualityIndicators: Option[String],
+  updatedAt: Option[Instant]
+)
+
+object MdrRawReadingRepr {
+  implicit val format: Format[MdrRawReadingRepr] = Json.format
+}
+
+case class MdrRawMeterportRepr(
+  id: Long,
+  execPlanID: ExecPlanID,
+  mainDeviceId: DeviceId,
+  meterPort: PortNr,
+  propertyID: PropertyID,
+  locationId: LocationId,
+  installed: LocalInstant,
+  uninstalled: Option[LocalInstant],
+  measurand: Measurand,
+  timeZone: String,
+  articleNr: ArticleNr,
+  serialNr: SerialNr,
+  inputService: DataInputService,
+  retentionPolicy: String,
+  initialRetentionPolicy: String,
+  migrated: Boolean,
+  certificationDate: Option[LocalInstant],
+  locationNumber: Option[LocationNumber],
+  lastConsumptionDate: Option[LocalInstant],
+  meterUse: Option[MeterUse],
+  readingFrequency: Option[String],
+  radioComponentUninstalled: Option[LocalInstant],
+)
+
+object MdrRawMeterportRepr extends SharedKernelExecPlanJsonFormats {
+  implicit val format: Format[MdrRawMeterportRepr] = Json.format
+}
+
+case class MdrRawMeterportConfigRepr(
+  meterPortId: Long,
+  validFrom: Instant,
+  deadlineDay: Option[String],
+  deviceType: String,
+  usageUnitId: Option[UsageUnitId],
+  radioArticle: Option[ArticleNr],
+  radioSerial: Option[SerialNr],
+  radioDeviceId: Option[DeviceId],
+  hcaScale: Option[String],
+  hcaScaleType: Option[String],
+  hcaZeroSetter: Option[Boolean],
+  hcaSensorMode: Option[String],
+  migratedConfig: Option[Boolean],
+  hcaScaleFactor: Option[Float],
+  volPulseCapacity: Option[Float],
+  volPulsePerUnit: Option[Boolean],
+  volDisplayUnit: Option[String],
+  volMbusAddress: Option[Int]
+)
+
+object MdrRawMeterportConfigRepr extends SharedKernelExecPlanJsonFormats {
+  implicit val format: Format[MdrRawMeterportConfigRepr] = Json.format
+}
+

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "schedule:weekly"
+  ],
+  "platform": "gitlab",
+  "labels": ["dependencies", "renovate"],
+  "assignees": ["Gunnar.Bastkowski"],
+  "reviewers": ["Jean-Marie.Gaillourdet.extern"],
+  "gitAuthor": "Renovate Bot <renovate@ista.com>",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "branchPrefix": "renovate/",
+  "commitMessagePrefix": "SQDD06-3885:",
+  "sbt": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Group Play Framework updates",
+      "groupName": "Play Framework",
+      "matchPackagePatterns": ["^com\\.typesafe\\.play:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Group Akka updates",
+      "groupName": "Akka",
+      "matchPackagePatterns": ["^com\\.typesafe\\.akka:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Group test dependencies",
+      "groupName": "Test Dependencies",
+      "matchPackagePatterns": ["^org\\.scalatest:", "^org\\.scalatestplus:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Group Typelevel ecosystem",
+      "groupName": "Typelevel",
+      "matchPackagePatterns": ["^org\\.typelevel:", "^co\\.fs2:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Group Circe JSON library",
+      "groupName": "Circe",
+      "matchPackagePatterns": ["^io\\.circe:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Group HTTP4s ecosystem",
+      "groupName": "HTTP4s",
+      "matchPackagePatterns": ["^org\\.http4s:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Group Doobie database library",
+      "groupName": "Doobie",
+      "matchPackagePatterns": ["^org\\.tpolecat:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "Pin Play Framework to 2.8.x for compatibility",
+      "matchPackagePatterns": ["^com\\.typesafe\\.play:"],
+      "allowedVersions": "< 2.9.0"
+    },
+    {
+      "description": "Pin Scala version to 2.13.x",
+      "matchPackageNames": ["org.scala-lang:scala-library"],
+      "allowedVersions": "~2.13.0"
+    },
+    {
+      "description": "Ignore SNAPSHOT versions",
+      "matchCurrentVersion": "/.*-SNAPSHOT$/",
+      "enabled": false
+    },
+    {
+      "description": "Group RDM internal dependencies",
+      "groupName": "RDM Internal",
+      "matchPackagePatterns": ["^com\\.ista\\.rdm\\.common:", "^com\\.ista\\.rdm\\.core:"],
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "description": "High priority security updates",
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch"],
+      "labels": ["dependencies", "security", "renovate"],
+      "prPriority": 10
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "vulnerability"]
+  },
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "rangeStrategy": "bump",
+  "rebaseWhen": "never",
+  "ignoreUnstable": false
+}

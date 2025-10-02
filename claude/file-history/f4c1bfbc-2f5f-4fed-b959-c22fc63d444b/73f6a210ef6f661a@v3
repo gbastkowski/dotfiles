@@ -1,0 +1,99 @@
+stages:
+  - dependencies
+  - build
+
+variables:
+  # Scala Steward configuration
+  EMAIL: "scala.steward@ista.com"
+  LOGIN: "scala-steward-bot"
+  # ISTA standard variables
+  SBT_OPTS: "-Xmx2g -XX:+UseG1GC"
+
+# Scala Steward job
+scala-steward:
+  stage: dependencies
+  image:
+    name: fthomas/scala-steward:latest
+    entrypoint: [""]
+  rules:
+    # Run weekly, manually, or on main branch pushes
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"
+  before_script:
+    # Setup SBT credentials for RDM registry access
+    - mkdir -p ~/.sbt
+    - |
+      cat > ~/.sbt/.rdm-credentials <<EOF
+      realm=Sonatype Nexus Repository Manager
+      host=registry.ista.net
+      user=rdm
+      password=$RDM_REGISTRY_TOKEN
+      EOF
+  script:
+    - >
+      /opt/docker/bin/scala-steward
+      --workspace /tmp/workspace
+      --repos-file repos.md
+      --git-author-email "${EMAIL}"
+      --git-author-name "Scala Steward"
+      --git-ask-pass ./git-ask-pass.sh
+      --forge-type gitlab
+      --forge-api-host "${CI_API_V4_URL}"
+      --forge-login "${LOGIN}"
+      --do-not-fork
+      --env-var "LOG_LEVEL=INFO"
+  variables:
+    # GitLab access token for Scala Steward (set in CI/CD variables)
+    GITLAB_TOKEN: $SCALA_STEWARD_GITLAB_TOKEN
+
+# Renovate job
+renovate:
+  stage: dependencies
+  image: renovate/renovate:latest
+  rules:
+    # Run weekly on main branch or manually
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"
+  script:
+    - renovate --platform=gitlab --endpoint=${CI_API_V4_URL} ${CI_PROJECT_PATH}
+  variables:
+    RENOVATE_TOKEN: $SCALA_STEWARD_GITLAB_TOKEN
+    RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@ista.com>"
+    RENOVATE_FORCE_CLI: "true"
+    RENOVATE_REQUIRE_CONFIG: "ignored"
+    LOG_LEVEL: "debug"
+
+# Build job following ISTA patterns
+.sbtTmpl: &sbtTmpl
+  stage: build
+  image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
+  variables:
+    SBT_CLI_OPTS: ""
+    SBT_CLI_COMMAND: ""
+  cache:
+    key: "sbt-$CI_COMMIT_REF_NAME"
+    policy: pull-push
+    paths:
+      - ~/.ivy2/cache
+      - ~/.sbt
+      - target
+      - project/target
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  tags:
+    - azure
+    - linux
+  script:
+    - java -version
+    - sbt -version
+    - sbt $SBT_CLI_OPTS $SBT_CLI_COMMAND
+
+build:
+  <<: *sbtTmpl
+  variables:
+    SBT_CLI_COMMAND: "clean compile test"
+  artifacts:
+    reports:
+      junit: target/test-reports/*.xml

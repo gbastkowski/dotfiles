@@ -1,0 +1,399 @@
+package com.ista.rdm.ui.frontend.readings.exporting
+
+import com.ista.rdm.common.extapi.model._
+import com.ista.rdm.emitter.extapi.jsonformats.EmitterReprJsonFormats
+import com.ista.rdm.emitter.extapi.model.{ReadingsExportRespRepr, ReadingsSearchReqRepr}
+import com.ista.rdm.ui.frontend.RouterComponent.Loc
+import com.ista.rdm.ui.frontend._
+import com.ista.rdm.ui.frontend.components.Bootstrap.Table.{TableSpec, Td, Tr}
+import com.ista.rdm.ui.frontend.components.Bootstrap.{Spinner, Table}
+import com.ista.rdm.ui.frontend.components.ContentModule.PageTitleConfig
+import com.ista.rdm.ui.frontend.components.ContentPanel.ContentPanelConfig
+import com.ista.rdm.ui.frontend.components._
+import com.ista.rdm.ui.frontend.readings.exporting.ReadingsExportRoutes.ReadingsExportLoc
+import com.ista.rdm.ui.frontend.readings.exporting.validation.{ExportInputState, InputValidator}
+import com.ista.rdm.ui.frontend.readings.shared.TypeMappers
+import com.ista.rdm.ui.frontend.readings.shared.inputvalidation.ValidationResult
+import com.ista.rdm.ui.shared.Locale.Locale
+import com.ista.rdm.ui.shared.components.{DateTimeDisplay, Icon, Toast}
+import com.ista.rdm.ui.shared.config.FrontendConfig
+import com.ista.rdm.ui.shared.pickling.SharedPicklers
+import com.ista.rdm.ui.shared.utils.ReadingsExportPropertyConverter
+import diode.data.Pot
+import diode.react.ModelProxy
+import diode.react.ReactPot._
+import japgolly.scalajs.react.Ref.Simple
+import japgolly.scalajs.react.component.Scala.BackendScope
+import japgolly.scalajs.react.extra.OnUnmount
+import japgolly.scalajs.react.extra.router.RouterCtl
+import japgolly.scalajs.react.vdom.html_<^._
+import japgolly.scalajs.react.{Callback, CallbackTo, Ref, ScalaComponent}
+import org.scalajs.dom.html
+import org.scalajs.dom.html.Element
+
+import java.time.{LocalDate, LocalTime}
+import java.util.regex.Pattern
+
+object ReadingsExportModule extends SharedPicklers with InputValidator with TypeMappers {
+  private val MaxLocationNumberDigits = 9
+  private val MaxArticleNumberDigits = 5
+  private val MaxSerialNumberDigits = 9
+
+  @inline private def bss = GlobalStyles.bootstrapStyles
+
+  case class Props(
+    router: RouterCtl[Loc],
+    readingsExportModelP: ModelProxy[Pot[ReadingsExportRespRepr]],
+    execEnvNameRepr: ExecEnvNameRepr,
+    filterParams: Option[String],
+    localeModelP: ModelProxy[Pot[Locale]],
+    frontendConfig: FrontendConfig
+  ) {
+    lazy val readingsExportInstance: Pot[ReadingsExportRespRepr] = readingsExportModelP()
+    lazy val localeInstance: Locale = localeModelP().toOption.get
+  }
+
+  case class State(
+    propertyNumberField: Seq[String] = Seq.empty,
+    locationNumberField: Seq[String] = Seq.empty,
+    articleField: Seq[String] = Seq.empty,
+    serialNumberField: Seq[String] = Seq.empty,
+    deviceTypeField: Seq[(String, String)] = Seq.empty,
+    consumptionDateFromField: Option[String] = None,
+    consumptionDateToField: Option[String] = None,
+    readingTypeField: Seq[(String, String)] = Seq.empty,
+    measurandField: Seq[(String, String)] = Seq.empty,
+    lastConsumptionDateFromField: Option[String] = None,
+    lastConsumptionDateToField: Option[String] = None,
+    usageUnitField: Seq[String] = Seq.empty,
+    failedMinimumRequirements: Seq[RequiredFieldId] = Seq.empty
+  ) extends ExportInputState {
+    def isEmpty = propertyNumberField.isEmpty &&
+                  locationNumberField.isEmpty &&
+                  articleField.isEmpty &&
+                  serialNumberField.isEmpty &&
+                  deviceTypeField.isEmpty &&
+                  consumptionDateFromField.isEmpty &&
+                  consumptionDateToField.isEmpty &&
+                  readingTypeField.isEmpty &&
+                  measurandField.isEmpty &&
+                  usageUnitField.isEmpty
+  }
+
+  private val emptyState = State(
+    propertyNumberField = Seq.empty,
+    locationNumberField = Seq.empty,
+    articleField = Seq.empty,
+    serialNumberField = Seq.empty,
+    deviceTypeField = Seq.empty,
+    consumptionDateFromField = None,
+    consumptionDateToField = None,
+    readingTypeField = Seq.empty,
+    measurandField = Seq.empty,
+    usageUnitField = Seq.empty,
+    failedMinimumRequirements = Seq.empty
+  )
+
+  //define the references for all fields used
+  private val PropertyNumberFieldRef: Simple[Element] = Ref[html.Element]
+  private val LocationNumberFieldRef: Simple[Element] = Ref[html.Element]
+  private val ArticleFieldRef: Simple[Element] = Ref[html.Element]
+  private val SerialNumberFieldRef: Simple[Element] = Ref[html.Element]
+  private val DeviceTypeFieldRef: Simple[Element] = Ref[html.Element]
+  private val ConsumptionDateFromFieldRef: Simple[Element] = Ref[html.Element]
+  private val ConsumptionDateToFieldRef: Simple[Element] = Ref[html.Element]
+  private val ReadingTypeFieldRef: Simple[Element] = Ref[html.Element]
+  private val MeasurandFieldRef: Simple[Element] = Ref[html.Element]
+  private val UsageUnitFieldRef: Simple[Element] = Ref[html.Element]
+  private val SearchButtonRef: Simple[Element] = Ref[html.Element]
+  private val CleanSearchButtonRef: Simple[Element] = Ref[html.Element]
+
+
+  class Backend($: BackendScope[Props, State]) extends OnUnmount with EmitterReprJsonFormats {
+
+    def render(p: Props, s: State) = {
+      ContentModule(
+        p.router,
+        PageTitleConfig(s"Readings Search Export", None),
+        Some(ContentPanelConfig.NoTitle),
+        p.frontendConfig,
+        <.div(^.className := "readings-search-filter",
+          renderFilterBar(p, s),
+          p.readingsExportInstance.renderPending(_ => Spinner()),
+          p.readingsExportInstance.renderFailed(e => Alert(Some(e))),
+          p.readingsExportInstance.renderReady(data => ReadingsExportDownloadView(data, p.readingsExportModelP)),
+        )
+      )
+    }
+
+    private def renderFilterBar(p: Props, s: State) =
+      <.div(
+        renderNormalFilterBarView(p, s)
+      )
+
+    private def renderNormalFilterBarView(p: Props, s: State) = {
+      val tooltipLocationInfo = <.span(s"${t("ReadingsSearchLoc.Results.Title.LocationInfo")}")
+      val tooltipPropertyNumber = <.span(s"${t("ReadingsExportLoc.Results.Title.PropertyInfo")}")
+      val tooltipConsumptionDateTo = <.span(s"${t("ReadingsExportLoc.Results.Title.ReadingDateTo")}")
+      <.div(^.classSet1("readings-search-filter-container visibility-on"),
+        Table(Table.Props(
+          spec = TableSpec(None,
+            Seq(
+              Tr(Seq(
+                //PropertyNumber
+                renderFilterField(t("ReadingsSearchLoc.Filter.PropertyNumber"),
+                  TagsInput(s.propertyNumberField, t("ReadingsSearchLoc.Placeholder.PropertyNumber"), propertyNumberFieldCallback, onExportCallback(p, s), 1, validatePropertyNumberField, ( {
+                    if (!s.isEmpty) CleanSearchButtonRef else SearchButtonRef
+                  }, PropertyNumberFieldRef, LocationNumberFieldRef), ReadingsExportPropertyConverter.sanitizeWithCheck, Some(ReadingsExportPropertyConverter.sanitize), Some(ReadingsExportPropertyConverter.maxAllowedPropertiesPasted),
+                    () => s.failedMinimumRequirements.contains(PropertyNumberFieldId)
+                  ),
+                  Tooltip(position = "right", hideOnClick = true, html = tooltipPropertyNumber.rawElement)(<.span(^.className := "results-td-info with-smaller-font", Icon.`circle-info`)),
+                  required = true
+                ),
+                //LocationNumber
+                renderFilterField(t("ReadingsSearchLoc.Filter.LocationNumber"),
+                  TagsInput(s.locationNumberField, t("ReadingsSearchLoc.Placeholder.LocationNumber"), locationNumberFieldCallback, onExportCallback(p, s), 2, validateNumberField(MaxLocationNumberDigits), (PropertyNumberFieldRef, LocationNumberFieldRef, ArticleFieldRef)),
+                  Tooltip(position = "right", hideOnClick = true, html = tooltipLocationInfo.rawElement)(<.span(^.className := "results-td-info with-smaller-font", Icon.`circle-info`))
+                ),
+                //Article
+                renderFilterField(t("ReadingsSearchLoc.Filter.ArticleNumber"),
+                  TagsInput(s.articleField, t("ReadingsSearchLoc.Placeholder.ArticleNumber"), articleFieldCallback, onExportCallback(p, s), 3, validateNumberField(MaxArticleNumberDigits), (LocationNumberFieldRef, ArticleFieldRef, SerialNumberFieldRef))),
+                //SerialNumber
+                renderFilterField(t("ReadingsSearchLoc.Filter.SerialNumber"),
+                  TagsInput(s.serialNumberField, t("ReadingsSearchLoc.Placeholder.SerialNumber"), serialNumberFieldCallback, onExportCallback(p, s), 4, validateNumberField(MaxSerialNumberDigits), (ArticleFieldRef, SerialNumberFieldRef, DeviceTypeFieldRef))),
+              )),
+              Tr(Seq(
+                //devicetype
+                renderFilterField(t("ReadingsSearchLoc.Filter.DeviceType"),
+                  TagsInputDropdown("ReadingsSearchLoc.Enums.Devicetype", p.localeModelP, s.deviceTypeField, t("ReadingsSearchLoc.Placeholder.DeviceType"), deviceTypeFieldCallback, onExportCallback(p, s), 5, deviceClassesTuples, (SerialNumberFieldRef, DeviceTypeFieldRef, ConsumptionDateFromFieldRef), "999")),
+                //comsumption date from
+                renderFilterField(t("ReadingsSearchLoc.Filter.ConsumptionDateFrom"),
+                  TextDateField(s.consumptionDateFromField, t("ReadingsSearchLoc.Placeholder.ConsumptionDateFrom"), consumptionDateFromFieldCallback, onExportCallback(p, s), 6, validateTextDateField, (DeviceTypeFieldRef, ConsumptionDateFromFieldRef, ConsumptionDateToFieldRef),() => s.failedMinimumRequirements.contains(ConsumptionDateFromFieldId)),
+                  required = true
+                ),
+                //consumption date to
+                renderFilterField(t("ReadingsSearchLoc.Filter.ConsumptionDateTo"),
+                  TextDateField(s.consumptionDateToField, t("ReadingsSearchLoc.Placeholder.ConsumptionDateTo"), consumptionDateToFieldCallback, onExportCallback(p, s), 7, validateTextDateField, (ConsumptionDateFromFieldRef, ConsumptionDateToFieldRef, ReadingTypeFieldRef), () => s.failedMinimumRequirements.contains(ConsumptionDateToFieldId)),
+                  Tooltip(position = "right", hideOnClick = true, html = tooltipConsumptionDateTo.rawElement)(<.span(^.className := "results-td-info with-smaller-font", Icon.`circle-info`)),
+                  required = true
+                ),
+                //reading type
+                renderFilterField(t("ReadingsSearchLoc.Filter.ReadingType"),
+                  TagsInputDropdown("ReadingsSearchLoc.Enums.ReadingType", p.localeModelP, s.readingTypeField, t("ReadingsSearchLoc.Placeholder.ReadingType"), readingTypeFieldCallback, onExportCallback(p, s), 8, readingTypesTuples, (ConsumptionDateToFieldRef, ReadingTypeFieldRef, MeasurandFieldRef), "999", () => s.failedMinimumRequirements.contains(ReadingTypeFieldId)),
+                  required = true
+                )
+              )),
+              Tr(Seq(
+                //measurand
+                renderFilterField(t("ReadingsSearchLoc.Filter.Measurand"),
+                  TagsInputDropdown("ReadingsSearchLoc.Enums.Measurands", p.localeModelP, s.measurandField, t("ReadingsSearchLoc.Placeholder.Measurand"), measurandFieldCallback, onExportCallback(p, s), 9, measurandsTuples, (ReadingTypeFieldRef, MeasurandFieldRef, UsageUnitFieldRef), "998")),
+                //Unit
+                renderFilterField(t("ReadingsSearchLoc.Filter.UsageUnit"),
+                  TagsInput(s.usageUnitField, t("ReadingsSearchLoc.Placeholder.UsageUnit"), usageUnitFieldCallback, onExportCallback(p, s), 10, validateNumberField(MaxSerialNumberDigits), (MeasurandFieldRef, UsageUnitFieldRef, SearchButtonRef))),
+              ))
+            )),
+          extraClasses = "readings-search-filter-table rdm-no-borders"
+        )
+        ),
+        //button for search
+        renderButtonField(ButtonField(
+          prompt = t("ReadingsExportLoc.Button.Export"),
+          title = t("ReadingsExportLoc.Button.Export"),
+          onClickCallback = onExportCallback(p, s),
+          tabIndex = 100,
+          cssClassName = "tag-input-export-container",
+          focusRef = {
+            if (s.isEmpty) (UsageUnitFieldRef, SearchButtonRef, PropertyNumberFieldRef)
+            else (UsageUnitFieldRef, SearchButtonRef, CleanSearchButtonRef)
+          }),
+          p, s)
+      )
+    }
+
+    private def renderFilterField(prompt: String, element: VdomElement, promptExtraElements: VdomNode = EmptyVdom, required: Boolean = false) =
+      Td(
+        cls = Option("readings-search-filter-table-td"),
+        content = addPrompt(prompt, element, promptExtraElements, required))
+
+    private def addPrompt(prompt: String, element: VdomElement, promptExtraElements: VdomNode, required: Boolean = false) =
+      <.div(^.className := "readings-search-filter-table-td-prompt",
+        <.span(^.className := "readings-field-prompt",
+          if(required) s"$prompt *" else prompt, promptExtraElements),
+        element)
+
+    private def renderButtonField(element: VdomElement, p: Props, s: State) =
+      <.div(
+        ^.className := "",
+        renderSearchbutton(element, p, s))
+
+    private def renderSearchbutton(element: VdomElement, p: Props, s: State) =
+      <.div(^.className := "tag-search-flex",
+        <.div(^.className := "with-flex"),
+        <.div(^.className := "with-flex justify",
+          element,
+          ButtonField(prompt = Icon.remove,
+            title = t("ReadingsSearchLoc.Filter.Title.CleanFilterSearch"),
+            onClickCallback = () => resetFiltersAndSearch(p),
+            tabIndex = 101,
+            cssClassName = "tag-search-filter-clean",
+            focusRef = (SearchButtonRef, CleanSearchButtonRef, PropertyNumberFieldRef)
+          ).when(!s.isEmpty)
+        ),
+        <.div(^.className := "with-flex")
+      )
+
+    ////////////////////////BEGIN STATE CALLBACKS///////////////////////////////
+    private def onExportCallback(p: Props, s: State): () => Callback = () => onExport(p, s)
+
+    private def propertyNumberFieldCallback: Seq[String] => Callback = { tags =>
+        $.modState(s => s.copy(
+          propertyNumberField = tags,
+          failedMinimumRequirements = s.failedMinimumRequirements.filterNot(_ == PropertyNumberFieldId)
+        ))
+    }
+
+    private def locationNumberFieldCallback: Seq[String] => Callback =
+      tags => $.modState(s => s.copy(locationNumberField = tags))
+
+    private def articleFieldCallback: Seq[String] => Callback =
+      tags => $.modState(s => s.copy(articleField = tags))
+
+    private def serialNumberFieldCallback: Seq[String] => Callback =
+      tags => $.modState(s => s.copy(serialNumberField = tags))
+
+    private def usageUnitFieldCallback: Seq[String] => Callback =
+      tags => $.modState(s => s.copy(usageUnitField = tags))
+
+    private def deviceTypeFieldCallback: Seq[(String, String)] => Callback =
+      tags => $.modState(s => s.copy(deviceTypeField = tags))
+
+    private def readingTypeFieldCallback: Seq[(String, String)] => Callback =
+      tags => $.modState(s => s.copy(
+        readingTypeField = tags,
+        failedMinimumRequirements = s.failedMinimumRequirements.filterNot(_ == ReadingTypeFieldId)
+      ))
+
+    private def measurandFieldCallback: Seq[(String, String)] => Callback =
+      tags => $.modState(s => s.copy(measurandField = tags))
+
+    private def consumptionDateFromFieldCallback: Option[String] => Callback =
+      date => {
+        val sanitizedDate = sanitizeInputDateField(date).flatten
+        $.modState(s => s.copy(
+          consumptionDateFromField = sanitizedDate,
+          failedMinimumRequirements = s.failedMinimumRequirements.filterNot(_ == ConsumptionDateFromFieldId)
+        ))
+      }
+
+    private def consumptionDateToFieldCallback: Option[String] => Callback =
+      date => {
+        val sanitizedDate = sanitizeInputDateField(date).flatten
+        $.modState(s => s.copy(
+          consumptionDateToField = sanitizedDate,
+          failedMinimumRequirements = s.failedMinimumRequirements.filterNot(_ == ConsumptionDateToFieldId)
+        ))
+      }
+
+
+    private def resetFiltersAndSearch(p: Props): CallbackTo[Unit] =
+      $.modState(_ => emptyState) >> p.router.set(ReadingsExportLoc(p.execEnvNameRepr.value, None))
+
+    ////////////////////////END STATE CALLBACKS///////////////////////////////
+
+    private def onExport(p: Props, s: State) = {
+      p.readingsExportModelP.dispatchCB(ClearReadingsExport) >> {
+        validateInput(s) match {
+          case _ @ ValidationResult(true, _, _) => dispatchLoadReadingsExport(p, s)
+          case _ @ ValidationResult(false, error, failedValidations) =>
+            println(s"Export button functionality failed: $error")
+            $.modState(s => s.copy(failedMinimumRequirements = failedValidations)) >> browserNotification(error)
+        }
+      }
+    }
+
+    private def sanitizeInputDateFieldPartialFunction: PartialFunction[String, Option[String]] = {
+      case regexDateFormatPattern(d, m, y) => Some(s"$d$m$y")
+      case other                           => Some(other)
+    }
+
+    private def sanitizeInputDateField(input: Option[String]): Option[Option[String]] =
+      input.map(sanitizeInputDateFieldPartialFunction)
+
+    private def browserNotification(msg: String, `type`: String = "error"): Callback =
+      Callback(Toast.Toastify.toast(msg, Toast.Props(`type` = `type`)))
+
+  }
+
+  ////////////////////////VALIDATION FUNCTIONS///////////////////////////////
+
+  //Allow multiple validation for the tag input field
+  private def validateNumberField(maxLength: Int): String => (Boolean, String) = input =>
+    if (!validateDigitsNumber(input)) (false, t("ReadingsSearchLoc.Notifications.OnlyDigits"))
+    else if (input.length > maxLength) (false, t("ReadingsSearchLoc.Notifications.MaxLength", maxLength.toString))
+    else (true, "")
+
+  private def validateDigitsNumber(input: String): Boolean = {
+    val pattern = Pattern.compile("^[0-9]*$")
+    input.isEmpty || pattern.matcher(input).matches()
+  }
+
+  /*
+    validates a property number in any of its multiple formats
+    we check the formats and the check digit if its present against its value
+  */
+  private def validatePropertyNumberField: String => (Boolean, String) = input => {
+    val tupleValidation =
+      if (ReadingsExportPropertyConverter.isValidInput(input)) {
+        val sanitizedProperties = ReadingsExportPropertyConverter.sanitize(input)
+        val results = sanitizedProperties.map { s =>
+          val checkDigit = ReadingsExportPropertyConverter.checkDigit(s.take(9))
+          if (s.length == 10 && checkDigit == s.takeRight(1) || s.length == 9) {
+            (true, "")
+          } else {
+            (false, t("ReadingsSearchLoc.Notifications.InvalidPropertyNumberCheckDigit"))
+          }
+        }
+        results.find(_._1 == false).getOrElse((true, ""))
+      } else (false, t("ReadingsSearchLoc.Notifications.InvalidPropertyNumberFormat"))
+
+    if (input.isEmpty || tupleValidation._1) (true, "")
+    else tupleValidation
+  }
+  ////////////////////////END VALIDATION FUNCTIONS///////////////////////////////
+
+  private def dispatchLoadReadingsExport(p: Props, s: State): Callback =
+    p.readingsExportModelP.dispatchCB(LoadReadingsExport(
+      ReadingsSearchReqRepr(
+        propertyIds = Vector.empty,
+        propertyNumbers = s.propertyNumberField.map(v => PropertyNumberRepr(v.take(9))).toVector,
+        locationNumbers = s.locationNumberField.map(LocationNumberRepr).toVector,
+        articleNumbers = s.articleField.map(ArticleNumberRepr).toVector,
+        serialNumbers = s.serialNumberField.map(SerialNumberRepr).toVector,
+        deviceTypes = mapRequestDeviceClassesType(s.deviceTypeField.toVector),
+        consumptionDateFrom = s.consumptionDateFromField.map(w => LocalDate.parse(w, dateFormatter).atStartOfDay(DateTimeDisplay.defaultDisplayZoneId)),
+        consumptionDateTo = s.consumptionDateToField.map(w => LocalDate.parse(w, dateFormatter).atStartOfDay(DateTimeDisplay.defaultDisplayZoneId).`with`(LocalTime.MAX)),
+        readingTypes = mapRequestReadingType(s.readingTypeField.toVector),
+        measurandTypes = mapRequestMeasurand(s.measurandField.toVector),
+        usageUnits = s.usageUnitField.map(UsageUnitNumberRepr).toVector,
+        limit = Option(p.frontendConfig.readingsComponents.outputLimit)
+      )
+    ))
+
+  def apply(
+    router: RouterCtl[Loc],
+    readingsExportRespReprModelP: ModelProxy[Pot[ReadingsExportRespRepr]],
+    execEnvNameRepr: ExecEnvNameRepr,
+    filterParams: Option[String],
+    localeModelP: ModelProxy[Pot[Locale]],
+    frontendConfig: FrontendConfig
+  ) =
+    component(Props(router, readingsExportRespReprModelP, execEnvNameRepr, filterParams, localeModelP, frontendConfig))
+
+  private val component = ScalaComponent.builder[Props]("ReadingsExport")
+    .initialState(State())
+    .renderBackend[Backend]
+    .componentDidMount { _ =>
+      PropertyNumberFieldRef.foreach(_.focus())
+    }
+    .build
+}

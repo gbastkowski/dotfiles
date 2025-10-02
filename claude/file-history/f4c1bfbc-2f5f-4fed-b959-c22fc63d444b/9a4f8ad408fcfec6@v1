@@ -1,0 +1,90 @@
+ThisBuild / scalaVersion := "2.13.14"
+ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / organization := "com.ista.rdm"
+ThisBuild / organizationName := "ISTA"
+
+// Internal ISTA artifact repository
+ThisBuild / resolvers ++= Seq(
+  "RDM Maven" at "https://registry.ista.net/repository/rdm-maven/",
+  "RDM Releases" at "https://registry.ista.net/repository/rdm-releases/",
+  "RDM Snapshots" at "https://registry.ista.net/repository/rdm-snapshots/"
+)
+
+lazy val commonSettings = Seq(
+  libraryDependencies ++= Seq(
+    // Core dependencies that are common in RDM
+    "com.typesafe.play" %% "play-json" % "2.9.4",
+    "org.apache.kafka" %% "kafka" % "3.5.1",
+    "org.postgresql" % "postgresql" % "42.6.0",
+    "com.typesafe.akka" %% "akka-actor" % "2.6.20",
+    "com.typesafe.akka" %% "akka-stream" % "2.6.20",
+    "ch.qos.logback" % "logback-classic" % "1.4.11",
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
+
+    // Functional programming dependencies (intentionally outdated for testing)
+    "org.typelevel" %% "cats-effect" % "3.4.8",
+    "co.fs2" %% "fs2-core" % "3.6.1",
+    "co.fs2" %% "fs2-io" % "3.6.1",
+    "org.typelevel" %% "cats-core" % "2.9.0",
+    "io.circe" %% "circe-core" % "0.14.1",
+    "io.circe" %% "circe-parser" % "0.14.1",
+
+    // Additional libraries for testing dependency updates
+    "com.github.pureconfig" %% "pureconfig" % "0.17.2",
+    "org.http4s" %% "http4s-dsl" % "0.23.18",
+    "org.http4s" %% "http4s-ember-server" % "0.23.18",
+    "org.scalameta" %% "munit" % "0.7.29" % Test,
+    "org.tpolecat" %% "doobie-core" % "1.0.0-RC2",
+
+    // More outdated dependencies for Renovate testing
+    "com.softwaremill.sttp.client3" %% "core" % "3.8.15",
+    "org.scalaz" %% "scalaz-core" % "7.3.6",
+    "org.mockito" %% "mockito-scala" % "1.17.12" % Test,
+    "dev.optics" %% "monocle-core" % "3.1.0",
+    "com.softwaremill.quicklens" %% "quicklens" % "1.8.8",
+
+    // Internal RDM dependencies (intentionally outdated for testing)
+    "com.ista.rdm.core" %%% "execution-planner-extapi-model" % "3.1.0",
+    "com.ista.rdm.core" %%% "execution-environment-extapi-model" % "3.1.0",
+    "com.ista.rdm.common" %% "avro" % "1.8.2",
+    "com.ista.rdm.common" %% "kafka" % "2.5.1",
+
+    // Test dependencies
+    "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+    "org.scalatestplus" %% "scalacheck-1-17" % "3.2.17.0" % Test
+  )
+)
+
+lazy val root = (project in file("."))
+  .settings(
+    name := "scalasteward-poc",
+    commonSettings
+  )
+
+lazy val common = (project in file("modules/common"))
+  .settings(
+    name := "common",
+    commonSettings
+  )
+
+lazy val processor = (project in file("modules/processor"))
+  .dependsOn(common)
+  .settings(
+    name := "processor",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.apache.commons" % "commons-lang3" % "3.12.0",
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.15.2"
+    )
+  )
+
+lazy val api = (project in file("modules/api"))
+  .dependsOn(common, processor)
+  .settings(
+    name := "api",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "play" % "2.8.19",
+      "com.typesafe.play" %% "play-ws" % "2.8.19"
+    )
+  )

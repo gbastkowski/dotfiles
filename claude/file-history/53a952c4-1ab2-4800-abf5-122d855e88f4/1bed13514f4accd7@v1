@@ -1,0 +1,541 @@
+package com.ista.rdm.outputchannel.mdr.tableDefinitions
+
+import com.ista.rdm.common.postgres.{CommonSlickDefs, UUIDSlickDefs}
+import com.ista.rdm.common.sharedkernel.execPlan.ExecPlanID
+import com.ista.rdm.common.sharedkernel.postgres.RdmSharedKernelSlickDefs
+import com.ista.rdm.common.types.{BiMap, LocalInstant}
+import com.ista.rdm.domain.shared.dataRetention.CompoundRetentionPolicy
+import com.ista.rdm.domain.shared.meterport._
+import com.ista.rdm.domain.shared.property.PropertyNumber
+import com.ista.rdm.outputchannel.mdr._
+import com.ista.rdm.outputchannel.mdr.api._
+import play.api.libs.json.JsObject
+import slick.jdbc.{GetResult, SetParameter}
+
+import java.time.{Instant, YearMonth, ZoneId}
+import java.util.{TimeZone, UUID}
+
+//noinspection TypeAnnotation
+trait ColumnTypeDefinitions
+  extends CommonSlickDefs
+    with CommonSharedMeterportSlickDefs
+    with RdmSharedKernelSlickDefs
+    with UUIDSlickDefs // to make intellij happy
+{
+  // == MdrMeasurand
+  protected implicit val mdrMeasurandSetParam: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrMeasurand] = SetParameter[MdrMeasurand]((m, pp) => pp.setString(m.entryName))
+  protected implicit val mdrMeasurandGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrMeasurand] = GetResult[MdrMeasurand](pr => MdrMeasurand.withName(pr.nextString()))
+  protected implicit val mdrMeasurandIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.outputchannel.mdr.api.MdrMeasurand]] = SetParameter[Iterable[MdrMeasurand]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[String]]].apply(m.map(_.entryName), pp)
+  }
+  // == LocationId
+  protected implicit val locationIdSetParameter: slick.jdbc.SetParameter[com.ista.rdm.domain.shared.meterport.LocationId] = SetParameter[LocationId]((m, pp) => implicitly[SetParameter[UUID]].apply(m.value, pp))
+  protected implicit val iterableLocationIdSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.domain.shared.meterport.LocationId]] = SetParameter[Iterable[LocationId]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[UUID]]].apply(m.map(_.value), pp)
+  }
+  protected implicit val locationIdeGetResult: GetResult[LocationId] = implicitly[GetResult[UUID]] andThen (LocationId(_))
+
+  // == MeterPortID
+  protected implicit val meterPortIDGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MeterPortID] = GetResult[MeterPortID](pr => MeterPortID(pr.nextInt()))
+  protected implicit val meterPortIDOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.MeterPortID]] = GetResult[Option[MeterPortID]](pr => pr.nextIntOption().map(MeterPortID(_)))
+  protected implicit val meterPortIdSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.MeterPortID] = SetParameter[MeterPortID]((m, pp) => pp.setLong(m.value))
+  protected implicit val meterPortIdIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.outputchannel.mdr.MeterPortID]] = SetParameter[Iterable[MeterPortID]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[Long]]].apply(m.map(_.value), pp)
+  }
+
+  // == LocationNumber
+  protected implicit val locationNumberSetParameter: slick.jdbc.SetParameter[com.ista.rdm.domain.shared.meterport.LocationNumber] = SetParameter[LocationNumber]((m, pp) => pp.setString(m.value))
+  protected implicit val locationPropertyNumberSetParameter: slick.jdbc.SetParameter[Option[com.ista.rdm.domain.shared.meterport.LocationNumber]] = SetParameter[Option[LocationNumber]]((m, pp) => pp.setStringOption(m.map(_.value)))
+  protected implicit val locationNumberGetResult: slick.jdbc.GetResult[com.ista.rdm.domain.shared.meterport.LocationNumber] = GetResult[LocationNumber](pr => LocationNumber(pr.nextString()))
+  protected implicit val locationNumberGetOptResult: slick.jdbc.GetResult[Option[com.ista.rdm.domain.shared.meterport.LocationNumber]] = GetResult[Option[LocationNumber]](pr => pr.nextStringOption().map(LocationNumber(_)))
+  protected implicit val locationNumberIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.domain.shared.meterport.LocationNumber]] = SetParameter[Iterable[LocationNumber]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[String]]].apply(m.map(_.value), pp)
+  }
+  // == MdrReadingType
+  protected val readingTypeMap: BiMap[MdrReadingType, String] = new BiMap(MdrReadingType.values.map {
+    case m @ MdrReadingType.Current  => m -> "CR"
+    case m @ MdrReadingType.DayEnd   => m -> "DE"
+    case m @ MdrReadingType.Deadline => m -> "DL"
+    case m @ MdrReadingType.Initial  => m -> "IN"
+    case m @ MdrReadingType.MonthEnd => m -> "ME"
+    case m @ MdrReadingType.MonthMid => m -> "MM"
+    case m @ MdrReadingType.Removal  => m -> "RM"
+  })
+
+  // == MdrReaderType
+  protected val readerTypeMap: BiMap[MdrReaderType, String] = new BiMap(MdrReaderType.values.map {
+    case m @ MdrReaderType.Ista     => m -> "ISTA"
+    case m @ MdrReaderType.Customer => m -> "CUSTOMER"
+    case m @ MdrReaderType.Unknown  => m -> "UNKNOWN"
+  })
+  protected implicit val mdrReadingTypeSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrReadingType] = SetParameter[MdrReadingType]((m, pp) => pp.setString(readingTypeMap.toInner(m)))
+  protected implicit val mdrReadingTypeIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.outputchannel.mdr.api.MdrReadingType]] = SetParameter[Iterable[MdrReadingType]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[String]]].apply(m.map(readingTypeMap.toInner), pp)
+  }
+  protected implicit val mdrReadingTypeGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrReadingType] = GetResult[MdrReadingType](pr => readingTypeMap.toOuter(pr.nextString()))
+  protected implicit val mdrReaderTypeSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrReaderType] = SetParameter[MdrReaderType]((m, pp) => pp.setString(readerTypeMap.toInner(m)))
+  protected implicit val mdrReaderTypeGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrReaderType] = GetResult[MdrReaderType](pr => readerTypeMap.toOuter(pr.nextString()))
+  protected implicit val mdrReadingTypeOptSetParameter: slick.jdbc.SetParameter[Option[com.ista.rdm.outputchannel.mdr.api.MdrReadingType]] = SetParameter[Option[MdrReadingType]]((m, pp) => pp.setStringOption(m map readingTypeMap.toInner))
+  protected implicit val mdrReadingTypeOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrReadingType]] = GetResult[Option[MdrReadingType]](pr => pr.<<?[String] map readingTypeMap.toOuter)
+
+  // == MdrReadingProcedure
+  protected val readingProcedureMap: BiMap[MdrReadingProcedure, String] = new BiMap(MdrReadingProcedure.values.map {
+    case m @ MdrReadingProcedure.Regular             => m -> "REG"
+    case m @ MdrReadingProcedure.Intermediate        => m -> "INT"
+    case m @ MdrReadingProcedure.CustomerSelfReading => m -> "CSR"
+  })
+  protected implicit val mdrReadingProcedureSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrReadingProcedure] = SetParameter[MdrReadingProcedure]((m, pp) => pp.setString(readingProcedureMap.toInner(m)))
+  protected implicit val mdrReadingProcedureIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.outputchannel.mdr.api.MdrReadingProcedure]] = SetParameter[Iterable[MdrReadingProcedure]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[String]]].apply(m.map(readingProcedureMap.toInner), pp)
+  }
+  protected implicit val mdrReadingProcedureGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrReadingProcedure] = GetResult[MdrReadingProcedure](pr => readingProcedureMap.toOuter(pr.nextString()))
+
+  // == MdrEstimationType
+  protected val estimationTypeMap: BiMap[MdrEstimationType, String] = new BiMap(MdrEstimationType.values.map {
+    case m @ MdrEstimationType.NoEstimation   => m -> "N"
+    case m @ MdrEstimationType.SomeEstimation => m -> "E"
+  })
+  protected implicit val estimationTypeSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrEstimationType] = SetParameter[MdrEstimationType]((m, pp) => pp.setString(estimationTypeMap.toInner(m)))
+  protected implicit val estimationTypeGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrEstimationType] = GetResult[MdrEstimationType](pr => estimationTypeMap.toOuter(pr.nextString()))
+
+  // == MdrTransportType
+  protected val transportTypeMap: BiMap[MdrTransportType, String] = new BiMap(MdrTransportType.values.map {
+    case m @ MdrTransportType.AMM     => m -> "AMM"
+    case m @ MdrTransportType.PDA     => m -> "PDA"
+    case m @ MdrTransportType.MDE     => m -> "MDE"
+    case m @ MdrTransportType.FF      => m -> "FF"
+    case m @ MdrTransportType.QC      => m -> "QC"
+    case m @ MdrTransportType.UNKNOWN => m -> "UNKNOWN"
+    case m @ MdrTransportType.CACTUS  => m -> "CACTUS"
+  })
+
+  protected implicit val mdrTransportTypeSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrTransportType] = SetParameter[MdrTransportType]((m, pp) => pp.setString(transportTypeMap.toInner(m)))
+  protected implicit val mdrTransportTypeIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.outputchannel.mdr.api.MdrTransportType]] = SetParameter[Iterable[MdrTransportType]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[String]]].apply(m.map(transportTypeMap.toInner), pp)
+  }
+  protected implicit val mdrTransportTypeGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrTransportType] = GetResult[MdrTransportType](pr => transportTypeMap.toOuter(pr.nextString()))
+  protected implicit val mdrTransportTypeOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrTransportType]] = GetResult[Option[MdrTransportType]](pr => pr.nextStringOption().map(transportTypeMap.toOuter))
+
+  // == MdrMediumType
+  protected val mediumTypeMap: BiMap[MdrMediumType, String] = new BiMap(MdrMediumType.values.map {
+    case m @ MdrMediumType.OPTICAL       => m -> "OPTICAL"
+    case m @ MdrMediumType.RADIO         => m -> "RADIO"
+    case m @ MdrMediumType.RADIO_CLASSIC => m -> "RADIO_CLASSIC"
+    case m @ MdrMediumType.MANUAL        => m -> "MANUAL"
+    case m @ MdrMediumType.OTHER         => m -> "OTHER"
+  })
+  protected implicit val mdrMediumTypeSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrMediumType] = SetParameter[MdrMediumType]((m, pp) => pp.setString(mediumTypeMap.toInner(m)))
+  protected implicit val mdrMediumTypeGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrMediumType] = GetResult[MdrMediumType](pr => mediumTypeMap.toOuter(pr.nextString()))
+  protected implicit val mdrMediumTypeOptSetParameter: slick.jdbc.SetParameter[Option[com.ista.rdm.outputchannel.mdr.api.MdrMediumType]] = SetParameter[Option[MdrMediumType]]((m, pp) => pp.setStringOption(m map mediumTypeMap.toInner))
+  protected implicit val mdrMediumTypeOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrMediumType]] = GetResult[Option[MdrMediumType]](pr => pr.<<?[String] map mediumTypeMap.toOuter)
+
+  // == MdrUnitType
+  private val unitTypeMap: BiMap[MdrUnitType, String] = new BiMap(MdrUnitType.values.map {
+    case m @ MdrUnitType.UnitM3        => m -> "M3"
+    case m @ MdrUnitType.UnitGC        => m -> "GC"
+    case m @ MdrUnitType.UnitGJ        => m -> "GJ"
+    case m @ MdrUnitType.UnitJ         => m -> "J"
+    case m @ MdrUnitType.UnitL         => m -> "L"
+    case m @ MdrUnitType.UnitKJ        => m -> "KJ"
+    case m @ MdrUnitType.UnitKWH       => m -> "KWH"
+    case m @ MdrUnitType.UnitMWH       => m -> "MWH"
+    case m @ MdrUnitType.UnitUndefined => m -> "UNDEFINED"
+    case m @ MdrUnitType.UnitDevice    => m -> "DEV"
+  })
+  protected implicit val mdrUnitTypeSetParameter: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrUnitType] = SetParameter[MdrUnitType]((m, pp) => pp.setString(unitTypeMap.toInner(m)))
+  protected implicit val mdrUnitTypeGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrUnitType] = GetResult[MdrUnitType](pr => unitTypeMap.toOuter(pr.nextString()))
+  protected implicit val mdrUnitTypeOptSetParameter: slick.jdbc.SetParameter[Option[com.ista.rdm.outputchannel.mdr.api.MdrUnitType]] = SetParameter[Option[MdrUnitType]]((m, pp) => pp.setStringOption(m map unitTypeMap.toInner))
+  protected implicit val mdrUnitTypeOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrUnitType]] = GetResult[Option[MdrUnitType]](pr => pr.<<?[String] map unitTypeMap.toOuter)
+
+  // == MdrScaleType
+  protected val mdrScaleTypeMap: BiMap[MdrScaleType, String] = new BiMap(MdrScaleType.values.map {
+    case m @ MdrScaleType.DEFAULT          => m -> "DEFAULT"
+    case m @ MdrScaleType.PRODUCT          => m -> "PRODUCT"
+    case m @ MdrScaleType.MIGRATED_UNKNOWN => m -> "MIGRATED_UNKNOWN"
+  })
+  protected implicit val mdrScaleTypeOptSetParam: slick.jdbc.SetParameter[Option[com.ista.rdm.outputchannel.mdr.api.MdrScaleType]] = SetParameter[Option[MdrScaleType]]((m, pp) => pp.setStringOption(m map mdrScaleTypeMap.toInner))
+  protected implicit val mdrScaleTypeOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrScaleType]] = GetResult[Option[MdrScaleType]](pr => pr.<<?[String] map mdrScaleTypeMap.toOuter)
+
+  // == MdrSensorMode
+  protected val mdrSensorModeToMap: BiMap[MdrSensorMode, String] = new BiMap(MdrSensorMode.values.map {
+    case m @ MdrSensorMode.ONE_SENSOR => m -> "1"
+    case m @ MdrSensorMode.TWO_SENSOR => m -> "2"
+  })
+  protected implicit val mdrSensorModeSetParam: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrSensorMode] = SetParameter[MdrSensorMode]((m, pp) => pp.setString(mdrSensorModeToMap.toInner(m)))
+  protected implicit val mdrSensorModeOptSetParam: slick.jdbc.SetParameter[Option[com.ista.rdm.outputchannel.mdr.api.MdrSensorMode]] = SetParameter[Option[MdrSensorMode]]((m, pp) => pp.setStringOption(m map mdrSensorModeToMap.toInner))
+  protected implicit val mdrSensorModeOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrSensorMode]] = GetResult[Option[MdrSensorMode]](pr => pr.<<?[String] map mdrSensorModeToMap.toOuter)
+
+  // == MdrDeviceClass
+  protected val mdrDeviceClassMap: BiMap[MdrDeviceClass, String] = new BiMap(MdrDeviceClass.values.map {
+    case m @ MdrDeviceClass.UNKNOWN => m -> "UNKNOWN"
+    case m @ MdrDeviceClass.HCA     => m -> "HCA"
+    case m @ MdrDeviceClass.VOL     => m -> "VOL"
+  })
+  protected implicit val mdrDeviceClassSetParam: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrDeviceClass] = SetParameter[MdrDeviceClass]((m, pp) => pp.setString(mdrDeviceClassMap.toInner(m)))
+  protected implicit val mdrDeviceClassGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrDeviceClass] = GetResult[MdrDeviceClass](pr => mdrDeviceClassMap.toOuter(pr.nextString()))
+  protected implicit val mdrDeviceClassOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrDeviceClass]] = GetResult[Option[MdrDeviceClass]](pr => pr.<<?[String] map mdrDeviceClassMap.toOuter)
+
+  protected implicit val mdrDeviceClassIterSetParameter: slick.jdbc.SetParameter[Iterable[com.ista.rdm.outputchannel.mdr.api.MdrDeviceClass]] = SetParameter[Iterable[MdrDeviceClass]] { (m, pp) =>
+    implicitly[SetParameter[Iterable[String]]].apply(m.map(mdrDeviceClassMap.toInner), pp)
+  }
+  protected implicit val mbusAddressSetParam: slick.jdbc.SetParameter[com.ista.rdm.domain.shared.meterport.MbusAddress] = SetParameter[MbusAddress]((m, pp) => pp.setInt(m.value))
+  protected implicit val mbusAddressGetParam: slick.jdbc.GetResult[com.ista.rdm.domain.shared.meterport.MbusAddress] = GetResult[MbusAddress] { pr => MbusAddress(pr.<<[Int]) }
+  protected implicit val mbusAddressOptSetParam: slick.jdbc.SetParameter[Option[com.ista.rdm.domain.shared.meterport.MbusAddress]] = SetParameter[Option[MbusAddress]]((m, pp) => pp.setIntOption(m.map(_.value)))
+  protected implicit val mbusAddressOptGetParam: slick.jdbc.GetResult[Option[com.ista.rdm.domain.shared.meterport.MbusAddress]] = GetResult[Option[MbusAddress]] { pr => pr.<<?[Int].map(MbusAddress(_)) }
+
+  protected val mdrMeterUseMap: BiMap[MdrMeterUse, String] = BiMap(
+    MdrMeterUse.MAIN_METER -> "MAIN_METER",
+    MdrMeterUse.USER_GROUP_METER -> "USER_GROUP_METER",
+    MdrMeterUse.COMMON_METER -> "COMMON_METER",
+    MdrMeterUse.USAGE_UNIT_METER -> "USAGE_UNIT_METER"
+  )
+  protected implicit val mdrMeterUseSetParam: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrMeterUse] = SetParameter[MdrMeterUse]((m, pp) => pp.setString(mdrMeterUseMap.toInner(m)))
+  protected implicit val mdrMeterUseOptSetParam: slick.jdbc.SetParameter[Option[com.ista.rdm.outputchannel.mdr.api.MdrMeterUse]] = SetParameter[Option[MdrMeterUse]]((m, pp) => pp.setStringOption(mdrMeterUseMap.toInnerOption(m)))
+  protected implicit val mdrMeterUseGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrMeterUse] = GetResult[MdrMeterUse](pr => mdrMeterUseMap.toOuter(pr.nextString()))
+  protected implicit val mdrMeterUseOptGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.outputchannel.mdr.api.MdrMeterUse]] = GetResult[Option[MdrMeterUse]](pr => pr.<<?[String].map(s => mdrMeterUseMap.toOuter(s)))
+
+  // == MdrMeterPort
+  protected implicit val mdrMeterPortGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrMeterPort] = GetResult[MdrMeterPort] { pr =>
+    // value classes need type hints
+    MdrMeterPort(
+      // id
+      id = pr.<<?[MeterPortID],
+      execPlanId = pr.<<[ExecPlanID],
+      mainDeviceId = pr.<<[DeviceId],
+      portNr = pr.<<[PortNr],
+      // location
+      propertyId = pr.<<[PropertyID],
+      locationId = pr.<<[LocationId],
+      locationNumber = pr.<<?[LocationNumber],
+      // config
+      migrated = pr.<<[Boolean],
+      retentionPolicy = pr.<<[CompoundRetentionPolicy],
+      // device
+      installed = pr.<<[LocalInstant],
+      uninstalled = pr.<<?[LocalInstant],
+      measurand = pr.<<[MdrMeasurand],
+      timeZone = pr.<<[ZoneId],
+      articleNr = pr.<<[ArticleNr],
+      serialNr = pr.<<[SerialNr],
+      inputService = pr.<<[DataInputService],
+      meterUse = pr.<<?[MdrMeterUse],
+      certificationDate = pr.<<?[LocalInstant]
+    )
+  }
+
+  protected implicit val mdrMeterPortConfigGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrMeterPortConfig] = GetResult[MdrMeterPortConfig] { pr =>
+    MdrMeterPortConfig(
+      meterPort = pr.<<[MdrMeterPort],
+      validFrom = pr.<<[LocalInstant],
+      deadline = pr.<<?[DeadlineDay],
+      deviceType = pr.<<[MdrDeviceClass],
+      usageUnitId = pr.<<?[UsageUnitId],
+      radioArticleNr = pr.<<?[ArticleNr],
+      radioSerialNr = pr.<<?[SerialNr],
+      radioDeviceId = pr.<<?[DeviceId],
+      migrated = pr.<<[Boolean],
+      // HCA fields
+      hcaScale = pr.<<?[BigDecimal],
+      hcaScaleFactor = pr.<<?[BigDecimal],
+      hcaScaleType = pr.<<?[MdrScaleType],
+      hcaZeroSetter = pr.<<?[Boolean],
+      hcaSensorMode = pr.<<?[MdrSensorMode],
+      // VOL fields
+      volDisplayUnit = pr.<<?[MdrUnitType],
+      volPulseCapacity = pr.<<?[BigDecimal],
+      volPulsePerUnit = pr.<<?[Boolean],
+      volMbusAddress = pr.<<?[MbusAddress]
+    )
+  }
+
+  // == MdrPropertyReadingsStatus
+  protected implicit val mdrPropertyReadingStatusGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrPropertyReadingsStatus] =
+    GetResult[MdrPropertyReadingsStatus](pr =>
+      MdrPropertyReadingsStatus(
+        execPlanId = pr.<<[ExecPlanID],
+        propertyId = pr.<<[PropertyID],
+        updated = pr.<<[LocalInstant],
+        timeZone = pr.<<[ZoneId],
+        ppsYield = pr.<<[BigDecimal],
+        receivable = pr.<<[Int],
+        notReceived = pr.<<[Int]
+      )
+    )
+
+  protected implicit val mdrPropertyReadingStatusMonthlyGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrPropertyReadingsStatusMonthly] =
+    GetResult[MdrPropertyReadingsStatusMonthly](pr =>
+      MdrPropertyReadingsStatusMonthly(
+        execPlanId = pr.<<[ExecPlanID],
+        propertyId = pr.<<[PropertyID],
+        period = pr.<<[YearMonth],
+        updated = pr.<<[LocalInstant],
+        timeZone = pr.<<[ZoneId],
+        ppsYield = pr.<<[BigDecimal],
+        receivable = pr.<<[Int],
+        notReceived = pr.<<[Int]
+      )
+    )
+
+  // == MdrPropertyReadingsStatus
+  protected implicit val mdrMeterPortReadingGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrMeterPortReading] = GetResult[MdrMeterPortReading] { pr =>
+    MdrMeterPortReading(
+      meterPortId = pr.<<[MeterPortID],
+      readingDate = pr.<<[LocalInstant],
+      value = pr.<<[BigDecimal],
+      unit = pr.<<[MdrUnitType],
+      readingType = pr.<<[MdrReadingType],
+      serviceType = pr.<<[MdrReadingProcedure],
+      transportType = pr.<<[MdrTransportType],
+      mediumType = pr.<<[MdrMediumType],
+      estimationType = pr.<<[MdrEstimationType],
+      identifier = pr.<<?[JsObject]
+    )
+  }
+
+  // == MdrMimoReadingLabel
+  protected val mdrMimoReadingLabel: BiMap[MdrMimoReadingLabel, String] = new BiMap(MdrMimoReadingLabel.values.map {
+    case m @ MdrMimoReadingLabel.ReadingsCsr1                => m -> "readings_csr1"
+    case m @ MdrMimoReadingLabel.ReadingsCsr2                => m -> "readings_csr2"
+    case m @ MdrMimoReadingLabel.ReadingsWithBundleDate      => m -> "readings_with_bundle_date"
+    case m @ MdrMimoReadingLabel.ReadingsWithoutBundleDate   => m -> "readings_without_bundle_date"
+    case m @ MdrMimoReadingLabel.ReadingsWithExtendedRange   => m -> "readings_with_extended_range"
+    case m @ MdrMimoReadingLabel.ReadingsOnRequestedDate     => m -> "readings_on_requested_date"
+    case m @ MdrMimoReadingLabel.ReadingsBeforeRequestedDate => m -> "readings_before_requested_date"
+  })
+
+  protected implicit val mdrMimoReadingLabelGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrMimoReadingLabel] = GetResult[MdrMimoReadingLabel](pr => mdrMimoReadingLabel.toOuter(pr.nextString()))
+
+  // == MdrMimoReading
+  protected implicit val mdrMimoReadingGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrMimoReading] = GetResult[MdrMimoReading] { pr =>
+    MdrMimoReading(
+      locationId = pr.<<[LocationId],
+      measurand = pr.<<[MdrMeasurand],
+      readingLocalInstant = pr.<<[LocalInstant],
+      readingValue = pr.<<[BigDecimal],
+      readingUnit = pr.<<[MdrUnitType],
+      readingType = pr.<<[MdrReadingType],
+      readingProcedure = pr.<<[MdrReadingProcedure],
+      mainSerialNr = pr.<<?[SerialNr],
+      readingLabel = pr.<<[MdrMimoReadingLabel],
+      locationMeasurandsToFill = pr.<<[Int],
+      ambiguousLocationMeasurandsToFill = pr.<<[Int],
+      duplicatedDevicesOnOtherLocationConsidered = pr.<<[Int]
+    )
+  }
+
+  // == MdrMeterReading
+  protected implicit val mdrMeterReadingGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrMeterReading] = GetResult[MdrMeterReading] { pr =>
+    // value classes need type hints
+    MdrMeterReading(
+      meterPortId = pr.<<[MeterPortID],
+      propertyId = pr.<<[PropertyID],
+      locationId = pr.<<[LocationId],
+      port = pr.<<[PortNr],
+      mainDeviceId = pr.<<[DeviceId],
+      mainArticleNr = pr.<<[ArticleNr],
+      mainSerialNr = pr.<<[SerialNr],
+      radioArticleNr = pr.<<?[ArticleNr],
+      radioSerialNr = pr.<<?[SerialNr],
+      consumptionDate = pr.<<[LocalInstant],
+      value = pr.<<[BigDecimal],
+      unit = pr.<<[MdrUnitType],
+      readingType = pr.<<[MdrReadingType],
+      readingProcedure = pr.<<[MdrReadingProcedure],
+      transportType = pr.<<[MdrTransportType],
+      mediumType = pr.<<[MdrMediumType],
+      estimationType = pr.<<[MdrEstimationType],
+      measurand = pr.<<[MdrMeasurand],
+      timeZone = pr.<<[ZoneId],
+      certificationDate = pr.<<?[LocalInstant],
+      identifier = pr.<<?[JsObject]
+    )
+  }
+
+  // == MdrDeviceReadingsInfo
+  protected implicit val mdrDeviceReadingsInfoGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrDeviceReadingsInfo] = GetResult[MdrDeviceReadingsInfo] { pr =>
+    // value classes need type hints
+    MdrDeviceReadingsInfo(
+      deviceId = pr.<<[DeviceId],
+      readingDate = pr.<<[LocalInstant],
+      readingType = pr.<<[MdrReadingType],
+      mainArticle = pr.<<[ArticleNr],
+      mainSerial = pr.<<[SerialNr],
+      lastRadioArticle = pr.<<?[ArticleNr],
+      lastRadioSerial = pr.<<?[SerialNr]
+    )
+  }
+
+  // MdrReadingQualityIndicator
+  protected implicit val mdrReadingQualityIndicatorGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrReadingQualityIndicator] = GetResult[MdrReadingQualityIndicator] { pr =>
+    MdrReadingQualityIndicator(
+      meterPortId = pr.<<[MeterPortID],
+      readingDate = pr.<<[LocalInstant],
+      readingType = pr.<<[MdrReadingType],
+      transportType = pr.<<[MdrTransportType],
+      payload = pr.<<[JsObject],
+      createdAt = pr.<<[Instant],
+      updatedAt = pr.<<?[Instant]
+    )
+  }
+
+  protected implicit val mdrRawReadingGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrRawReading] = GetResult[MdrRawReading] { pr =>
+    MdrRawReading(
+      meterPortId = pr.<<[Long],
+      readingDate = pr.<<[LocalInstant],
+      readingType = pr.<<[MdrReadingType],
+      value = pr.<<[BigDecimal],
+      unit = pr.<<[MdrUnitType],
+      serviceType = pr.<<[MdrReadingProcedure],
+      estimationType = pr.<<[MdrEstimationType],
+      mediumType = pr.<<[MdrMediumType],
+      transportType = pr.<<[MdrTransportType],
+      transmittingRadioArticle = pr.<<?[ArticleNr],
+      transmittingRadioSerial = pr.<<?[SerialNr],
+      createdAt = pr.<<[Instant],
+      migrated = pr.<<[Boolean],
+      readerType = pr.<<[MdrReaderType],
+      identifier = pr.<<?[String],
+      qualityIndicators = pr.<<?[String],
+      updatedAt = pr.<<?[Instant]
+    )
+  }
+
+  implicit val measurandGetResult: slick.jdbc.GetResult[com.ista.rdm.domain.shared.meterport.Measurand] = GetResult[Measurand](r => Measurand.withName(r.<<[String]))
+  implicit val meterUseGetResult: slick.jdbc.GetResult[Option[com.ista.rdm.domain.shared.meterport.MeterUse]] = GetResult[Option[MeterUse]] {
+    r =>
+      val m = r.<<?[String]
+      m.map(MeterUse.withName)
+  }
+
+  protected implicit val mdrRawMeterportsGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrRawMeterport] = GetResult[MdrRawMeterport] { pr =>
+
+    MdrRawMeterport(
+      id = pr.<<[Int],
+      execPlanID = pr.<<[ExecPlanID],
+      mainDeviceId = pr.<<[DeviceId],
+      meterPort = pr.<<[PortNr],
+      propertyID = pr.<<[PropertyID],
+      locationId = pr.<<[LocationId],
+      installed = pr.<<[LocalInstant],
+      uninstalled = pr.<<?[LocalInstant],
+      measurand = pr.<<[Measurand],
+      timeZone = {
+        val zId = pr.<<[ZoneId]
+        TimeZone.getTimeZone(zId)
+      },
+      articleNr = pr.<<[ArticleNr],
+      serialNr = pr.<<[SerialNr],
+      inputService = pr.<<[DataInputService],
+      retentionPolicy = pr.<<[CompoundRetentionPolicy],
+      initialRetentionPolicy = pr.<<[CompoundRetentionPolicy],
+      migrated = pr.<<[Boolean],
+      certificationDate = pr.<<?[LocalInstant],
+      locationNumber = pr.<<?[LocationNumber],
+      lastConsumptionDate = pr.<<?[LocalInstant],
+      meterUse = pr.<<?[MeterUse],
+      readingFrequency = pr.<<?[String],
+      radioComponentUninstalled = pr.<<?[LocalInstant]
+    )
+  }
+
+  protected implicit val mdrRawMeterportConfigsGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.MdrRawMeterportConfig] = GetResult[MdrRawMeterportConfig] { pr =>
+    MdrRawMeterportConfig(
+      meterPortId = pr.<<[Long],
+      validFrom = pr.<<[Instant],
+      deadlineDay = pr.<<?[DeadlineDay],
+      deviceType = pr.<<[String],
+      usageUnitId = pr.<<?[UsageUnitId],
+      radioArticle = pr.<<?[ArticleNr],
+      radioSerial = pr.<<?[SerialNr],
+      radioDeviceId = pr.<<?[DeviceId],
+      hcaScale = pr.<<?[String],
+      hcaScaleType = pr.<<?[String],
+      hcaZeroSetter = pr.<<?[Boolean],
+      hcaSensorMode = pr.<<?[String],
+      migratedConfig = pr.<<?[Boolean],
+      hcaScaleFactor = pr.<<?[Float],
+      volPulseCapacity = pr.<<?[Float],
+      volPulsePerUnit = pr.<<?[Boolean],
+      volDisplayUnit = pr.<<?[String],
+      volMbusAddress = pr.<<?[Int]
+    )
+  }
+
+  // == MdrDataRetentionScheduleStatus
+  protected implicit val mdrDataRetentionScheduleStatusSetParam: slick.jdbc.SetParameter[com.ista.rdm.outputchannel.mdr.api.MdrDataRetentionScheduleStatus] = SetParameter[MdrDataRetentionScheduleStatus]((m, pp) => pp.setString(m.entryName))
+  protected implicit val mdrDataRetentionScheduleStatusGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrDataRetentionScheduleStatus] = GetResult[MdrDataRetentionScheduleStatus](pr => MdrDataRetentionScheduleStatus.withName(pr.nextString()))
+
+  protected implicit val mdrDataRetentionScheduleIteratedDatesGetResult: slick.jdbc.GetResult[Vector[String]] = GetResult[Vector[String]](r =>
+    r.rs.getArray(r.skip.currentPos)
+      .getArray
+      .asInstanceOf[Array[Any]]
+      .toVector
+      .map(_.toString)
+  )
+  // == MdrDataRetentionSchedule
+  protected implicit val mdrDataRetentionScheduleGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrDataRetentionSchedule] = GetResult[MdrDataRetentionSchedule] { pr =>
+    MdrDataRetentionSchedule(
+      id = pr.<<[Long],
+      status = pr.<<[MdrDataRetentionScheduleStatus],
+      outputResult = pr.<<?[String],
+      creationDate = pr.<<[LocalInstant],
+      updateDate = pr.<<?[LocalInstant],
+      deletedRows = pr.<<?[Int],
+      lastIteratedDate = pr.<<?[LocalInstant],
+      iteratedDates = pr.<<[Vector[String]],
+      isUnfinished = pr.<<[Boolean],
+      executorNr = pr.<<[Int]
+    )
+  }
+
+  // == MdrDataRetentionExecutors
+  protected implicit val mdrDataRetentionExecutorsGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.api.MdrDataRetentionExecutor] = GetResult[MdrDataRetentionExecutor] { pr =>
+    MdrDataRetentionExecutor(
+      executorNr = pr.<<[Int],
+      status = pr.<<[MdrDataRetentionScheduleStatus],
+      runningPeriod = pr.<<[LocalInstant],
+      creationDate = pr.<<[LocalInstant],
+      updateDate = pr.<<?[LocalInstant],
+      isUnfinished = pr.<<[Boolean]
+    )
+  }
+
+  // == MdrMeterPort
+  protected implicit val uiReadingsSearchDataGetResult: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.UiReadingsSearchData] = GetResult[UiReadingsSearchData] { pr =>
+    UiReadingsSearchData(
+      propertyNumber = pr.<<[PropertyNumber],
+      propertyId = pr.<<[PropertyID],
+      usageUnitId = pr.<<?[UsageUnitId],
+      meterPortID = pr.<<[MeterPortID],
+      locationNumber = pr.<<?[LocationNumber],
+      locationId = pr.<<[LocationId],
+      portNr = pr.<<[PortNr],
+      mainDeviceId = pr.<<[DeviceId],
+      serialNumber = pr.<<?[SerialNr],
+      articleNumber = pr.<<?[ArticleNr],
+      installDate = pr.<<?[LocalInstant],
+      uninstallDate = pr.<<?[LocalInstant],
+      consumptionDate = pr.<<?[LocalInstant],
+      readingValue = pr.<<?[BigDecimal],
+      unit = pr.<<?[MdrUnitType],
+      deviceType = pr.<<[MdrDeviceClass],
+      readingType = pr.<<?[MdrReadingType],
+      transportType = pr.<<?[MdrTransportType],
+      mediumType = pr.<<?[MdrMediumType],
+      measurandType = pr.<<[MdrMeasurand],
+      lastConsumptionDate = pr.<<?[LocalInstant],
+      trxSerialNumber = pr.<<?[SerialNr],
+      trxArticleNumber = pr.<<?[ArticleNr],
+      inputService = pr.<<[DataInputService],
+      qualityIndicators = pr.<<?[JsObject]
+    )
+  }
+
+  protected implicit val uiReadingExportReference: slick.jdbc.GetResult[com.ista.rdm.outputchannel.mdr.UiReadingExportReference] = GetResult[UiReadingExportReference] { pr =>
+    UiReadingExportReference(
+      id = pr.<<[UUID],
+      request = pr.<<[JsObject].as[UiReadingsExportRequest],
+      createdAt = pr.<<[Instant]
+    )
+  }
+}

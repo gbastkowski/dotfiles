@@ -1,0 +1,112 @@
+import sbt._
+
+object Deps {
+
+  object Versions {
+    val scala = "2.13.14"
+
+    // Core dependencies
+    val playJson = "2.9.4"
+    val kafka = "3.5.1"
+    val postgresql = "42.6.0"
+    val akka = "2.6.20"
+    val logback = "1.4.11"
+    val scalaLogging = "3.9.5"
+
+    // Functional programming
+    val catsEffect = "3.4.8"
+    val fs2 = "3.6.1"
+    val cats = "2.9.0"
+    val circe = "0.14.1"
+
+    // Additional libraries
+    val pureconfig = "0.17.2"
+    val http4s = "0.23.18"
+    val munit = "0.7.29"
+    val doobie = "1.0.0-RC2"
+    val sttp = "3.8.15"
+    val mockitoScala = "1.17.12"
+    val monocle = "3.1.0"
+    val quicklens = "1.8.8"
+
+    // Internal RDM dependencies
+    val executionPlannerModel = "3.1.0"
+    val executionEnvironmentModel = "3.1.0"
+    val rdmAvro = "1.8.2"
+    val rdmKafka = "2.5.1"
+
+    // Test dependencies
+    val scalatest = "3.2.17"
+    val scalatestPlusScalacheck = "3.2.17.0"
+
+    // Play Framework
+    val play = "2.8.19"
+
+    // Apache Commons & Jackson
+    val commonsLang3 = "3.12.0"
+    val jackson = "2.15.2"
+  }
+
+  // Core dependencies common across all modules
+  val common = Seq(
+    "com.typesafe.play" %% "play-json" % Versions.playJson,
+    "org.apache.kafka" %% "kafka" % Versions.kafka,
+    "org.postgresql" % "postgresql" % Versions.postgresql,
+    "com.typesafe.akka" %% "akka-actor" % Versions.akka,
+    "com.typesafe.akka" %% "akka-stream" % Versions.akka,
+    "ch.qos.logback" % "logback-classic" % Versions.logback,
+    "com.typesafe.scala-logging" %% "scala-logging" % Versions.scalaLogging
+  )
+
+  // Functional programming dependencies
+  val functional = Seq(
+    "org.typelevel" %% "cats-effect" % Versions.catsEffect,
+    "co.fs2" %% "fs2-core" % Versions.fs2,
+    "co.fs2" %% "fs2-io" % Versions.fs2,
+    "org.typelevel" %% "cats-core" % Versions.cats,
+    "io.circe" %% "circe-core" % Versions.circe,
+    "io.circe" %% "circe-parser" % Versions.circe
+  )
+
+  // Additional libraries for testing dependency updates
+  val additional = Seq(
+    "com.github.pureconfig" %% "pureconfig" % Versions.pureconfig,
+    "org.http4s" %% "http4s-dsl" % Versions.http4s,
+    "org.http4s" %% "http4s-ember-server" % Versions.http4s,
+    "org.scalameta" %% "munit" % Versions.munit % Test,
+    "org.tpolecat" %% "doobie-core" % Versions.doobie,
+    "com.softwaremill.sttp.client3" %% "core" % Versions.sttp,
+    "org.mockito" %% "mockito-scala" % Versions.mockitoScala % Test,
+    "dev.optics" %% "monocle-core" % Versions.monocle,
+    "com.softwaremill.quicklens" %% "quicklens" % Versions.quicklens
+  )
+
+  // Internal RDM dependencies
+  val rdmInternal = Seq(
+    "com.ista.rdm.core" %% "execution-planner-extapi-model" % Versions.executionPlannerModel,
+    "com.ista.rdm.core" %% "execution-environment-extapi-model" % Versions.executionEnvironmentModel,
+    "com.ista.rdm.common" %% "avro" % Versions.rdmAvro,
+    "com.ista.rdm.common" %% "kafka" % Versions.rdmKafka
+  )
+
+  // Test dependencies
+  val test = Seq(
+    "org.scalatest" %% "scalatest" % Versions.scalatest % Test,
+    "org.scalatestplus" %% "scalacheck-1-17" % Versions.scalatestPlusScalacheck % Test
+  )
+
+  // All common dependencies combined
+  val allCommon = common ++ functional ++ additional ++ rdmInternal ++ test
+
+  // Processor-specific dependencies
+  val processor = Seq(
+    "org.apache.commons" % "commons-lang3" % Versions.commonsLang3,
+    "com.fasterxml.jackson.core" % "jackson-core" % Versions.jackson
+  )
+
+  // API-specific dependencies
+  val api = Seq(
+    "com.typesafe.play" %% "play" % Versions.play,
+    "com.typesafe.play" %% "play-ws" % Versions.play
+  )
+}

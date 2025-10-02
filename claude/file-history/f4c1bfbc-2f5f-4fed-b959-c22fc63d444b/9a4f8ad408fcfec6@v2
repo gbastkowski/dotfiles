@@ -1,0 +1,43 @@
+ThisBuild / scalaVersion := Deps.Versions.scala
+ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / organization := "com.ista.rdm"
+ThisBuild / organizationName := "ISTA"
+
+// Internal ISTA artifact repository
+ThisBuild / resolvers ++= Seq(
+  "RDM Maven" at "https://registry.ista.net/repository/rdm-maven/",
+  "RDM Releases" at "https://registry.ista.net/repository/rdm-releases/",
+  "RDM Snapshots" at "https://registry.ista.net/repository/rdm-snapshots/"
+)
+
+lazy val commonSettings = Seq(
+  libraryDependencies ++= Deps.allCommon
+)
+
+lazy val root = (project in file("."))
+  .settings(
+    name := "scalasteward-poc",
+    commonSettings
+  )
+
+lazy val common = (project in file("modules/common"))
+  .settings(
+    name := "common",
+    commonSettings
+  )
+
+lazy val processor = (project in file("modules/processor"))
+  .dependsOn(common)
+  .settings(
+    name := "processor",
+    commonSettings,
+    libraryDependencies ++= Deps.processor
+  )
+
+lazy val api = (project in file("modules/api"))
+  .dependsOn(common, processor)
+  .settings(
+    name := "api",
+    commonSettings,
+    libraryDependencies ++= Deps.api
+  )

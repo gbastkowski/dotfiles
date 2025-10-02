@@ -1,0 +1,5 @@
+resolvers += "rdm" at "https://registry.ista.net/repository/rdm-maven"
+
+addSbtPlugin("com.github.cb372" % "sbt-explicit-dependencies" % "0.2.16")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.4")
+addSbtPlugin("com.ista.rdm.sbt" % "avro" % "1.30")

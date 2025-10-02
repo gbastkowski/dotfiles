@@ -128,3 +128,11 @@
 {"display":"/exit ","pastedContents":{},"timestamp":1759386866452,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
 {"display":"/exit ","pastedContents":{},"timestamp":1759386866472,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
 {"display":"/exit ","pastedContents":{},"timestamp":1759386866477,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"read the readme. look up the jira ticket and read everything","pastedContents":{},"timestamp":1759387945731,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"also read the merge requests in gitlab. also the closed ones","pastedContents":{},"timestamp":1759388000163,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Also read the documentation of scala steward and renovate","pastedContents":{},"timestamp":1759388063195,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Why do you recommend Scala Steward?","pastedContents":{},"timestamp":1759388143330,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Why do you recommend Scala Steward?","pastedContents":{},"timestamp":1759388332249,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Also read the documentation of scala steward and renovate","pastedContents":{},"timestamp":1759388383533,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Let's craft a comment for jira","pastedContents":{},"timestamp":1759388569602,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"the gitlab repo previously had a different location. I was asked to move it, but couldn't, so created a copy. There are many merge requests on the old repo that we also should consider. It's here: https://gitlab.com/ista-se/cas/rdm/scalasteward-poc-deletion_scheduled-74687925","pastedContents":{},"timestamp":1759388779291,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}

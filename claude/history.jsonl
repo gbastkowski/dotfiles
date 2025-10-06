@@ -136,3 +136,64 @@
 {"display":"Also read the documentation of scala steward and renovate","pastedContents":{},"timestamp":1759388383533,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
 {"display":"Let's craft a comment for jira","pastedContents":{},"timestamp":1759388569602,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
 {"display":"the gitlab repo previously had a different location. I was asked to move it, but couldn't, so created a copy. There are many merge requests on the old repo that we also should consider. It's here: https://gitlab.com/ista-se/cas/rdm/scalasteward-poc-deletion_scheduled-74687925","pastedContents":{},"timestamp":1759388779291,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"company strategy speaks more towards renovate. Does it still make sense to have scala-steward?","pastedContents":{},"timestamp":1759388999484,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Let's create an updated comment with the new knowledge. Keep it brief with a clear focus on developers as audience","pastedContents":{},"timestamp":1759389201875,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"I am pretty sure that there are more renovate merge requests. Anyway, just leave out the info about autoclosed and the number of MRs","pastedContents":{},"timestamp":1759389274600,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"use the current repo url, not the old one","pastedContents":{},"timestamp":1759389300225,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"the one with the experiments prefix","pastedContents":{},"timestamp":1759389317937,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"I'll say, we need a conclusion. Something like: Scala-Steward is smarter and more targeted towards Scala. But renovate is company-strategy. And most likely works well enough so that we can give it a shot","pastedContents":{},"timestamp":1759389508409,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Something like: If we face issues with Renovate and Scala, we still have the option to set up Scala-Steward later. Key issues like TOKENS and access to ista repositories are solved in both setups more or less the same way","pastedContents":{},"timestamp":1759389626439,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Also mention that both systems support company repository managers as well as sbt plugins. Add links to Renovate's documentation on this","pastedContents":{},"timestamp":1759389702524,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"let's post it","pastedContents":{},"timestamp":1759390097961,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"next step is to create a story. and here, we give some hints what should be in that story","pastedContents":{},"timestamp":1759390391095,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"I think, renovate should run daily","pastedContents":{},"timestamp":1759390430393,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"sorry, this was easy to misunderstand. I actually wanted the comment to contain info about what should be in the story to be created.\nBut let's already create the story","pastedContents":{},"timestamp":1759390649456,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"Just print the jira markup so that I can paste it manually","pastedContents":{},"timestamp":1759390849716,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3885/scalasteward-poc"}
+{"display":"tmux. check the failed tests you can capture in window 'core sbt'","pastedContents":{},"timestamp":1759398643422,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!ls -al","pastedContents":{},"timestamp":1759398695926,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!ls -al","pastedContents":{},"timestamp":1759398695941,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!ls -al","pastedContents":{},"timestamp":1759398695949,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"We have an sdkmanrc, but still a wrong java version?","pastedContents":{},"timestamp":1759398741647,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"What's the ideomatic way to make this sdk use happen automatically in this directory/project?","pastedContents":{},"timestamp":1759398986313,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"can you clear the scrollback in the core sbt pane?","pastedContents":{},"timestamp":1759399118509,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"that pane now runs an sbt session. type 'test' to run the tests. Observe the output. Finally, give me a summary of the outcome.","pastedContents":{},"timestamp":1759399186630,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Putting a green check mark after \"mostly successful\" is funny. Just like saying \"you have lung cancer, but your body ist mostly cancer-free\"","pastedContents":{},"timestamp":1759399762404,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!git status","pastedContents":{},"timestamp":1759399991328,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!git status","pastedContents":{},"timestamp":1759399991343,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!git status","pastedContents":{},"timestamp":1759399991351,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"check out main branch. run tests again. pull latest main. run tests again if there are updates","pastedContents":{},"timestamp":1759400036165,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gst","pastedContents":{},"timestamp":1759400821851,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gst","pastedContents":{},"timestamp":1759400821872,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gst","pastedContents":{},"timestamp":1759400821879,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gl","pastedContents":{},"timestamp":1759400829744,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gl","pastedContents":{},"timestamp":1759400829760,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gl","pastedContents":{},"timestamp":1759400829765,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"clear scrollback in that pane","pastedContents":{},"timestamp":1759400870123,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"I ran the tests again. What can you tell about the failures?","pastedContents":{},"timestamp":1759401872727,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"check out previous branch again.","pastedContents":{},"timestamp":1759402883661,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"clear scrollback in that pane","pastedContents":{},"timestamp":1759402927378,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"I am now running the tests again. I am only interested in those failures that only happen in this branch.","pastedContents":{},"timestamp":1759402981152,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"check the weird error/warning in the other tmux pane. What's going on there?","pastedContents":{},"timestamp":1759405438529,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"just capture the core pane. That's the one I am interested in","pastedContents":{},"timestamp":1759405491683,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"capture the pane with the name 'core'. There is no claude","pastedContents":{},"timestamp":1759405549734,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"what is better? direnv or autoenv?","pastedContents":{},"timestamp":1759405626483,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"checkout main. run 'sbt testAll'. check out this branch again. run 'sbt testAll'. Which tests broke on this branch?","pastedContents":{},"timestamp":1759405783863,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Read jira 3968. Read https://docs.devops.prod.naas.ista.com/developer-platform/ and everything below that","pastedContents":{},"timestamp":1759406479676,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3968"}
+{"display":"Does this have to do with the code changes in this branch compared to main?","pastedContents":{},"timestamp":1759407846533,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"check 3489","pastedContents":{},"timestamp":1759408020729,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3968"}
+{"display":"push an empty commit to trigger rebuild","pastedContents":{},"timestamp":1759408092064,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"use the tmux window named 'core'. use glab cli to get the latest pipeline run for this branch","pastedContents":{},"timestamp":1759409694460,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"I used gitlab ui to rebase. Pull the latest commits from origin","pastedContents":{},"timestamp":1759410483467,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"run tests again","pastedContents":{},"timestamp":1759410519409,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"try to find the logs for https://gitlab.com/ista-se/cas/rdm/core/-/jobs/11578371849","pastedContents":{},"timestamp":1759412080241,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"[Pasted text #1 +12 lines]","pastedContents":{},"timestamp":1759412103804,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gst","pastedContents":{},"timestamp":1759412179948,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gst","pastedContents":{},"timestamp":1759412179962,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"!gst","pastedContents":{},"timestamp":1759412179969,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"commit and push","pastedContents":{},"timestamp":1759412192291,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/exit ","pastedContents":{},"timestamp":1759419116975,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/exit ","pastedContents":{},"timestamp":1759419117020,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/exit ","pastedContents":{},"timestamp":1759419117032,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/exit ","pastedContents":{},"timestamp":1759419121368,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3968"}
+{"display":"/exit ","pastedContents":{},"timestamp":1759419121388,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3968"}
+{"display":"/exit ","pastedContents":{},"timestamp":1759419121394,"project":"/Users/gunnar.bastkowski/git/rdm/tasks/SQDD06-3968"}

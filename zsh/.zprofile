@@ -9,7 +9,6 @@ case "$OSTYPE" in
       autoload -U +X compinit && compinit
       autoload -U +X bashcompinit && bashcompinit
 
-      source /opt/homebrew/opt/autoenv/activate.sh
       source /Users/gunnar.bastkowski/.ista_profile
       ;;
 

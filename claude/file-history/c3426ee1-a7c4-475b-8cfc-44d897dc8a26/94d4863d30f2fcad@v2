@@ -1,0 +1,482 @@
+# IDP Migration Roadmap - Brainstorming Notes
+
+## Context
+Task: SQDD06-3968 - Prepare and brainstorm ideas for IDP migration roadmap for RDM
+Goal: Understand IDP platform capabilities and plan migration from current on-prem infrastructure
+
+---
+
+## Platform Overview
+
+### Target Platform: IDP v2 (Cloud Platform)
+- **Based on**: Cloud App Space (CAS) concept
+- **Infrastructure**: GitLab.com + Azure cloud
+- **Status**: Recommended for new projects and migrations
+- **Timeline**: gitlab.ista.net EOL scheduled for June 2025
+
+### Legacy Platform: IDP v1 (On-prem)
+- **Also known as**: iSDP (ista service delivery platform)
+- **Infrastructure**: gitlab.ista.net + on-prem Kubernetes clusters
+- **Status**: Being deprecated
+
+---
+
+## Key IDP Components
+
+### 1. Cloud App Space (CAS)
+A scoped, integrated environment providing all necessary software delivery tools for a squad/product.
+
+**Included Tools:**
+- **GitLab.com**: Source code management, CI/CD
+- **SonarQube**: Code quality and security scanning
+- **Artifactory**: Artifact storage, dependency management
+- **Azure AD**: Centralized access management
+- **ArgoCD**: GitOps-based deployment automation
+
+**Access Management:**
+- Managed through Azure AD groups
+- Role levels: Guest, Reporter, Developer, Maintainer, Owner
+- 30-minute sync delay for permission changes
+
+### 2. Runtime Environment (Kubernetes)
+**Current Offerings:**
+- **NaaS (Network as a Service) Kubernetes Clusters**: Shared, currently available
+- **Fleeting Kubernetes Clusters**: Dedicated per CAS (planned)
+
+**Key Characteristics:**
+- Kubernetes-based platform
+- Integrated with Azure, GitLab, Artifactory, Observability
+- Business hours support only (9:00-17:00 Essen time)
+- No persistent storage in cluster (must use external storage)
+- Clusters may be recreated at any time
+
+**Deployment Clusters:**
+- NONPROD: dev, int, rc
+- PROD: preprod, prod
+
+### 3. PostgreSQL as a Service
+- **Status**: Preview
+- **Implementation**: CloudNativePG operator
+- **Features**:
+  - High availability (3 replicas)
+  - Automatic failover
+  - Configurable backups
+  - Extensions support (e.g., pgcrypto)
+- **Limitations**:
+  - No cross-region replication
+  - Monitoring still in development
+
+### 4. Observability Stack
+**Three Pillars:**
+- **Metrics**: Prometheus, Grafana
+- **Logging**: Centralized log aggregation
+- **Tracing**: Distributed tracing for microservices
+- **Frontend**: Grafana Faro Web SDK for web app observability
+
+### 5. CI/CD Templates
+**Available Templates:**
+- Maven, Gradle
+- Dockerize, Docker-in-Docker
+- Helm, ArgoCD
+- Static Code Analysis
+- MegaLinter, Semantic Release
+- Container Tests, CVE scanning
+- Notification, Deploy
+
+**Versioning**: Semantic versioning with floating major versions for backwards compatibility
+
+---
+
+## Migration Components
+
+### GitLab Migration Process
+**Prerequisites:**
+- Cloud App Space GitLab group created
+- SSH keys configured in GitLab.com
+- Verified sign-in to GitLab.com
+
+**Steps:**
+1. Update pipelines to latest CI templates
+2. Migrate deployments to Artifactory
+3. Mirror clone repository (`git clone --mirror`)
+4. Update remote origin to GitLab.com
+5. Verify branches/tags transfer
+6. Archive on-premise project
+7. Copy CI variables and project settings
+8. Update team's local Git remotes
+9. Verify and test pipelines
+
+**Important Notes:**
+- Old CI templates won't work on GitLab.com
+- Pipelines require reconfiguration
+- Security exception needed if can't complete by June 2025
+
+### Runtime Migration (iSDP to IDP NaaS)
+**Key Considerations:**
+- Not a one-size-fits-all approach
+- Each application has unique requirements
+- Reference: Primus (CCT) migration documented in Miro board (JIRA SQCP09-2143)
+
+**Migration Approach:**
+1. Review migration reference materials
+2. Estimate application-specific effort
+3. Identify required modifications
+4. Consult with IDP team for guidance
+5. Plan phased migration if needed
+
+### Deployment Model (ArgoCD)
+**Options:**
+1. **Application**: Direct sync from Git to specific cluster
+2. **ApplicationSet**: Deploy across multiple clusters/environments (recommended)
+
+**Deployment Flow:**
+1. Create ApplicationSet YAML
+2. Commit to GitLab resources repository
+3. ArgoCD auto-syncs and creates Applications
+4. Monitor deployment via ArgoCD UI
+
+---
+
+## RDM-Specific Migration Considerations
+
+### Architecture Analysis Needed
+
+#### 1. Core Infrastructure
+- **~100+ Scala modules** across common, core, ui, periphery, business-metrics, errors, e2e, eed
+- **Build system**: SBT with custom plugins and multi-module setup
+- **Technology stack**: Scala 2.13, Scala.js, Play Framework, Pekko Streams
+- **Data layer**: PostgreSQL + Flyway, Kafka streaming, Avro serialization
+
+**Questions:**
+- Which modules can be containerized independently?
+- What are current deployment units vs. potential microservice boundaries?
+- How to handle multi-module build dependencies in CI/CD?
+
+#### 2. Services Inventory
+**Standalone Microservices (periphery/):**
+- articles
+- contract-integrator
+- mandants
+- rdas
+
+**Potential Migration Units:**
+- business-metrics (independent metrics system)
+- errors (centralized error handling)
+- e2e testing infrastructure
+- UI (Scala.js frontend + Play backend)
+- Core processors (by market/domain)
+
+**Questions:**
+- Current containerization status?
+- Service dependencies and communication patterns?
+- Database per service or shared databases?
+
+#### 3. Data Management
+**Current Setup:**
+- PostgreSQL with Flyway migrations
+- Kafka for event streaming
+- Custom Avro schema registry
+
+**Migration Considerations:**
+- Migrate to PostgreSQL as a Service (CloudNativePG)?
+- Kafka infrastructure: managed service or self-hosted in K8s?
+- Schema registry: migrate or run in cluster?
+- Database migration strategy per service
+- Data retention requirements
+
+#### 4. Local Development Environment
+**Current:** `devenv/` with Kafka, Zookeeper, PostgreSQL, ActiveMQ
+
+**Questions:**
+- How to maintain local dev experience during migration?
+- Docker Compose equivalent for new architecture?
+- Developer onboarding process changes?
+
+#### 5. Testing Strategy
+**Current:**
+- Unit tests (ScalaTest, ScalaCheck)
+- Database tests (`Db / test`)
+- Integration tests (`Systemit / test`, `Serviceit / test`)
+- Data retention tests
+- Gatling load tests
+- E2E tests (Cucumber BDD)
+
+**Migration Considerations:**
+- CI/CD pipeline structure for test stages
+- Test environments (dev, int, rc) setup
+- Test data management
+- Integration test infrastructure in K8s
+
+#### 6. Configuration Management
+**Current:**
+- Hierarchical configs: reference.conf → base.conf → bundle/service-application.conf
+- User overrides: `*-user.conf`
+- Environment-specific via GitLab CI variables
+
+**Migration Considerations:**
+- ConfigMaps and Secrets in Kubernetes
+- Azure KeyVault integration for sensitive data
+- Environment-specific configuration strategy
+- Config hot-reload requirements
+
+#### 7. Monitoring & Observability
+**Current:**
+- Micrometer metrics
+- Custom business metrics
+- LazyLogging
+
+**Migration to:**
+- Grafana Cloud stack
+- Prometheus metrics
+- Structured logging
+- Distributed tracing
+- Frontend observability (if applicable for Scala.js UI)
+
+#### 8. Build & Artifact Management
+**Current:**
+- SBT multi-module builds
+- `publishLocal` for development
+- Unknown artifact repository
+
+**Migration to:**
+- Artifactory for artifact storage
+- Container image registry
+- Build optimization for containerized environments
+- CI template selection (likely custom due to SBT)
+
+---
+
+## Migration Scenarios
+
+### Scenario A: All Components on IDP
+**Approach:** Big-bang or phased migration of all RDM components to IDP v2
+
+**Pros:**
+- Single platform, unified tooling
+- Simplified long-term maintenance
+- Full benefit from IDP features
+
+**Cons:**
+- High initial complexity
+- Risk if issues arise
+- All teams impacted simultaneously
+
+**Considerations:**
+- Requires comprehensive planning
+- Extensive testing in non-prod environments
+- Need rollback strategy
+
+### Scenario B: Hybrid (Partial IDP + Parallel Systems)
+**Approach:** Migrate selected components while keeping others on current infrastructure
+
+**Pros:**
+- Lower initial risk
+- Learn and iterate
+- Business continuity maintained
+
+**Cons:**
+- Dual platform maintenance
+- Potential integration complexity
+- Longer overall migration timeline
+
+**Migration Candidates (Priority Order):**
+1. **New services**: Start new development on IDP
+2. **Standalone services**: periphery/ microservices (articles, mandants, etc.)
+3. **Independent systems**: business-metrics, errors
+4. **UI layer**: Scala.js frontend + Play backend
+5. **Core processors**: by market or domain boundaries
+6. **Common libraries**: shared modules (keep as libraries?)
+
+### Scenario C: Strangler Pattern
+**Approach:** Gradually replace legacy system by incrementally building new services on IDP
+
+**Pros:**
+- Lowest risk
+- Continuous business operation
+- Team learns progressively
+
+**Cons:**
+- Longest timeline
+- Complex integration during transition
+- Potential technical debt accumulation
+
+---
+
+## Coordination with WeS (We enable Squads)
+
+### Planning Sessions Needed
+1. **Initial Assessment** (ASAP)
+   - Present RDM architecture overview
+   - Discuss feasibility and constraints
+   - Understand support model and escalation paths
+
+2. **CAS Onboarding** (After assessment)
+   - Create Cloud App Space for RDM
+   - Setup team access (Azure AD groups)
+   - Initial LeanIX application registration
+
+3. **Technical Deep Dives** (During planning)
+   - Database migration strategy
+   - Kafka/messaging infrastructure options
+   - CI/CD pipeline design for SBT/Scala
+   - Secret management approach
+   - Monitoring integration
+
+4. **Migration Checkpoints** (During execution)
+   - Regular progress reviews
+   - Blocker resolution
+   - Best practices sharing
+
+### Information to Prepare for WeS
+- RDM team structure (Product Owner, Permission Managers, Developers)
+- LeanIX Application details (if exists)
+- Current infrastructure diagram
+- Service inventory with dependencies
+- Technical stack details
+- Special requirements (e.g., Scala, SBT, Kafka)
+
+---
+
+## Migration Roadmap Phases (Draft)
+
+### Phase 0: Discovery & Planning (Current)
+- ✅ Read IDP documentation
+- ⬜ Analyze RDM architecture and create service inventory
+- ⬜ Document dependencies (service-to-service, databases, external systems)
+- ⬜ Assess current containerization status
+- ⬜ Initial WeS consultation
+- ⬜ Select migration scenario (A, B, or C)
+- ⬜ Create detailed migration plan
+
+### Phase 1: Foundation Setup
+- ⬜ Create RDM Cloud App Space
+- ⬜ Onboard team (Azure AD groups, roles)
+- ⬜ Setup GitLab.com repositories
+- ⬜ Configure Artifactory repositories
+- ⬜ Setup basic CI/CD pipeline (proof of concept)
+- ⬜ Create non-prod environments (dev, int, rc)
+
+### Phase 2: Pilot Migration
+**Target: 1-2 low-risk, standalone services**
+- ⬜ Containerize pilot service(s)
+- ⬜ Setup CI/CD pipeline with IDP templates
+- ⬜ Configure ArgoCD ApplicationSets
+- ⬜ Migrate databases to PostgreSQL as a Service
+- ⬜ Setup monitoring and logging
+- ⬜ Deploy to dev/int environments
+- ⬜ Test and validate
+- ⬜ Document learnings and best practices
+- ⬜ Deploy to rc/preprod/prod
+
+### Phase 3: Iterative Migration
+**Target: Remaining services in priority order**
+- ⬜ Apply learnings from pilot
+- ⬜ Migrate service groups incrementally
+- ⬜ Update inter-service communication as needed
+- ⬜ Migrate shared infrastructure (Kafka, schema registry)
+- ⬜ Migrate common libraries (if needed)
+
+### Phase 4: Completion
+- ⬜ Migrate final services
+- ⬜ Decommission old infrastructure
+- ⬜ Full team training on IDP tools
+- ⬜ Update documentation
+- ⬜ Retrospective and knowledge sharing
+
+---
+
+## Key Risks & Mitigations
+
+### Risks
+1. **Complexity of ~100 module monorepo**
+   - Mitigation: Careful dependency analysis, consider splitting if beneficial
+
+2. **SBT build in containerized CI/CD**
+   - Mitigation: Early prototype, may need custom CI templates
+
+3. **Kafka infrastructure availability**
+   - Mitigation: Early consultation with WeS, may need self-hosted option
+
+4. **Business hours only support**
+   - Mitigation: Plan for degraded service windows, comprehensive monitoring
+
+5. **Team learning curve**
+   - Mitigation: Phased approach, extensive documentation, pair with WeS
+
+6. **June 2025 GitLab deadline**
+   - Mitigation: Prioritize GitLab migration, plan for security exception if needed
+
+### Critical Dependencies
+- WeS team availability
+- RDM team capacity
+- Infrastructure decisions (Kafka, schema registry)
+- Database migration complexity
+- Integration testing environments
+
+---
+
+## Open Questions
+
+### Architecture & Technical
+1. What are the current deployment units vs. desired microservice boundaries?
+2. Is RDM currently containerized? If so, where are containers running?
+3. Where are container images currently stored?
+4. What external systems does RDM integrate with?
+5. What are the data volumes and performance requirements?
+6. Are there any regulatory or compliance requirements affecting deployment?
+
+### Operational
+7. What is the current on-call and support model?
+8. What are the SLAs for RDM services?
+9. What is the release frequency and deployment process?
+10. How is disaster recovery currently handled?
+
+### Strategic
+11. What is the desired end-state architecture?
+12. Are there plans to refactor/modernize during migration?
+13. What is the acceptable migration timeline?
+14. What is the team capacity for migration work?
+15. Are there business drivers or deadlines?
+
+### Platform-Specific
+16. How will Kafka be provided? (managed service, self-hosted K8s, external)
+17. Schema registry migration strategy?
+18. How to handle Scala.js UI deployment and serving?
+19. ActiveMQ usage - migrate or replace?
+20. Avro schema management in new platform?
+
+---
+
+## Next Steps
+
+### Immediate Actions
+1. **Create service inventory ticket**: Document all RDM services, dependencies, databases
+2. **Schedule WeS consultation**: Initial discussion on RDM requirements and IDP feasibility
+3. **Technical assessment ticket**: Current containerization, infrastructure, deployment model
+4. **Team capacity planning**: Estimate effort and availability for migration work
+5. **Scenario selection**: Choose migration approach (A, B, or C) based on constraints
+
+### Short-term Actions
+6. **Pilot service selection**: Identify 1-2 low-risk services for initial migration
+7. **CAS onboarding**: Create Cloud App Space for RDM team
+8. **PoC development**: Prototype SBT build in GitLab CI with IDP templates
+9. **Database strategy**: Design approach for PostgreSQL migration
+10. **Communication plan**: Keep stakeholders informed of progress and timelines
+
+---
+
+## References
+
+### Documentation
+- IDP Developer Platform: https://docs.devops.prod.naas.ista.com/developer-platform/
+- Cloud App Space Onboarding: https://docs.devops.prod.naas.ista.com/developer-platform/v2/guides/cloud-app-space/onboarding/
+- GitLab Migration Guide: https://docs.devops.prod.naas.ista.com/developer-platform/v2/guides/gitlab/migration/
+- Runtime Migration: https://docs.devops.prod.naas.ista.com/developer-platform/v2/guides/runtime/migrating-from-isdp-to-idp-naas/
+
+### Related Tickets
+- SQDD06-3968: This brainstorming task
+- SQCP09-2143: Primus/CCT migration reference
+
+### Support Channels
+- WeS (We enable Squads) team: Teams channel
+- IDP documentation: docs-next project on GitLab

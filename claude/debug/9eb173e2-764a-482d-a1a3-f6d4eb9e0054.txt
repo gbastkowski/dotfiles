@@ -1,0 +1,7 @@
+[DEBUG] Watching for changes in setting files /Users/gunnar.bastkowski/.claude/settings.json...
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39015.1760084040825
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 657179 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39015.1760084040825 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically

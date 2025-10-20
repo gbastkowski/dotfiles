@@ -1,0 +1,336 @@
+[DEBUG] Watching for changes in setting files /Users/gunnar.bastkowski/.claude/settings.json, /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/.claude/settings.local.json...
+[DEBUG] Applying permission update: Adding 10 allow rule(s) to destination 'localSettings': ["Bash(jira issue view:*)","WebSearch","WebFetch(domain:www.scala-sbt.org)","WebFetch(domain:jfrog.com)","Bash(glab ci view:*)","Bash(glab mr list:*)","Bash(glab mr view:*)","Bash(glab pipeline list:*)","Bash(glab ci:*)","WebFetch(domain:stackoverflow.com)"]
+[DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+[DEBUG] >>>>> getSkillsIfEnabled() CALLED <<<<<
+[DEBUG] ENABLE_SKILLS value: true, type: boolean
+[DEBUG] ENABLE_SKILLS check passed, loading skills...
+[DEBUG] Loading skills from directories: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/gunnar.bastkowski/.claude/skills, project=/Users/gunnar.bastkowski/git/rdm/sbt/base-settings/.claude/skills
+[DEBUG] >>>>> getPluginSkills CALLED <<<<<
+[DEBUG] Creating shell snapshot for zsh (/bin/zsh)
+[DEBUG] Looking for shell config file: /Users/gunnar.bastkowski/.zshrc
+[DEBUG] Snapshots directory: /Users/gunnar.bastkowski/.claude/shell-snapshots
+[DEBUG] Creating snapshot at: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1760694055469-4fdbqt.sh
+[DEBUG] Shell binary exists: true
+[DEBUG] Execution timeout: 10000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e-agent-6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e.json.tmp.79159.1760694055489
+[DEBUG] Temp file written successfully, size: 2 bytes
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e-agent-6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e.json.tmp.79159.1760694055489 to /Users/gunnar.bastkowski/.claude/todos/6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e-agent-6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e-agent-6fb2bb7b-1889-4bc0-9cab-ba8d2fbce88e.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055522
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715463 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055522 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] getPluginSkills: Processing 0 enabled plugins
+[DEBUG] Total plugin skills loaded: 0
+[DEBUG] Total plugin commands loaded: 0
+[DEBUG] Registered 0 hooks from 0 plugins
+[DEBUG] Loaded 0 skills total (managed: 0, user: 0, project: 0)
+[DEBUG] getSkillsIfEnabled returning: 0 skill dir commands, 0 plugin skills
+[DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg)
+[DEBUG] Summarizing all 2 messages (~3505 tokens)
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/glab-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/glab-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Total plugin agents loaded: 0
+[DEBUG] MCP server "voice-mode": Starting connection with timeout of 30000ms
+[DEBUG] MCP server "puppeteer": Starting connection with timeout of 30000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055675
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715463 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055675 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for SessionStart with query: startup
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055750
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715358 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055750 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055834
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715358 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055834 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] performStartupChecks called, ENABLE_PLUGINS=true
+[DEBUG] Starting background plugin installations
+[DEBUG] performBackgroundPluginInstallations called
+[DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+[DEBUG] Loaded plugins - Enabled: 0, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055934
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715358 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055934 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055957
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715358 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694055957 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694056021
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715463 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694056021 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Summarizing last 19 of 47 messages (~135000 tokens)
+[DEBUG] MCP server "puppeteer": Successfully connected to stdio server in 1234ms
+[DEBUG] MCP server "puppeteer": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":true,"serverVersion":{"name":"example-servers/puppeteer","version":"0.1.0"}}
+[DEBUG] Stream started - received first chunk
+[DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Shell snapshot created successfully (264191 bytes)
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-17 11:41:02,720 - voicemode - INFO - Starting VoiceMode v6.0.0
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-17 11:41:02,720 - voicemode - INFO - Event logging enabled, writing to /Users/gunnar.bastkowski/.voicemode/logs/events
+[ERROR] MCP server "voice-mode" Server stderr: ╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     voicemode                              │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.4                                 │
+│                 🤝 MCP SDK version: 1.18.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+[ERROR] MCP server "voice-mode" Server stderr: [10/17/25 11:41:02] INFO     Starting MCP server 'voicemode' with server.py:1502
+                             transport 'stdio'
+[DEBUG] MCP server "voice-mode": Successfully connected to stdio server in 7094ms
+[DEBUG] MCP server "voice-mode": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"voicemode","version":"1.18.0"}}
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-17 11:41:02,745 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-10-17 11:41:02,746 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-10-17 11:41:02,746 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/settings.json.tmp.79159.1760694096494
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 175 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/settings.json.tmp.79159.1760694096494 to /Users/gunnar.bastkowski/.claude/settings.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/settings.json written atomically
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Added snapshot for 78efe89e-5d19-4b58-b0aa-132f6f0ece23, tracking 0 files
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[ERROR] SyntaxError: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:62:719
+    at Q (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:15093)
+    at Zn2 (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:1056:20444)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Read
+[DEBUG] Getting matching hook commands for PreToolUse with query: Read
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Read
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Edit
+[DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Permission suggestions for Edit: [
+  {
+    "type": "setMode",
+    "mode": "acceptEdits",
+    "destination": "session"
+  }
+]
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] FileHistory: Tracked file modification for /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh.tmp.79159.1760694145541
+[DEBUG] Preserving file permissions: 100755
+[DEBUG] Temp file written successfully, size: 8141 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh.tmp.79159.1760694145541 to /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh
+[DEBUG] File /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Edit
+[DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Permission suggestions for Edit: [
+  {
+    "type": "setMode",
+    "mode": "acceptEdits",
+    "destination": "session"
+  }
+]
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694157973
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715358 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694157973 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694158004
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715358 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694158004 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694158048
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715463 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694158048 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh.tmp.79159.1760694165452
+[DEBUG] Preserving file permissions: 100755
+[DEBUG] Temp file written successfully, size: 8423 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh.tmp.79159.1760694165452 to /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh
+[DEBUG] File /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694172681
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715543 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694172681 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694381960
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715438 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694381960 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694382022
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715438 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694382022 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694382062
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715543 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694382062 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Metrics opt-out API response: enabled=true
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 16,
+  "rejected_count": 0
+}
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Making snapshot for message 4980afa3-d4c7-4efc-9cf3-abdd77852f80
+[DEBUG] FileHistory: Added snapshot for 4980afa3-d4c7-4efc-9cf3-abdd77852f80, tracking 1 files
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[ERROR] SyntaxError: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:62:719
+    at Q (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:15093)
+    at Zn2 (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:1056:20444)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Edit
+[DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Permission suggestions for Edit: [
+  {
+    "type": "setMode",
+    "mode": "acceptEdits",
+    "destination": "session"
+  }
+]
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh.tmp.79159.1760694416789
+[DEBUG] Preserving file permissions: 100755
+[DEBUG] Temp file written successfully, size: 8566 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh.tmp.79159.1760694416789 to /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh
+[DEBUG] File /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/migrate-nexus-to-artifactory.sh written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694421101
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715427 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.79159.1760694421101 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically

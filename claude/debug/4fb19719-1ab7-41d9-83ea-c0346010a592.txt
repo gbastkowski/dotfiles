@@ -1,0 +1,323 @@
+[DEBUG] Watching for changes in setting files /Users/gunnar.bastkowski/.claude/settings.json, /Users/gunnar.bastkowski/git/rdm/sbt/base-settings/.claude/settings.local.json...
+[DEBUG] Applying permission update: Adding 10 allow rule(s) to destination 'localSettings': ["Bash(jira issue view:*)","WebSearch","WebFetch(domain:www.scala-sbt.org)","WebFetch(domain:jfrog.com)","Bash(glab ci view:*)","Bash(glab mr list:*)","Bash(glab mr view:*)","Bash(glab pipeline list:*)","Bash(glab ci:*)","WebFetch(domain:stackoverflow.com)"]
+[DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+[DEBUG] >>>>> getSkillsIfEnabled() CALLED <<<<<
+[DEBUG] ENABLE_SKILLS value: true, type: boolean
+[DEBUG] ENABLE_SKILLS check passed, loading skills...
+[DEBUG] Loading skills from directories: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/gunnar.bastkowski/.claude/skills, project=/Users/gunnar.bastkowski/git/rdm/sbt/base-settings/.claude/skills
+[DEBUG] >>>>> getPluginSkills CALLED <<<<<
+[DEBUG] Creating shell snapshot for zsh (/bin/zsh)
+[DEBUG] Looking for shell config file: /Users/gunnar.bastkowski/.zshrc
+[DEBUG] Snapshots directory: /Users/gunnar.bastkowski/.claude/shell-snapshots
+[DEBUG] Creating snapshot at: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1760698643268-dgmtlg.sh
+[DEBUG] Shell binary exists: true
+[DEBUG] Execution timeout: 10000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/4fb19719-1ab7-41d9-83ea-c0346010a592-agent-4fb19719-1ab7-41d9-83ea-c0346010a592.json.tmp.39112.1760698643284
+[DEBUG] Temp file written successfully, size: 2 bytes
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/4fb19719-1ab7-41d9-83ea-c0346010a592-agent-4fb19719-1ab7-41d9-83ea-c0346010a592.json.tmp.39112.1760698643284 to /Users/gunnar.bastkowski/.claude/todos/4fb19719-1ab7-41d9-83ea-c0346010a592-agent-4fb19719-1ab7-41d9-83ea-c0346010a592.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/4fb19719-1ab7-41d9-83ea-c0346010a592-agent-4fb19719-1ab7-41d9-83ea-c0346010a592.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643306
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715824 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643306 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] getPluginSkills: Processing 0 enabled plugins
+[DEBUG] Total plugin skills loaded: 0
+[DEBUG] Total plugin commands loaded: 0
+[DEBUG] Registered 0 hooks from 0 plugins
+[DEBUG] Loaded 0 skills total (managed: 0, user: 0, project: 0)
+[DEBUG] getSkillsIfEnabled returning: 0 skill dir commands, 0 plugin skills
+[DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg)
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/glab-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/glab-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Total plugin agents loaded: 0
+[DEBUG] Summarizing all 2 messages (~3491 tokens)
+[DEBUG] MCP server "voice-mode": Starting connection with timeout of 30000ms
+[DEBUG] MCP server "puppeteer": Starting connection with timeout of 30000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643449
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715824 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643449 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for SessionStart with query: startup
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643526
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715719 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643526 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643551
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715719 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643551 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] performStartupChecks called, ENABLE_PLUGINS=true
+[DEBUG] Starting background plugin installations
+[DEBUG] performBackgroundPluginInstallations called
+[DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+[DEBUG] Loaded plugins - Enabled: 0, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643658
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715719 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643658 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643688
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715719 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643688 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643730
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715824 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698643730 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] MCP server "puppeteer": Successfully connected to stdio server in 897ms
+[DEBUG] MCP server "puppeteer": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":true,"serverVersion":{"name":"example-servers/puppeteer","version":"0.1.0"}}
+[DEBUG] Stream started - received first chunk
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-17 12:57:24,911 - voicemode - INFO - Starting VoiceMode v6.0.0
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-17 12:57:24,911 - voicemode - INFO - Event logging enabled, writing to /Users/gunnar.bastkowski/.voicemode/logs/events
+[ERROR] MCP server "voice-mode" Server stderr: ╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     voicemode                              │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.4                                 │
+│                 🤝 MCP SDK version: 1.18.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/17/25 12:57:24] INFO     Starting MCP server 'voicemode' with server.py:1502
+                             transport 'stdio'
+[DEBUG] MCP server "voice-mode": Successfully connected to stdio server in 1511ms
+[DEBUG] MCP server "voice-mode": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"voicemode","version":"1.18.0"}}
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-17 12:57:24,939 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-10-17 12:57:24,940 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-10-17 12:57:24,940 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+[DEBUG] Summarizing last 13 of 18 messages (~136878 tokens)
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Shell snapshot created successfully (264191 bytes)
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Added snapshot for a00d19fa-6d8a-462e-a989-0a2cc8822bdf, tracking 0 files
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[ERROR] SyntaxError: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:62:719
+    at Q (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:15093)
+    at Zn2 (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:1056:20444)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Permission suggestions for Bash: [
+  {
+    "type": "addDirectories",
+    "directories": [
+      "/Users/gunnar.bastkowski/.m2"
+    ],
+    "destination": "session"
+  },
+  {
+    "type": "setMode",
+    "mode": "acceptEdits",
+    "destination": "session"
+  }
+]
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Permission suggestions for Bash: [
+  {
+    "type": "addDirectories",
+    "directories": [
+      "/Users/gunnar.bastkowski/.ivy2"
+    ],
+    "destination": "session"
+  },
+  {
+    "type": "setMode",
+    "mode": "acceptEdits",
+    "destination": "session"
+  }
+]
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Permission suggestions for Bash: [
+  {
+    "type": "addDirectories",
+    "directories": [
+      "/Users/gunnar.bastkowski/.cache"
+    ],
+    "destination": "session"
+  },
+  {
+    "type": "setMode",
+    "mode": "acceptEdits",
+    "destination": "session"
+  }
+]
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698774723
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715801 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760698774723 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704193307
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715251 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704193307 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704193340
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715251 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704193340 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704193374
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715356 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704193374 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Metrics opt-out API response: enabled=true
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 13,
+  "rejected_count": 0
+}
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704199594
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715251 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704199594 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704199829
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715251 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704199829 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704199887
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715356 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704199887 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] npm view failed with code 1
+[DEBUG] npm stderr: (empty)
+[DEBUG] npm stdout: 2.0.21
+[DEBUG] npm view failed with code 1
+[DEBUG] npm stderr: (empty)
+[DEBUG] npm stdout: 2.0.21
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Getting matching hook commands for SessionEnd with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] MCP server "puppeteer": Sending SIGINT to MCP server process
+[DEBUG] MCP server "voice-mode": Sending SIGINT to MCP server process
+[DEBUG] Cleaned up session snapshot: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1760698643268-dgmtlg.sh
+[DEBUG] FileHistory: Making snapshot for message 6781626e-ad97-4675-9f06-24988e9a7d30
+[DEBUG] FileHistory: Added snapshot for 6781626e-ad97-4675-9f06-24988e9a7d30, tracking 0 files
+[DEBUG] Rendering user message with 1 content blocks
+[DEBUG] Block 0: <command-name>/exit</command-name>
+            <command-message>exit</command-message>
+            <...
+[DEBUG] UserCommandMessage rendering: "exit" (args: "none")
+[DEBUG] isSkillFormat: false, prefix: "/"
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704204323
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715256 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704204323 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] MCP server "voice-mode": SIGINT failed, sending SIGTERM to MCP server process
+[DEBUG] MCP server "voice-mode": MCP server process exited cleanly
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 2,
+  "rejected_count": 0
+}
+[DEBUG] BigQuery metrics exporter flush complete
+[DEBUG] BigQuery metrics exporter flush complete
+[DEBUG] BigQuery metrics exporter shutdown complete
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704204621
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 715676 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.39112.1760704204621 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically

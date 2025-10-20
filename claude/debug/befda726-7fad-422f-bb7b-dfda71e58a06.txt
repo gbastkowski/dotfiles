@@ -1,0 +1,1004 @@
+[DEBUG] Watching for changes in setting files /Users/gunnar.bastkowski/.claude/settings.json, /Users/gunnar.bastkowski/git/rdm/.claude/settings.local.json...
+[DEBUG] Applying permission update: Adding 76 allow rule(s) to destination 'localSettings': ["Bash(jira me)","Bash(jira issue view:*)","Bash(glab auth:*)","Bash(glab mr view:*)","Bash(kubectl get:*)","Bash(kubectl describe:*)","Bash(osascript:*)","Bash(git checkout:*)","Bash(glab mr create:*)","Bash(open:*)","WebFetch(domain:mvnrepository.com)","Bash(find:*)","Bash(glab mr update:*)","Bash(git push:*)","Bash(cd:*)","Bash(cd:*)","Bash(mkdir:*)","Bash(sbt:*)","Bash(rdmctl postgres psql:*)","Bash(git add:*)","Bash(git commit:*)","Bash(git reset:*)","Bash(rdmctl:*)","Bash(git branch:*)","Bash(git log:*)","WebSearch","Bash(emacsclient:*)","Bash(glab ci:*)","Bash(glab pipeline:*)","Read(//Users/gunnar.bastkowski/org/**)","Bash(glab mr list:*)","Bash(for project in ui core business-metrics errors debug periphery/rdas deployment/deploytest e2e/tests)","Bash(do echo \"=== $project ===\")","Bash(if [ -f \"/Users/gunnar.bastkowski/git/rdm/$project/project/Deps.scala\" ])","Bash(then echo \"Dependencies from Deps.scala:\")","Bash(grep:*)","Bash(else echo \"No Deps.scala found\")","Bash(fi)","Bash(done)","Bash(for project in ui core business-metrics errors debug utils/readings-import periphery/rdas periphery/articles periphery/contract-integrator periphery/mandants deployment/deploytest e2e/fake-rgc e2e/tests sbt/base-settings sbt/avro sbt/data-retention sbt/db-migration)","Bash(elif [ -f \"/Users/gunnar.bastkowski/git/rdm/$project/build.sbt\" ])","Bash(then echo \"Dependencies from build.sbt:\")","Bash(else echo \"No dependency file found\")","Bash(if [ -f \"/Users/gunnar.bastkowski/git/rdm/periphery/articles/project/Deps.scala\" ])","Bash(if [ -f \"/Users/gunnar.bastkowski/git/rdm/periphery/mandants/project/Deps.scala\" ])","Bash(for service in business-metrics core debug errors periphery/articles periphery/contract-integrator periphery/rdas ui deployment/deploytest e2e/fake-rgc)","Bash(do echo \"=== $service ===\")","Bash(if [ -d \"$service\" ])","Bash(then cd \"$service\")","Bash(else echo \"Directory not found\")","Bash(glab mr close:*)","Bash(cat:*)","Bash(kubectl logs:*)","Bash(terminal-notifier:*)","Bash(lsof:*)","Bash(tmux list-panes:*)","Bash(tmux capture-pane:*)","Bash(kafka-topics:*)","Bash(kafka-console-consumer:*)","Bash(glab job view:*)","Bash(glab:*)","Bash(sort:*)","Bash(ps:*)","Bash(nslookup:*)","Bash(kafka-consumer-groups:*)","Bash(tmux send-keys:*)","Bash(curl:*)","WebFetch(domain:pekko.apache.org)","Bash(jira issue list:*)","Bash(wdev)","Bash(kubectl config:*)","Bash(wpre)","Bash(tmux list-windows:*)","Bash(tmux new-window:*)","WebFetch(domain:prodmetal.rdm.ista.net)","Bash(tmux list-sessions:*)"]
+[DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+[DEBUG] Creating shell snapshot for zsh (/bin/zsh)
+[DEBUG] Looking for shell config file: /Users/gunnar.bastkowski/.zshrc
+[DEBUG] Snapshots directory: /Users/gunnar.bastkowski/.claude/shell-snapshots
+[DEBUG] Creating snapshot at: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1760354409898-7o0lbp.sh
+[DEBUG] Shell binary exists: true
+[DEBUG] Execution timeout: 10000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/befda726-7fad-422f-bb7b-dfda71e58a06-agent-befda726-7fad-422f-bb7b-dfda71e58a06.json.tmp.62625.1760354409912
+[DEBUG] Temp file written successfully, size: 2 bytes
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/befda726-7fad-422f-bb7b-dfda71e58a06-agent-befda726-7fad-422f-bb7b-dfda71e58a06.json.tmp.62625.1760354409912 to /Users/gunnar.bastkowski/.claude/todos/befda726-7fad-422f-bb7b-dfda71e58a06-agent-befda726-7fad-422f-bb7b-dfda71e58a06.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/befda726-7fad-422f-bb7b-dfda71e58a06-agent-befda726-7fad-422f-bb7b-dfda71e58a06.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354409952
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354409952 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Registered 0 hooks from 0 plugins
+[DEBUG] Summarizing last 9 of 12 messages (~124611 tokens)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410114
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410114 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410153
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410153 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg)
+[DEBUG] Loading skills from directories: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/gunnar.bastkowski/.claude/skills, project=/Users/gunnar.bastkowski/git/rdm/.claude/skills
+[DEBUG] Loaded 0 skills total (managed: 0, user: 0, project: 0)
+[DEBUG] Total plugin commands loaded: 0
+[DEBUG] Total plugin skills loaded: 0
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/glab-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/glab-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Total plugin agents loaded: 0
+[DEBUG] MCP server "voice-mode": Starting connection with timeout of 30000ms
+[DEBUG] MCP server "puppeteer": Starting connection with timeout of 30000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410515
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410515 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for SessionStart:startup
+[DEBUG] Getting matching hook commands for SessionStart with query: startup
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410609
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712819 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410609 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410635
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712819 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410635 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] performStartupChecks called, ENABLE_PLUGINS=true
+[DEBUG] Starting background plugin installations
+[DEBUG] performBackgroundPluginInstallations called
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410840
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410840 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+[DEBUG] Loaded plugins - Enabled: 0, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410936
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354410936 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[ERROR] MCP server "voice-mode" Server stderr: Installed 121 packages in 851ms
+[DEBUG] MCP server "puppeteer": Successfully connected to stdio server in 2721ms
+[DEBUG] MCP server "puppeteer": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":true,"serverVersion":{"name":"example-servers/puppeteer","version":"0.1.0"}}
+[DEBUG] Shell snapshot created successfully (264188 bytes)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Executing hooks for UserPromptSubmit
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] FileHistory: Added snapshot for 9335f7df-1aa6-4568-b1ad-b4f88165debd, tracking 0 files
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[ERROR] MCP server "voice-mode" Server stderr: /Users/gunnar.bastkowski/.cache/uv/archive-v0/9MXaVuYMSgtaK0Cr41x7N/lib/python3.10/site-packages/pydub/utils.py:300: DeprecationWarning: invalid escape sequence '\('
+  m = re.match('([su]([0-9]{1,2})p?) \(([0-9]{1,2}) bit\)$', token)
+/Users/gunnar.bastkowski/.cache/uv/archive-v0/9MXaVuYMSgtaK0Cr41x7N/lib/python3.10/site-packages/pydub/utils.py:301: DeprecationWarning: invalid escape sequence '\('
+  m2 = re.match('([su]([0-9]{1,2})p?)( \(default\))?$', token)
+/Users/gunnar.bastkowski/.cache/uv/archive-v0/9MXaVuYMSgtaK0Cr41x7N/lib/python3.10/site-packages/pydub/utils.py:310: DeprecationWarning: invalid escape sequence '\('
+  elif re.match('(flt)p?( \(default\))?$', token):
+/Users/gunnar.bastkowski/.cache/uv/archive-v0/9MXaVuYMSgtaK0Cr41x7N/lib/python3.10/site-packages/pydub/utils.py:314: DeprecationWarning: invalid escape sequence '\('
+  elif re.match('(dbl)p?( \(default\))?$', token):
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl config current-context
+[DEBUG] Bash tool description: Get current k8s context
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get pods -A | grep -i kafka
+[DEBUG] Bash tool description: List Kafka pods across all namespaces
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-13 13:20:28,327 - voicemode - INFO - Starting VoiceMode v5.1.8
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-13 13:20:28,327 - voicemode - INFO - Event logging enabled, writing to /Users/gunnar.bastkowski/.voicemode/logs/events
+[ERROR] MCP server "voice-mode" Server stderr: ╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     voicemode                              │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.4                                 │
+│                 🤝 MCP SDK version: 1.17.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+[ERROR] MCP server "voice-mode" Server stderr: [10/13/25 13:20:28] INFO     Starting MCP server 'voicemode' with server.py:1502
+                             transport 'stdio'
+[DEBUG] MCP server "voice-mode": Successfully connected to stdio server in 17865ms
+[DEBUG] MCP server "voice-mode": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"voicemode","version":"1.17.0"}}
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-13 13:20:28,359 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-10-13 13:20:28,360 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-10-13 13:20:28,360 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354436723
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354436723 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for Stop
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354436818
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712924 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354436818 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354436871
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712602 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354436871 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Executing hooks for UserPromptSubmit
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] FileHistory: Making snapshot for message e9b52d06-791a-4c14-be4b-f383ddff99bd
+[DEBUG] FileHistory: Added snapshot for e9b52d06-791a-4c14-be4b-f383ddff99bd, tracking 0 files
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get pods -A | grep -i collector-reading-rgc
+[DEBUG] Bash tool description: List collector-reading-rgc pods across all namespaces
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354490726
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712602 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354490726 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for Stop
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354490834
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712602 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354490834 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354490878
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712505 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354490878 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Executing hooks for UserPromptSubmit
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] FileHistory: Making snapshot for message 43aaf4ff-436a-4f0e-8dbd-dd5f504e48cb
+[DEBUG] FileHistory: Added snapshot for 43aaf4ff-436a-4f0e-8dbd-dd5f504e48cb, tracking 0 files
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-2 --tail=100
+[DEBUG] Bash tool description: Get recent logs from perf collector-reading-rgc-2
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-2 --previous --tail=50 2>&1 || echo "No previous logs available"
+[DEBUG] Bash tool description: Get logs from previous crash
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[ERROR] Error: Error: Language not supported while highlighting code, falling back to markdown: 
+    at hK (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:729)
+    at file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:457
+    at Array.map (<anonymous>)
+    at tF (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:448)
+    at OlB (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:12745)
+    at G$ (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:73:19415)
+    at ka (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:42814)
+    at S9 (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:38355)
+    at Wm (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:38283)
+    at z$ (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:38137)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354535203
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712505 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354535203 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for Stop
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354535280
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712505 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354535280 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354535330
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712411 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354535330 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Metrics opt-out API response: enabled=true
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 13,
+  "rejected_count": 0
+}
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Executing hooks for UserPromptSubmit
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] FileHistory: Making snapshot for message 465cc034-b1a5-4b84-a183-747ea17264da
+[DEBUG] FileHistory: Added snapshot for 465cc034-b1a5-4b84-a183-747ea17264da, tracking 0 files
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-0 --tail=200 | grep -i deadlock
+[DEBUG] Bash tool description: Search for deadlock in collector-reading-rgc-0 logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-1 --tail=200 | grep -i deadlock
+[DEBUG] Bash tool description: Search for deadlock in collector-reading-rgc-1 logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-2 --tail=200 | grep -i deadlock
+[DEBUG] Bash tool description: Search for deadlock in collector-reading-rgc-2 logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-0 --tail=1000 | grep -iE "deadlock|dead lock"
+[DEBUG] Bash tool description: Search more logs from pod-0 for deadlock
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-1 --tail=1000 | grep -iE "deadlock|dead lock"
+[DEBUG] Bash tool description: Search more logs from pod-1 for deadlock
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-2 --tail=1000 | grep -iE "deadlock|dead lock"
+[DEBUG] Bash tool description: Search more logs from pod-2 for deadlock
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-0 --previous --tail=500 2>&1 | grep -iE "deadlock|dead lock"
+[DEBUG] Bash tool description: Search previous pod-0 logs for deadlock
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-1 --previous --tail=500 2>&1 | grep -iE "deadlock|dead lock"
+[DEBUG] Bash tool description: Search previous pod-1 logs for deadlock
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-2 --previous --tail=500 2>&1 | grep -iE "deadlock|dead lock"
+[DEBUG] Bash tool description: Search previous pod-2 logs for deadlock
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-0 --previous --tail=500 2>&1 | grep -iE "ERROR|Exception" | head -20
+[DEBUG] Bash tool description: Check for any errors in pod-0 previous logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-1 --previous --tail=500 2>&1 | grep -iE "ERROR|Exception" | head -20
+[DEBUG] Bash tool description: Check for any errors in pod-1 previous logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-2 --previous --tail=500 2>&1 | grep -iE "ERROR|Exception" | head -20
+[DEBUG] Bash tool description: Check for any errors in pod-2 previous logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[ERROR] Error: Error: Language not supported while highlighting code, falling back to markdown: 
+    at hK (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:729)
+    at file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:457
+    at Array.map (<anonymous>)
+    at tF (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:448)
+    at OlB (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:2123:12745)
+    at G$ (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:73:19415)
+    at ka (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:42814)
+    at S9 (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:38355)
+    at Wm (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:38283)
+    at z$ (file:///opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js:75:38137)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354890063
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712411 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354890063 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for Stop
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354890179
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712411 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354890179 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354890216
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712467 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760354890216 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Executing hooks for UserPromptSubmit
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] FileHistory: Making snapshot for message 3ef4be2f-0f0b-496e-8d33-6b88ff2ab676
+[DEBUG] FileHistory: Added snapshot for 3ef4be2f-0f0b-496e-8d33-6b88ff2ab676, tracking 0 files
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-0 --previous --tail=100 2>&1 | grep -E "ERROR|TimeoutException" | head -10
+[DEBUG] Bash tool description: Check prod pod-0 for similar errors
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-1 --previous --tail=100 2>&1 | grep -E "ERROR|TimeoutException" | head -10
+[DEBUG] Bash tool description: Check prod pod-1 for similar errors
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 12,
+  "rejected_count": 0
+}
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-2 --previous --tail=100 2>&1 | grep -E "ERROR|TimeoutException" | head -10
+[DEBUG] Bash tool description: Check prod pod-2 for similar errors
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-0 --tail=50 | grep -E "env:|environment" | head -5
+[DEBUG] Bash tool description: Check what environment prod pod-0 thinks it's in
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-0 --tail=50 | grep -E "env:|environment" | head -5
+[DEBUG] Bash tool description: Check what environment perf pod-0 thinks it's in
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl describe pod -n prod collector-reading-rgc-0 | grep -E "Environment:|Labels:" -A 10
+[DEBUG] Bash tool description: Check prod pod environment configuration
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-0 --previous --tail=1000 2>&1 | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException" | head -20
+[DEBUG] Bash tool description: Deep search in prod pod-0 previous logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-1 --previous --tail=1000 2>&1 | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException" | head -20
+[DEBUG] Bash tool description: Deep search in prod pod-1 previous logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-2 --previous --tail=1000 2>&1 | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException" | head -20
+[DEBUG] Bash tool description: Deep search in prod pod-2 previous logs
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl describe pod -n perf collector-reading-rgc-0 | grep -E "Environment:|Labels:" -A 10
+[DEBUG] Bash tool description: Check perf pod environment and labels
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get pods -n perf collector-reading-rgc-0 -o jsonpath='{.metadata.labels}' | jq
+[DEBUG] Bash tool description: Get all labels from perf pod as JSON
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355062603
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712467 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355062603 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for Stop
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355062740
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712467 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355062740 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355062816
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712543 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355062816 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Executing hooks for UserPromptSubmit
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] FileHistory: Making snapshot for message 1fe20e64-f9f3-4a0c-b70d-e7dcec5f4ce8
+[DEBUG] FileHistory: Added snapshot for 1fe20e64-f9f3-4a0c-b70d-e7dcec5f4ce8, tracking 0 files
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get pods -n prod -l app=collector-reading-rgc -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.startTime}{"\t"}{.status.containerStatuses[0].restartCount}{"\n"}{end}'
+[DEBUG] Bash tool description: Check prod pod start times and restart counts
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-0 --since=96h 2>&1 | grep "2025-10-10" | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException|ERROR" | head -20
+[DEBUG] Bash tool description: Search for Oct 10th errors in prod pod-0
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-1 --since=96h 2>&1 | grep "2025-10-10" | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException|ERROR" | head -20
+[DEBUG] Bash tool description: Search for Oct 10th errors in prod pod-1
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n prod collector-reading-rgc-2 --since=96h 2>&1 | grep "2025-10-10" | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException|ERROR" | head -20
+[DEBUG] Bash tool description: Search for Oct 10th errors in prod pod-2
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get events -n prod --field-selector involvedObject.name=collector-reading-rgc-0 --sort-by='.lastTimestamp' | tail -20
+[DEBUG] Bash tool description: Check prod pod-0 events
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get pods -n perf -l app=collector-reading-rgc -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.startTime}{"\t"}{.status.containerStatuses[0].restartCount}{"\n"}{end}'
+[DEBUG] Bash tool description: Check perf pod start times and restart counts
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl logs -n perf collector-reading-rgc-0 --since=96h 2>&1 | grep "2025-10-10" | grep -E "RdmCouldNotNotifyCheckQueue|TimeoutException|ERROR" | head -20
+[DEBUG] Bash tool description: Search for Oct 10th errors in perf
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl describe statefulset -n perf collector-reading-rgc | grep -E "Image:|Revision|Update Strategy" | head -10
+[DEBUG] Bash tool description: Check perf statefulset config
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl describe statefulset -n prod collector-reading-rgc | grep -E "Image:|Revision|Update Strategy" | head -10
+[DEBUG] Bash tool description: Check prod statefulset config
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Executing hooks for PreToolUse:Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Bash tool invoked with command: kubectl get configmap -n perf | grep collector-reading-rgc
+[DEBUG] Bash tool description: Check perf configmaps
+[DEBUG] Executing hooks for PostToolUse:Bash
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355204249
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712543 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355204249 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Executing hooks for Stop
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Found 0 hook commands to execute
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355204355
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712543 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355204355 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355204411
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712403 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760355204411 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Notification with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 12,
+  "rejected_count": 0
+}
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Getting matching hook commands for SessionEnd with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] MCP server "puppeteer": Sending SIGINT to MCP server process
+[DEBUG] Cleaned up session snapshot: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1760354409898-7o0lbp.sh
+[DEBUG] MCP server "voice-mode": Sending SIGINT to MCP server process
+[DEBUG] FileHistory: Making snapshot for message edfe1b07-3bac-4e26-bc34-f944972551fa
+[DEBUG] FileHistory: Added snapshot for edfe1b07-3bac-4e26-bc34-f944972551fa, tracking 0 files
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760359441576
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712877 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760359441576 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] MCP server "puppeteer": SIGINT failed, sending SIGTERM to MCP server process
+[DEBUG] MCP server "voice-mode": SIGINT failed, sending SIGTERM to MCP server process
+[DEBUG] MCP server "puppeteer": MCP server process exited cleanly
+[DEBUG] MCP server "voice-mode": MCP server process exited cleanly
+[DEBUG] Metrics opt-out API response: enabled=true
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 1,
+  "rejected_count": 0
+}
+[DEBUG] BigQuery metrics exporter flush complete
+[DEBUG] BigQuery metrics exporter flush complete
+[DEBUG] BigQuery metrics exporter shutdown complete
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760359441927
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 712868 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.62625.1760359441927 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically

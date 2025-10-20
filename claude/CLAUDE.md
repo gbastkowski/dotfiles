@@ -55,3 +55,4 @@ Teammates:
 - Always switch to correct environment context before running rdmctl commands
 - Use tmux windows for parallel database operations across environments
 - Example: `rdmctl postgres psql prod output-channel-mdr-rgc -c "SELECT count(*) FROM table_name;"`
+- Commands to read jira and web searches are always approved

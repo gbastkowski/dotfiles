@@ -62,6 +62,10 @@
 (package! dashboard         :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
 
 
+;; Upstream renamed the default branch to main; straight still defaults to master.
+(package! iedit             :recipe (:branch "main"))
+
+
 (package! pg                :recipe (:host github :repo "emarsden/pg-el"))
 (package! pgmacs            :recipe (:host github :repo "emarsden/pgmacs"))
 

@@ -56,3 +56,4 @@ Teammates:
 - Use tmux windows for parallel database operations across environments
 - Example: `rdmctl postgres psql prod output-channel-mdr-rgc -c "SELECT count(*) FROM table_name;"`
 - Commands to read jira and web searches are always approved
+- The glab command to get the logs of a job is glab ci trace <job id>

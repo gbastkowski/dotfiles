@@ -1,0 +1,663 @@
+[DEBUG] Watching for changes in setting files /Users/gunnar.bastkowski/.claude/settings.json, /Users/gunnar.bastkowski/git/rdm/common/.claude/settings.local.json...
+[DEBUG] Applying permission update: Adding 16 allow rule(s) to destination 'localSettings': ["Bash(git config:*)","Bash(jira issue view:*)","Bash(sbt:*)","Bash(git add:*)","Bash(git commit:*)","Bash(jira me)","Bash(jira issue list:*)","Bash(git checkout:*)","Bash(git reset:*)","Bash(jira:*)","Bash(glab mr view:*)","Bash(glab mr diff:*)","Bash(git stash push:*)","Bash(git fetch:*)","Bash(git rebase:*)","Bash(emacsclient:*)"]
+[DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+[DEBUG] >>>>> getSkillsIfEnabled() CALLED <<<<<
+[DEBUG] ENABLE_SKILLS value: true, type: boolean
+[DEBUG] ENABLE_SKILLS check passed, loading skills...
+[DEBUG] Loading skills from directories: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/gunnar.bastkowski/.claude/skills, project=/Users/gunnar.bastkowski/git/rdm/common/.claude/skills
+[DEBUG] >>>>> getPluginSkills CALLED <<<<<
+[DEBUG] Creating shell snapshot for zsh (/bin/zsh)
+[DEBUG] Looking for shell config file: /Users/gunnar.bastkowski/.zshrc
+[DEBUG] Snapshots directory: /Users/gunnar.bastkowski/.claude/shell-snapshots
+[DEBUG] Creating snapshot at: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1761143226235-t00g0o.sh
+[DEBUG] Shell binary exists: true
+[DEBUG] Execution timeout: 10000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143226254
+[DEBUG] Temp file written successfully, size: 2 bytes
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143226254 to /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226276
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662045 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226276 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] getPluginSkills: Processing 0 enabled plugins
+[DEBUG] Total plugin skills loaded: 0
+[DEBUG] Total plugin commands loaded: 0
+[DEBUG] Registered 0 hooks from 0 plugins
+[DEBUG] Loaded 0 skills total (managed: 0, user: 0, project: 0)
+[DEBUG] getSkillsIfEnabled returning: 0 skill dir commands, 0 plugin skills
+[DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg)
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/glab-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/glab-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/kubectl-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Agent file /Users/gunnar.bastkowski/.claude/agents/glab-expert.md is missing required 'name' in frontmatter
+[DEBUG] Failed to parse agent from /Users/gunnar.bastkowski/.claude/agents/glab-expert.md: Missing required "name" field in frontmatter
+[DEBUG] Total plugin agents loaded: 0
+[DEBUG] Summarizing all 2 messages (~3362 tokens)
+[DEBUG] MCP server "voice-mode": Starting connection with timeout of 30000ms
+[DEBUG] MCP server "puppeteer": Starting connection with timeout of 30000ms
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226435
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662045 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226435 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for SessionStart with query: startup
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226528
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661940 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226528 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226557
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661940 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226557 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] performStartupChecks called
+[DEBUG] Starting background plugin installations
+[DEBUG] performBackgroundPluginInstallations called
+[DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+[DEBUG] Loaded plugins - Enabled: 0, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226686
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661940 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226686 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226708
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661940 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226708 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226746
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662045 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143226746 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Stream started - received first chunk
+[DEBUG] Summarizing last 12 of 31 messages (~142428 tokens)
+[DEBUG] Stream started - received first chunk
+[DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] MCP server "puppeteer": Successfully connected to stdio server in 2096ms
+[DEBUG] MCP server "puppeteer": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":true,"serverVersion":{"name":"example-servers/puppeteer","version":"0.1.0"}}
+[DEBUG] Stream started - received first chunk
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-22 16:27:09,479 - voicemode - INFO - Starting VoiceMode v6.0.1
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-22 16:27:09,479 - voicemode - INFO - Event logging enabled, writing to /Users/gunnar.bastkowski/.voicemode/logs/events
+[ERROR] MCP server "voice-mode" Server stderr: ╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     voicemode                              │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.5                                 │
+│                 🤝 MCP SDK version: 1.16.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+[ERROR] MCP server "voice-mode" Server stderr: [10/22/25 16:27:09] INFO     Starting MCP server 'voicemode' with server.py:1502
+                             transport 'stdio'
+[DEBUG] MCP server "voice-mode": Successfully connected to stdio server in 3087ms
+[DEBUG] MCP server "voice-mode": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"voicemode","version":"1.16.0"}}
+[ERROR] MCP server "voice-mode" Server stderr: 2025-10-22 16:27:09,501 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-10-22 16:27:09,502 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-10-22 16:27:09,502 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Shell snapshot created successfully (264191 bytes)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Added snapshot for 37e5a914-0131-4c92-92eb-40f1960f2a2e, tracking 0 files
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: TodoWrite
+[DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143253452
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 468 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143253452 to /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Glob
+[DEBUG] Getting matching hook commands for PreToolUse with query: Glob
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Glob" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Glob
+[DEBUG] Getting matching hook commands for PreToolUse with query: Glob
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Glob" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Grep
+[DEBUG] Getting matching hook commands for PreToolUse with query: Grep
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Grep" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Grep
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Grep" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Glob
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Glob" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Glob
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Glob" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Read
+[DEBUG] Getting matching hook commands for PreToolUse with query: Read
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Glob
+[DEBUG] Getting matching hook commands for PreToolUse with query: Glob
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Glob" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Grep
+[DEBUG] Getting matching hook commands for PreToolUse with query: Grep
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Grep" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Read
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Glob
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Glob" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Grep
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Grep" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Read
+[DEBUG] Getting matching hook commands for PreToolUse with query: Read
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Read
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: TodoWrite
+[DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143272443
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 470 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143272443 to /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Edit
+[DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] FileHistory: Tracked file modification for /Users/gunnar.bastkowski/git/rdm/common/build.sbt
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/git/rdm/common/build.sbt.tmp.10855.1761143272589
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 6061 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/git/rdm/common/build.sbt.tmp.10855.1761143272589 to /Users/gunnar.bastkowski/git/rdm/common/build.sbt
+[DEBUG] File /Users/gunnar.bastkowski/git/rdm/common/build.sbt written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: TodoWrite
+[DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143281944
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 472 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143281944 to /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Edit
+[DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/git/rdm/common/build.sbt.tmp.10855.1761143282058
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 6866 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/git/rdm/common/build.sbt.tmp.10855.1761143282058 to /Users/gunnar.bastkowski/git/rdm/common/build.sbt
+[DEBUG] File /Users/gunnar.bastkowski/git/rdm/common/build.sbt written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: TodoWrite
+[DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143286322
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 2 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json.tmp.10855.1761143286322 to /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude/todos/826ff6f0-36f0-4a0e-a8e3-1b9350586add-agent-826ff6f0-36f0-4a0e-a8e3-1b9350586add.json written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143292153
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662045 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143292153 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143292268
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662045 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143292268 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143292328
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143292328 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143405288
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661946 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143405288 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143405346
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661946 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143405346 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143405388
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143405388 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Making snapshot for message 272698d8-7da6-453d-b1b8-5d76322dbe70
+[DEBUG] FileHistory: Added snapshot for 272698d8-7da6-453d-b1b8-5d76322dbe70, tracking 1 files
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Edit
+[DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/git/rdm/common/build.sbt.tmp.10855.1761143426620
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 6061 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/git/rdm/common/build.sbt.tmp.10855.1761143426620 to /Users/gunnar.bastkowski/git/rdm/common/build.sbt
+[DEBUG] File /Users/gunnar.bastkowski/git/rdm/common/build.sbt written atomically
+[DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468251
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468251 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468319
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468319 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468353
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662071 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468353 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468419
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661966 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468419 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468448
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661966 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468448 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468484
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662071 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143468484 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Metadata string for commit:
+[DEBUG] <command-message>commit is running…</command-message>
+<command-name>/commit</command-name>
+[DEBUG] command-message tags in metadata: 1
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] processPromptSlashCommand creating 2 messages for commit
+[DEBUG] Message 1: <command-message>commit is running…</command-message>
+<command-name>/commit</command-name>
+[DEBUG] Message 2 [META]: [{"type":"text","text":"# Git Commit\nCreates a git commit following the established commit message guidelines.\n\n## Commit Message Guidelines Applied:\n- Subject line: Keep concise (around 70 charac
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Making snapshot for message d4f125c9-7b0f-4e3a-9dd3-fddfb2d6d5b9
+[DEBUG] FileHistory: Added snapshot for d4f125c9-7b0f-4e3a-9dd3-fddfb2d6d5b9, tracking 1 files
+[DEBUG] Rendering user message with 1 content blocks
+[DEBUG] Block 0: <command-message>commit is running…</command-message>
+<command-name>/commit</command-name>...
+[DEBUG] UserCommandMessage rendering: "commit is running…" (args: "none")
+[DEBUG] isSkillFormat: false, prefix: "/"
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] No hook environment files found
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143500241
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662071 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143500241 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143500326
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662071 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143500326 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143500362
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143500362 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] FileHistory: Making snapshot for message 9d40187c-fe88-4802-acfd-89d831e4bbbb
+[DEBUG] FileHistory: Added snapshot for 9d40187c-fe88-4802-acfd-89d831e4bbbb, tracking 1 files
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] executePreToolHooks called for tool: Bash
+[DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+[DEBUG] Hooks: getAsyncHookResponseAttachments called
+[DEBUG] Hooks: checkForNewResponses called
+[DEBUG] Hooks: Found 0 total hooks in registry
+[DEBUG] Hooks: checkForNewResponses returning 0 responses
+[DEBUG] Skills and commands included in Skill tool:
+[DEBUG] Slash commands included in SlashCommand tool: /system-upgrade, /commit, /rebase, /push, /compile, /system-upgrade, /commit, /rebase, /push, /compile
+[DEBUG] Stream started - received first chunk
+[DEBUG] Stream started - received first chunk
+[DEBUG] Metrics opt-out API response: enabled=true
+[DEBUG] Stream started - received first chunk
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143526433
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143526433 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Getting matching hook commands for Stop with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143526486
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662051 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143526486 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143526510
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662049 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143526510 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 17,
+  "rejected_count": 0
+}
+[DEBUG] Rendering user message with 1 content blocks
+[DEBUG] Block 0: <command-message>commit is running…</command-message>
+<command-name>/commit</command-name>...
+[DEBUG] UserCommandMessage rendering: "commit is running…" (args: "none")
+[DEBUG] isSkillFormat: false, prefix: "/"
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143914173
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661944 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143914173 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143914209
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661944 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143914209 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143914245
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662049 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761143914245 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 6,
+  "rejected_count": 0
+}
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 1,
+  "rejected_count": 0
+}
+[DEBUG] AutoUpdaterWrapper: Installation type: npm-global, using native: false
+[DEBUG] Getting matching hook commands for SessionEnd with query: undefined
+[DEBUG] Found 0 hook matchers in settings
+[DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+[DEBUG] MCP server "puppeteer": Sending SIGINT to MCP server process
+[DEBUG] MCP server "voice-mode": Sending SIGINT to MCP server process
+[DEBUG] Cleaned up session snapshot: /Users/gunnar.bastkowski/.claude/shell-snapshots/snapshot-zsh-1761143226235-t00g0o.sh
+[DEBUG] FileHistory: Making snapshot for message 2963d6d8-c0ee-43ee-83f5-156fa7728f0d
+[DEBUG] FileHistory: Added snapshot for 2963d6d8-c0ee-43ee-83f5-156fa7728f0d, tracking 1 files
+[DEBUG] Rendering user message with 1 content blocks
+[DEBUG] Block 0: <command-name>/exit</command-name>
+            <command-message>exit</command-message>
+            <...
+[DEBUG] UserCommandMessage rendering: "exit" (args: "none")
+[DEBUG] isSkillFormat: false, prefix: "/"
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761166082615
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661966 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761166082615 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761166082654
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 661921 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761166082654 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically
+[DEBUG] MCP server "puppeteer": SIGINT failed, sending SIGTERM to MCP server process
+[DEBUG] MCP server "voice-mode": SIGINT failed, sending SIGTERM to MCP server process
+[DEBUG] MCP server "puppeteer": MCP server process exited cleanly
+[DEBUG] MCP server "voice-mode": MCP server process exited cleanly
+[DEBUG] Metrics opt-out API response: enabled=true
+[DEBUG] BigQuery metrics exported successfully
+[DEBUG] API Response: {
+  "accepted_count": 2,
+  "rejected_count": 0
+}
+[DEBUG] BigQuery metrics exporter flush complete
+[DEBUG] BigQuery metrics exporter flush complete
+[DEBUG] BigQuery metrics exporter shutdown complete
+[DEBUG] Writing to temp file: /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761166083382
+[DEBUG] Preserving file permissions: 100644
+[DEBUG] Temp file written successfully, size: 662339 bytes
+[DEBUG] Applied original permissions to temp file
+[DEBUG] Renaming /Users/gunnar.bastkowski/.claude.json.tmp.10855.1761166083382 to /Users/gunnar.bastkowski/.claude.json
+[DEBUG] File /Users/gunnar.bastkowski/.claude.json written atomically

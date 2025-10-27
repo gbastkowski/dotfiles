@@ -687,3 +687,273 @@
 {"display":"Is any of them the newest version?","pastedContents":{},"timestamp":1760945825322,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
 {"display":"but the table shows less than 13","pastedContents":{},"timestamp":1760946318216,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
 {"display":" save that table to a text file","pastedContents":{},"timestamp":1760947072752,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/exit ","pastedContents":{},"timestamp":1760966935690,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/exit ","pastedContents":{},"timestamp":1760966935725,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/exit ","pastedContents":{},"timestamp":1760966935728,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/commit ","pastedContents":{},"timestamp":1760967963691,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/commit ","pastedContents":{},"timestamp":1760967963732,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"remove the colon","pastedContents":{},"timestamp":1760968613333,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"cd ../pipelines for the gitlab pipeline and tell me why job 11775239900 failed","pastedContents":{},"timestamp":1760969762049,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"read ../pipelines for the gitlab pipeline and tell me why job 11775239900 failed","pastedContents":{},"timestamp":1760969849890,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"for the context: \n1. check the pipelines project, diff the current branch to main\n2. check core-extapi, the gitlab pipeline\nBased on that, your task is to offer me options to fix the failed core-extapi job 11761037788","pastedContents":{},"timestamp":1760969993274,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"I need to elaborate. in ../pipelines is the library.yml, which is referred in this project's gitlab-ci.yml.","pastedContents":{},"timestamp":1760970031404,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"What was the final error that caused the build failure?","pastedContents":{},"timestamp":1760970037645,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"is it even searching in artifactory?","pastedContents":{},"timestamp":1760970511302,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"yes","pastedContents":{},"timestamp":1760970527863,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"I would like to print the relevant files' contents for troubleshooting","pastedContents":{},"timestamp":1760970647166,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"committed and pushed?","pastedContents":{},"timestamp":1760970651492,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"I want to add the required print statements to this pipeline","pastedContents":{},"timestamp":1760970693250,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"create an empty commit in core-extapi to trigger rebuild","pastedContents":{},"timestamp":1760970725417,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"yes","pastedContents":{},"timestamp":1760970750454,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"committed and pushed?","pastedContents":{},"timestamp":1760970891064,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"commit and push","pastedContents":{},"timestamp":1760970941171,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"then trigger rebuild with empty commit","pastedContents":{},"timestamp":1760970965527,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"Search all projects if there is still anyone depending on nexus","pastedContents":{},"timestamp":1760971339216,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"job 11775814579 failed","pastedContents":{},"timestamp":1760971540159,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"11775941951","pastedContents":{},"timestamp":1760972094161,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"gitlab-ci.yml must also include shared.yml explicitly, because the implicit import from library.yml imports from the main branch","pastedContents":{},"timestamp":1760972168670,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"no, don't change pipelines. change it here in common","pastedContents":{},"timestamp":1760972204391,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"commit mandants and push","pastedContents":{},"timestamp":1760972899533,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"remove the debug output from pipelines again","pastedContents":{},"timestamp":1760973277833,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"job 11776097376 has a warning duplicate label 'jFrog-repo-maven' in section 'repositories' which needs to be fixed","pastedContents":{},"timestamp":1761031395903,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"don't add nexus again","pastedContents":{},"timestamp":1761031438499,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"empty commit on mandants please","pastedContents":{},"timestamp":1761042909411,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"trigger rebuilds in core-extapi, common, core, ui, and mandants","pastedContents":{},"timestamp":1761052609670,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"which projects still need migration?","pastedContents":{},"timestamp":1761052947124,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"look at my merge request in ui. Create a corresponding one for core","pastedContents":{},"timestamp":1761053010549,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"sbt-scoverage has not been migrated from nexus to artifactory","pastedContents":{},"timestamp":1761053165217,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"migrate it","pastedContents":{},"timestamp":1761053351227,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761053405476,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761053405515,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761053405518,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761053408078,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761053408107,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761053408110,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"there is a migration script here, which I executed. the artifact sbt-scoverage hasn't been migrated apparently. Migrate it.","pastedContents":{},"timestamp":1761054196926,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"That is wrong. The artifact is not available in artifactory","pastedContents":{},"timestamp":1761055107011,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"can you please just create a script that downloads pom, jar, sources from nexus and uploads to artifactory? only for sbt-scoverage. as simple as possible","pastedContents":{},"timestamp":1761055294729,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"not scalac-scoverage. it's sbt-scoverage","pastedContents":{},"timestamp":1761055373819,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"artifact id contains scala version 2.12 and sbt version 1.0","pastedContents":{},"timestamp":1761055419151,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"https://registry.ista.net/#browse/browse:rdm-maven:com%2Fista%2Frdm%2Fsbt-scoverage_2.12_1.0%2F1.6.3%2Fsbt-scoverage-1.6.3.pom","pastedContents":{},"timestamp":1761055508313,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"upload failed with a 400","pastedContents":{},"timestamp":1761055634741,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"<!doctype html><html lang=\"en\"><head><title>HTTP Status 400 – Bad Request</title><style type=\"text/css\">body {font-family:Tahoma,Arial,sans-serif;} h1, h2, h3, b {color:white;background-color:#525D76;} h1 {font-size:22px;} h2 {font-size:16px;} h3 {font-size:14px;} p {font-size:12px;} a {color:black;} .line {height:1px;background-color:#525D76;border:none;}</style></head><body><h1>HTTP Status 400 – Bad Request</h1></body></html>","pastedContents":{},"timestamp":1761055719450,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"same ","pastedContents":{},"timestamp":1761056148117,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"Plenty of projects are on a migration branch from nexus to artifactory. it's the gitlab pipeline files which need migration and the reference to a base-settings plugin.\nSome projects haven't been migrated yet. List them","pastedContents":{},"timestamp":1761056419718,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"create the branches, update gitlab-ci.yml accordingly, create the merge requests. Use the merge request in ui as an example. Keep it minimalistic","pastedContents":{},"timestamp":1761056628662,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"in the meantime, I merged the branch in the pipelines project. ref: <branch name> is not required anymore","pastedContents":{},"timestamp":1761056804335,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"empty commit on base-settings to trigger rebuild","pastedContents":{},"timestamp":1761057208415,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"delete the merged branch in pipelines. local and remote","pastedContents":{},"timestamp":1761057356105,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"job 11792224069 shows errors","pastedContents":{},"timestamp":1761057761687,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"#The glab command to get the logs of a job is glab ci trace <job id>","pastedContents":{},"timestamp":1761057776371,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"#The glab command to get the logs of a job is glab ci trace <job id>","pastedContents":{},"timestamp":1761057776405,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"now let's observe job 11792224073","pastedContents":{},"timestamp":1761057926667,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"2","pastedContents":{},"timestamp":1761058010067,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761058066896,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761058066940,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/psuh","pastedContents":{},"timestamp":1761058072142,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/psuh","pastedContents":{},"timestamp":1761058072181,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/push ","pastedContents":{},"timestamp":1761058112810,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/push ","pastedContents":{},"timestamp":1761058112848,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"claude supports custom commands. does it also support custom commands with arguments?","pastedContents":{},"timestamp":1761058136789,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"new job 11792457667","pastedContents":{},"timestamp":1761058660205,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"new job 11792457667","pastedContents":{},"timestamp":1761059103724,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"just an empty commit. I need to retrigger and then trigger the release job with correct version numbers","pastedContents":{},"timestamp":1761059497417,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"what would be the glab command?","pastedContents":{},"timestamp":1761059779449,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"what would be the glab command to create a release using the gitlab api?","pastedContents":{},"timestamp":1761060031643,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"job 11792836186 failed","pastedContents":{},"timestamp":1761060218111,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"So, the only thing that failed is the new commit with the new snapshot version?","pastedContents":{},"timestamp":1761060541691,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"let's create those commits manually and also the tag","pastedContents":{},"timestamp":1761060647908,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"solution 1 does not exist","pastedContents":{},"timestamp":1761061055445,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"which token can we use?","pastedContents":{},"timestamp":1761061076012,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"what is CI_RELEASE_TOKEN? who created it?","pastedContents":{},"timestamp":1761061112784,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"I would need to do 2 steps, right? 1. create the token. 2. create a variable with that token","pastedContents":{},"timestamp":1761061198688,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"ok, I added a variable SBT_RELEASE_TOKEN to the base-settings project. Ideally, just add the new remote in this pipeline for testing.","pastedContents":{},"timestamp":1761077444201,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"in avro, remove the SNAPSHOT version and the branch name from the pipeline. push, merge into main, delete migration branch.","pastedContents":{},"timestamp":1761077539371,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"it's sbt/avro","pastedContents":{},"timestamp":1761077592165,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"I merged base-settings and pipelines. time to update the other merge requests/branches accordingly","pastedContents":{},"timestamp":1761077644104,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"pull latest main, start over","pastedContents":{},"timestamp":1761077711567,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"looks like we created our branch from an outdated codebase. We can delete our current feature branch, recreate it from latest main. Either delete or force push. I don't care. there is nothing in the current 3489 branch that is worth investing effort for keeping the changes","pastedContents":{},"timestamp":1761077840456,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"base-settings should be 1.266, not SNAPSHOT","pastedContents":{},"timestamp":1761077923187,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"i mean the version of the base-settings dependency. the version of the avro plugin will be changed afterwards","pastedContents":{},"timestamp":1761078052714,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"there might be more projects which are still justing 1.266-SNAPSHOT","pastedContents":{},"timestamp":1761079407232,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"job 11798571120 failed","pastedContents":{},"timestamp":1761079564661,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"pushed?","pastedContents":{},"timestamp":1761079567365,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"The compile stage publishes to local cache? Really?","pastedContents":{},"timestamp":1761079635117,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"it looks like many of my merge requests still have a ref to the SQDD06-3489-add-artifactory-resolver pipeline files","pastedContents":{},"timestamp":1761079815978,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"let's first see how job 11798688524 goes","pastedContents":{},"timestamp":1761079880948,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"why not just use the correct path?","pastedContents":{},"timestamp":1761080016729,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"job 11798688523 should tell the precise paths","pastedContents":{},"timestamp":1761080204772,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"instead of hard-coding, we should use the cwd","pastedContents":{},"timestamp":1761080263996,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"sbt scripted doesn't make a lot of sense here. skip the tests for now","pastedContents":{},"timestamp":1761080448223,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"now job 11798835493 failes","pastedContents":{},"timestamp":1761081075855,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"which variables for releasing again?","pastedContents":{},"timestamp":1761081223907,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"push empty commit","pastedContents":{},"timestamp":1761081636218,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"data-retention needs the same adjustments for the release process as base-settings. Look at gitlab-ci.yml to understand what I mean","pastedContents":{},"timestamp":1761082139236,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"Actually, I was only thinking about the release process","pastedContents":{},"timestamp":1761082399353,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"just merge the two to main.","pastedContents":{},"timestamp":1761082528832,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"what are the release variables for sbt/avro?","pastedContents":{},"timestamp":1761082650527,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"empty commit to avro. I need a new trigger","pastedContents":{},"timestamp":1761082779824,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"empty commit to db-migration. I need a new trigger","pastedContents":{},"timestamp":1761082875278,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"data-retention job 11799114500 failed","pastedContents":{},"timestamp":1761083086247,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"another empty commit for avro","pastedContents":{},"timestamp":1761083576034,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"core-extapi's pipeline does not need the extra shared.yml import","pastedContents":{},"timestamp":1761083754011,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"avro job 11799234618 failed","pastedContents":{},"timestamp":1761083943389,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"change version sbt to prepare the next version, commit and push","pastedContents":{},"timestamp":1761084068341,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"now, also core-extapi needs the pipeline and build.sbt adjustments for the release process. I already added the token to the gitlab settings","pastedContents":{},"timestamp":1761084604800,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"recreate the mr","pastedContents":{},"timestamp":1761084658354,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the mr does not contain the necessary changes for release and also not an updated pipeline?","pastedContents":{},"timestamp":1761084748491,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"also update the pipeline in core-extapi as well as the release settings","pastedContents":{},"timestamp":1761084872065,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"which project are you on right now?","pastedContents":{},"timestamp":1761084897050,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"build.sbt needs a change to enable proper release on gitlab","pastedContents":{},"timestamp":1761085126837,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"but on gitlab in the merge request i only see the changes in plugins.sbt","pastedContents":{},"timestamp":1761085204508,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"merge and push","pastedContents":{},"timestamp":1761085285623,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"we can also merge common","pastedContents":{},"timestamp":1761085402463,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"and delete the feature branch","pastedContents":{},"timestamp":1761085445035,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"core-extapi needs an empty commit","pastedContents":{},"timestamp":1761085533435,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"\"undraft\" all my open merge requests","pastedContents":{},"timestamp":1761086161756,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"fix common job 11799470458","pastedContents":{},"timestamp":1761086245428,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761086559297,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761086559331,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761086559334,"project":"/Users/gunnar.bastkowski/git/rdm/sbt/base-settings"}
+{"display":"fake-rgc job 11798403575 cannot resolve dependencies","pastedContents":{},"timestamp":1761086675319,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the build.sbt in common seems to be missing the untracked files setting","pastedContents":{},"timestamp":1761086675368,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"if you look at the logs, do you see any try to access artifactory?","pastedContents":{},"timestamp":1761086725532,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"it's job 11798403575","pastedContents":{},"timestamp":1761086737940,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"use glab ci trace 11798403575","pastedContents":{},"timestamp":1761086789406,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the issue must be somewhere in the pipelines project. ","pastedContents":{},"timestamp":1761086850839,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the variable is correct","pastedContents":{},"timestamp":1761086970701,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"there is no print","pastedContents":{},"timestamp":1761086970838,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the before_script .compile-base overrides the before_script in .sbt-job?","pastedContents":{},"timestamp":1761087046973,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"do we need that reference at all? We already extend .sbt-job","pastedContents":{},"timestamp":1761087141238,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"go ahead","pastedContents":{},"timestamp":1761087205518,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the scalajs-react-bridge project can be simplified in build.sbt. if ... else is not required anymore, because both are the same. the credentials setting can be removed.","pastedContents":{},"timestamp":1761114322459,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"deploytest has new changes on origin/main. pull and rebase ","pastedContents":{},"timestamp":1761114430549,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"job 11799579194 failed","pastedContents":{},"timestamp":1761114483351,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"my feature branch needs to be rebase on top of latest origin/main","pastedContents":{},"timestamp":1761114580089,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the gitlab-ci.yml in mandants doesn't need to import shared.yml","pastedContents":{},"timestamp":1761114942595,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"and core still has the ref and also the obsolete shared.yml","pastedContents":{},"timestamp":1761115024861,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the pipeline in errors also seems to override before_script in a bad wa","pastedContents":{},"timestamp":1761115351884,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"then there must be another reason why job 11798731894 in errors does not print the diagnostic output that sbt config has been created","pastedContents":{},"timestamp":1761115487541,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"core has a wrong sbt-scoverage. there is the correct one in some other project","pastedContents":{},"timestamp":1761116522447,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"job 11803168026 in ui feiled. why","pastedContents":{},"timestamp":1761116644417,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"upgrade core-extapi to 0.217","pastedContents":{},"timestamp":1761116856554,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"same needs on core","pastedContents":{},"timestamp":1761117095713,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"core-extapi release did not upload a pom","pastedContents":{},"timestamp":1761118495608,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"just check out the 0.217 commit and do a ^ publish","pastedContents":{},"timestamp":1761118574509,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"pull beforehand. the release is there","pastedContents":{},"timestamp":1761119098580,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"do i need to set some publishMavenStyle? ","pastedContents":{},"timestamp":1761119534662,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"fix the warning: Multiple resolvers having different access mechanism configured with same name 'artifactory'. To avoid conflict, Remove duplicate project resolvers (`resolvers`) or rename publishing resolver (`publishTo`)","pastedContents":{},"timestamp":1761119709877,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"Push the base-settings changes. I'll create a a 1.268 release","pastedContents":{},"timestamp":1761119770514,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"[Pasted text #1 +7 lines]","pastedContents":{},"timestamp":1761121581707,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/infrastructure/configure-env"}
+{"display":"now, update everything to the new base-settings version","pastedContents":{},"timestamp":1761121800460,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"i copied from another machine. Just think as it was my user name","pastedContents":{},"timestamp":1761121820839,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/infrastructure/configure-env"}
+{"display":"remove that AGENTS.md from rdas","pastedContents":{},"timestamp":1761131493147,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"in ui, there are 5 new files in the merge request which all should be removed again","pastedContents":{},"timestamp":1761131853711,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"list all my open merge requests","pastedContents":{},"timestamp":1761132049143,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"ui job 11806762194 faild","pastedContents":{},"timestamp":1761132499805,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"does core-extapi use publish or \"^ publish\"?","pastedContents":{},"timestamp":1761132701529,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"for which platform?","pastedContents":{},"timestamp":1761133144331,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"it tried to publish to https://ista.jfrog.io/artifactory/maven/ instead of the publishTo?","pastedContents":{},"timestamp":1761133286074,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"base-settings 1.268 is available now","pastedContents":{},"timestamp":1761133484254,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"what was the variable names and values again for the gitlab ui?","pastedContents":{},"timestamp":1761133548701,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"I did that freakin' release, but no pom was uploaded","pastedContents":{},"timestamp":1761133840081,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"pull core-extapi and show me the version of base-settings","pastedContents":{},"timestamp":1761133986370,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"but even with base-settings 1.268, the publish didn't work correctly","pastedContents":{},"timestamp":1761134142582,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"ui job 11807224646 failed","pastedContents":{},"timestamp":1761134299296,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"Well. Let's give it a try","pastedContents":{},"timestamp":1761134630193,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761134644884,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/infrastructure/configure-env"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761134644910,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/infrastructure/configure-env"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761134644913,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/infrastructure/configure-env"}
+{"display":"didn't work","pastedContents":{},"timestamp":1761135874332,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"job id is 11807370068. Looks fine in the logs, but the pom is not in artifactory","pastedContents":{},"timestamp":1761135947507,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"can you give an example of a filtered pom file?","pastedContents":{},"timestamp":1761136169992,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"check job 11807748028 if it pushes poms ","pastedContents":{},"timestamp":1761136739953,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"glab ci trace 11807748028","pastedContents":{},"timestamp":1761136902702,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"can we override it here, at least for testing?","pastedContents":{},"timestamp":1761136964562,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"glab ci trac 11807935180","pastedContents":{},"timestamp":1761137203371,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761137488886,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761137488920,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761137488923,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"upgrade base-settings to 1.269","pastedContents":{},"timestamp":1761137557509,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761137580412,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761137580453,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"3489","pastedContents":{},"timestamp":1761137607489,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"compile with sbt and remove the offending setting","pastedContents":{},"timestamp":1761137703609,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"amend to previous commit","pastedContents":{},"timestamp":1761137721634,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"are there shorthands for --amend and --no-edit? I just want to know to learn git better","pastedContents":{},"timestamp":1761137753236,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"check my aliases. maybe I have one already","pastedContents":{},"timestamp":1761137825077,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"just using 'alias' should work","pastedContents":{},"timestamp":1761137845516,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"!alias","pastedContents":{},"timestamp":1761137863535,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"!alias","pastedContents":{},"timestamp":1761137863572,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"!alias","pastedContents":{},"timestamp":1761137863575,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761137962082,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761137962111,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761137962114,"project":"/Users/gunnar.bastkowski/git/rdm/core-extapi"}
+{"display":"find latest base-settings and core-extapi and upgrade this project","pastedContents":{},"timestamp":1761138038563,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"core-extapi is 0.221. base-settings 1.269","pastedContents":{},"timestamp":1761138103139,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761138143856,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761138143889,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/push ","pastedContents":{},"timestamp":1761138179026,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/push ","pastedContents":{},"timestamp":1761138179059,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761138470609,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761138470639,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761138470642,"project":"/Users/gunnar.bastkowski/git/rdm/ui"}
+{"display":"Upgrade base-settings to 1.269 and core-extapi to 0.221","pastedContents":{},"timestamp":1761138534900,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761138848956,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761138848992,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"Upgrade base-settings to 1.269 and core-extapi to 0.221 in all projects which are still on a branch","pastedContents":{},"timestamp":1761138952375,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"regarding core-extapi: Why should there be a reference to core-extapi?","pastedContents":{},"timestamp":1761139013691,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"all good. I wanted you to upgrade references to core-extapi. Nothing more","pastedContents":{},"timestamp":1761139061429,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"push the upgraded projects","pastedContents":{},"timestamp":1761139221122,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"not found: https://ista.jfrog.io/artifactory/cas-rdm-maven-private/com/ista/rdm/core/execution-planner-extapi-jsonformats_2.13/0.218/execution-planner-extapi-jsonformats_2.13-0.218.pom","pastedContents":{},"timestamp":1761139941366,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"in core, job 11808555510 fails. why?","pastedContents":{},"timestamp":1761140453519,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"would a sbt clean help?","pastedContents":{},"timestamp":1761140625883,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"the problem is that it tries to download the wrong version ...","pastedContents":{},"timestamp":1761140801431,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"pull latest common, are all versions uptodate? what are the release variables for sbt-release?","pastedContents":{},"timestamp":1761140972097,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"base-settings?","pastedContents":{},"timestamp":1761141029530,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"I upgraded base-settings in common. commit that","pastedContents":{},"timestamp":1761141100113,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"enable release without running tests","pastedContents":{},"timestamp":1761142710742,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"clear","pastedContents":{},"timestamp":1761143115901,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761143125713,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761143125741,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761143125744,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761143216960,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761143217156,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761143217159,"project":"/Users/gunnar.bastkowski/git/rdm/core"}
+{"display":"disable tests during release. make release possible even with a dirty work tree.","pastedContents":{},"timestamp":1761143292302,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"remove that releaseVcs again","pastedContents":{},"timestamp":1761143468339,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761143500349,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/commit ","pastedContents":{},"timestamp":1761143500387,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"3489","pastedContents":{},"timestamp":1761143526501,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"common now has a v1.691. Update all references","pastedContents":{},"timestamp":1761144257161,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"looks like the merge requests are all doing fine. Is now everything nexus eliminated? Everyone using the corret base-settings, common, core-extapi?","pastedContents":{},"timestamp":1761144736963,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"list all my open merge requests as links","pastedContents":{},"timestamp":1761164408901,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"make sure, for the new MRs to create, the projects are on latest main, rebase if necessary, and create the minimalist MRs.","pastedContents":{},"timestamp":1761166030113,"project":"/Users/gunnar.bastkowski/git/rdm"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761166082640,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761166082673,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"/exit ","pastedContents":{},"timestamp":1761166082676,"project":"/Users/gunnar.bastkowski/git/rdm/common"}
+{"display":"which contexts and namespaces can you see with k8s","pastedContents":{},"timestamp":1761166416176,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"job 11814290210 failed","pastedContents":{},"timestamp":1761168571874,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"pushed?","pastedContents":{},"timestamp":1761169021357,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"I am trying to deploy something on branch. Can you observe that","pastedContents":{},"timestamp":1761169290404,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"try again","pastedContents":{},"timestamp":1761169432132,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"job 11814680276 failed","pastedContents":{},"timestamp":1761169557636,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"how is it going?","pastedContents":{},"timestamp":1761169602323,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"glab ci trace 11814710404","pastedContents":{},"timestamp":1761169760244,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"I expect that something will fail. ","pastedContents":{},"timestamp":1761169815276,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"job 11814741054 failed. I assume we should modify the scalac options","pastedContents":{},"timestamp":1761170086179,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"check again. that change to scalacOptions looks weird to me. I have something simpler in my memory","pastedContents":{},"timestamp":1761170166924,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"this is the current job: 11814710409","pastedContents":{},"timestamp":1761170290787,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"the pods and events in k8s are good?","pastedContents":{},"timestamp":1761170328282,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"now trace job 11814710410","pastedContents":{},"timestamp":1761170389682,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"now trace https://gitlab.com/ista-se/cas/rdm/e2e/tests/-/jobs/11814815223","pastedContents":{},"timestamp":1761170407067,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"do a research. I something else in my mind","pastedContents":{},"timestamp":1761170451163,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"Ok, it fails because of errors in the e2e tests. I fix it in a different session","pastedContents":{},"timestamp":1761170621701,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}
+{"display":"this -Xfatal-warnings was what I had on my mind. I believe, it's set in base-settings","pastedContents":{},"timestamp":1761170623857,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"job 11814853089 failed","pastedContents":{},"timestamp":1761170871097,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"just explain what happens here","pastedContents":{},"timestamp":1761170889889,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"can't we just upgrade to the latest versions?","pastedContents":{},"timestamp":1761171019798,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"what is it that requires sttp-model 1.7.11","pastedContents":{},"timestamp":1761171181970,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"b","pastedContents":{},"timestamp":1761171396416,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"glab ci trace 11814981575","pastedContents":{},"timestamp":1761171965509,"project":"/Users/gunnar.bastkowski/git/rdm/e2e/tests"}
+{"display":"I ran a test suite. any errors in k8s?","pastedContents":{},"timestamp":1761172002007,"project":"/Users/gunnar.bastkowski/git/rdm/deployment/bundle-versions"}

@@ -18,6 +18,7 @@ claude/todos/
 claude/projects/
 claude/statsig/
 claude/settings.local.json
+claude/history.jsonl
 
 .claude/settings.local.json
 .aider*

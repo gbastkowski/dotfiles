@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: import cats
-# key: cats
-# --
-import cats.*
-import cats.effect.*
-import cats.implicits.*

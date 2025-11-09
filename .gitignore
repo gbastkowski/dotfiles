@@ -11,16 +11,3 @@
 /plover/*.log
 plover/**/site-packages/*
 
-# Claude runtime/cache files
-claude/.update.lock
-claude/shell-snapshots/
-claude/todos/
-claude/projects/
-claude/statsig/
-claude/settings.local.json
-claude/history.jsonl
-
-.claude/settings.local.json
-.aider*
-/claude/debug/*
-/claude/file-history/

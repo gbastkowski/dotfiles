@@ -1,4 +1,14 @@
 #+startup: overview
+
+#+begin_center
+Gunnar's Doom Emacs*
+_Config as a presentation-ready narrative_
+#+end_center
+
+#+begin_quote
+"Sharpen the tools, then craft the work." — shop mantra
+#+end_quote
+
 * Header
 #+begin_src emacs-lisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
@@ -180,7 +190,69 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 (setq! scala-indent:use-javadoc-style nil)
 #+end_src
 **** LSP
+***** UniteAI
 #+begin_src emacs-lisp
+;; UniteAI LSP Commands
+(defun lsp-stop ()
+  (interactive)
+  (let* ((doc (lsp--text-document-identifier)))
+    (lsp-request "workspace/executeCommand"
+                 `(:command "command.stop"
+                    :arguments ,(vector doc)))))
+
+(defun lsp-openai-gpt ()
+  (interactive)
+  (unless (region-active-p)
+    (error "No region selected"))
+  (let* ((doc (lsp--text-document-identifier))
+         (range (list :start (lsp--point-to-position (region-beginning))
+                      :end (lsp--point-to-position (region-end)))))
+    (lsp-request "workspace/executeCommand"
+                 `(:command "command.openaiAutocompleteStream"
+                   :arguments ,(vector doc range "FROM_CONFIG_COMPLETION" "FROM_CONFIG")))))
+
+(defun lsp-openai-chatgpt ()
+  (interactive)
+  (unless (region-active-p)
+    (error "No region selected"))
+  (let* ((doc (lsp--text-document-identifier))
+         (range (list :start (lsp--point-to-position (region-beginning))
+                      :end (lsp--point-to-position (region-end)))))
+    (lsp-request "workspace/executeCommand"
+                 `(:command "command.openaiAutocompleteStream"
+                   :arguments ,(vector doc range "FROM_CONFIG_CHAT" "FROM_CONFIG")))))
+
+(defun lsp-document ()
+  (interactive)
+  (unless (region-active-p)
+    (error "No region selected"))
+  (let* ((doc (lsp--text-document-identifier))
+         (range (list :start (lsp--point-to-position (region-beginning))
+                      :end (lsp--point-to-position (region-end)))))
+    (lsp-request "workspace/executeCommand"
+                 `(:command "command.document"
+                   :arguments ,(vector doc range)))))
+
+(define-minor-mode uniteai-mode
+  "Minor mode for interacting with UniteAI server."
+  :lighter " UniteAI"
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map (kbd "C-c l s") 'lsp-stop)
+            (define-key map (kbd "C-c l g") 'lsp-openai-gpt)
+            (define-key map (kbd "C-c l c") 'lsp-openai-chatgpt)
+            (define-key map (kbd "C-c l d") 'lsp-document)
+            map))
+
+(after! lsp-mode
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection `("uniteai_lsp" "--stdio"))
+    :priority -3
+    :major-modes '(python-mode markdown-mode org-mode)
+    :server-id 'uniteai
+    :add-on? t))
+
+  (setq lsp-tcp-connection-timeout 5.0))
 #+end_src
 
 
@@ -366,6 +438,49 @@ Inspiration can be obtained from
 #+begin_src emacs-lisp
 (map! :leader :desc "Insert source block"         :n "mws" #'org-insert-src-block)
 #+end_src
+
+*** Presentations
+#+begin_src emacs-lisp
+(after! org
+  (add-hook 'org-mode-hook #'variable-pitch-mode))
+
+(use-package! visual-fill-column
+  :defer t
+  :init
+  (setq visual-fill-column-center-text t
+        visual-fill-column-width 110))
+
+(defun gunnar/org-present-prepare-slide (&rest _)
+  (org-overview)
+  (org-show-entry)
+  (org-show-children))
+
+(defun gunnar/org-present-start ()
+  (setq-local face-remapping-alist
+              '((default (:height 1.5) variable-pitch)
+                (header-line (:height 4.0) variable-pitch)
+                (org-document-title (:height 1.75) org-document-title)
+                (org-code (:height 1.55) org-code)
+                (org-verbatim (:height 1.55) org-verbatim)
+                (org-block (:height 1.25) org-block)
+                (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
+  (org-display-inline-images)
+  (visual-fill-column-mode 1)
+  (visual-line-mode 1))
+
+(defun gunnar/org-present-end ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (org-remove-inline-images)
+  (visual-fill-column-mode 0)
+  (visual-line-mode 0))
+
+(add-hook 'org-present-mode-hook #'gunnar/org-present-start)
+(add-hook 'org-present-mode-quit-hook #'gunnar/org-present-end)
+(add-hook 'org-present-after-navigate-functions #'gunnar/org-present-prepare-slide)
+#+end_src
+
 
 ** Agenda & Journal
 *** Settings

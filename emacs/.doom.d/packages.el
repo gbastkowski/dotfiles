@@ -70,3 +70,6 @@
 (package! pgmacs            :recipe (:host github :repo "emarsden/pgmacs"))
 
 (package! avdl-mode         :recipe (:host github :repo "logc/emacs-avro"))
+
+(package! org-present)
+(package! visual-fill-column)

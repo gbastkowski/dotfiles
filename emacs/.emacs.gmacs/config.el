@@ -73,6 +73,9 @@
 
 (add-hook 'org-mode-hook #'org-indent-mode)
 
+;; Use proportional fonts when editing Org documents for better presentation defaults.
+(add-hook 'org-mode-hook #'variable-pitch-mode)
+
 (setq org-indent-indentation-per-level 2)
 (setq org-edit-src-content-indentation 0)
 
@@ -95,6 +98,49 @@
   :hook (org-mode . org-fancy-priorities-mode)
   :hook (org-agenda-mode . org-fancy-priorities-mode)
   :config (setq org-fancy-priorities-list '("⚑" "⬆" "■")))
+
+(use-package visual-fill-column
+  :ensure t
+  :custom
+  (visual-fill-column-center-text t)
+  (visual-fill-column-width 110))
+
+(use-package org-present
+  :ensure t
+  :commands (org-present)
+  :init
+  (defun gmacs/org-present-prepare-slide (_buffer heading)
+    ;; Show only current heading to keep slides focused
+    (org-overview)
+    (org-show-entry)
+    (org-show-children))
+
+  (defun gmacs/org-present-start ()
+    ;; Enlarge the main typography for readability on stream/TV
+    (setq-local face-remapping-alist
+                '((default (:height 1.5) variable-pitch)
+                  (header-line (:height 4.0) variable-pitch)
+                  (org-document-title (:height 1.75) org-document-title)
+                  (org-code (:height 1.55) org-code)
+                  (org-verbatim (:height 1.55) org-verbatim)
+                  (org-block (:height 1.25) org-block)
+                  (org-block-begin-line (:height 0.7) org-block)))
+    (setq header-line-format " ")
+    (org-display-inline-images)
+    (visual-fill-column-mode 1)
+    (visual-line-mode 1))
+
+  (defun gmacs/org-present-end ()
+    ;; Restore buffer state when leaving presentation mode
+    (setq-local face-remapping-alist '((default variable-pitch default)))
+    (setq header-line-format nil)
+    (org-remove-inline-images)
+    (visual-fill-column-mode 0)
+    (visual-line-mode 0))
+
+  (add-hook 'org-present-mode-hook #'gmacs/org-present-start)
+  (add-hook 'org-present-mode-quit-hook #'gmacs/org-present-end)
+  (add-hook 'org-present-after-navigate-functions #'gmacs/org-present-prepare-slide))
 
 (use-package which-key
   :diminish which-key-mode

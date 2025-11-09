@@ -3,6 +3,15 @@
 #+author: Gunnar Bastkowski
 #+startup: content
 
+#+begin_center
+*Welcome to Gunnar's Emacs dojo*
+_A living configuration I can present and tweak on stage_
+#+end_center
+
+#+begin_quote
+"Sharpen the tools, then craft the work." — shop mantra
+#+end_quote
+
 * Basic Settings
 ** Authentication
 Use unix pass as default source for authentication.

@@ -1,0 +1,69 @@
+##################################################
+#
+# UniteAI Configuration
+#
+# RESTART YOUR EDITOR AFTER EDITING THIS
+#
+##################################################
+
+##########
+# LSP
+
+modules:
+  - uniteai.openai
+  # - uniteai.transcription
+  # - uniteai.document
+  # - uniteai.local_llm
+
+# Editor typically connects via stdio, but if you change it to use TCP, here's the port
+lsp_port: 5033
+
+
+##########
+# OpenAI
+
+openai:
+  api_key: "sk-YOUR-API-KEY-HERE"
+  completion_engine: 'gpt-4'
+  chat_engine: 'gpt-4'
+  max_length: 2000
+
+
+##########
+# Transcription: `uniteai.transcription`
+# Uncomment and add to modules if you want speech-to-text
+
+# transcription:
+#   volume_threshold: 100
+#   model_type: 'whisper'
+#   model_size: 'base'
+
+
+##########
+# Document Chat
+# Uncomment and add to modules if you want semantic document search
+
+# document:
+#   download_cache: './download_cache/'
+#   embedding_cache: './embedding_cache/'
+#   db_path: 'db.sqlite3'
+#   model_name: 'thenlper/gte-large'
+#   denoise_window_size: 1000
+#   denoise_poly_order: 1
+#   percentile: 95
+
+
+##########
+# Local LLM: `uniteai.local_llm`
+# Uncomment and add to modules if you want local LLM
+# Also requires running `uniteai_llm` from terminal
+
+# local_llm:
+#   port: 8000
+#   host: 'localhost'
+#   model_name_or_path: 'codellama/CodeLlama-7b-Python-hf'
+#   model_commit: '51955db0c7f350e799b6cd837e4974017761d79a'
+#   device_map: 'auto'
+#   torch_dtype: "bf16"
+#   max_length: 1000
+#   top_k: 10

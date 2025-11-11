@@ -1,0 +1,2 @@
+# Ignore runtime agent socket symlink replaced by Byobu
+.ssh-agent

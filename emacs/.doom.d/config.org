@@ -442,7 +442,9 @@ Inspiration can be obtained from
 *** Presentations
 #+begin_src emacs-lisp
 (after! org
-  (add-hook 'org-mode-hook #'variable-pitch-mode))
+  ;; Keep Org buffers monospace by default; presentation tweaks handle
+  ;; variable-pitch themselves when needed.
+  (remove-hook 'org-mode-hook #'variable-pitch-mode))
 
 (use-package! visual-fill-column
   :defer t
@@ -455,7 +457,11 @@ Inspiration can be obtained from
   (org-show-entry)
   (org-show-children))
 
+(defvar-local gunnar/org-present--saved-face-remapping nil
+  "Face remapping to restore after leaving `org-present-mode'.")
+
 (defun gunnar/org-present-start ()
+  (setq gunnar/org-present--saved-face-remapping face-remapping-alist)
   (setq-local face-remapping-alist
               '((default (:height 1.5) variable-pitch)
                 (header-line (:height 4.0) variable-pitch)
@@ -470,7 +476,7 @@ Inspiration can be obtained from
   (visual-line-mode 1))
 
 (defun gunnar/org-present-end ()
-  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq-local face-remapping-alist gunnar/org-present--saved-face-remapping)
   (setq header-line-format nil)
   (org-remove-inline-images)
   (visual-fill-column-mode 0)

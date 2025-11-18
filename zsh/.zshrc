@@ -6,6 +6,11 @@ fi
 # Initialize completion system early to avoid 'compdef' errors
 autoload -Uz compinit && compinit
 
+# Preserve kitty remote-control socket inside nested shells/tmux
+if [[ -n "${KITTY_WINDOW_ID:-}" ]]; then
+  export KITTY_LISTEN_ON="${KITTY_LISTEN_ON:-unix:/tmp/kitty-$USER}"
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block, everything else may go below.

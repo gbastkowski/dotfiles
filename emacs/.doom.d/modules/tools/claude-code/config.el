@@ -5,6 +5,9 @@
 (use-package! monet
   :config (monet-mode))
 
+(use-package! eat
+  :commands (eat eat-other-window eat-project))
+
 (use-package! claude-code
   :config 
   (claude-code-mode)

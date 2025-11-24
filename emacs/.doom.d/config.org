@@ -1,7 +1,8 @@
 #+startup: overview
 
 #+begin_center
-Gunnar's Doom Emacs*
+*Gunnar's Doom Emacs*
+
 _Config as a presentation-ready narrative_
 #+end_center
 
@@ -18,8 +19,13 @@ _Config as a presentation-ready narrative_
 * General Settings
 ** Functions
 ** Settings
-Some functionality uses this to identify you, e.g. GPG configuration, email
-clients, file templates and snippets. It is optional.
+Some functionality uses this to identify you, e.g.
+
+ * GPG configuration,
+ * email clients,
+ * file templates and snippets.
+   
+It is optional.
 
 *** Orderless (CamelCase completion)
 Enable CamelCase matching for completion.
@@ -67,6 +73,12 @@ Enable automatic reversion of buffers when files change on disk.
   (find-file (expand-file-name "config.org" doom-user-dir)))
 
 (setq! aw-scope 'global)
+#+end_src
+
+*** Claude Code
+Make Claude's IDE terminal integration use the `eat' backend inside Emacs.
+#+begin_src emacs-lisp
+(setq! claude-code-ide-terminal-backend 'eat)
 #+end_src
 
 ** Git/Magit Settings
@@ -472,15 +484,13 @@ Inspiration can be obtained from
                 (org-block-begin-line (:height 0.7) org-block)))
   (setq header-line-format " ")
   (org-display-inline-images)
-  (visual-fill-column-mode 1)
-  (visual-line-mode 1))
+  (visual-fill-column-mode 1))
 
 (defun gunnar/org-present-end ()
   (setq-local face-remapping-alist gunnar/org-present--saved-face-remapping)
   (setq header-line-format nil)
   (org-remove-inline-images)
-  (visual-fill-column-mode 0)
-  (visual-line-mode 0))
+  (visual-fill-column-mode 0))
 
 (add-hook 'org-present-mode-hook #'gunnar/org-present-start)
 (add-hook 'org-present-mode-quit-hook #'gunnar/org-present-end)

@@ -1,6 +1,0 @@
-22:10:48.207 [io-compute-blocker-5] INFO  weather.McpServer - Starting MCP Weather Server
-22:10:48.260 [io-compute-blocker-5] INFO  weather.McpServer - Handling request: initialize
-22:10:48.261 [io-compute-blocker-5] INFO  weather.McpServer - Initialize: InitializeResult(2024-11-05,ServerCapabilities(Some(ToolsCapability(true)),None),Implementation(mcp-weather-scala,0.1.0))
-22:10:48.301 [io-compute-blocker-5] INFO  weather.McpServer - Handling request: notifications/initialized
-22:10:48.301 [io-compute-blocker-5] INFO  weather.McpServer - Client initialized
-22:10:48.301 [io-compute-blocker-5] INFO  weather.McpServer - Handling request: tools/list

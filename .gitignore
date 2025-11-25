@@ -11,3 +11,5 @@
 /plover/*.log
 plover/**/site-packages/*
 /claude/.update.lock
+# Local logs
+logs/

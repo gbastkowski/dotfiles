@@ -139,12 +139,6 @@ fi
 export PATH="./node_modules/.bin:$PATH"
 
 # export JAVA_HOME=$(/usr/libexec/java_home -v 11)
-
-if [ -f ~/.bashrc ]
-then
-    . ~/.bashrc
-fi
-
 export PATH=$PATH:~/.emacs.doom/bin
 export PATH="/usr/local/opt/sqlite/bin:$PATH"
 

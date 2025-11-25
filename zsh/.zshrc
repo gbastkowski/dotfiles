@@ -3,9 +3,6 @@ if [[ -n "$INTELLIJ_ENVIRONMENT_READER" ]]; then
     return
 fi
 
-# Initialize completion system early to avoid 'compdef' errors
-autoload -Uz compinit && compinit
-
 # Preserve kitty remote-control socket inside nested shells/tmux
 if [[ -n "${KITTY_WINDOW_ID:-}" ]]; then
   export KITTY_LISTEN_ON="${KITTY_LISTEN_ON:-unix:/tmp/kitty-$USER}"
@@ -21,6 +18,7 @@ fi
 ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_DOTENV_FILE=.env.local
+export ZSH_DISABLE_COMPFIX=true
 POWERLEVEL9K_MODE='nerdfont-complete'
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context nodeenv virtualenv aws dir newline os_icon)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time vcs time)

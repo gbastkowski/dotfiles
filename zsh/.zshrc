@@ -139,6 +139,7 @@ fi
 export PATH="./node_modules/.bin:$PATH"
 
 # export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+
 export PATH=$PATH:~/.emacs.doom/bin
 export PATH="/usr/local/opt/sqlite/bin:$PATH"
 
@@ -174,7 +175,25 @@ export PATH="$PATH:/home/gunnar/.local/bin"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
+  __sdkman_lazy_loaded=0
+  __sdkman_lazy_init() {
+    if (( __sdkman_lazy_loaded )); then
+      return 0
+    fi
+    __sdkman_lazy_loaded=1
+    source "$SDKMAN_DIR/bin/sdkman-init.sh"
+  }
+
+  sdk() {
+    unset -f sdk
+    if ! __sdkman_lazy_init; then
+      echo "sdkman initialization failed" >&2
+      return 1
+    fi
+    sdk "$@"
+  }
+fi
 
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall

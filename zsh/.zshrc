@@ -35,7 +35,39 @@ export DEFAULT_USER=gunnar
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-[ -f ~/.ista_rc ] && source ~/.ista_rc
+if [[ -f $HOME/.ista_rc ]]; then
+  __ista_env_loaded=0
+  __ista_load_env() {
+    if (( __ista_env_loaded )); then
+      return
+    fi
+    __ista_env_loaded=1
+    source "$HOME/.ista_rc"
+  }
+
+  w() {
+    __ista_load_env
+    w "$@"
+  }
+
+  for __ista_spec in \
+    "wdev:devtest:dev" \
+    "wint:devtest:int" \
+    "wrc:devtest:rc" \
+    "we2e:devtest:e2e" \
+    "wpre:prodmetal:preprod" \
+    "wpro:prodmetal:prod" \
+    "winf:devinfra:infradev"; do
+    __ista_alias=${__ista_spec%%:*}
+    __ista_ctx_ns=${__ista_spec#*:}
+    __ista_ctx=${__ista_ctx_ns%%:*}
+    __ista_ns=${__ista_spec##*:}
+    eval "${__ista_alias}() { __ista_load_env; w ${__ista_ctx} ${__ista_ns} \"\$@\"; }"
+  done
+
+  unset __ista_spec __ista_alias __ista_ctx_ns __ista_ctx __ista_ns
+fi
+
 [ -f ~/.private ] && source ~/.private
 
 # Set to this to use case-sensitive completion

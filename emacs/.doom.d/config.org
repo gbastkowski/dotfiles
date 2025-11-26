@@ -435,8 +435,7 @@ Inspiration can be obtained from
 (defun org-insert-src-block (language)
   "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
   (interactive (let ((languages
-                      '("gunnar-test"
-                        "C" "C++" "R" "clojure" "css" "ditaa" "dot" "emacs-lisp" "gnuplot" "haskell" "http"
+                      '("C" "C++" "R" "clojure" "css" "ditaa" "dot" "emacs-lisp" "gnuplot" "haskell" "http"
                         "java" "js" "latex" "lisp" "org" "plantuml" "python" "ruby"
                         "sass" "scala" "sh" "sql" "sqlite")))
                  (list (ido-completing-read "Language: " languages))))
@@ -449,52 +448,6 @@ Inspiration can be obtained from
 *** Keybindings
 #+begin_src emacs-lisp
 (map! :leader :desc "Insert source block"         :n "mws" #'org-insert-src-block)
-#+end_src
-
-*** Presentations
-#+begin_src emacs-lisp
-(after! org
-  ;; Keep Org buffers monospace by default; presentation tweaks handle
-  ;; variable-pitch themselves when needed.
-  (remove-hook 'org-mode-hook #'variable-pitch-mode))
-
-(use-package! visual-fill-column
-  :defer t
-  :init
-  (setq visual-fill-column-center-text t
-        visual-fill-column-width 110))
-
-(defun gunnar/org-present-prepare-slide (&rest _)
-  (org-overview)
-  (org-show-entry)
-  (org-show-children))
-
-(defvar-local gunnar/org-present--saved-face-remapping nil
-  "Face remapping to restore after leaving `org-present-mode'.")
-
-(defun gunnar/org-present-start ()
-  (setq gunnar/org-present--saved-face-remapping face-remapping-alist)
-  (setq-local face-remapping-alist
-              '((default (:height 1.5) variable-pitch)
-                (header-line (:height 4.0) variable-pitch)
-                (org-document-title (:height 1.75) org-document-title)
-                (org-code (:height 1.55) org-code)
-                (org-verbatim (:height 1.55) org-verbatim)
-                (org-block (:height 1.25) org-block)
-                (org-block-begin-line (:height 0.7) org-block)))
-  (setq header-line-format " ")
-  (org-display-inline-images)
-  (visual-fill-column-mode 1))
-
-(defun gunnar/org-present-end ()
-  (setq-local face-remapping-alist gunnar/org-present--saved-face-remapping)
-  (setq header-line-format nil)
-  (org-remove-inline-images)
-  (visual-fill-column-mode 0))
-
-(add-hook 'org-present-mode-hook #'gunnar/org-present-start)
-(add-hook 'org-present-mode-quit-hook #'gunnar/org-present-end)
-(add-hook 'org-present-after-navigate-functions #'gunnar/org-present-prepare-slide)
 #+end_src
 
 
@@ -787,6 +740,52 @@ Inspiration can be obtained from
 (setq! org-pomodoro-finished-sound "/Users/gunnar/Media/Sounds/mixkit-correct-answer-reward-952.wav"
        org-pomodoro-start-sound    "/Users/gunnar/Media/Sounds/mixkit-positive-notification-951.wav")
 #+end_src
+** Presentations
+#+begin_src emacs-lisp
+(after! org
+  ;; Keep Org buffers monospace by default; presentation tweaks handle
+  ;; variable-pitch themselves when needed.
+  (remove-hook 'org-mode-hook #'variable-pitch-mode))
+
+(use-package! visual-fill-column
+  :defer t
+  :init
+  (setq visual-fill-column-center-text t
+        visual-fill-column-width 110))
+
+(defun gunnar/org-present-prepare-slide (&rest _)
+  (org-overview)
+  (org-show-entry)
+  (org-show-children))
+
+(defvar-local gunnar/org-present--saved-face-remapping nil
+  "Face remapping to restore after leaving `org-present-mode'.")
+
+(defun gunnar/org-present-start ()
+  (setq gunnar/org-present--saved-face-remapping face-remapping-alist)
+  (setq-local face-remapping-alist
+              '((default (:height 1.5) variable-pitch)
+                (header-line (:height 4.0) variable-pitch)
+                (org-document-title (:height 1.75) org-document-title)
+                (org-code (:height 1.55) org-code)
+                (org-verbatim (:height 1.55) org-verbatim)
+                (org-block (:height 1.25) org-block)
+                (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
+  (org-display-inline-images)
+  (visual-fill-column-mode 1))
+
+(defun gunnar/org-present-end ()
+  (setq-local face-remapping-alist gunnar/org-present--saved-face-remapping)
+  (setq header-line-format nil)
+  (org-remove-inline-images)
+  (visual-fill-column-mode 0))
+
+(add-hook 'org-present-mode-hook #'gunnar/org-present-start)
+(add-hook 'org-present-mode-quit-hook #'gunnar/org-present-end)
+(add-hook 'org-present-after-navigate-functions #'gunnar/org-present-prepare-slide)
+#+end_src
+
 ** Babel
 *** Settings
 #+begin_src emacs-lisp

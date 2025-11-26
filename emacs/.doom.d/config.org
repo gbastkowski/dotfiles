@@ -498,6 +498,7 @@ Inspiration can be obtained from
                                                        '("inbox-akiko.org"
                                                          "inbox-galaxy.org"
                                                          "inbox-s7.org"
+                                                         "inbox-s11.org"
                                                          "inbox-gistaone.org"
                                                          "habits.org"
                                                          "tickler.org"

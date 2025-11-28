@@ -19,7 +19,7 @@
 * Concepts
   - The dotfiles are stored in git. They can be checked out to any folder on the target workstation.
   - Via symlinks the dotfiles are "activated".
-  - Management of symlinks is handled via [[https://www.gnu.org/software/stow/][GNU Stow]].
+  - The repo is copied into place via ~bootstrap.sh~ (rsync) instead of managing per-file symlinks.
   - Complex configuration setups from 3rd parties are managed via [[https://git-scm.com/book/en/v2/Git-Tools-Submodules][git submodules]].
 
 * Installation
@@ -54,7 +54,6 @@
     - rbenv
     - scalastyle
     - sops
-    - stow
     - terraform-ls
     - the_silver_searcher
     - wget
@@ -66,18 +65,17 @@
   Run ~./update.sh~ from time to time
 
 * Essential Tools
-** [[https://www.gnu.org/software/stow/][GNU Stow]]
-  Manages placement of symlinks in the user's home directory.
+** bootstrap.sh
+  Copies the tracked configuration into ~$HOME~ using ~rsync~.
 
-  Basic usage (assuming cwd is the dotfiles root):
+  Dry run first (recommended):
   #+BEGIN_SRC
-    stow --target=$HOME -nv byobu
+    ./bootstrap.sh -n
   #+END_SRC
-  This simulates the installation of the byobu settings.
 
-  To finally install the package
+  Apply the changes once the output looks right:
   #+BEGIN_SRC
-    stow --dir=stow --target=$HOME byobu
+    ./bootstrap.sh
   #+END_SRC
 
 ** AWS
@@ -107,8 +105,6 @@
   - General models (non-coding): ~llama3.1:8b~, ~qwen2.5:7b~.
   - Server host: set ~OLLAMA_HOST~ or pass ~--host~ to scripts.
 
-* stow
-  https://www.gnu.org/software/stow/
 * brew
 * sdkman
   https://sdkman.io/

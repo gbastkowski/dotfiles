@@ -1,17 +1,14 @@
 # Repository Guidelines
 
-This is a dotfiles repository for macOS and Linux. It manages shell, editor, and system configuration via GNU Stow and a few helper scripts. Keep changes minimal, reversible, and host‑agnostic.
+This is a dotfiles repository for macOS and Linux. It manages shell, editor, and system configuration via ~bootstrap.sh~ (rsync into ~$HOME~) and a few helper scripts. Keep changes minimal, reversible, and host‑agnostic.
 
 ## Project Structure & Module Organization
 - `bin/` — utility scripts (system upgrades, helpers).
-- `bash/`, `zsh/`, `tmux/`, `emacs/`, `hypr/`, etc. — config packages stowed into `$HOME`.
-- `stow/` — Stow ignore rules; use to exclude editor backups.
+- `bash/`, `zsh/`, `tmux/`, `emacs/`, `hypr/`, etc. — config packages copied or symlinked into `$HOME` via `bootstrap.sh`.
 - `reveal.js/`, `powerlevel10k/`, `zsh-vi-mode/`, `emacs/*` — submodules; update via `bin/system-upgrade.sh`.
-- `install.sh`, `bootstrap.sh`, `brew.sh` — setup/installation scripts.
+- `bootstrap.sh`, `brew.sh` — setup/installation scripts (legacy Stow installer was removed).
 
 ## Build, Test, and Development Commands
-- `./install.sh` — symlink packages into `$HOME` using GNU Stow.
-  - Example: `stow -t "$HOME" -Rv zsh`
 - `./bootstrap.sh [-n|--dry-run]` — rsync selected files to `$HOME` (interactive by default).
 - `bin/system-upgrade.sh` — update OS packages and submodules, then commit dotfiles.
 - macOS packages: edit `brew.sh` and run manually if needed.
@@ -26,7 +23,6 @@ This is a dotfiles repository for macOS and Linux. It manages shell, editor, and
 ## Testing Guidelines
 - No formal test suite. Validate changes by:
   - Running scripts with dry‑run flags where available (e.g., `bootstrap.sh -n`).
-  - Stowing one package at a time: `stow -t "$HOME" -Rv zsh` then verify shell startup.
   - Optional: run `shellcheck bin/*.sh` locally to catch issues.
 
 ## Commit & Pull Request Guidelines
@@ -41,4 +37,4 @@ This is a dotfiles repository for macOS and Linux. It manages shell, editor, and
 
 ## Agent-Specific Instructions
 - Changes must be idempotent, host‑agnostic, and avoid destructive ops.
-- When in doubt, prefer Stow packages over ad‑hoc copies; update `install.sh` accordingly.
+- Ensure new files are copied by `bootstrap.sh` (adjust excludes only if absolutely required).

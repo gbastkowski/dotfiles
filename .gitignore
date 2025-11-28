@@ -1,7 +1,5 @@
 .private
 /sbt/1.0/swoval-jni/
-/stow/sbt/.sbt/1.0/swoval-jni/*.so
-/stow/sbt/.sbt/1.0/swoval-jni/*.pid
 /README.html
 /emacs/.doom.d/config.el
 /sbt/.sbt/1.0/java9-rt-ext-eclipse_adoptium_17_0_2/

@@ -1,7 +1,5 @@
 * github
   https://github.com/gbastkowski/dotfiles
-* stow
-  https://www.gnu.org/software/stow/
 * brew
 * sdkman
   https://sdkman.io/

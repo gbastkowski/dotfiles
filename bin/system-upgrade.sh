@@ -33,6 +33,7 @@ if command -v npm >/dev/null 2>&1
 then
   echo "updating ccline (npm) ..."
   npm update -g @cometix/ccline || echo "warning: failed to update ccline"
+  npm update -g tweakcc         || echo "warning: failed to update tweakcc"
   echo
 else
   echo "npm not found, skipping ccline update"

@@ -19,14 +19,6 @@ _Config as a presentation-ready narrative_
 * General Settings
 ** Functions
 ** Settings
-Some functionality uses this to identify you, e.g.
-
- * GPG configuration,
- * email clients,
- * file templates and snippets.
-   
-It is optional.
-
 *** Orderless (CamelCase completion)
 Enable CamelCase matching for completion.
 #+begin_src emacs-lisp
@@ -73,6 +65,12 @@ Enable automatic reversion of buffers when files change on disk.
   (find-file (expand-file-name "config.org" doom-user-dir)))
 
 (setq! aw-scope 'global)
+#+end_src
+
+*** Spell checking dictionary
+#+begin_src emacs-lisp
+(setq! ispell-personal-dictionary
+       (expand-file-name "ispell.pws" doom-user-dir))
 #+end_src
 
 *** Claude Code

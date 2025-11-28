@@ -3,18 +3,17 @@
 (use-package! codex-cli
   :config
   (map! :leader
-        :desc "Codex CLI toggle" "d t" #'codex-cli-toggle)
-  ;; (("C-c c t" . codex-cli-toggle)
-  ;;        ("C-c c s" . codex-cli-start)
-  ;;        ("C-c c q" . codex-cli-stop)
-  ;;        ("C-c c Q" . codex-cli-stop-all)
-  ;;        ("C-c c p" . codex-cli-send-prompt)
-  ;;        ("C-c c r" . codex-cli-send-region)
-  ;;        ("C-c c f" . codex-cli-send-file)
-  ;;        ;; Show-all layout + paging
-  ;;        ("C-c c a" . codex-cli-toggle-all)
-  ;;        ("C-c c n" . codex-cli-toggle-all-next-page)
-  ;;        ("C-c c b" . codex-cli-toggle-all-prev-page))
+        :prefix ("d" . "Codex CLI")
+        :desc "Codex CLI toggle" "t" #'codex-cli-toggle
+        :desc "Start Codex CLI" "s" #'codex-cli-start
+        :desc "Stop Codex CLI" "q" #'codex-cli-stop
+        :desc "Stop all Codex sessions" "Q" #'codex-cli-stop-all
+        :desc "Send prompt to Codex" "p" #'codex-cli-send-prompt
+        :desc "Send region to Codex" "r" #'codex-cli-send-region
+        :desc "Send file to Codex" "f" #'codex-cli-send-file
+        :desc "Toggle Codex show-all" "a" #'codex-cli-toggle-all
+        :desc "Show-all next page" "n" #'codex-cli-toggle-all-next-page
+        :desc "Show-all previous page" "b" #'codex-cli-toggle-all-prev-page)
   (setq codex-cli-executable "codex"
         codex-cli-terminal-backend 'vterm
         codex-cli-side 'right

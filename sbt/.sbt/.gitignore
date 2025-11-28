@@ -1,5 +1,6 @@
 /0.13/dependency/
 /0.13/java9-rt-*
+/1.0/java9-rt-*
 /1.0/plugins/idea.sbt
 /1.0/staging/
 /1.0/templates/

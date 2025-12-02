@@ -34,7 +34,6 @@ export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
 [[ -f $HOME/.ista_rc ]] && source "$HOME/.ista_rc"
-
 [ -f ~/.private ] && source ~/.private
 
 # Set to this to use case-sensitive completion
@@ -112,9 +111,7 @@ export PATH="./node_modules/.bin:$PATH"
 export PATH=$PATH:~/.emacs.doom/bin
 export PATH="/usr/local/opt/sqlite/bin:$PATH"
 
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH="$ANDROID_HOME/tools/bin:$PATH"
-export PATH="$ANDROID_HOME/platform-tools:$PATH"
+[[ -r "$HOME/.android-env" ]] && source "$HOME/.android-env"
 
 
 export PATH="$HOME/.rbenv/bin:$PATH"

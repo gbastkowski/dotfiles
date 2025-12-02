@@ -1,0 +1,63 @@
+# shellcheck shell=sh
+# Configure Android SDK/NDK paths in a host-agnostic way.
+
+_android_selected=""
+if [ -n "${ANDROID_HOME:-}" ] && [ -d "$ANDROID_HOME" ]; then
+  _android_selected="$ANDROID_HOME"
+else
+  for _android_dir in \
+    "$HOME/Library/Android/sdk" \
+    "$HOME/Android/Sdk" \
+    "/usr/local/share/android-sdk" \
+    "/opt/homebrew/share/android-sdk" \
+    "/usr/local/Cellar/android-sdk/24.4.1"
+  do
+    if [ -d "$_android_dir" ]; then
+      _android_selected="$_android_dir"
+      break
+    fi
+  done
+fi
+
+if [ -n "$_android_selected" ]; then
+  export ANDROID_HOME="$_android_selected"
+  export ANDROID_SDK_ROOT="$ANDROID_HOME"
+  export ANDROID_SDK="$ANDROID_HOME"
+
+  _android_path_prepend() {
+    case ":$PATH:" in
+      *:"$1":*) ;;
+      *) PATH="$1:$PATH" ;;
+    esac
+  }
+
+  if [ -d "$ANDROID_HOME/tools/bin" ]; then
+    _android_path_prepend "$ANDROID_HOME/tools/bin"
+  fi
+  if [ -d "$ANDROID_HOME/platform-tools" ]; then
+    _android_path_prepend "$ANDROID_HOME/platform-tools"
+  fi
+
+  unset -f _android_path_prepend
+
+  if [ -n "${ANDROID_NDK:-}" ] && [ -d "$ANDROID_NDK" ]; then
+    :
+  else
+    if [ -d "$ANDROID_HOME/ndk-bundle" ]; then
+      export ANDROID_NDK="$ANDROID_HOME/ndk-bundle"
+    elif [ -d "$ANDROID_HOME/ndk" ]; then
+      _android_latest_ndk=""
+      for _candidate in "$ANDROID_HOME"/ndk/*; do
+        if [ -d "$_candidate" ]; then
+          _android_latest_ndk="$_candidate"
+        fi
+      done
+      if [ -n "$_android_latest_ndk" ]; then
+        export ANDROID_NDK="$_android_latest_ndk"
+      fi
+      unset _android_latest_ndk
+    fi
+  fi
+fi
+
+unset _android_dir _android_selected _candidate

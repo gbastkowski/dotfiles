@@ -3,6 +3,12 @@ if [[ -n "$INTELLIJ_ENVIRONMENT_READER" ]]; then
     return
 fi
 
+# Initialize completion early so plugins calling compdef don't fail
+if ! typeset -f compdef >/dev/null; then
+  autoload -Uz compinit
+  compinit
+fi
+
 # Preserve kitty remote-control socket inside nested shells/tmux
 if [[ -n "${KITTY_WINDOW_ID:-}" ]]; then
   export KITTY_LISTEN_ON="${KITTY_LISTEN_ON:-unix:/tmp/kitty-$USER}"

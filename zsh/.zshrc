@@ -195,4 +195,4 @@ esac
 #     fi
 # fi
 
-. "$HOME/.local/bin/env"
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"

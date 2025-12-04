@@ -78,6 +78,8 @@ echo
 echo "pushing submodules to origin ..."
 git -C zsh/.oh-my-zsh pull --rebase origin master || true
 git -C zsh/.oh-my-zsh push origin
+git -C reveal.js pull --rebase origin master || true
+git -C reveal.js push origin master
 git -C emacs/.emacs.d push origin
 echo
 

@@ -9,5 +9,8 @@
 /plover/*.log
 plover/**/site-packages/*
 /claude/.update.lock
+# Codex CLI runtime state
+.codex/*
+!.codex/config.toml
 # Local logs
 logs/

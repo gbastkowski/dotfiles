@@ -44,7 +44,7 @@ ssl = no
 
 [Repository Gmailserver-mine]
 type = Gmail
-remoteuser = get_pass("private/gmail/imap-user")
+remoteusereval = get_pass("private/gmail/imap-user")
 remotepasseval = get_pass("private/gmail/application-password")
 sslcacertfile = /etc/openssl@3/cert.pem
 

@@ -277,63 +277,65 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 ** Settings
 #+begin_src emacs-lisp
-(after! mu4e
-  (setq sendmail-program (executable-find "msmtp")
-        send-mail-function #'smtpmail-send-it
-        message-sendmail-f-is-evil t
-        message-sendmail-extra-arguments '("--read-envelope-from")
-        message-send-mail-function #'message-send-mail-with-sendmail))
+(when (string-prefix-p "akiko" (system-name) t)
+  (setq mu4e-maildir         (expand-file-name ".mail" (getenv "HOME"))
+        mu4e-update-interval 60
+        +mu4e-gmail-accounts '(("gunnar.bastkowski@gmail.com" . "/gunnar.bastkowski@gmail.com")))
 
-(setq mu4e-update-interval 60)
-(setq +mu4e-gmail-accounts '(("gunnar.bastkowski@gmail.com" . "/gunnar.bastkowski@gmail.com")))
+  (after! mu4e
+    (setq sendmail-program (executable-find "msmtp")
+          send-mail-function #'smtpmail-send-it
+          message-sendmail-f-is-evil t
+          message-sendmail-extra-arguments '("--read-envelope-from")
+          message-send-mail-function #'message-send-mail-with-sendmail))
 
-(set-email-account! "akiko.local"
-  '((mu4e-sent-folder       . "/gunnar@akiko.local/Sent")
-    (mu4e-drafts-folder     . "/gunnar@akiko.local/Drafts")
-    (mu4e-trash-folder      . "/gunnar@akiko.local/Trash")
-    (mu4e-refile-folder     . "/gunnar@akiko.local/Archive")
-    (smtpmail-smtp-user     . "gunnar@akiko.local")
-    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
-  t)
-(set-email-account! "bastkowski.name"
-  '((mu4e-sent-folder       . "/gunnar@bastkowski.name/Sent")
-    (mu4e-drafts-folder     . "/gunnar@bastkowski.name/Drafts")
-    (mu4e-trash-folder      . "/gunnar@bastkowski.name/Trash")
-    (mu4e-refile-folder     . "/gunnar@bastkowski.name/Archive")
-    (smtpmail-smtp-user     . "gunnar@bastkowski.name")
-    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
-  t)
-(set-email-account! "digitalstep.de"
-  '((mu4e-sent-folder       . "/gunnar@digitalstep.de/Sent")
-    (mu4e-drafts-folder     . "/gunnar@digitalstep.de/Drafts")
-    (mu4e-trash-folder      . "/gunnar@digitalstep.de/Trash")
-    (mu4e-refile-folder     . "/gunnar@digitalstep.de/Archive")
-    (smtpmail-smtp-user     . "gunnar@digitalstep.de")
-    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
-  t)
-(set-email-account! "gmail.com"
-  '((mu4e-sent-folder       . "/gunnar.bastkowski@gmail.com/Sent")
-    (mu4e-drafts-folder     . "/gunnar.bastkowski@gmail.com/Drafts")
-    (mu4e-trash-folder      . "/gunnar.bastkowski@gmail.com/Trash")
-    (mu4e-refile-folder     . "/gunnar.bastkowski@gmail.com/Archive")
-    (smtpmail-smtp-user     . "gunnar.bastkowski@gmail.com")
-    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
-  t)
-(set-email-account! "gmx.de"
-  '((mu4e-sent-folder       . "/gbastkowski@gmx.de/Sent")
-    (mu4e-drafts-folder     . "/gbastkowski@gmx.de/Drafts")
-    (mu4e-trash-folder      . "/gbastkowski@gmx.de/Trash")
-    (mu4e-refile-folder     . "/gbastkowski@gmx.de/Archive")
-    (smtpmail-smtp-user     . "gbastkowski@gmx.de")
-    (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
-  t)
+  (set-email-account! "akiko.local"
+    '((mu4e-sent-folder       . "/gunnar@akiko.local/Sent")
+      (mu4e-drafts-folder     . "/gunnar@akiko.local/Drafts")
+      (mu4e-trash-folder      . "/gunnar@akiko.local/Trash")
+      (mu4e-refile-folder     . "/gunnar@akiko.local/Archive")
+      (smtpmail-smtp-user     . "gunnar@akiko.local")
+      (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+    t)
+  (set-email-account! "bastkowski.name"
+    '((mu4e-sent-folder       . "/gunnar@bastkowski.name/Sent")
+      (mu4e-drafts-folder     . "/gunnar@bastkowski.name/Drafts")
+      (mu4e-trash-folder      . "/gunnar@bastkowski.name/Trash")
+      (mu4e-refile-folder     . "/gunnar@bastkowski.name/Archive")
+      (smtpmail-smtp-user     . "gunnar@bastkowski.name")
+      (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+    t)
+  (set-email-account! "digitalstep.de"
+    '((mu4e-sent-folder       . "/gunnar@digitalstep.de/Sent")
+      (mu4e-drafts-folder     . "/gunnar@digitalstep.de/Drafts")
+      (mu4e-trash-folder      . "/gunnar@digitalstep.de/Trash")
+      (mu4e-refile-folder     . "/gunnar@digitalstep.de/Archive")
+      (smtpmail-smtp-user     . "gunnar@digitalstep.de")
+      (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+    t)
+  (set-email-account! "gmail.com"
+    '((mu4e-sent-folder       . "/gunnar.bastkowski@gmail.com/Sent")
+      (mu4e-drafts-folder     . "/gunnar.bastkowski@gmail.com/Drafts")
+      (mu4e-trash-folder      . "/gunnar.bastkowski@gmail.com/Trash")
+      (mu4e-refile-folder     . "/gunnar.bastkowski@gmail.com/Archive")
+      (smtpmail-smtp-user     . "gunnar.bastkowski@gmail.com")
+      (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+    t)
+  (set-email-account! "gmx.de"
+    '((mu4e-sent-folder       . "/gbastkowski@gmx.de/Sent")
+      (mu4e-drafts-folder     . "/gbastkowski@gmx.de/Drafts")
+      (mu4e-trash-folder      . "/gbastkowski@gmx.de/Trash")
+      (mu4e-refile-folder     . "/gbastkowski@gmx.de/Archive")
+      (smtpmail-smtp-user     . "gbastkowski@gmx.de")
+      (mu4e-compose-signature . "---\nKind Regards\nGunnar"))
+    t)
 
-(setq mu4e-bookmarks            '((:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
-                                  (:name "Inbox"                 :query "maildir:/inbox/"                      :key 116)
-                                  (:name "Today's messages"      :query "date:today..now"                      :key 116)
-                                  (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
-                                  ("flag:flagged" "Flagged messages" 102)
-                                  (:name "Messages with images"  :query "mime:image/*"                         :key 112)))
+  (setq mu4e-bookmarks      '((:name "Unread messages"       :query "flag:unread AND NOT flag:trashed"     :key 117)
+                              (:name "Inbox"                 :query "maildir:/inbox/"                      :key 116)
+                              (:name "Today's messages"      :query "date:today..now"                      :key 116)
+                              (:name "Last 7 days"           :query "date:7d..now"                         :key 119  :hide-unread t)
+                              ("flag:flagged" "Flagged messages" 102)
+                              (:name "Messages with images"  :query "mime:image/*"                         :key 112))))
 #+end_src
 
 

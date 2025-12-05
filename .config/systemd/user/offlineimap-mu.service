@@ -1,0 +1,7 @@
+[Unit]
+Description=Sync mail with offlineimap and update mu index
+ConditionHost=akiko*
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env bash -lc 'offlineimap && mu index'

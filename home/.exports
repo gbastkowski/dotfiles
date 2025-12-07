@@ -27,7 +27,22 @@ export LESS_TERMCAP_md="${yellow}";
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';
 
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+# Ensure JAVA_HOME is exported for any shell that sources this file.
+if [ -z "${JAVA_HOME:-}" ]; then
+  if [ -n "${SDKMAN_DIR:-}" ] && [ -d "${SDKMAN_DIR}/candidates/java/current" ]; then
+    JAVA_HOME="${SDKMAN_DIR}/candidates/java/current"
+  elif [ -x /usr/libexec/java_home ]; then
+    JAVA_HOME="$(/usr/libexec/java_home 2>/dev/null || true)"
+  else
+    JAVA_BIN="$(command -v java 2>/dev/null || true)"
+    if [ -n "$JAVA_BIN" ]; then
+      JAVA_HOME="$(cd "$(dirname "$JAVA_BIN")/.." 2>/dev/null && pwd -P)"
+    fi
+  fi
+  if [ -n "${JAVA_HOME:-}" ]; then
+    export JAVA_HOME
+  fi
+fi
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 
 [ -r "$HOME/.android-env" ] && . "$HOME/.android-env"

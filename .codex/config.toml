@@ -39,6 +39,9 @@ trust_level = "trusted"
 [projects."/Users/gunnar.bastkowski/git/gbastkowski/mcp-emacs"]
 trust_level = "trusted"
 
+[projects."/Users/gunnar.bastkowski/git/chapter/mcp-jira-confluence"]
+trust_level = "trusted"
+
 [mcp_servers.emacs]
 command = "node"
 args = ["/Users/gunnar.bastkowski/git/gbastkowski/mcp-emacs/dist/index.js"]

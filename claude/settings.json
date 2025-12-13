@@ -5,7 +5,11 @@
     "command": "ccline",
     "padding": 0
   },
-  "alwaysThinkingEnabled": true,
+  "enabledPlugins": {
+    "example-skills@anthropic-agent-skills": true,
+    "jira-assistant@rdm-jira-tools": true
+  },
+  "alwaysThinkingEnabled": false,
   "feedbackSurveyState": {
     "lastShownTime": 1754085994342
   }

@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "jira-confluence": {
+      "command": "npx",
+      "args": [
+        "@rdm/mcp-jira-confluence",
+        "--jira-url",
+        "https://ista.atlassian.net",
+        "--confluence-url",
+        "https://ista.atlassian.net/wiki",
+        "--email",
+        "${JIRA_EMAIL}",
+        "--token-command",
+        "${JIRA_TOKEN_COMMAND:-pass show jira-api-token}"
+      ]
+    }
+  }
+}

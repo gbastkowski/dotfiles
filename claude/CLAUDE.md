@@ -109,7 +109,7 @@ jira issue create -t Story -s "Title" --web
 
 ## General Rules
 - Prefer one-line git commit messages
-- Prefix with the current ticket number
+- Prefix with the current ticket number only if a ticket number has been mentioned in the conversation
 - Don't add "generated with Claude Code"
 
 ## Gitlab User Handles

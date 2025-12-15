@@ -809,7 +809,7 @@ Inspiration can be obtained from
 ** Reveal
 *** Settings
 #+begin_src emacs-lisp
-(setq! org-re-reveal-title-slide          nil
+(setq! org-re-reveal-title-slide          "auto"
        org-re-reveal-transition           "fade"
        org-re-reveal-hlevel               2
        org-re-reveal-width                1920

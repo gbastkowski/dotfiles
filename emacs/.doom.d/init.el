@@ -17,7 +17,7 @@
 (doom!
         :completion (corfu +icons +orderless +dabbrev)
                     (vertico +icons +childframe)
-        :ui         ;;deft                            ; notational velocity for Emacs
+        :ui         deft                              ; notational velocity for Emacs
                     doom
                     doom-dashboard
                     doom-quit
@@ -85,7 +85,7 @@
                     ;;rgb                             ; creating color strings
                     ;;taskrunner                      ; taskrunner for all your projects
                     ;;terraform
-                    ;;tmux                            ; an API for interacting with tmux
+                    tmux                              ; an API for interacting with tmux
                     tree-sitter
                     ;;upload                          ; map local to remote projects via ssh/ftp
         :os         (:if (featurep :system 'macos) macos)
@@ -131,7 +131,7 @@
                     ;;nim                             ; python + lisp at the speed of c
                     ;;nix                             ; I hereby declare "nix geht mehr!"
                     ;;ocaml                           ; an objective camel
-                    (org +brain +crypt +hugo +journal +pandoc +passwords +pomodoro +present +pretty +roam2)
+                    (org +brain +crypt +dragndrop +journal +pandoc +passwords +pomodoro +present +pretty +roam2)
                     ;;php                             ; perl's insecure younger brother
                     plantuml
                     ;;purescript                      ; javascript, but functional

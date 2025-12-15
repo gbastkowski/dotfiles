@@ -11,6 +11,17 @@
         "gitCommitSha": "00756142ab04c82a447693cf373c4e0c554d1005",
         "isLocal": true
       }
+    ],
+    "jira-assistant@rdm-jira-tools": [
+      {
+        "scope": "user",
+        "installPath": "/Users/gunnar.bastkowski/.claude/plugins/cache/rdm-jira-tools/jira-assistant/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2025-12-14T00:02:59.899Z",
+        "lastUpdated": "2025-12-14T00:02:59.899Z",
+        "gitCommitSha": "38dbb85442ade13d9fbd0132be65449aa2bc3c46",
+        "isLocal": true
+      }
     ]
   }
 }

@@ -3,6 +3,85 @@ if [[ -n "$INTELLIJ_ENVIRONMENT_READER" ]]; then
     return
 fi
 
+# Load shared exports first so interactive shells inherit common env vars.
+if [[ -r "$HOME/.exports" ]]; then
+  source "$HOME/.exports"
+fi
+
+# Guarantee JAVA_HOME available for zsh sessions.
+if ! typeset -f ensure_java_home >/dev/null 2>&1; then
+  ensure_java_home() {
+    if [[ -n ${SDKMAN_DIR:-} && -d ${SDKMAN_DIR}/candidates/java/current ]]; then
+      export JAVA_HOME="${SDKMAN_DIR}/candidates/java/current"
+      return
+    fi
+
+    if command -v /usr/libexec/java_home >/dev/null 2>&1; then
+      local detected
+      detected=$(/usr/libexec/java_home 2>/dev/null || true)
+      if [[ -n $detected ]]; then
+        export JAVA_HOME="$detected"
+        return
+      fi
+    fi
+
+    local java_path
+    java_path="$(command -v java 2>/dev/null || true)"
+    if [[ -n $java_path ]]; then
+      local java_bin_dir
+      java_bin_dir="$(dirname "$java_path")"
+      if [[ $java_bin_dir == */bin ]]; then
+        export JAVA_HOME="${java_bin_dir%/bin}"
+      fi
+    fi
+  }
+fi
+ensure_java_home
+
+# Fallback PATH helpers for shells that source this file before ~/.exports is updated.
+if ! typeset -f path_prepend >/dev/null 2>&1; then
+  _path_contains() {
+    dir=$1
+    if [[ -z ${dir:-} ]]; then
+      return 1
+    fi
+    case ":${PATH:-}:" in
+      *:"$dir":*) return 0 ;;
+    esac
+    return 1
+  }
+
+  path_prepend() {
+    dir=$1
+    if [[ -z ${dir:-} ]]; then
+      return
+    fi
+    if ! _path_contains "$dir"; then
+      if [[ -n ${PATH:-} ]]; then
+        PATH="$dir:$PATH"
+      else
+        PATH="$dir"
+      fi
+      export PATH
+    fi
+  }
+
+  path_append() {
+    dir=$1
+    if [[ -z ${dir:-} ]]; then
+      return
+    fi
+    if ! _path_contains "$dir"; then
+      if [[ -n ${PATH:-} ]]; then
+        PATH="$PATH:$dir"
+      else
+        PATH="$dir"
+      fi
+      export PATH
+    fi
+  }
+fi
+
 # Initialize completion early so plugins calling compdef don't fail
 if ! typeset -f compdef >/dev/null; then
   autoload -Uz compinit
@@ -36,8 +115,6 @@ POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 
 export TERM="xterm-256color"
 export DEFAULT_USER=gunnar
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
 
 [[ -f $HOME/.ista_rc ]] && source "$HOME/.ista_rc"
 [ -f ~/.private ] && source ~/.private
@@ -92,13 +169,15 @@ autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles
 
 # source ~/.aliases
-# source ~/.exports
 export GTAGSLABEL=pygments
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export PATH=/opt/homebrew/bin/python3/opt/homebrew/bin/python3:~/.bin:~/go/bin:$PATH
+# Prefer personal and Homebrew-installed binaries.
+[ -d /opt/homebrew/bin ] && path_prepend "/opt/homebrew/bin"
+[ -d "$HOME/.bin" ] && path_prepend "$HOME/.bin"
+[ -d "$HOME/go/bin" ] && path_prepend "$HOME/go/bin"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
@@ -110,52 +189,20 @@ elif [[ "$(uname)" == "Linux" ]]; then
     [ -s "/usr/share/nvm/init-nvm.sh" ] && \. "/usr/share/nvm/init-nvm.sh"
 fi
 
-export PATH="./node_modules/.bin:$PATH"
+path_prepend "./node_modules/.bin"
 
-# Configure JAVA_HOME to match the active JDK (SDKMAN > macOS > PATH).
-_setup_java_home() {
-  if [[ -n "${JAVA_HOME:-}" ]]; then
-    return
-  fi
+if [ -d "$HOME/.emacs.doom/bin" ]; then
+  path_append "$HOME/.emacs.doom/bin"
+fi
 
-  if [[ -n "${SDKMAN_DIR:-}" && -d "${SDKMAN_DIR}/candidates/java/current" ]]; then
-    export JAVA_HOME="${SDKMAN_DIR}/candidates/java/current"
-    return
-  fi
-
-  case "${OSTYPE:-}" in
-    darwin*)
-      if [[ -x /usr/libexec/java_home ]]; then
-        local detected
-        detected=$(/usr/libexec/java_home 2>/dev/null || true)
-        if [[ -n $detected ]]; then
-          export JAVA_HOME="$detected"
-          return
-        fi
-      fi
-      ;;
-  esac
-
-  local java_path
-  java_path="$(command -v java 2>/dev/null || true)"
-  if [[ -n $java_path ]]; then
-    local java_bin_dir
-    java_bin_dir="$(dirname "$java_path")"
-    if [[ $java_bin_dir == */bin ]]; then
-      export JAVA_HOME="${java_bin_dir%/bin}"
-    fi
-  fi
-}
-_setup_java_home
-unset -f _setup_java_home
-
-export PATH=$PATH:~/.emacs.doom/bin
-export PATH="/usr/local/opt/sqlite/bin:$PATH"
+[ -d /usr/local/opt/sqlite/bin ] && path_prepend "/usr/local/opt/sqlite/bin"
 
 [[ -r "$HOME/.android-env" ]] && source "$HOME/.android-env"
 
 
-export PATH="$HOME/.rbenv/bin:$PATH"
+if [ -d "$HOME/.rbenv/bin" ]; then
+  path_prepend "$HOME/.rbenv/bin"
+fi
 eval "$(rbenv init - zsh)"
 
 # eval "$(op completion zsh)"; compdef _op op
@@ -169,7 +216,9 @@ else
     if [ -f "/Users/gunnar.bastkowski/opt/anaconda3/etc/profile.d/conda.sh" ]; then
         . "/Users/gunnar.bastkowski/opt/anaconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/gunnar.bastkowski/opt/anaconda3/bin:$PATH"
+        if [ -d "/Users/gunnar.bastkowski/opt/anaconda3/bin" ]; then
+            path_prepend "/Users/gunnar.bastkowski/opt/anaconda3/bin"
+        fi
     fi
 fi
 unset __conda_setup
@@ -178,10 +227,9 @@ unset __conda_setup
 # source /Users/gunnar.bastkowski/.config/op/plugins.sh
 
 # Created by `pipx` on 2024-05-10 23:04:23
-export PATH="$PATH:/home/gunnar/.local/bin"
+[ -d "$HOME/.local/bin" ] && path_append "$HOME/.local/bin"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
 if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
   __sdkman_lazy_loaded=0
   __sdkman_lazy_init() {

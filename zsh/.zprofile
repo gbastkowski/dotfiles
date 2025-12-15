@@ -1,3 +1,7 @@
+if [[ -r "$HOME/.profile" ]]; then
+  source "$HOME/.profile"
+fi
+
 case "$OSTYPE" in
   darwin*)
       if [[ -x /opt/homebrew/bin/brew ]]; then
@@ -16,10 +20,6 @@ case "$OSTYPE" in
               eval "$(/opt/homebrew/bin/brew shellenv)"
           fi
       fi
-
-      # >>> coursier install directory >>>
-      export PATH="$PATH:/Users/gunnar.bastkowski/Library/Application Support/Coursier/bin"
-      # <<< coursier install directory <<<
 
       source /Users/gunnar.bastkowski/.ista_profile
       ;;

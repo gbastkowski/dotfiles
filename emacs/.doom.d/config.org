@@ -810,7 +810,7 @@ Inspiration can be obtained from
 *** Settings
 #+begin_src emacs-lisp
 (setq! org-re-reveal-title-slide          "auto"
-       org-re-reveal-transition           "fade"
+       org-re-reveal-transition           "convex"
        org-re-reveal-hlevel               2
        org-re-reveal-width                1920
        org-re-reveal-center               nil)

@@ -9,6 +9,20 @@
 /plover/*.log
 plover/**/site-packages/*
 /claude/.update.lock
+# Claude Code runtime data (keep config, ignore runtime state)
+/claude/history.jsonl
+/claude/debug/
+/claude/file-history/
+/claude/plans/
+/claude/plugins/
+/claude/projects/
+/claude/session-env/
+/claude/shell-snapshots/
+/claude/stats-cache.json
+/claude/statsig/
+/claude/todos/
+/claude/telemetry/
+/claude/stats-cache.json
 # Codex CLI runtime state
 .codex/*
 !.codex/config.toml

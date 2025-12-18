@@ -36,39 +36,39 @@ labelsheader = X-Keywords
 [Repository akikoserver]
 type = IMAP
 remotehost = localhost
-remoteusereval = get_pass("private/localimap/imap-user")
-remotepasseval = get_pass("private/localimap/imap-pass")
+remoteusereval = get_pass("mail-sync/localimap/imap-user")
+remotepasseval = get_pass("mail-sync/localimap/imap-pass")
 auth_mechanisms = LOGIN
 starttls = no
 ssl = no
 
 [Repository Gmailserver-mine]
 type = Gmail
-remoteusereval = get_pass("private/gmail/imap-user")
-remotepasseval = get_pass("private/gmail/application-password")
+remoteusereval = get_pass("mail-sync/gmail/imap-user")
+remotepasseval = get_pass("mail-sync/gmail/application-password")
 sslcacertfile = /etc/openssl@3/cert.pem
 
 [Repository gmxserver]
 type = IMAP
 remotehost = imap.gmx.de
-remoteusereval = get_pass("private/gmx.de/imap-user")
-remotepasseval = get_pass("private/gmx.de/imap-pass")
+remoteusereval = get_pass("mail-sync/gmx.de/imap-user")
+remotepasseval = get_pass("mail-sync/gmx.de/imap-pass")
 sslcacertfile = /etc/openssl@3/cert.pem
 ssl = yes
 
 [Repository bastkowskiserver]
 type = IMAP
 remotehost = w00d23c2.kasserver.com
-remoteusereval = get_pass("private/bastkowski.name/imap-user")
-remotepasseval = get_pass("private/bastkowski.name/imap-pass")
+remoteusereval = get_pass("mail-sync/bastkowski.name/imap-user")
+remotepasseval = get_pass("mail-sync/bastkowski.name/imap-pass")
 sslcacertfile = /etc/openssl@3/cert.pem
 ssl = yes
 
 [Repository digitalstepserver]
 type = IMAP
 remotehost = w00d23c2.kasserver.com
-remoteusereval = get_pass("private/digitalstep.de/imap-user")
-remotepasseval = get_pass("private/digitalstep.de/imap-pass")
+remoteusereval = get_pass("mail-sync/digitalstep.de/imap-user")
+remotepasseval = get_pass("mail-sync/digitalstep.de/imap-pass")
 sslcacertfile = /etc/openssl@3/cert.pem
 ssl = yes
 

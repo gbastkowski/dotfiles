@@ -230,25 +230,7 @@ unset __conda_setup
 [ -d "$HOME/.local/bin" ] && path_append "$HOME/.local/bin"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
-  __sdkman_lazy_loaded=0
-  __sdkman_lazy_init() {
-    if (( __sdkman_lazy_loaded )); then
-      return 0
-    fi
-    __sdkman_lazy_loaded=1
-    source "$SDKMAN_DIR/bin/sdkman-init.sh"
-  }
-
-  sdk() {
-    unset -f sdk
-    if ! __sdkman_lazy_init; then
-      echo "sdkman initialization failed" >&2
-      return 1
-    fi
-    sdk "$@"
-  }
-fi
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall

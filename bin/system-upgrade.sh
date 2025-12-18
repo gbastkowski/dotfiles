@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
 
-SCRIPTPATH=$(dirname $0)
-DOTFILES_DIR="$HOME/git/gbastkowski/dotfiles"
-ORIGINAL_DIR=$(pwd)
+SCRIPTPATH="$(cd "$(dirname "$0")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPTPATH/.." && pwd)"
+ORIGINAL_DIR="$(pwd)"
 
 # Change to dotfiles directory
 cd "$DOTFILES_DIR" || { echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"; exit 1; }
 
-OSTYPE=$($SCRIPTPATH/ostype.sh)
+OSTYPE="$("$SCRIPTPATH/ostype.sh")"
 # [ -f $HOME/.bashrc ] && $HOME/.bashrc
 
 case "$OSTYPE" in
-  arch*)    . $SCRIPTPATH/linux.include.sh ;;
-  darwin*)  . $SCRIPTPATH/macos.include.sh ;;
-  termux*)  . $SCRIPTPATH/termux.include.sh ;;
+  arch*)    . "$SCRIPTPATH/linux.include.sh" ;;
+  darwin*)  . "$SCRIPTPATH/macos.include.sh" ;;
+  termux*)  . "$SCRIPTPATH/termux.include.sh" ;;
   *)        echo "unknown: $OSTYPE" ; exit 1 ;;
 esac
 
 upgrade_system_and_packages
 
 upgrade_python_packages
+
+echo "normalizing git remotes (submodules) ..."
+"$SCRIPTPATH/git-ensure-remotes.sh" || echo "warning: failed to normalize submodule remotes"
+echo
 
 if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]
 then
@@ -44,6 +48,7 @@ echo "updating dotfiles ..."
 echo
 
 echo "updating oh-my-zsh ..."
+git -C zsh/.oh-my-zsh checkout -q master 2>/dev/null || true
 git -C zsh/.oh-my-zsh fetch --all
 EDITOR=vim git -C zsh/.oh-my-zsh merge upstream/master
 echo
@@ -53,13 +58,18 @@ git -C powerlevel10k pull
 echo
 
 echo "updating zsh-vi-mode ..."
+git -C zsh-vi-mode checkout -q master 2>/dev/null || true
 git -C zsh-vi-mode pull
 echo
 
 echo "updating chemacs2 ..."
 git -C emacs/.emacs.d fetch --all
 EDITOR=vim git -C emacs/.emacs.d checkout main
-EDITOR=vim git -C emacs/.emacs.d merge upstream/main
+if git -C emacs/.emacs.d show-ref --verify --quiet refs/remotes/upstream/main; then
+  EDITOR=vim git -C emacs/.emacs.d merge upstream/main
+else
+  EDITOR=vim git -C emacs/.emacs.d merge upstream/master
+fi
 EDITOR=vim git -C emacs/.emacs.d push
 echo
 
@@ -93,7 +103,7 @@ echo "current state:"
 git status
 
 # Return to original directory
-cd "$ORIGINAL_DIR"
+cd "$ORIGINAL_DIR" || exit 1
 
 echo
 echo "done :-)"

@@ -79,6 +79,17 @@ Make Claude's IDE terminal integration use the `eat' backend inside Emacs.
 (setq! claude-code-ide-terminal-backend 'eat)
 #+end_src
 
+*** MCP Emacs helpers
+Load the `mcp-emacs' package (installed via `packages.el`) and make sure the
+Emacs server is running before the MCP Node server connects.
+#+begin_src emacs-lisp
+(use-package! mcp-emacs
+  :defer nil
+  :config
+  (unless (server-running-p)
+    (server-start)))
+#+end_src
+
 ** Git/Magit Settings
 #+begin_src emacs-lisp
 (setq! git-commit-summary-max-length 70)

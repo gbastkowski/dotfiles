@@ -2,7 +2,7 @@
 
 cd "$(dirname "${BASH_SOURCE}")";
 
-git pull origin master;
+git pull origin main;
 
 usage() {
     echo "Usage: $0 [-f|--force] [-n|--dry-run]";

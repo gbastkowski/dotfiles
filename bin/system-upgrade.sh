@@ -96,7 +96,7 @@ echo
 echo "pushing dotfiles to origin ..."
 git add .
 EDITOR=vim git commit -m "Update dotfiles and submodules"
-git pull --rebase origin master
+git pull --rebase origin main
 git push origin
 
 echo "current state:"

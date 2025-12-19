@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "Checking out master and pulling latest version"
-git checkout master
+echo "Checking out main and pulling latest version"
+git checkout main
 git pull origin
 
 echo "Current branches:"

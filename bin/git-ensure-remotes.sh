@@ -5,6 +5,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dotfiles_dir="$(cd "$script_dir/.." && pwd)"
 dry_run=0
+DEFAULT_BRANCH=${DEFAULT_BRANCH:-main}
 
 usage() {
   cat <<'EOF'
@@ -95,10 +96,21 @@ guess_default_branch() {
   origin_head="$(git -C "$repo_dir" symbolic-ref -q --short refs/remotes/origin/HEAD || true)"
   if [ -n "$origin_head" ] && [[ "$origin_head" == origin/* ]]; then
     echo "${origin_head#origin/}"
-  elif git -C "$repo_dir" show-ref --verify --quiet refs/remotes/origin/main; then
-    echo "main"
   else
-    echo "master"
+    local candidate last_candidate=""
+    for candidate in "$DEFAULT_BRANCH" main master; do
+      [ -z "$candidate" ] && continue
+      if [ "$candidate" = "$last_candidate" ]; then
+        continue
+      fi
+      last_candidate="$candidate"
+      if git -C "$repo_dir" show-ref --verify --quiet "refs/remotes/origin/$candidate"; then
+        echo "$candidate"
+        return
+      fi
+    done
+
+    echo "$DEFAULT_BRANCH"
   fi
 }
 

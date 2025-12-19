@@ -74,4 +74,6 @@
 (package! org-present)
 (package! visual-fill-column)
 
-(package! mcp-emacs         :recipe (:host github :repo "gbastkowski/mcp-emacs"     :files ("packages/emacs/lisp/*.el")))
+(package! mcp-emacs         :recipe (:host github :repo "gbastkowski/mcp-emacs"
+                                      :branch "main"
+                                      :files ("packages/emacs/lisp/*.el")))

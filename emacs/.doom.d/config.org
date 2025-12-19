@@ -83,11 +83,7 @@ Make Claude's IDE terminal integration use the `eat' backend inside Emacs.
 Load the `mcp-emacs' package (installed via `packages.el`) and make sure the
 Emacs server is running before the MCP Node server connects.
 #+begin_src emacs-lisp
-(use-package! mcp-emacs
-  :defer nil
-  :config
-  (unless (server-running-p)
-    (server-start)))
+(use-package! mcp-emacs :defer nil)
 #+end_src
 
 ** Git/Magit Settings

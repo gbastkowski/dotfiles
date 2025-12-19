@@ -1,0 +1,11 @@
+# Minimal WayVNC config for LAN access.
+address=0.0.0.0
+port=5900
+
+# Uncomment and set the following to enable auth + TLS.
+# enable_auth=true
+# username=
+# password=
+# rsa_private_key_file=
+# private_key_file=
+# certificate_file=

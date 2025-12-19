@@ -1,0 +1,18 @@
+[Unit]
+Description=Headless Sway session for WayVNC
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+Environment=WLR_BACKENDS=headless
+Environment=WLR_LIBINPUT_NO_DEVICES=1
+Environment=WAYLAND_DISPLAY=wayland-headless
+Environment=XDG_CURRENT_DESKTOP=sway
+Environment=XDG_SESSION_TYPE=wayland
+ExecStart=/usr/bin/sway --config %h/.config/sway/headless.conf
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

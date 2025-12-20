@@ -1,0 +1,14 @@
+[Unit]
+Description=Postgres Administration UI
+After=network.target
+
+[Service]
+ExecStart=/home/gunnar/.local/bin/pgadmin4
+
+# Hardening
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

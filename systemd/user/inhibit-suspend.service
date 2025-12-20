@@ -1,0 +1,10 @@
+[Unit]
+Description=Inhibit suspend while SSH session is active
+After=default.target
+
+[Service]
+ExecStart=/usr/bin/systemd-inhibit --what=idle:sleep --why="SSH session active" sleep infinity
+
+[Install]
+WantedBy=default.target
+

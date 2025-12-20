@@ -93,6 +93,11 @@ if [[ -n "${KITTY_WINDOW_ID:-}" ]]; then
   export KITTY_LISTEN_ON="${KITTY_LISTEN_ON:-unix:/tmp/kitty-$USER}"
 fi
 
+if command -v gpg-connect-agent >/dev/null 2>&1; then
+  export GPG_TTY="$(tty)"
+  gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block, everything else may go below.

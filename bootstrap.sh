@@ -17,6 +17,9 @@ doIt() {
 		      --exclude "README.md" \
           --exclude "LICENSE-MIT.txt" \
           -avh --no-perms . ~;
+    if [ -f "$HOME/.gnupg/pinentry-wrapper" ]; then
+      chmod 700 "$HOME/.gnupg/pinentry-wrapper";
+    fi
 	source ~/.bash_profile;
 }
 

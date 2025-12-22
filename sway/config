@@ -42,6 +42,10 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
 exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec ~/.azotebg
 
+# Start WayVNC only for headless sessions.
+set $wayvnc_config $HOME/.config/wayvnc/config
+exec sh -c 'if [ -n "${SWAY_HEADLESS:-}" ]; then swaymsg output HEADLESS-1 mode 1920x1080; wayvnc --config "$wayvnc_config"; fi'
+
 ### Turn off screen on lid closed
 set $laptop eDP-1
 bindswitch lid:on output $laptop disable

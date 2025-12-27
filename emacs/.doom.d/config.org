@@ -194,6 +194,11 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 (use-package! avdl-mode)
 #+end_src
 
+** PlantUML
+#+begin_src emacs-lisp
+(use-package! plantuml-mode)
+#+end_src
+
 ** Scala
 *** Settings
 **** General

@@ -57,23 +57,25 @@
 ;;(package! copilot           :recipe (:host github :repo "copilot-emacs/copilot.el"   :files ("*.el")))
 
 (package! openai-playground :recipe (:local-repo "openai/playground" :build (:not compile)))
-(package! scala-customs     :recipe (:local-repo "scala/customs" :build (:not compile)))
+(package! scala-customs     :recipe (:local-repo "scala/customs"     :build (:not compile)))
 
-(package! dashboard         :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
+(package! dashboard         :recipe (:host github :repo   "emacs-dashboard/emacs-dashboard"))
 
 
 ;; Upstream renamed the default branch to main; straight still defaults to master.
 (package! iedit             :recipe (:branch "main"))
 
 
-(package! pg                :recipe (:host github :repo "emarsden/pg-el"))
-(package! pgmacs            :recipe (:host github :repo "emarsden/pgmacs"))
+(package! pg                :recipe (:host github :repo   "emarsden/pg-el"))
+(package! pgmacs            :recipe (:host github :repo   "emarsden/pgmacs"))
 
-(package! avdl-mode         :recipe (:host github :repo "logc/emacs-avro"))
+(package! avdl-mode         :recipe (:host github :repo   "logc/emacs-avro"))
 
 (package! org-present)
 (package! visual-fill-column)
 
-(package! mcp-emacs         :recipe (:host github :repo "gbastkowski/mcp-emacs"
-                                      :branch "main"
-                                      :files ("packages/emacs/lisp/*.el")))
+(package! mcp-emacs         :recipe (:host github :repo   "gbastkowski/mcp-emacs"
+                                                  :branch "main"
+                                                  :files  ("packages/emacs/lisp/*.el")))
+
+(package! plantuml-mode     :recipe (:host github :repo "skuro/plantuml-mode"))

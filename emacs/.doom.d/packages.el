@@ -78,4 +78,4 @@
                                                   :branch "main"
                                                   :files  ("packages/emacs/lisp/*.el")))
 
-(package! plantuml-mode     :recipe (:host github :repo "skuro/plantuml-mode"))
+(package! opencode          :recipe (:host gitlab :repo   "rogs/opencode.el"))

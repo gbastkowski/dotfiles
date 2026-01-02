@@ -7,10 +7,10 @@
         "@zenobius/opencode-skillful"
     ],
     "mcp": {
-        "webresearch": {
-            "enabled": true,
+        "agentvibes": {
             "type": "local",
-            "command": ["npx", "-y", "@mzxrai/mcp-webresearch@latest"]
+            "enabled": true,
+            "command": ["npx", "-y", "--package=agentvibes", "agentvibes-mcp-server"]
         }
     },
     "provider": {

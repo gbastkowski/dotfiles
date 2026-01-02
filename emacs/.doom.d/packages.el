@@ -79,3 +79,7 @@
                                                   :files  ("packages/emacs/lisp/*.el")))
 
 (package! opencode          :recipe (:host gitlab :repo   "rogs/opencode.el"))
+
+(package! shell-maker       :recipe (:host github :repo   "xenodium/shell-maker"))
+(package! acp               :recipe (:host github :repo   "xenodium/acp"))
+(package! agent-shell       :recipe (:host github :repo   "xenodium/agent-shell"))

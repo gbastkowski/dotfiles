@@ -352,6 +352,10 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
 
 
 * AI
+** ACP
+#+begin_src emacs-lisp
+(use-package! agent-shell)
+#+end_src
 ** *Copilot
 *** Settings
 accept completion from copilot and fallback to company

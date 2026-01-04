@@ -1,3 +1,10 @@
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+fpath=("/Users/gunnar.bastkowski/.oh-my-zsh/custom/completions" $fpath)
+autoload -Uz compinit
+compinit
+# OPENSPEC:END
+
 # Return early when shell is loaded by IntelliJ, to prevent errors with interactive shell features
 if [[ -n "$INTELLIJ_ENVIRONMENT_READER" ]]; then
     return

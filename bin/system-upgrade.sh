@@ -38,6 +38,7 @@ then
   echo "updating ccline (npm) ..."
   npm update -g @cometix/ccline || echo "warning: failed to update ccline"
   npm update -g tweakcc         || echo "warning: failed to update tweakcc"
+  npm update -g @fission-ai/openspec || echo "warning: failed to update openspec"
   echo
 else
   echo "npm not found, skipping ccline update"

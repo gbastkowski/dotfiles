@@ -43,8 +43,8 @@ path_append() {
 # Ensure SDKMAN paths are consistent across shells.
 export SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
 
-# Make vim the default editor.
-export EDITOR='vim';
+# Make emacsclient the default editor.
+export EDITOR='emacsclient -t';
 
 # Enable persistent REPL history for `node`.
 export NODE_REPL_HISTORY=~/.node_history;

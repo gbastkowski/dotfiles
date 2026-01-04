@@ -153,6 +153,18 @@ numbers are disabled. For relative line numbers, set this to `relative'.
       display-line-numbers-width    4)
 #+end_src
 
+** TTY Menu Bar
+Keep the menu bar disabled in terminal frames (including emacsclient -t).
+#+begin_src emacs-lisp
+(when (not (display-graphic-p))
+  (menu-bar-mode -1))
+(add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (unless (display-graphic-p frame)
+              (with-selected-frame frame
+                (menu-bar-mode -1)))))
+#+end_src
+
 
 * Editing
 ** Duplicate

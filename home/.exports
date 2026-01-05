@@ -40,11 +40,25 @@ path_append() {
   fi
 }
 
+# Add Coursier-installed binaries (e.g., scalafmt).
+case "$(uname -s)" in
+  Darwin)
+    [ -d "$HOME/Library/Application Support/Coursier/bin" ] && path_append "$HOME/Library/Application Support/Coursier/bin"
+    ;;
+  Linux)
+    [ -d "$HOME/.local/share/coursier/bin" ] && path_append "$HOME/.local/share/coursier/bin"
+    [ -d "$HOME/.coursier/bin" ] && path_append "$HOME/.coursier/bin"
+    ;;
+esac
+
 # Ensure SDKMAN paths are consistent across shells.
 export SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
 
 # Make emacsclient the default editor.
 export EDITOR='emacsclient -t';
+
+# Enable OpenCode experimental features.
+export OPENCODE_EXPERIMENTAL='true';
 
 # Enable persistent REPL history for `node`.
 export NODE_REPL_HISTORY=~/.node_history;

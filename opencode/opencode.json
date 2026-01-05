@@ -6,11 +6,43 @@
         "opencode-websearch-cited@1.1.1",
         "@zenobius/opencode-skillful"
     ],
+    "tools": {
+        "bash": true,
+        "glob": true,
+        "grep": true,
+        "list": true,
+        "patch": true,
+        "skill": true,
+        "todoread": true,
+        "todowrite": true,
+        "webfetch": true,
+        "write": true
+    },
+    "formatter": {
+        "scalafmt": {
+            "command": ["scalafmt", "$FILE"],
+            "extensions": [".scala", ".sc", ".sbt"]
+        }
+    },
     "mcp": {
         "agentvibes": {
             "type": "local",
             "enabled": true,
             "command": ["npx", "-y", "--package=agentvibes", "agentvibes-mcp-server"]
+        },
+        "emacs": {
+            "type": "local",
+            "enabled": true,
+            "command": ["node", "/Users/gunnar.bastkowski/git/gbastkowski/mcp-emacs/packages/server/bin/mcp-emacs.js"]
+        },
+        "ista_jira_confluence": {
+            "type": "local",
+            "enabled": true,
+            "command": ["node",             "/Users/gunnar.bastkowski/git/chapter/mcp-jira-confluence/dist/index.js",
+                        "--jira-url",       "https://ista.atlassian.net",
+                        "--confluence-url", "https://ista.atlassian.net/wiki",
+                        "--email",          "gunnar.bastkowski@ista.com",
+                        "--token-command",  "pass show ista/jira-api-token-mcp"]
         }
     },
     "provider": {

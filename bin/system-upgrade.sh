@@ -51,7 +51,10 @@ sdkman_noninteractive_upgrade() {
       continue
     fi
 
-    if sdk list "$candidate" 2>/dev/null | LC_ALL=C grep -Fq "$default_version"; then
+    local validation_endpoint="${sdkman_api}/candidates/validate/${candidate}/${default_version}/${SDKMAN_PLATFORM:-unknown}"
+    local validation_result="$(__sdkman_secure_curl "$validation_endpoint" 2>/dev/null || true)"
+
+    if [ "$validation_result" = "valid" ]; then
       upgrade_candidates+=("$candidate")
       upgrade_versions+=("$default_version")
     else

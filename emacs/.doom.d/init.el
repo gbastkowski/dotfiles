@@ -31,7 +31,8 @@
                     nav-flash
                     neotree
                     ophints
-                    (popup +defaults)                 ; tame sudden yet inevitable temporary windows
+                    (popup +all +defaults)
+                    (smooth-scroll +interpolate)
                     ;;tabs                            ; a tab bar for Emacs
                     (treemacs +lsp)
                     unicode
@@ -159,7 +160,7 @@
                     ;;(wanderlust +gmail)
        :app         calendar
                     ;;emms
-                    ;;everywhere                      ; *leave* Emacs!? You must be joking
+                    everywhere                        ; *leave* Emacs!? You must be joking
                     ;;irc                             ; how neckbeards socialize
                     ;;(rss +org)                      ; emacs as an RSS reader
                     ;;twitter                         ; twitter client https://twitter.com/vnought

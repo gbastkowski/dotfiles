@@ -278,7 +278,6 @@ from https://www.emacswiki.org/emacs/CopyingWholeLines
             map))
 
 (after! lsp-mode
-  (setq lsp-semgrep-server-command '("semgrep" "lsp" "--x-eio-ls"))
   (lsp-register-client
    (make-lsp-client
     :new-connection (lsp-stdio-connection `("uniteai_lsp" "--stdio"))

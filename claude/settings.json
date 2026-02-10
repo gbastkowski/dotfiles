@@ -6,7 +6,6 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true,
     "jira-assistant@rdm-jira-tools": true
   },
   "alwaysThinkingEnabled": false,

@@ -38,7 +38,7 @@
         "ista_jira_confluence": {
             "type": "local",
             "enabled": true,
-            "command": ["node",             "/Users/gunnar.bastkowski/git/chapter/mcp-jira-confluence/dist/index.js",
+            "command": ["node",             "/Users/gunnar.bastkowski/git/rdm/ai/mcp-jira-confluence/dist/index.js",
                         "--jira-url",       "https://ista.atlassian.net",
                         "--confluence-url", "https://ista.atlassian.net/wiki",
                         "--email",          "gunnar.bastkowski@ista.com",

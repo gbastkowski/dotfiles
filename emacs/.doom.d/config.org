@@ -82,9 +82,10 @@ Make Claude's IDE terminal integration use the `eat' backend inside Emacs.
 *** MCP Emacs helpers
 Load the `mcp-emacs' package (installed via `packages.el`) and make sure the
 Emacs server is running before the MCP Node server connects.
-#+begin_src emacs-lisp
+
++begin_src emacs-lisp
 (use-package! mcp-emacs :defer nil)
-#+end_src
++end_src
 
 ** Git/Magit Settings
 #+begin_src emacs-lisp
@@ -405,6 +406,7 @@ accept completion from copilot and fallback to company
         (:prefix ("D" . "OpenCode")
          :desc "OpenCode menu" "o" #'opencode-menu)))
 #+end_src
+
 
 * Org Mode
 Most of the stuff here is to implement a GTD workflow.
@@ -1006,6 +1008,7 @@ Inspiration can be obtained from
 *** emacs-dashboard
 #+begin_src emacs-lisp
 (setq! dashboard-banner-logo-title          "Welcome to Emacs!"
+       dashboard-center-content             t
        dashboard-items                      '((agenda . 20)
                                               (recents . 10)
                                               (bookmarks . 5)

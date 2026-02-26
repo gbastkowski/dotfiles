@@ -29,3 +29,4 @@ plover/**/site-packages/*
 !.codex/config.toml
 # Local logs
 logs/
+claude/backups/

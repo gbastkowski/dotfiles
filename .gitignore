@@ -9,6 +9,7 @@
 /plover/*.log
 plover/**/site-packages/*
 /claude/.update.lock
+/claude/policy-limits.json
 # Claude Code runtime data (keep config, ignore runtime state)
 /claude/history.jsonl
 /claude/debug/

@@ -656,6 +656,21 @@ Inspiration can be obtained from
   (interactive)
   (org-agenda-align-tags))
 #+end_src
+**** region-markdown-clipboard
+#+begin_src emacs-lisp
+(defun gunnar/org-region-to-markdown-clipboard ()
+  "Convert the active Org region to Markdown and copy it to the clipboard."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (user-error "Not in org-mode"))
+  (unless (use-region-p)
+    (user-error "No active region"))
+  (require 'ox-md)
+  (let* ((content (buffer-substring-no-properties (region-beginning) (region-end)))
+         (markdown (org-export-string-as content 'md t)))
+    (kill-new markdown)
+    (message "Copied region as Markdown")))
+#+end_src
 **** agenda-views
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))

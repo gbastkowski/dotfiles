@@ -33,7 +33,8 @@
         "emacs": {
             "type": "local",
             "enabled": true,
-            "command": ["node", "/Users/gunnar.bastkowski/git/gbastkowski/mcp-emacs/packages/server/bin/mcp-emacs.js"]
+            "command": ["node",                     "/Users/gunnar.bastkowski/git/gbastkowski/mcp-emacs/packages/server/bin/mcp-emacs.js",
+                        "--emacsclient-executable", "/opt/homebrew/bin/emacsclient"]
         },
         "ista_jira_confluence": {
             "type": "local",

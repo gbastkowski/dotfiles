@@ -272,4 +272,6 @@ esac
 #     fi
 # fi
 
-[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+if [ -f "$HOME/.local/bin/ensure-local-bin-in-path" ]; then
+  . "$HOME/.local/bin/ensure-local-bin-in-path"
+fi

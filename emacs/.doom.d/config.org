@@ -67,6 +67,40 @@ Enable automatic reversion of buffers when files change on disk.
 (setq! aw-scope 'global)
 #+end_src
 
+*** Native compilation (macOS/Homebrew GCC)
+`libgccjit` may call the system GCC driver (`/usr/bin/gcc`), which cannot find
+Homebrew's `libemutls_w` runtime. Resolve the runtime library directory from
+`gcc-15` and inject it for native compilation.
+#+begin_src emacs-lisp
+(defun gunnar/native-comp-gcc-runtime-dir ()
+  "Return Homebrew GCC runtime dir containing libemutls_w, or nil."
+  (when (eq system-type 'darwin)
+    (let* ((gcc-exe (or (executable-find "gcc-15")
+                        (executable-find "gcc-14")))
+           (libemutls
+            (when gcc-exe
+              (string-trim
+               (with-temp-buffer
+                 (call-process gcc-exe nil t nil "-print-file-name=libemutls_w.a")
+                 (buffer-string)))))
+           (lib-dir
+            (and libemutls
+                 (not (string= libemutls "libemutls_w.a"))
+                 (file-name-directory libemutls))))
+      (when (and lib-dir (file-exists-p libemutls))
+        lib-dir))))
+
+(let ((lib-dir (gunnar/native-comp-gcc-runtime-dir)))
+  (when lib-dir
+    (let ((current (getenv "LIBRARY_PATH")))
+      (unless (and current (string-match-p (regexp-quote lib-dir) current))
+        (setenv "LIBRARY_PATH"
+                (if (and current (> (length current) 0))
+                    (concat lib-dir path-separator current)
+                  lib-dir))))
+    (add-to-list 'native-comp-driver-options (concat "-L" lib-dir))))
+#+end_src
+
 *** Spell checking dictionary
 #+begin_src emacs-lisp
 (setq! ispell-personal-dictionary
@@ -99,7 +133,7 @@ There are two ways to load a theme. Both assume the theme is installed and avail
 You can either set `doom-theme' or manually load a theme with the `load-theme' function.
 This is the default:
 #+begin_src emacs-lisp
-(setq! doom-theme 'gunnar)
+(setq doom-theme 'gunnar)
 #+end_src
 
 ** Folds
@@ -130,9 +164,9 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 
 #+begin_src emacs-lisp
 (cond ((eq system-type 'gnu/linux)
-       (setq! doom-font (font-spec :family "IosevkaNerdFont" :size 18)))
+       (setq doom-font (font-spec :family "IosevkaNerdFont" :size 18)))
       (t
-       (setq! doom-font (font-spec :family "Iosevka Nerd Font" :size 15))))
+       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 15))))
 
 (global-prettify-symbols-mode t)
 ;; (map! :leader :desc "Toggle global prettify symbols mode" :n "aP" #'global-prettify-symbols-mode)
@@ -546,6 +580,7 @@ Inspiration can be obtained from
 
 **** org-agenda-custom-commands
 #+begin_src emacs-lisp
+#+end_src
 (setq! org-agenda-custom-commands
        '(("P" "Private Agenda " ((agenda    ""
                                             ((org-agenda-skip-function            '(org-agenda-skip-entry-if 'deadline))
@@ -589,7 +624,6 @@ Inspiration can be obtained from
                                                   ((org-agenda-prefix-format            "  %?-12t% s")
                                                    (org-agenda-hide-tags-regexp         "inbox")
                                                    (org-agenda-overriding-header        "\nInbox: clarify and organize\n")))))))
-#+end_src
 
 *** Functions
 **** Helpers
@@ -675,7 +709,7 @@ Inspiration can be obtained from
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))
 (defun gunnar/org-agenda-show-today         (&optional arg) (interactive "P") (org-agenda arg "a"))
-(defun gunnar/org-agenda-show-today-ista    (&optional arg) (interactive "P") (org-agenda arg "b"))
+(defun gunnar/org-agenda-show-today-ista    (&optional arg) (interactive "P") (org-agenda arg "W"))
 #+end_src
 
 *** Keybindings
@@ -903,7 +937,7 @@ Inspiration can be obtained from
 ** Settings
 #+begin_src emacs-lisp
 (setq! projectile-project-search-path '("~/git/rdm/" "~/git/gbastkowski/"))
-(setq! lsp-file-watch-threshold nil)
+(setq! lsp-file-watch-threshold 10000)
 #+end_src
 
 ** Functions

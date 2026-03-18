@@ -3,6 +3,28 @@
 ;; This file controls what Doom modules are enabled and what order they load
 ;; in. Remember to run 'doom sync' after modifying it!
 
+;; Ensure native-comp can link Homebrew GCC runtime libraries on macOS.
+(when (eq system-type 'darwin)
+  (let* ((gcc-exe (or (executable-find "gcc-15")
+                      (executable-find "gcc-14")))
+         (libemutls
+          (when gcc-exe
+            (string-trim
+             (with-temp-buffer
+               (call-process gcc-exe nil t nil "-print-file-name=libemutls_w.a")
+               (buffer-string)))))
+         (lib-dir
+          (and libemutls
+               (not (string= libemutls "libemutls_w.a"))
+               (file-name-directory libemutls))))
+    (when (and lib-dir (file-exists-p libemutls))
+      (let ((current (getenv "LIBRARY_PATH")))
+        (unless (and current (string-match-p (regexp-quote lib-dir) current))
+          (setenv "LIBRARY_PATH"
+                  (if (and current (> (length current) 0))
+                      (concat lib-dir path-separator current)
+                    lib-dir)))))))
+
 ;; NOTE Press 'SPC h d h' (or 'C-h d h' for non-vim users) to access Doom's
 ;;      documentation. There you'll find a link to Doom's Module Index where all
 ;;      of our modules are listed, including what flags they support.

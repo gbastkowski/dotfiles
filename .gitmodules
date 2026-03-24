@@ -1,15 +1,6 @@
 [submodule "oh-my-zsh"]
 	path = zsh/.oh-my-zsh
 	url = git@github.com:gbastkowski/oh-my-zsh.git
-[submodule "password-store"]
-	path = password-store
-	url = ec2-user@ec2-35-156-252-69.eu-central-1.compute.amazonaws.com:password-store
-[submodule "powerlevel9k"]
-	path = powerlevel9k
-	url = git@github.com:bhilburn/powerlevel9k.git
-[submodule "autosrc"]
-	path = autosrc
-	url = git@github.com:seanyeh/autosrc.git
 [submodule "powerlevel10k"]
 	path = powerlevel10k
 	url = git@github.com:romkatv/powerlevel10k.git

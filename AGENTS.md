@@ -32,7 +32,7 @@ This is a dotfiles repository for macOS and Linux. It manages shell, editor, and
 - PRs: describe the scope, affected packages (e.g., `zsh`, `emacs`), platform impact (macOS/Linux), and testing steps/screenshots/logs when relevant. Link related issues if any.
 
 ## Security & Configuration Tips
-- Do not commit secrets. Use `~/.private` (sourced in zsh) and `password-store/` submodule for secrets management.
+- Do not commit secrets. Use `~/.private` (sourced in zsh) and your personal `pass` store outside this repo for secrets management.
 - Submodules may require SSH access. Ensure keys are configured before running `bin/system-upgrade.sh`.
 
 ## Agent-Specific Instructions

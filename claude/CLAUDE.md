@@ -15,6 +15,7 @@
 - I am using Doomemacs
 - When running a build process, print out the important log messages. Especially if errors occur.
 - Don't assume. Ask, if things are unclear.
+- Always read AGENTS.md at the start of a session if it exists in the project
 
 # Installed Tools
 - `gh` - GitHub CLI for repository management

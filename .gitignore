@@ -32,4 +32,5 @@ plover/**/site-packages/*
 # Local logs
 logs/
 claude/backups/
+/claude/transcripts/
 /.agent-shell/

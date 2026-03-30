@@ -188,6 +188,14 @@ numbers are disabled. For relative line numbers, set this to `relative'.
       display-line-numbers-width    4)
 #+end_src
 
+** Display Toggles
+Keep a dedicated toggle for line truncation next to Doom's existing wrapping
+toggle, without overloading `SPC t w'.
+
+#+begin_src emacs-lisp
+(map! :leader :desc "Toggle truncate lines" :n "tW" #'toggle-truncate-lines)
+#+end_src
+
 ** TTY Menu Bar
 Keep the menu bar disabled in terminal frames (including emacsclient -t).
 #+begin_src emacs-lisp

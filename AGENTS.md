@@ -5,7 +5,7 @@ This is a dotfiles repository for macOS and Linux. It manages shell, editor, and
 ## Project Structure & Module Organization
 - `bin/` — utility scripts (system upgrades, helpers).
 - `bash/`, `zsh/`, `tmux/`, `emacs/`, `hypr/`, etc. — config packages copied or symlinked into `$HOME` via `bootstrap.sh`.
-- `reveal.js/`, `powerlevel10k/`, `zsh-vi-mode/`, `emacs/*` — submodules; update via `bin/system-upgrade.sh`.
+- `powerlevel10k/`, `zsh-vi-mode/`, `emacs/*` — submodules; update via `bin/system-upgrade.sh`.
 - `bootstrap.sh`, `brew.sh` — setup/installation scripts (legacy Stow installer was removed).
 
 ## Build, Test, and Development Commands

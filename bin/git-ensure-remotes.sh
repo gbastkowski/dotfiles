@@ -82,7 +82,6 @@ upstream_url_for_submodule() {
 
   case "$submodule_name" in
     oh-my-zsh) echo "git@github.com:ohmyzsh/ohmyzsh.git" ;;
-    reveal.js) echo "https://github.com/hakimel/reveal.js.git" ;;
     emacs/.emacs.doom) echo "git@github.com:doomemacs/doomemacs.git" ;;
     emacs/.emacs.d) echo "git@github.com:plexus/chemacs2.git" ;;
     *) echo "" ;;

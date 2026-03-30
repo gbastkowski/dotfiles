@@ -4,10 +4,6 @@
 [submodule "powerlevel10k"]
 	path = powerlevel10k
 	url = git@github.com:romkatv/powerlevel10k.git
-[submodule "reveal.js"]
-	path = reveal.js
-	url = git@github.com:gbastkowski/reveal.js.git
-	branch = master
 [submodule "zsh-vi-mode"]
 	path = zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode

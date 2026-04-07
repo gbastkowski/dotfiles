@@ -88,7 +88,7 @@
                     grammar
         :tools      ;;ai
                     ;;ansible
-                    claude-code
+                    ;;claude-code
                     codex
                     ;;biblio                          ; Writes a PhD for you (citation needed)
                     ;;collab                          ; buffers with friends

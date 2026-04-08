@@ -779,7 +779,7 @@ Inspiration can be obtained from
 (setq! calendar-date-display-form   '((format "%s-%.2d-%.2d" year (string-to-number month) (string-to-number day)))
        calendar-date-style          'iso
        calendar-week-start-day      1
-       calendar-mark-holidays-flag  1)
+       calendar-mark-holidays-flag  t)
 
 (setq! calendar-intermonth-text     '(propertize
                                       (format "%2d"

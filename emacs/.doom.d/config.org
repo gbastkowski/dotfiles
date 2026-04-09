@@ -107,7 +107,7 @@ Homebrew's `libemutls_w` runtime. Resolve the runtime library directory from
        (expand-file-name "ispell.pws" doom-user-dir))
 #+end_src
 
-*** MCP Emacs helpers
+*** MCP Emacs helpers (deactivated)
 Load the `mcp-emacs' package (installed via `packages.el`) and make sure the
 Emacs server is running before the MCP Node server connects.
 
@@ -193,13 +193,9 @@ toggle, without overloading `SPC t w'.
 ** TTY Menu Bar
 Keep the menu bar disabled in terminal frames (including emacsclient -t).
 #+begin_src emacs-lisp
-(when (not (display-graphic-p))
-  (menu-bar-mode -1))
+(when (not (display-graphic-p)) (menu-bar-mode -1))
 (add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (unless (display-graphic-p frame)
-              (with-selected-frame frame
-                (menu-bar-mode -1)))))
+          (lambda (frame) (unless (display-graphic-p frame) (with-selected-frame frame (menu-bar-mode -1)))))
 #+end_src
 
 
@@ -502,7 +498,15 @@ Inspiration can be obtained from
                                     ("WAIT" . +org-todo-onhold)
                                     ("NO"   . +org-todo-cancel)
                                     ("DONE" . +org-todo-cancel)
-                                    ("KILL" . +org-todo-cancel))))
+                                    ("KILL" . +org-todo-cancel)))
+
+  (defun gunnar/org-clock-in-switch-to-started (current-state)
+    (pcase current-state
+      ((or "TODO" "NEXT") "STRT")
+      ("[ ]" "[-]")
+      (_ current-state)))
+
+  (setq org-clock-in-switch-to-state #'gunnar/org-clock-in-switch-to-started))
 #+end_src
 
 *** Functions

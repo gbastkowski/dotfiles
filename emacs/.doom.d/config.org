@@ -534,10 +534,13 @@ Inspiration can be obtained from
 (map! :leader :desc "Insert source block"         :n "mws" #'org-insert-src-block)
 #+end_src
 
-
 ** Agenda & Journal
 *** Functions
-
+**** gunnar/today-note-file-name
+#+begin_src emacs-lisp
+(defun gunnar/today-note-file-name () (concat org-journal-dir (format-time-string org-journal-file-format)))
+#+end_src
+**** gunnar/org-copy-todo-to-today
 #+begin_src emacs-lisp
 (defun gunnar/org-copy-todo-to-today (&optional arg)
   "Copy or move current task to today's journal file.
@@ -547,11 +550,51 @@ Preserves all task metadata including properties, tags, and state.
 Creates today's journal file if it doesn't exist."
   (interactive "P")
   (let ((today-journal (gunnar/today-note-file-name))
-        (current-task (org-get-entry)))
+        (current-task (org-get-entry))
+        (journal-buffer (find-file-noselect today-journal))
+        (target-heading "Tasks"))
     (unless current-task
       (user-error "Not on a task - cannot refile"))
-    (message "Task refile to today's journal: %s - implementation in progress"
-             today-journal)))
+    
+    ;; Ensure journal file exists and has proper structure
+    (unless (file-exists-p today-journal)
+      (make-directory (file-name-directory today-journal) t)
+      (with-current-buffer journal-buffer
+        (org-mode)
+        (insert "#+TITLE: " (format-time-string "%Y-%m-%d") "\n\n")
+        (insert "* " target-heading "\n"))
+      (save-buffer journal-buffer))
+    
+    ;; Ensure target heading exists in journal
+    (with-current-buffer journal-buffer
+      (goto-char (point-min))
+      (unless (re-search-forward (concat "^\* " target-heading "\b") nil t)
+        (goto-char (point-max))
+        (unless (bolp) (newline))
+        (insert "* " target-heading "\n")))
+    
+    ;; Copy or move task based on prefix argument
+    (save-excursion
+      (if arg
+          ;; Copy: preserve original, add to journal
+          (progn
+            (org-copy-subtree)
+            (with-current-buffer journal-buffer
+              (goto-char (point-max))
+              (unless (bolp) (newline))
+              (yank))
+            (message "Task copied to today's journal: %s" today-journal))
+        ;; Move: remove original, add to journal
+        (org-cut-subtree)
+        (with-current-buffer journal-buffer
+          (goto-char (point-max))
+          (unless (bolp) (newline))
+          (yank))
+        (message "Task moved to today's journal: %s" today-journal)))
+    
+    ;; Save the journal file
+    (with-current-buffer journal-buffer
+      (save-buffer))))
 #+end_src
 
 *** Keybindings
@@ -577,7 +620,6 @@ Creates today's journal file if it doesn't exist."
                                                               "\n\n"))
        org-journal-find-file                  'find-file)
 
-(defun gunnar/today-note-file-name () (concat org-journal-dir (format-time-string org-journal-file-format)))
 #+end_src
 
 **** Agenda Date and Diary Handling
@@ -662,26 +704,7 @@ Creates today's journal file if it doesn't exist."
 *** Functions
 **** Helpers
 #+begin_src emacs-lisp
-(defun gunnar/org-copy-todo-to-today ()
-  (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-        (org-capture-templates '(("a" "Journal Task"   entry (file+headline gunnar/today-note-file-name "Tasks")
-                                  "* [%<%H:%M>] %(gunnar/org-entry-info) %?"
-                                  :immediate-finish t)))
-        (org-refile-targets '(((gunnar/today-note-file-name) :maxlevel . 1)))
-        pos)
-    (with-current-buffer (find-file-noselect (gunnar/today-note-file-name))
-      (goto-char (point-min))
-      (unless (re-search-forward "^\\* Tasks\\b" nil t)
-        (goto-char (point-max))
-        (unless (bolp) (newline)) ; Make sure we're on a new line
-        (insert "* Tasks\n"))
-      (save-buffer))
-    (setq pos (point))
-    ;; Only refile if the target file is different than the current file
-    (unless (equal (file-truename (gunnar/today-note-file-name))
-                   (file-truename (buffer-file-name)))
-      (org-refile nil nil (list "Tasks" (gunnar/today-note-file-name) nil pos)))))
+
 
 ;; (add-to-list 'org-after-todo-state-change-hook
 ;;              (lambda ()
@@ -847,15 +870,6 @@ Creates today's journal file if it doesn't exist."
 (map! :leader :desc "Show calendar"         :n "y" #'calendar)
 (map! :leader :desc "All calendars to diary"        :n "Gc" #'gunnar/all-calendars-to-diary)
 #+end_src
-
-** Journal
-*** Open Tasks
-**** TODO org-enable-asciidoc-support t
-**** TODO org-enable-bootstrap-support t
-**** TODO org-enable-github-support t
-**** TODO jiralib-url "https://jira.mobimeo.com"
-**** TODO org-enable-sticky-header nil
-**** TODO org-start-notification-daemon-on-startup t)
 
 ** Pomodoro
 *** Settings

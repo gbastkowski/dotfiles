@@ -546,8 +546,12 @@ With optional prefix argument ARG (C-u), copy the task instead of moving it.
 Preserves all task metadata including properties, tags, and state.
 Creates today's journal file if it doesn't exist."
   (interactive "P")
-  ;; TODO: Implement task refile functionality
-  (message "Task refile to today's journal - implementation in progress"))
+  (let ((today-journal (gunnar/today-note-file-name))
+        (current-task (org-get-entry)))
+    (unless current-task
+      (user-error "Not on a task - cannot refile"))
+    (message "Task refile to today's journal: %s - implementation in progress"
+             today-journal)))
 #+end_src
 
 *** Keybindings

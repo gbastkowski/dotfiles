@@ -566,13 +566,7 @@ Creates today's journal file if it doesn't exist."
       (with-current-buffer journal-buffer
         (goto-char (point-min))
         ;; Ensure target heading exists in journal
-        (unless (save-excursion
-                   (goto-char (point-min))
-                   (catch 'found
-                     (while (outline-next-heading)
-                       (when (string-match (concat "^\* " target-heading "\b") (thing-at-point 'line))
-                         (throw 'found t)))
-                     nil)))
+        (unless (org-find-exact-headline-in-buffer target-heading)
           (goto-char (point-max))
           (unless (bolp) (newline))
           (insert "* " target-heading "\n"))

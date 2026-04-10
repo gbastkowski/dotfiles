@@ -551,20 +551,20 @@ Creates today's journal file if it doesn't exist."
   (interactive "P")
   (let ((today-journal (gunnar/today-note-file-name))
         (current-task (org-get-entry))
-        (journal-buffer (find-file-noselect today-journal))
         (target-heading "Tasks"))
     (unless current-task
       (user-error "Not on a task - cannot refile"))
     
     ;; Ensure journal file exists and has proper structure
-    (unless (file-exists-p today-journal)
-      (make-directory (file-name-directory today-journal) t)
-      (with-current-buffer journal-buffer
-        (org-mode)
-        ;; Use similar header format to org-journal
-        (insert (funcall org-journal-file-header (current-time)))
-        (insert "* " target-heading "\n"))
-      (save-buffer journal-buffer))
+    (let ((journal-buffer (find-file-noselect today-journal)))
+      (unless (file-exists-p today-journal)
+        (make-directory (file-name-directory today-journal) t)
+        (with-current-buffer journal-buffer
+          (org-mode)
+          ;; Use similar header format to org-journal
+          (insert (funcall org-journal-file-header (current-time)))
+          (insert "* " target-heading "\n"))
+        (save-buffer journal-buffer)))
     
     ;; Ensure target heading exists in journal
     (with-current-buffer journal-buffer

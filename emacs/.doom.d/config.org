@@ -183,7 +183,7 @@ numbers are disabled. For relative line numbers, set this to `relative'.
 
 #+begin_src emacs-lisp
 (setq display-line-numbers-type     t
-      display-line-numbers-width    4)
+      display-line-numbers-width    5)
 #+end_src
 
 ** Display Toggles

@@ -566,16 +566,19 @@ Creates today's journal file if it doesn't exist."
       (with-current-buffer journal-buffer
         (goto-char (point-min))
         ;; Ensure target heading exists in journal
-        (or (re-search-forward (concat "^\* " target-heading "\b") nil t)
-            (progn
-              (goto-char (point-max))
-              (unless (bolp) (newline))
-              (insert "* " target-heading "\n")))
+        (unless (save-excursion
+                   (goto-char (point-min))
+                   (catch 'found
+                     (while (outline-next-heading)
+                       (when (string-match (concat "^\* " target-heading "\b") (thing-at-point 'line))
+                         (throw 'found t)))
+                     nil)))
+          (goto-char (point-max))
+          (unless (bolp) (newline))
+          (insert "* " target-heading "\n"))
         
         ;; Copy or move task based on prefix argument
-        (if arg
-            (org-copy-subtree)  ; Copy to kill-ring
-          (org-cut-subtree))   ; Cut to kill-ring
+        (if arg (org-copy-subtree) (org-cut-subtree))
         
         (with-current-buffer journal-buffer
           (goto-char (point-max))
@@ -583,9 +586,6 @@ Creates today's journal file if it doesn't exist."
           (org-yank)           ; Yank from kill-ring
           (save-buffer))
         
-        (message "Task %s to today's journal: %s"
-                 (if arg "copied" "moved")
-                 today-journal)))
         (message "Task %s to today's journal: %s" (if arg "copied" "moved") today-journal)))))
 #+end_src
 

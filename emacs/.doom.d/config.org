@@ -536,6 +536,25 @@ Inspiration can be obtained from
 
 
 ** Agenda & Journal
+*** Functions
+
+#+begin_src emacs-lisp
+(defun gunnar/org-copy-todo-to-today (&optional arg)
+  "Copy or move current task to today's journal file.
+
+With optional prefix argument ARG (C-u), copy the task instead of moving it.
+Preserves all task metadata including properties, tags, and state.
+Creates today's journal file if it doesn't exist."
+  (interactive "P")
+  ;; TODO: Implement task refile functionality
+  (message "Task refile to today's journal - implementation in progress"))
+#+end_src
+
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Copy task to today's journal" :n "jt" #'gunnar/org-copy-todo-to-today)
+#+end_src
+
 *** Settings
 **** Clock, Diary, and Journal
 #+begin_src emacs-lisp

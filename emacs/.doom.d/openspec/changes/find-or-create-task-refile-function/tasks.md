@@ -3,7 +3,7 @@
 ## 1. Function Implementation
 
 - [x] 1.1 Create `gunnar/org-copy-todo-to-today` function skeleton
-- [ ] 1.2 Implement today's journal file path calculation
+- [x] 1.2 Implement today's journal file path calculation
 - [ ] 1.3 Add journal file existence check and creation logic
 - [ ] 1.4 Implement task copying functionality (with prefix argument)
 - [ ] 1.5 Implement task moving functionality (without prefix argument)

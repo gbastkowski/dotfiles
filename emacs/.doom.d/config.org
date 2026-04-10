@@ -555,7 +555,7 @@ Creates today's journal file if it doesn't exist."
     (unless current-task
       (user-error "Not on a task - cannot refile"))
     
-    ;; Ensure journal file exists and has proper structure
+    ;; Get or create journal buffer and ensure proper structure
     (let ((journal-buffer (find-file-noselect today-journal)))
       (unless (file-exists-p today-journal)
         (make-directory (file-name-directory today-journal) t)
@@ -564,15 +564,15 @@ Creates today's journal file if it doesn't exist."
           ;; Use similar header format to org-journal
           (insert (funcall org-journal-file-header (current-time)))
           (insert "* " target-heading "\n"))
-        (save-buffer journal-buffer)))
-    
-    ;; Ensure target heading exists in journal
-    (with-current-buffer journal-buffer
-      (goto-char (point-min))
-      (unless (re-search-forward (concat "^\* " target-heading "\b") nil t)
-        (goto-char (point-max))
-        (unless (bolp) (newline))
-        (insert "* " target-heading "\n")))
+        (save-buffer journal-buffer))
+      
+      ;; Ensure target heading exists in journal
+      (with-current-buffer journal-buffer
+        (goto-char (point-min))
+        (unless (re-search-forward (concat "^\* " target-heading "\b") nil t)
+          (goto-char (point-max))
+          (unless (bolp) (newline))
+          (insert "* " target-heading "\n"))))
     
     ;; Copy or move task based on prefix argument
     (save-excursion

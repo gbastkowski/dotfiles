@@ -562,40 +562,30 @@ Creates today's journal file if it doesn't exist."
         (with-current-buffer journal-buffer
           (org-mode)
           ;; Use similar header format to org-journal
-          (insert (funcall org-journal-file-header (current-time)))
-          (insert "* " target-heading "\n"))
+          (insert (funcall org-journal-file-header (current-time))))
         (save-buffer journal-buffer))
       
       ;; Ensure target heading exists in journal
       (with-current-buffer journal-buffer
         (goto-char (point-min))
-      (unless (re-search-forward (concat "^\* " target-heading "\b") nil t)
-          (goto-char (point-max))
-          (unless (bolp) (newline))
-          (insert "* " target-heading "\n"))
-      
-      ;; Copy or move task based on prefix argument
-      (save-excursion
-      (if arg
-          ;; Copy: preserve original, add to journal
-          (progn
-            (org-copy-subtree)
-            (with-current-buffer journal-buffer
+        (or (re-search-forward (concat "^\* " target-heading "\b") nil t)
+            (progn
               (goto-char (point-max))
               (unless (bolp) (newline))
-              (yank))
-            (message "Task copied to today's journal: %s" today-journal))
-        ;; Move: remove original, add to journal
-        (org-cut-subtree)
-        (with-current-buffer journal-buffer
-          (goto-char (point-max))
-          (unless (bolp) (newline))
-          (yank))
-          (message "Task moved to today's journal: %s" today-journal))
-      
-      ;; Save the journal file
-      (with-current-buffer journal-buffer
-        (save-buffer))))
+              (insert "* " target-heading "\n")))
+        
+        ;; Copy or move task based on prefix argument
+        (save-excursion
+          (if arg (org-copy-subtree) (org-cut-subtree))
+          (with-current-buffer journal-buffer
+            (goto-char (point-max))
+            (unless (bolp) (newline))
+            (yank)))
+        
+        (save-buffer)
+        (message "Task %s to today's journal: %s"
+                 (if arg "copied" "moved")
+                 today-journal)))))
 #+end_src
 
 *** Keybindings

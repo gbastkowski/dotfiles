@@ -561,7 +561,8 @@ Creates today's journal file if it doesn't exist."
       (make-directory (file-name-directory today-journal) t)
       (with-current-buffer journal-buffer
         (org-mode)
-        (insert "#+TITLE: " (format-time-string "%Y-%m-%d") "\n\n")
+        ;; Use similar header format to org-journal
+        (insert (funcall org-journal-file-header (current-time)))
         (insert "* " target-heading "\n"))
       (save-buffer journal-buffer))
     

@@ -579,14 +579,16 @@ Creates today's journal file if it doesn't exist."
             ;; Copy: keep original, insert in journal
             (progn
               (org-cut-subtree)  ; Cut to remove from original
-              (setq task-text (buffer-substring-no-properties task-start task-end)))
+              ;; task-text already captured before cutting
+              )
           ;; Move: just cut from original
           (org-cut-subtree))
         
-        (with-current-buffer journal-buffer
-          (goto-char (point-max))
-          (unless (bolp) (newline))
-          (insert task-text))
+      (with-current-buffer journal-buffer
+        (goto-char (point-max))
+        (unless (bolp) (newline))
+        (insert task-text)
+        (message "Inserted task text: %s" task-text))  ; Debug message
         
         (save-buffer))
         

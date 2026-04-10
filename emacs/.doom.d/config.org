@@ -571,14 +571,24 @@ Creates today's journal file if it doesn't exist."
           (unless (bolp) (newline))
           (insert "* " target-heading "\n"))
         
-        ;; Copy or move task based on prefix argument
-        (if arg (org-copy-subtree) (org-cut-subtree))
+      ;; Copy or move task based on prefix argument
+      (let ((task-start (progn (org-back-to-heading t) (point)))
+            (task-end (progn (org-end-of-subtree) (point)))
+            (task-text (buffer-substring-no-properties task-start task-end)))
+        (if arg
+            ;; Copy: keep original, insert in journal
+            (progn
+              (org-cut-subtree)  ; Cut to remove from original
+              (setq task-text (buffer-substring-no-properties task-start task-end)))
+          ;; Move: just cut from original
+          (org-cut-subtree))
         
         (with-current-buffer journal-buffer
           (goto-char (point-max))
           (unless (bolp) (newline))
-          (org-yank)           ; Yank from kill-ring
-          (save-buffer))
+          (insert task-text))
+        
+        (save-buffer))
         
         (message "Task %s to today's journal: %s" (if arg "copied" "moved") today-journal)))))
 #+end_src

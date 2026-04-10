@@ -182,8 +182,9 @@ This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 
 #+begin_src emacs-lisp
-(setq display-line-numbers-type     t
-      display-line-numbers-width    5)
+(after! display-line-numbers
+  (setq display-line-numbers-type     t
+        display-line-numbers-width    4))
 #+end_src
 
 ** Display Toggles

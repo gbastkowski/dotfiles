@@ -555,19 +555,17 @@ Creates today's journal file if it doesn't exist."
     (unless current-task
       (user-error "Not on a task - cannot refile"))
     
-    ;; Get or create journal buffer and ensure proper structure
     (let ((journal-buffer (find-file-noselect today-journal)))
       (unless (file-exists-p today-journal)
         (make-directory (file-name-directory today-journal) t)
         (with-current-buffer journal-buffer
           (org-mode)
-          ;; Use similar header format to org-journal
           (insert (funcall org-journal-file-header (current-time))))
         (save-buffer journal-buffer))
       
-      ;; Ensure target heading exists in journal
       (with-current-buffer journal-buffer
         (goto-char (point-min))
+        ;; Ensure target heading exists in journal
         (or (re-search-forward (concat "^\* " target-heading "\b") nil t)
             (progn
               (goto-char (point-max))
@@ -575,17 +573,20 @@ Creates today's journal file if it doesn't exist."
               (insert "* " target-heading "\n")))
         
         ;; Copy or move task based on prefix argument
-        (save-excursion
-          (if arg (org-copy-subtree) (org-cut-subtree))
-          (with-current-buffer journal-buffer
-            (goto-char (point-max))
-            (unless (bolp) (newline))
-            (yank)))
+        (if arg
+            (org-copy-subtree)  ; Copy to kill-ring
+          (org-cut-subtree))   ; Cut to kill-ring
         
-        (save-buffer)
+        (with-current-buffer journal-buffer
+          (goto-char (point-max))
+          (unless (bolp) (newline))
+          (org-yank)           ; Yank from kill-ring
+          (save-buffer))
+        
         (message "Task %s to today's journal: %s"
                  (if arg "copied" "moved")
-                 today-journal)))))
+                 today-journal)))
+        (message "Task %s to today's journal: %s" (if arg "copied" "moved") today-journal)))))
 #+end_src
 
 *** Keybindings

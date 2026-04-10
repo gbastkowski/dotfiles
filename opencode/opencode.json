@@ -9,7 +9,7 @@
     "opencode-websearch-cited@1.1.1",
     "@zenobius/opencode-skillful",
     "opencode-openai-codex-auth",
-    "oh-my-opencode@latest"
+    "oh-my-openagent@latest"
   ],
   "tools": {
     "bash": true,

@@ -569,13 +569,13 @@ Creates today's journal file if it doesn't exist."
       ;; Ensure target heading exists in journal
       (with-current-buffer journal-buffer
         (goto-char (point-min))
-        (unless (re-search-forward (concat "^\* " target-heading "\b") nil t)
+      (unless (re-search-forward (concat "^\* " target-heading "\b") nil t)
           (goto-char (point-max))
           (unless (bolp) (newline))
-          (insert "* " target-heading "\n"))))
-    
-    ;; Copy or move task based on prefix argument
-    (save-excursion
+          (insert "* " target-heading "\n"))
+      
+      ;; Copy or move task based on prefix argument
+      (save-excursion
       (if arg
           ;; Copy: preserve original, add to journal
           (progn
@@ -591,11 +591,11 @@ Creates today's journal file if it doesn't exist."
           (goto-char (point-max))
           (unless (bolp) (newline))
           (yank))
-        (message "Task moved to today's journal: %s" today-journal)))
-    
-    ;; Save the journal file
-    (with-current-buffer journal-buffer
-      (save-buffer))))
+          (message "Task moved to today's journal: %s" today-journal))
+      
+      ;; Save the journal file
+      (with-current-buffer journal-buffer
+        (save-buffer))))
 #+end_src
 
 *** Keybindings

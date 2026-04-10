@@ -118,6 +118,13 @@ Emacs server is running before the MCP Node server connects.
 ** Git/Magit Settings
 #+begin_src emacs-lisp
 (setq! git-commit-summary-max-length 70)
+
+(after! git-commit
+  (add-hook 'git-commit-setup-hook
+            (lambda ()
+              (setq-local fill-column git-commit-summary-max-length)))
+  (add-to-list 'git-commit-style-convention-checks
+               'overlong-summary-line))
 #+end_src
 
 

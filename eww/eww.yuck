@@ -43,8 +43,6 @@
                     :spacing            30
                     :halign             "end"
       (emacs)
-      (systray      :spacing            5
-                    :prepend-new        true)
       (sidestuff))))
 
 (defwidget sidestuff []

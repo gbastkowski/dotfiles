@@ -107,7 +107,7 @@ Homebrew's `libemutls_w` runtime. Resolve the runtime library directory from
        (expand-file-name "ispell.pws" doom-user-dir))
 #+end_src
 
-*** MCP Emacs helpers
+*** MCP Emacs helpers (deactivated)
 Load the `mcp-emacs' package (installed via `packages.el`) and make sure the
 Emacs server is running before the MCP Node server connects.
 
@@ -117,7 +117,11 @@ Emacs server is running before the MCP Node server connects.
 
 ** Git/Magit Settings
 #+begin_src emacs-lisp
-(setq! git-commit-summary-max-length 70)
+(after! git-commit
+  (setq! git-commit-summary-max-length 70)
+  (add-hook 'git-commit-setup-hook
+           (lambda ()
+             (setq-local fill-column git-commit-summary-max-length))))
 #+end_src
 
 
@@ -178,8 +182,9 @@ This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 
 #+begin_src emacs-lisp
-(setq display-line-numbers-type     t
-      display-line-numbers-width    4)
+(after! display-line-numbers
+  (setq display-line-numbers-type     t
+        display-line-numbers-width    4))
 #+end_src
 
 ** Display Toggles
@@ -193,13 +198,9 @@ toggle, without overloading `SPC t w'.
 ** TTY Menu Bar
 Keep the menu bar disabled in terminal frames (including emacsclient -t).
 #+begin_src emacs-lisp
-(when (not (display-graphic-p))
-  (menu-bar-mode -1))
+(when (not (display-graphic-p)) (menu-bar-mode -1))
 (add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (unless (display-graphic-p frame)
-              (with-selected-frame frame
-                (menu-bar-mode -1)))))
+          (lambda (frame) (unless (display-graphic-p frame) (with-selected-frame frame (menu-bar-mode -1)))))
 #+end_src
 
 
@@ -502,7 +503,15 @@ Inspiration can be obtained from
                                     ("WAIT" . +org-todo-onhold)
                                     ("NO"   . +org-todo-cancel)
                                     ("DONE" . +org-todo-cancel)
-                                    ("KILL" . +org-todo-cancel))))
+                                    ("KILL" . +org-todo-cancel)))
+
+  (defun gunnar/org-clock-in-switch-to-started (current-state)
+    (pcase current-state
+      ((or "TODO" "NEXT") "STRT")
+      ("[ ]" "[-]")
+      (_ current-state)))
+
+  (setq org-clock-in-switch-to-state #'gunnar/org-clock-in-switch-to-started))
 #+end_src
 
 *** Functions
@@ -525,8 +534,72 @@ Inspiration can be obtained from
 (map! :leader :desc "Insert source block"         :n "mws" #'org-insert-src-block)
 #+end_src
 
-
 ** Agenda & Journal
+*** Functions
+**** gunnar/today-note-file-name
+#+begin_src emacs-lisp
+(defun gunnar/today-note-file-name () (concat org-journal-dir (format-time-string org-journal-file-format)))
+#+end_src
+**** gunnar/org-copy-todo-to-today
+#+begin_src emacs-lisp
+(defun gunnar/org-copy-todo-to-today (&optional arg)
+  "Copy or move current task to today's journal file.
+
+With optional prefix argument ARG (C-u), copy the task instead of moving it.
+Preserves all task metadata including properties, tags, and state.
+Creates today's journal file if it doesn't exist."
+  (interactive "P")
+  (let ((today-journal (gunnar/today-note-file-name))
+        (current-task (org-get-entry))
+        (target-heading "Tasks"))
+    (unless current-task
+      (user-error "Not on a task - cannot refile"))
+    
+    (let ((journal-buffer (find-file-noselect today-journal)))
+      (unless (file-exists-p today-journal)
+        (make-directory (file-name-directory today-journal) t)
+        (with-current-buffer journal-buffer
+          (org-mode)
+          (insert (funcall org-journal-file-header (current-time))))
+        (save-buffer journal-buffer))
+      
+      (with-current-buffer journal-buffer
+        (goto-char (point-min))
+        ;; Ensure target heading exists in journal
+        (unless (org-find-exact-headline-in-buffer target-heading)
+          (goto-char (point-max))
+          (unless (bolp) (newline))
+          (insert "* " target-heading "\n"))
+        
+      ;; Copy or move task based on prefix argument
+      (let ((task-start (progn (org-back-to-heading t) (point)))
+            (task-end (progn (org-end-of-subtree) (point)))
+            (task-text (buffer-substring-no-properties task-start task-end)))
+        (if arg
+            ;; Copy: keep original, insert in journal
+            (progn
+              (org-cut-subtree)  ; Cut to remove from original
+              ;; task-text already captured before cutting
+              )
+          ;; Move: just cut from original
+          (org-cut-subtree))
+        
+      (with-current-buffer journal-buffer
+        (goto-char (point-max))
+        (unless (bolp) (newline))
+        (insert task-text)
+        (message "Inserted task text: %s" task-text))  ; Debug message
+        
+        (save-buffer))
+        
+        (message "Task %s to today's journal: %s" (if arg "copied" "moved") today-journal)))))
+#+end_src
+
+*** Keybindings
+#+begin_src emacs-lisp
+(map! :leader :desc "Copy task to today's journal" :n "jt" #'gunnar/org-copy-todo-to-today)
+#+end_src
+
 *** Settings
 **** Clock, Diary, and Journal
 #+begin_src emacs-lisp
@@ -545,7 +618,6 @@ Inspiration can be obtained from
                                                               "\n\n"))
        org-journal-find-file                  'find-file)
 
-(defun gunnar/today-note-file-name () (concat org-journal-dir (format-time-string org-journal-file-format)))
 #+end_src
 
 **** Agenda Date and Diary Handling
@@ -630,26 +702,7 @@ Inspiration can be obtained from
 *** Functions
 **** Helpers
 #+begin_src emacs-lisp
-(defun gunnar/org-copy-todo-to-today ()
-  (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-        (org-capture-templates '(("a" "Journal Task"   entry (file+headline gunnar/today-note-file-name "Tasks")
-                                  "* [%<%H:%M>] %(gunnar/org-entry-info) %?"
-                                  :immediate-finish t)))
-        (org-refile-targets '(((gunnar/today-note-file-name) :maxlevel . 1)))
-        pos)
-    (with-current-buffer (find-file-noselect (gunnar/today-note-file-name))
-      (goto-char (point-min))
-      (unless (re-search-forward "^\\* Tasks\\b" nil t)
-        (goto-char (point-max))
-        (unless (bolp) (newline)) ; Make sure we're on a new line
-        (insert "* Tasks\n"))
-      (save-buffer))
-    (setq pos (point))
-    ;; Only refile if the target file is different than the current file
-    (unless (equal (file-truename (gunnar/today-note-file-name))
-                   (file-truename (buffer-file-name)))
-      (org-refile nil nil (list "Tasks" (gunnar/today-note-file-name) nil pos)))))
+
 
 ;; (add-to-list 'org-after-todo-state-change-hook
 ;;              (lambda ()
@@ -815,15 +868,6 @@ Inspiration can be obtained from
 (map! :leader :desc "Show calendar"         :n "y" #'calendar)
 (map! :leader :desc "All calendars to diary"        :n "Gc" #'gunnar/all-calendars-to-diary)
 #+end_src
-
-** Journal
-*** Open Tasks
-**** TODO org-enable-asciidoc-support t
-**** TODO org-enable-bootstrap-support t
-**** TODO org-enable-github-support t
-**** TODO jiralib-url "https://jira.mobimeo.com"
-**** TODO org-enable-sticky-header nil
-**** TODO org-start-notification-daemon-on-startup t)
 
 ** Pomodoro
 *** Settings

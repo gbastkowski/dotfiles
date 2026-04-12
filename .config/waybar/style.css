@@ -1,0 +1,166 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Ubuntu Nerd Font", "Symbols Nerd Font", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(51, 51, 63, 0.55);
+  color: #f3efe5;
+}
+
+tooltip {
+  background: rgba(51, 51, 63, 0.55);
+  border: 1px solid rgba(224, 170, 86, 0.45);
+  border-radius: 14px;
+  color: #f3efe5;
+}
+
+#workspaces,
+#window,
+#clock,
+#custom-weather,
+#custom-emacs-task,
+#mpd,
+#idle_inhibitor,
+#custom-volume,
+#network,
+#load,
+#temperature,
+#cpu,
+#memory,
+#tray {
+  margin-top: 0;
+  padding: 0 14px;
+  min-height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#workspaces {
+  padding: 0 8px;
+}
+
+#workspaces button {
+  padding: 0 10px;
+  margin: 4px 3px;
+  border-radius: 10px;
+  color: #d8d0bf;
+  background: transparent;
+}
+
+#workspaces button:hover {
+  color: #161411;
+  background: #e0aa56;
+}
+
+#workspaces button.active {
+  color: #161411;
+  background: linear-gradient(180deg, #f0c674 0%, #d89a43 100%);
+}
+
+#workspaces button.urgent {
+  color: #fff5f0;
+  background: #c65d4a;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  padding: 0 10px;
+}
+
+#window {
+  min-width: 240px;
+  color: #ffcf79;
+}
+
+#clock {
+  color: #f4e7c2;
+}
+
+#custom-weather {
+  color: #f4e7c2;
+}
+
+#custom-emacs-task {
+  color: #ffb044;
+  font-weight: 700;
+}
+
+#custom-shutdown {
+  color: #efe3c8;
+  padding: 0 14px;
+}
+
+#custom-shutdown:hover {
+  color: #161411;
+  background: #e0aa56;
+}
+
+#custom-emacs-task.expired {
+  color: #ff6064;
+}
+
+#custom-emacs-task.hidden {
+  min-width: 0;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+#mpd,
+#idle_inhibitor,
+#custom-volume,
+#network,
+#load,
+#temperature,
+#cpu,
+#memory {
+  color: #efe3c8;
+}
+
+#temperature.critical {
+  color: #cf8e7a;
+}
+
+#load,
+#temperature,
+#cpu,
+#memory {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+#idle_inhibitor {
+  min-width: 48px;
+  color: #d8d0bf;
+}
+
+#idle_inhibitor.activated {
+  color: #66b044;
+}
+
+#network.disconnected,
+#custom-volume.muted {
+  color: #cf8e7a;
+}
+
+#network {
+  min-width: 260px;
+}
+
+#custom-volume {
+  min-width: 0;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+#tray {
+  padding-right: 10px;
+  padding-left: 10px;
+}

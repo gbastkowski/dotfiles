@@ -1,0 +1,28 @@
+name: add-waybar-shutdown-menu
+description: Add shutdown menu functionality to Waybar configuration
+status: planning
+artifacts:
+  - id: requirements
+    type: requirements
+    status: completed
+    description: Define requirements for the shutdown menu
+  - id: design
+    type: design
+    status: completed
+    depends_on: [requirements]
+    description: Design the shutdown menu UI and functionality
+  - id: implementation
+    type: implementation
+    status: completed
+    depends_on: [design]
+    description: Implement the shutdown menu in Waybar
+  - id: testing
+    type: testing
+    status: ready
+    depends_on: [implementation]
+    description: Test the shutdown menu functionality
+  - id: documentation
+    type: documentation
+    status: completed
+    depends_on: [testing]
+    description: Document the shutdown menu setup

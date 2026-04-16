@@ -1047,13 +1047,15 @@ Creates today's journal file if it doesn't exist."
 #+end_src
 
 
-* Web
+* Web and Restclient
 ** Settings
 #+begin_src emacs-lisp
 (setq! web-mode-markup-indent-offset 2
        web-mode-css-indent-offset 2
        web-mode-sql-indent-offset 2
        web-mode-code-indent-offset 2)
+
+(add-hook 'restclient-mode-hook (lambda () (setq-local restclient-enable-eval t)))
 #+end_src
 
 

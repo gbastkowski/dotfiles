@@ -162,7 +162,7 @@
                     qt                                ; the 'cutest' gui framework ever
                     ;;racket                          ; a DSL for DSLs
                     ;;raku                            ; the artist formerly known as perl6
-                    rest
+                    (rest +jq)
                     ;;rst                             ; ReST in peace
                     ;;(ruby +rails)
                     (rust +lsp)                       ; rust support

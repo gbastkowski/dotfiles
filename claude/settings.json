@@ -11,5 +11,10 @@
   "alwaysThinkingEnabled": false,
   "feedbackSurveyState": {
     "lastShownTime": 1754085994342
+  },
+  "voiceEnabled": true,
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
   }
 }

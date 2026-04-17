@@ -1,9 +1,9 @@
 {
   "restrictions": {
-    "allow_remote_control": {
+    "allow_quick_web_setup": {
       "allowed": false
     },
-    "allow_quick_web_setup": {
+    "enforce_web_search_mcp_isolation": {
       "allowed": false
     }
   }

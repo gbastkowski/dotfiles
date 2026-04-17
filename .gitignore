@@ -34,3 +34,4 @@ logs/
 claude/backups/
 /claude/transcripts/
 /.agent-shell/
+/claude/mcp-needs-auth-cache.json

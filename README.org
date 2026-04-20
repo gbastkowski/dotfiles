@@ -64,6 +64,61 @@
 * Usage
   Run ~./update.sh~ from time to time
 
+** Home Manager (MVP)
+   This repo now also contains an experimental standalone [[https://github.com/nix-community/home-manager][Home Manager]] setup under ~nix/~.
+   It is intentionally narrow.
+   For now it only manages ~~/.p10k.zsh~ and does not replace the broader shell setup in ~.zshrc~ or ~.zprofile~.
+
+*** Supported targets
+   - ~gunnar-dotfiles-darwin~ → current macOS architecture (~aarch64-darwin~)
+   - ~gunnar-dotfiles-arch~ → Arch Linux (~x86_64-linux~)
+
+*** Prerequisites
+   - Install Nix first.
+   - The repo-managed user-level Nix config now lives at ~nix/config/nix.conf~.
+     It still needs to end up at ~~/.config/nix/nix.conf~ on your machine, for example via symlink or your normal dotfiles sync process.
+   - Enable flakes in the live ~~/.config/nix/nix.conf~ or in ~~/etc/nix/nix.conf~:
+     #+BEGIN_SRC conf
+       experimental-features = nix-command flakes
+     #+END_SRC
+   - If you are testing local changes, make sure newly added flake files are tracked by git before running flake commands.
+
+*** Build before switch
+   Validate the configuration without activation first:
+   #+BEGIN_SRC sh
+     nix run github:nix-community/home-manager/release-25.11 -- build --flake ./nix#gunnar-dotfiles-darwin
+   #+END_SRC
+
+   On Arch Linux, use the Arch target instead:
+   #+BEGIN_SRC sh
+     nix run github:nix-community/home-manager/release-25.11 -- build --flake ./nix#gunnar-dotfiles-arch
+   #+END_SRC
+
+   Activate it only after the build succeeds:
+   #+BEGIN_SRC sh
+     nix run github:nix-community/home-manager/release-25.11 -- switch --flake ./nix#gunnar-dotfiles-darwin
+   #+END_SRC
+
+   On Arch Linux, use the Arch target instead:
+   #+BEGIN_SRC sh
+     nix run github:nix-community/home-manager/release-25.11 -- switch --flake ./nix#gunnar-dotfiles-arch
+   #+END_SRC
+
+*** Collision handling
+   Home Manager refuses to overwrite an unmanaged target.
+   If ~~/.p10k.zsh~ already exists, either move it aside first or ask Home Manager to keep a backup during the first switch:
+   #+BEGIN_SRC sh
+     nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ./nix#gunnar-dotfiles-darwin
+   #+END_SRC
+
+*** Rollback
+   To stop using this MVP setup:
+   - stop activating the relevant Home Manager target
+   - remove the Home Manager-managed ~~/.p10k.zsh~ symlink or generation output
+   - restore the previous ~~/.p10k.zsh~ from the backup you created during first activation
+
+   The backup-based first activation flow above is the intended rollback path for this MVP.
+
 * Essential Tools
 ** bootstrap.sh
   Copies the tracked configuration into ~$HOME~ using ~rsync~.

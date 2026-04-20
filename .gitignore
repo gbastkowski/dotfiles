@@ -1,4 +1,5 @@
 .private
+/result
 /sbt/1.0/swoval-jni/
 /README.html
 /emacs/.doom.d/config.el

@@ -66,8 +66,18 @@
 
 ** Home Manager (MVP)
    This repo now also contains an experimental standalone [[https://github.com/nix-community/home-manager][Home Manager]] setup under ~nix/~.
-   It is intentionally narrow.
-   For now it only manages ~~/.p10k.zsh~ and does not replace the broader shell setup in ~.zshrc~ or ~.zprofile~.
+
+*** Managed files
+   The following files are managed by Home Manager.
+   Do not edit the originals in ~git/~ or ~zsh/~ for day-to-day use; edit the Nix configuration instead.
+
+   | Target file          | Nix declaration                          |
+   |----------------------+------------------------------------------|
+   | ~~/.p10k.zsh~        | ~home.file.".p10k.zsh"~ in ~common.nix~ |
+   | ~~/.gitconfig~       | ~programs.git~ in ~common.nix~           |
+   | ~~/.gitignore_global~| ~programs.git.ignores~ in ~common.nix~  |
+
+   The files ~git/.gitconfig~ and ~git/.gitignore_global~ remain in the repository as reference until each machine has been migrated.
 
 *** Supported targets
    - ~gunnar-dotfiles-darwin~ → current macOS architecture (~aarch64-darwin~)
@@ -117,8 +127,8 @@
    #+END_SRC
 
 *** Collision handling
-   Home Manager refuses to overwrite an unmanaged target.
-   If ~~/.p10k.zsh~ already exists, either move it aside first or ask Home Manager to keep a backup during the first switch:
+   Home Manager refuses to overwrite unmanaged target files.
+   If ~~/.p10k.zsh~ or ~~/.gitconfig~ already exists as an unmanaged file, move it aside first or use the ~-b backup~ flag to let Home Manager keep a backup during the first switch:
    #+BEGIN_SRC sh
       nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ./nix#gunnar-dotfiles-darwin
    #+END_SRC
@@ -129,12 +139,12 @@
    #+END_SRC
 
 *** Rollback
-   To stop using this MVP setup:
+   To stop using this setup:
    - stop activating the relevant Home Manager target
-   - remove the Home Manager-managed ~~/.p10k.zsh~ symlink or generation output
-   - restore the previous ~~/.p10k.zsh~ from the backup you created during first activation
+   - remove the Home Manager-managed symlinks or generation output (~~/.p10k.zsh~, ~~/.gitconfig~, ~~/.gitignore_global~)
+   - restore any previous files from the backups you created during first activation
 
-   The backup-based first activation flow above is the intended rollback path for this MVP.
+   The backup-based first activation flow above is the intended rollback path.
 
 * Essential Tools
 ** bootstrap.sh

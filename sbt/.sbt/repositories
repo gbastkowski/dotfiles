@@ -1,0 +1,7 @@
+[repositories]
+local
+rdm-ivy: https://ista.jfrog.io/artifactory/cas-rdm-maven-private/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+rdm-maven: https://ista.jfrog.io/artifactory/cas-rdm-maven-private/
+ivy-proxy-releases: https://ista.jfrog.io/artifactory/maven/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+maven-proxy-releases: https://ista.jfrog.io/artifactory/maven/
+maven-central: https://repo1.maven.org/maven2/

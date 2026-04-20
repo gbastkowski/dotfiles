@@ -71,11 +71,15 @@
    The following files are managed by Home Manager.
    Do not edit the originals in ~git/~ or ~zsh/~ for day-to-day use; edit the Nix configuration instead.
 
-   | Target file          | Nix declaration                          |
-   |----------------------+------------------------------------------|
-   | ~~/.p10k.zsh~        | ~home.file.".p10k.zsh"~ in ~common.nix~ |
-   | ~~/.gitconfig~       | ~programs.git~ in ~common.nix~           |
-   | ~~/.gitignore_global~| ~programs.git.ignores~ in ~common.nix~  |
+   | Target file                      | Nix declaration                                    |
+   |----------------------------------+----------------------------------------------------|
+   | ~~/.p10k.zsh~                    | ~home.file.".p10k.zsh"~ in ~common.nix~            |
+   | ~~/.gitconfig~                   | ~programs.git~ in ~common.nix~                     |
+   | ~~/.config/git/ignore~           | ~programs.git.ignores~ in ~common.nix~             |
+   | ~~/.sbt/1.0/build.sbt~           | ~home.file.".sbt/1.0/build.sbt"~ in ~common.nix~  |
+   | ~~/.sbt/1.0/plugins/plugins.sbt~ | ~home.file.".sbt/1.0/plugins/..."~ in ~common.nix~ |
+   | ~~/.sbt/1.0/credentials.sbt~     | ~home.file.".sbt/1.0/credentials..."~ in ~common.nix~ |
+   | ~~/.sbt/repositories~            | ~home.file.".sbt/repositories"~ in ~common.nix~       |
 
    The files ~git/.gitconfig~ and ~git/.gitignore_global~ remain in the repository as reference until each machine has been migrated.
 

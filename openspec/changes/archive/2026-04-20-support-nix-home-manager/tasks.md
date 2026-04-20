@@ -22,6 +22,6 @@
 
 ## 5. Validation
 
-- [ ] 5.1 Validate the flake and Home Manager configuration without activation.
-- [ ] 5.2 Validate first activation on the supported macOS architecture and confirm that the existing shell setup continues sourcing `~/.p10k.zsh`.
-- [ ] 5.3 Validate first activation on Arch Linux and confirm that `~/.p10k.zsh` is the only file brought under Home Manager management in the MVP.
+- [x] 5.1 Validate the flake and Home Manager configuration without activation.
+- [x] 5.2 Validate first activation on the supported macOS architecture and confirm that the existing shell setup continues sourcing `~/.p10k.zsh`.
+- [x] 5.3 Validate first activation on Arch Linux and confirm that `~/.p10k.zsh` is the only file brought under Home Manager management in the MVP.

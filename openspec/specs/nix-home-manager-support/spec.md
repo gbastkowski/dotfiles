@@ -14,11 +14,12 @@ The system SHALL provide a standalone Home Manager setup path for the MVP on mac
 - **THEN** the repository contains standalone Home Manager entry points for macOS and Arch Linux
 
 ### Requirement: Limit the MVP managed surface to `.p10k.zsh`
-The system SHALL limit the MVP Home Manager-managed surface to exactly one file target at `~/.p10k.zsh`, sourced from the repository-owned `zsh/.p10k.zsh`.
+The system SHALL manage `~/.p10k.zsh` as the initial Home Manager file target, sourced from the repository-owned `zsh/.p10k.zsh`.
+The managed surface is not limited to this file; subsequent changes MAY extend Home Manager management to additional dotfiles including sbt configuration.
 
-#### Scenario: MVP manages exactly one zsh-related file
-- **WHEN** the user inspects the MVP Home Manager configuration
-- **THEN** it manages `~/.p10k.zsh` and does not manage additional zsh startup files as part of the MVP
+#### Scenario: p10k.zsh is managed by Home Manager
+- **WHEN** the user inspects the Home Manager configuration
+- **THEN** it manages `~/.p10k.zsh` sourced from `zsh/.p10k.zsh`
 
 ### Requirement: Keep broader zsh startup behavior outside the MVP
 The system MUST NOT require Home Manager to manage `.zshrc`, `.zprofile`, `.zshenv`, or other broader shell startup behavior for this MVP.

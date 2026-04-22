@@ -30,13 +30,13 @@
 # Jira
 
 ## Project Configuration
-- Default project: SQDD06
+- Default project: SQDD09
 - Jira URL: https://ista.atlassian.net
 - Config file: ~/.config/.jira/.config.yml
-- A jira issue with digits (e.g. 1234) only usually refers to the precise issue key SQDD06-1234
+- A jira issue with digits (e.g. 1234) only usually refers to the precise issue key SQDD09-1234
 
 ## Available Issue Types
-The SQDD06 project has the following issue types:
+The SQDD09 project has the following issue types:
 - Epic (id: 34)
 - Story (id: 26)
 - Task (id: 39)

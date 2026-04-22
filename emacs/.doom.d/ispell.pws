@@ -1,6 +1,9 @@
-personal_ws-1.1 en 19 
+personal_ws-1.1 en 24 
 ACP
 Avro
+BMAD
+DSP
+Grafana
 Gunnar's
 ISTA
 JQL
@@ -12,9 +15,11 @@ SQDD
 emacsclient
 isLast
 jira
+learnings
 mcp
 md
 modelcontextprotocol
+observability
 readme
 sbt
 startAt

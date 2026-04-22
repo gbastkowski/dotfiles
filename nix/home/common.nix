@@ -1,10 +1,11 @@
-{ ... }:
+{ inputs, ... }:
 {
   programs.home-manager.enable = true;
 
   home.stateVersion = "25.11";
 
   home.file.".p10k.zsh".source = ../../zsh/.p10k.zsh;
+  home.file.".oh-my-zsh/custom/themes/powerlevel10k".source = inputs.powerlevel10k;
   home.file.".sbt/1.0/build.sbt".source = ../../sbt/.sbt/1.0/build.sbt;
   home.file.".sbt/1.0/plugins/plugins.sbt".source = ../../sbt/.sbt/1.0/plugins/plugins.sbt;
   home.file.".sbt/1.0/credentials.sbt".source = ../../sbt/.sbt/1.0/credentials.sbt;

@@ -37,10 +37,27 @@
         "type": "github"
       }
     },
+    "powerlevel10k": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773468431,
+        "narHash": "sha256-J8qKLkKYd62LuUY2y6Hy+AaokKVDSTucCNQwVQeAaxo=",
+        "owner": "romkatv",
+        "repo": "powerlevel10k",
+        "rev": "604f19a9eaa18e76db2e60b8d446d5f879065f90",
+        "type": "github"
+      },
+      "original": {
+        "owner": "romkatv",
+        "repo": "powerlevel10k",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "powerlevel10k": "powerlevel10k"
       }
     }
   },

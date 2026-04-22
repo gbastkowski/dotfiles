@@ -15,7 +15,7 @@ The system SHALL provide a standalone Home Manager setup path for the MVP on mac
 
 ### Requirement: Limit the MVP managed surface to `.p10k.zsh`
 The system SHALL manage `~/.p10k.zsh` as the initial Home Manager file target, sourced from the repository-owned `zsh/.p10k.zsh`.
-The managed surface is not limited to this file; subsequent changes MAY extend Home Manager management to additional dotfiles including sbt configuration.
+The managed surface is not limited to this file; subsequent changes MAY extend Home Manager management to additional dotfiles and external theme sources via flake inputs.
 
 #### Scenario: p10k.zsh is managed by Home Manager
 - **WHEN** the user inspects the Home Manager configuration
@@ -48,6 +48,13 @@ The system SHALL document the first-activation collision behavior for `~/.p10k.z
 #### Scenario: Collision handling guidance is available
 - **WHEN** a user follows the MVP setup documentation
 - **THEN** the documentation explains how to handle an existing `~/.p10k.zsh` before the first activation
+
+### Requirement: Manage powerlevel10k theme path via home.file
+The system SHALL manage `~/.oh-my-zsh/custom/themes/powerlevel10k` as a Home Manager `home.file` entry sourced from the `inputs.powerlevel10k` flake input.
+
+#### Scenario: powerlevel10k is managed via home.file
+- **WHEN** the user inspects the Home Manager configuration
+- **THEN** `home.file` contains an entry for `~/.oh-my-zsh/custom/themes/powerlevel10k` sourced from the powerlevel10k flake input
 
 ### Requirement: Restrict macOS MVP support to the current architecture
 The system SHALL support Arch Linux and the currently used macOS architecture for the MVP and MUST NOT require Intel macOS support in this change.

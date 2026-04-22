@@ -80,6 +80,7 @@
    | ~~/.sbt/1.0/plugins/plugins.sbt~ | ~home.file.".sbt/1.0/plugins/..."~ in ~common.nix~ |
    | ~~/.sbt/1.0/credentials.sbt~     | ~home.file.".sbt/1.0/credentials..."~ in ~common.nix~ |
    | ~~/.sbt/repositories~            | ~home.file.".sbt/repositories"~ in ~common.nix~       |
+   | ~~/.oh-my-zsh/custom/themes/powerlevel10k~ | ~home.file.".oh-my-zsh/custom/themes/powerlevel10k"~ in ~common.nix~ |
 
    The files ~git/.gitconfig~ and ~git/.gitignore_global~ remain in the repository as reference until each machine has been migrated.
 

@@ -11,6 +11,10 @@
       url = "github:romkatv/powerlevel10k";
       flake = false;
     };
+    zsh-vi-mode = {
+      url = "github:jeffreytse/zsh-vi-mode";
+      flake = false;
+    };
   };
 
   outputs = { nixpkgs, home-manager, ... }@inputs: {

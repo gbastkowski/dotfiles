@@ -1,10 +1,6 @@
 [submodule "oh-my-zsh"]
 	path = zsh/.oh-my-zsh
 	url = git@github.com:gbastkowski/oh-my-zsh.git
-[submodule "zsh-vi-mode"]
-	path = zsh-vi-mode
-	url = https://github.com/jeffreytse/zsh-vi-mode
-	branch = master
 [submodule "emacs/.emacs.d"]
 	path = emacs/.emacs.d
 	url = git@github.com:gbastkowski/chemacs2.git

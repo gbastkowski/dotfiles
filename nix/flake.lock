@@ -57,7 +57,24 @@
       "inputs": {
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
-        "powerlevel10k": "powerlevel10k"
+        "powerlevel10k": "powerlevel10k",
+        "zsh-vi-mode": "zsh-vi-mode"
+      }
+    },
+    "zsh-vi-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768353452,
+        "narHash": "sha256-WdZHCVxVVOs4HyG5f56vAA17UWYOvb9Yf6v7M1RIdU4=",
+        "owner": "jeffreytse",
+        "repo": "zsh-vi-mode",
+        "rev": "08bd1c04520418faee2b9d1afbc410ee1a59a8f1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jeffreytse",
+        "repo": "zsh-vi-mode",
+        "type": "github"
       }
     }
   },

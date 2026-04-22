@@ -1,4 +1,4 @@
-personal_ws-1.1 en 24 
+personal_ws-1.1 en 30 
 ACP
 Avro
 BMAD
@@ -8,18 +8,24 @@ Gunnar's
 ISTA
 JQL
 LaTeX
+NixOS
 PlantUML
 Postgres
 RDM
 SQDD
+darwin
 emacsclient
+gunnar
 isLast
 jira
 learnings
 mcp
 md
 modelcontextprotocol
+nixos
+nixpkgs
 observability
 readme
+romkatv
 sbt
 startAt

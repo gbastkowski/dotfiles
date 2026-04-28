@@ -1,5 +1,6 @@
-personal_ws-1.1 en 30 
+personal_ws-1.1 en 34 
 ACP
+APIs
 Avro
 BMAD
 DSP
@@ -13,7 +14,9 @@ PlantUML
 Postgres
 RDM
 SQDD
+auth
 darwin
+direnv
 emacsclient
 gunnar
 isLast
@@ -28,4 +31,5 @@ observability
 readme
 romkatv
 sbt
+sdk
 startAt

@@ -6,15 +6,23 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "jira-assistant@rdm-jira-tools": true
+    "jira-assistant@mdb-ai-tooling": true
+  },
+  "extraKnownMarketplaces": {
+    "mdb-ai-tooling": {
+      "source": {
+        "source": "git",
+        "url": "git@gitlab.com:ista-se/cas/dsp-mdb/ai-tooling/jira-assistant-claude-plugin.git"
+      }
+    }
   },
   "alwaysThinkingEnabled": false,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754085994342
-  },
   "voiceEnabled": true,
   "voice": {
     "enabled": true,
     "mode": "hold"
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1754085994342
   }
 }

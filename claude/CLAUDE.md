@@ -12,10 +12,10 @@
 - RDM = Reading Data Management
 
 # Development Environment
-- I am using Doomemacs
+- I am using Doomemacs. You can interact with my Emacs instance via an installed mcp server.
 - When running a build process, print out the important log messages. Especially if errors occur.
 - Don't assume. Ask, if things are unclear.
-- Always read AGENTS.md at the start of a session if it exists in the project
+- Always read AGENTS.md at the start of a session if it exists in the project.
 
 # Installed Tools
 - `gh` - GitHub CLI for repository management
@@ -50,26 +50,6 @@ The SQDD09 project has the following issue types:
 - Emergency User Request (id: 18300)
 - Risk (id: 11300)
 - Impediment (id: 41)
-
-## Custom Fields
-Stories have the following custom fields configured:
-- **Acceptance Criteria** (customfield_11102): Use `--custom acceptance-criteria="text"`
-- **Additional Information** (customfield_27806): Use `--custom additional-information="text"`
-
-## Creating Issues with jira-cli
-```bash
-# Create a story with custom fields
-jira issue create -t Story -s "Title" \
-  -b "Description" \
-  --custom acceptance-criteria="Given...When...Then..." \
-  --custom additional-information="Investigation notes, test plans, etc."
-
-# Create a task
-jira issue create -t Task -s "Title" -b "Description"
-
-# Use --web flag to open the created issue in browser immediately
-jira issue create -t Story -s "Title" --web
-```
 
 ## Jira Issue Writing Preferences
 
@@ -116,9 +96,9 @@ jira issue create -t Story -s "Title" --web
 ## Gitlab User Handles
 Me: Gunnar.Bastkowski
 Teammates:
-- Jean: Jean-Marie.Gaillourdet.extern
 - Nitin: Nitin.Soni1
 - Benny: Benny.Lach
+- David: David.Lopez.Extern
 
 ## GitLab Merge Requests
 - Add the related Jira issue to the merge request description.

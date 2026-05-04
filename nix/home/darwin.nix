@@ -3,6 +3,8 @@
   home.username = "gunnar.bastkowski";
   home.homeDirectory = "/Users/gunnar.bastkowski";
 
+  home.file.".aliases".source = ../../home/.aliases;
+
   programs.zsh.initContent = ''
     # Homebrew
     if [[ -x /opt/homebrew/bin/brew ]]; then

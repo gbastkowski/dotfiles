@@ -262,6 +262,7 @@
     settings = {
       user.name = "Gunnar Bastkowski";
       user.email = "gunnar.bastkowski@ista.com";
+      user.signingkey = "D97D98E973249CDC50C02CB2C2D116E278472281";
       pull.rebase = true;
       merge.conflictstyle = "diff3";
       push.followTags = true;

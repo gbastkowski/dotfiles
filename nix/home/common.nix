@@ -6,6 +6,7 @@
 
   home.file.".p10k.zsh".source = ../../zsh/.p10k.zsh;
   home.file.".android-env".source = ../../home/.android-env;
+  home.file.".ideavimrc".source = ../../idea/.ideavimrc;
   home.file.".uniteai.yml".source = ../../home/.uniteai.yml;
   home.file.".gnupg/gpg-agent.conf".source = ../../home/.gnupg/gpg-agent.conf;
   home.file.".gnupg/pinentry-wrapper" = {

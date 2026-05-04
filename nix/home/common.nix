@@ -168,6 +168,9 @@
           ;;
       esac
 
+      # cargo
+      [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+
       # local bin helper
       [[ -f "$HOME/.local/bin/ensure-local-bin-in-path" ]] && source "$HOME/.local/bin/ensure-local-bin-in-path"
 

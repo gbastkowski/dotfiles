@@ -7,7 +7,8 @@
   },
   "enabledPlugins": {
     "jira-assistant@mdb-ai-tooling": true,
-    "ista-presentation@ista-marketplace": true
+    "ista-presentation@ista-marketplace": true,
+    "caveman@caveman": true
   },
   "extraKnownMarketplaces": {
     "mdb-ai-tooling": {
@@ -20,6 +21,12 @@
       "source": {
         "source": "git",
         "url": "git@gitlab.com:ista-se/cas/dsp/ai-dev-tools/marketplace.git"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
       }
     }
   },

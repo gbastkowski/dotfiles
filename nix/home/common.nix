@@ -21,6 +21,10 @@
   home.file.".local/bin/system-upgrade.sh"   = { source = ../../bin/system-upgrade.sh;   executable = true; };
   home.file.".local/bin/termux.include.sh"   = { source = ../../bin/termux.include.sh;   executable = true; };
 
+  home.file.".doom.d".source = ../../emacs/.doom.d;
+  home.file.".emacs-profile".source = ../../emacs/.emacs-profile;
+  home.file.".emacs-profiles.el".source = ../../emacs/.emacs-profiles.el;
+
   home.file.".android-env".source = ../../home/.android-env;
   home.file.".ideavimrc".source = ../../idea/.ideavimrc;
   home.file.".uniteai.yml".source = ../../home/.uniteai.yml;

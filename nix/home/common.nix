@@ -25,6 +25,7 @@
   home.file.".emacs-profile".source = ../../emacs/.emacs-profile;
   home.file.".emacs-profiles.el".source = ../../emacs/.emacs-profiles.el;
 
+  home.file.".byobu".source = ../../byobu/.byobu;
   home.file.".wgetrc".source = ../../wget/.wgetrc;
   home.file.".latexmkrc".source = ../../latexmk/.latexmkrc;
 

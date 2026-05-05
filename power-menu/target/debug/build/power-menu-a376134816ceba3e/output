@@ -1,0 +1,4 @@
+cargo:rerun-if-changed=src/main.rs
+Building with GTK version: 3.24.52
+cargo:rustc-env=COMMIT_HASH=b7ed04d
+

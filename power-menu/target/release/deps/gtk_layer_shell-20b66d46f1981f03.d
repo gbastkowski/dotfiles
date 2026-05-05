@@ -1,0 +1,10 @@
+/home/gunnar/git/gbastkowski/dotfiles/power-menu/target/release/deps/gtk_layer_shell-20b66d46f1981f03.d: /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/lib.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/mod.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/enums.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/functions.rs
+
+/home/gunnar/git/gbastkowski/dotfiles/power-menu/target/release/deps/libgtk_layer_shell-20b66d46f1981f03.rlib: /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/lib.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/mod.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/enums.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/functions.rs
+
+/home/gunnar/git/gbastkowski/dotfiles/power-menu/target/release/deps/libgtk_layer_shell-20b66d46f1981f03.rmeta: /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/lib.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/mod.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/enums.rs /home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/functions.rs
+
+/home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/lib.rs:
+/home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/mod.rs:
+/home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/enums.rs:
+/home/gunnar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-layer-shell-0.1.3/src/auto/functions.rs:

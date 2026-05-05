@@ -1,0 +1,17 @@
+schema: spec-driven
+created: 2026-04-08
+language: rust
+implementation: gtk-layer-shell
+status: implemented
+completed: 2026-05-05
+github_issues:
+  - https://github.com/gbastkowski/dotfiles/issues/7
+  - https://github.com/gbastkowski/dotfiles/issues/8
+  - https://github.com/gbastkowski/dotfiles/issues/9
+  - https://github.com/gbastkowski/dotfiles/issues/10
+  - https://github.com/gbastkowski/dotfiles/issues/11
+  - https://github.com/gbastkowski/dotfiles/issues/12
+  - https://github.com/gbastkowski/dotfiles/issues/13
+  - https://github.com/gbastkowski/dotfiles/issues/14
+  - https://github.com/gbastkowski/dotfiles/issues/15
+  - https://github.com/gbastkowski/dotfiles/issues/16

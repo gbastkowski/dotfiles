@@ -20,6 +20,7 @@
   home.file.".local/bin/release.sh"          = { source = ../../bin/release.sh;          executable = true; };
   home.file.".local/bin/system-upgrade.sh"   = { source = ../../bin/system-upgrade.sh;   executable = true; };
   home.file.".local/bin/termux.include.sh"   = { source = ../../bin/termux.include.sh;   executable = true; };
+  home.file.".local/bin/ensure-local-bin-in-path" = { source = ../../local/bin/ensure-local-bin-in-path; executable = true; };
 
   home.file.".doom.d/cheatsheet.css".source = ../../emacs/.doom.d/cheatsheet.css;
   home.file.".doom.d/cheatsheet.html".source = ../../emacs/.doom.d/cheatsheet.html;

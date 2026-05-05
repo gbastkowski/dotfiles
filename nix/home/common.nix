@@ -25,6 +25,8 @@
   home.file.".emacs-profile".source = ../../emacs/.emacs-profile;
   home.file.".emacs-profiles.el".source = ../../emacs/.emacs-profiles.el;
 
+  home.file.".wgetrc".source = ../../wget/.wgetrc;
+
   home.file.".android-env".source = ../../home/.android-env;
   home.file.".ideavimrc".source = ../../idea/.ideavimrc;
   home.file.".uniteai.yml".source = ../../home/.uniteai.yml;

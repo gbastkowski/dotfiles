@@ -212,21 +212,6 @@
       # sdkman
       [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-      # nvm (Linux)
-      if [[ "$(uname)" == "Linux" ]]; then
-        [[ -s "/usr/share/nvm/init-nvm.sh" ]] && source "/usr/share/nvm/init-nvm.sh"
-      fi
-
-      # Dart completions (Linux only)
-      [[ -f /home/gunnar/.dart-cli-completion/zsh-config.zsh ]] && source /home/gunnar/.dart-cli-completion/zsh-config.zsh || true
-
-      # Arch-specific
-      case "$(uname -a)" in
-        *arch*)
-          [[ -n "$SSH_CONNECTION" ]] && systemctl --user start inhibit-suspend.service
-          ;;
-      esac
-
       # cargo
       [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 

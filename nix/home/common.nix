@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   programs.home-manager.enable = true;
 
@@ -79,6 +79,7 @@
         ZSH_DISABLE_COMPFIX=true
         DISABLE_AUTO_UPDATE="true"
         COMPLETION_WAITING_DOTS="true"
+        ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
       '';
     };
 
@@ -102,13 +103,14 @@
       NVM_DIR = "$HOME/.nvm";
     };
 
-    initContent = ''
+    initContent = lib.mkMerge [
+     (lib.mkOrder 500 ''
       # Return early for IntelliJ environment reader
       if [[ -n "$INTELLIJ_ENVIRONMENT_READER" ]]; then
         return
       fi
 
-      # p10k instant prompt
+      # p10k instant prompt — must be before oh-my-zsh
       if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
         source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
       fi
@@ -164,6 +166,15 @@
         export KITTY_LISTEN_ON="''${KITTY_LISTEN_ON:-unix:/tmp/kitty-$USER}"
       fi
 
+      # PATH additions (no compdef calls)
+      [[ -d $HOME/.bin ]] && path_prepend "$HOME/.bin"
+      [[ -d $HOME/go/bin ]] && path_prepend "$HOME/go/bin"
+      path_prepend "./node_modules/.bin"
+      [[ -d $HOME/.emacs.doom/bin ]] && path_append "$HOME/.emacs.doom/bin"
+      [[ -d $HOME/.rbenv/bin ]] && path_prepend "$HOME/.rbenv/bin"
+      [[ -d $HOME/.local/bin ]] && path_append "$HOME/.local/bin"
+    '')
+    (lib.mkAfter ''
       # Private/work config
       [[ -f $HOME/.ista_rc ]] && source "$HOME/.ista_rc"
       [[ -f $HOME/.private ]] && source "$HOME/.private"
@@ -171,21 +182,13 @@
       # p10k config
       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-      # PATH additions
-      [[ -d $HOME/.bin ]] && path_prepend "$HOME/.bin"
-      [[ -d $HOME/go/bin ]] && path_prepend "$HOME/go/bin"
-      path_prepend "./node_modules/.bin"
-      [[ -d $HOME/.emacs.doom/bin ]] && path_append "$HOME/.emacs.doom/bin"
-      [[ -d $HOME/.rbenv/bin ]] && path_prepend "$HOME/.rbenv/bin"
-      [[ -d $HOME/.local/bin ]] && path_append "$HOME/.local/bin"
-
       # rbenv
       eval "$(rbenv init - zsh)"
 
       # sdkman
       [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-      # nvm
+      # nvm (Linux)
       if [[ "$(uname)" == "Linux" ]]; then
         [[ -s "/usr/share/nvm/init-nvm.sh" ]] && source "/usr/share/nvm/init-nvm.sh"
       fi
@@ -218,7 +221,8 @@
 
       unalias run-help 2>/dev/null || true
       autoload run-help
-    '';
+    '')
+    ];
   };
   home.file.".oh-my-zsh/custom/themes/powerlevel10k".source = inputs.powerlevel10k;
   home.file.".oh-my-zsh/custom/plugins/zsh-vi-mode".source = inputs.zsh-vi-mode;

@@ -26,6 +26,7 @@
   home.file.".emacs-profiles.el".source = ../../emacs/.emacs-profiles.el;
 
   home.file.".wgetrc".source = ../../wget/.wgetrc;
+  home.file.".latexmkrc".source = ../../latexmk/.latexmkrc;
 
   home.file.".android-env".source = ../../home/.android-env;
   home.file.".ideavimrc".source = ../../idea/.ideavimrc;

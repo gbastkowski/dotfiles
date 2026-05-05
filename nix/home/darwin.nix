@@ -4,6 +4,8 @@
   home.homeDirectory = "/Users/gunnar.bastkowski";
 
   home.file.".aliases".source = ../../home/.aliases;
+  home.file.".config/opencode/opencode.json".source = ../../opencode/opencode.json;
+  home.file.".config/opencode/oh-my-openagent.json".source = ../../opencode/oh-my-openagent.json;
   home.file.".config/kitty/kitty.conf".source = ../../kitty/kitty.conf;
   home.file.".config/kitty/current-theme.conf".source = ../../kitty/current-theme.conf;
 

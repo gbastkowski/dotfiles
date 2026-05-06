@@ -1,55 +1,47 @@
 * dotfiles
-
 A [[https://github.com/nix-community/home-manager][Home Manager]]-based dotfiles setup for macOS and Arch Linux.
 
 * Structure
-
-| Directory      | Contents                                      |
-|----------------+-----------------------------------------------|
-| ~nix/~         | Home Manager flake and configuration          |
-| ~bin/~         | Custom scripts deployed to ~~/.local/bin/~    |
-| ~emacs/~       | Doom Emacs configuration (~config.org~)       |
-| ~claude/~      | Global Claude Code configuration              |
-| ~kitty/~       | Kitty terminal configuration                  |
-| ~byobu/~       | Byobu configuration                           |
-| ~hypr/~        | Hyprland configuration (Arch only)            |
-| ~sway/~        | Sway configuration (Arch only)                |
-| ~eww/~         | Eww widget system (Arch only)                 |
-| ~walker/~      | Walker launcher (Arch only)                   |
-| ~wayvnc/~      | Wayvnc configuration (Arch only)              |
-| ~systemd/~     | Systemd user services (Arch only)             |
-| ~plover/~      | Plover stenography configuration              |
-| ~opencode/~    | OpenCode AI configuration                     |
-| ~sbt/~         | SBT build tool configuration                  |
-| ~zsh/~         | ZSH/p10k configuration                        |
-| ~home/~        | Miscellaneous home directory files            |
-| ~clang/~       | CMake toolchain files                         |
+| Directory   | Contents                                   |
+|-------------+--------------------------------------------|
+| ~nix/~      | Home Manager flake and configuration       |
+| ~bin/~      | Custom scripts deployed to ~~/.local/bin/~ |
+| ~emacs/~    | Doom Emacs configuration (~config.org~)    |
+| ~claude/~   | Global Claude Code configuration           |
+| ~kitty/~    | Kitty terminal configuration               |
+| ~byobu/~    | Byobu configuration                        |
+| ~hypr/~     | Hyprland configuration (Arch only)         |
+| ~sway/~     | Sway configuration (Arch only)             |
+| ~eww/~      | Eww widget system (Arch only)              |
+| ~walker/~   | Walker launcher (Arch only)                |
+| ~wayvnc/~   | Wayvnc configuration (Arch only)           |
+| ~systemd/~  | Systemd user services (Arch only)          |
+| ~plover/~   | Plover stenography configuration           |
+| ~opencode/~ | OpenCode AI configuration                  |
+| ~sbt/~      | SBT build tool configuration               |
+| ~zsh/~      | ZSH/p10k configuration                     |
+| ~home/~     | Miscellaneous home directory files         |
+| ~clang/~    | CMake toolchain files                      |
 
 * Installation
-
 ** Prerequisites
-
 - Git (to clone this repo)
 - Nix package manager
 
-** macOS
+** Bootstrap
+Run the single bootstrap script — it detects the OS automatically:
 
 #+BEGIN_SRC sh
-  ./bootstrap-darwin.sh
+  ./bootstrap.sh
 #+END_SRC
 
-This script will:
-1. Install Nix (if not already installed)
-2. Link ~nix/config/~ to ~~/.config/nix~ (enables flakes)
-3. Optionally build and switch to the Home Manager configuration
-
-** Arch Linux
-
-#+BEGIN_SRC sh
-  ./bootstrap-arch.sh
-#+END_SRC
-
-Same flow as macOS, but installs Nix via ~yay~ and enables the nix daemon.
+The script will walk through each step interactively:
+1. Install Nix (~curl~ on macOS, ~yay~ on Arch)
+2. Enable the Nix daemon (Arch only)
+3. Link ~nix/config/~ to ~~/.config/nix~ (enables flakes)
+4. Build and switch to the Home Manager configuration
+5. Install [[https://github.com/plexus/chemacs2][Chemacs2]] (Emacs profile switcher) into ~~/.emacs.d/~
+6. Clone and install Doom Emacs into ~~/.emacs.doom/~
 
 * Day-to-day Usage
 
@@ -77,14 +69,16 @@ Use the ~-b backup~ flag on first switch to let it keep backups of existing file
 
 * Home Manager targets
 
-| Target                    | Platform              |
-|---------------------------+-----------------------|
-| ~darwin-dotfiles~  | macOS (~aarch64-darwin~) |
-| ~arch-dotfiles~    | Arch Linux (~x86_64-linux~) |
+| Target            | Platform                    |
+|-------------------+-----------------------------|
+| ~darwin-dotfiles~ | macOS (~aarch64-darwin~)    |
+| ~arch-dotfiles~   | Arch Linux (~x86_64-linux~) |
 
 * Notes
 
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
-- ~emacs/.emacs.doom/~ (Doom Emacs itself) is a git submodule, managed outside Home Manager.
-- The ~ista/~ directory is a private git submodule with work-specific configuration.
-- ~nix/config/nix.conf~ enables flakes and must be linked to ~~/.config/nix~ before running any nix commands. The bootstrap scripts handle this.
+- ~emacs/.emacs.doom/~ (Doom Emacs itself) is cloned independently by ~bootstrap.sh~, not managed by Home Manager.
+- ~ista-dotfiles~ is a private repo included as a Nix flake input (not a submodule).
+- ~nix/config/nix.conf~ enables flakes and must be linked to ~~/.config/nix~ before running any nix commands.
+  ~bootstrap.sh~ handles this.
+- After a gcc or libgccjit upgrade, re-run ~doom env~ to refresh the environment snapshot for GUI Emacs.

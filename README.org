@@ -1,206 +1,90 @@
 * dotfiles
-  inspired by https://github.com/mathiasbynens/dotfiles
 
-  A simple setup to automate and document the setup of my development machine
-  as much as reasonable.
+A [[https://github.com/nix-community/home-manager][Home Manager]]-based dotfiles setup for macOS and Arch Linux.
 
-  Full automation doesn't make a lot of sense as it is a lot of work,
-  needs to be adjusted every now and then,
-  and won't be used much more often than every few years.
-  The invested time just doesn't justify.
+* Structure
 
-  But at least this framework gives some tools to recreate a development setup
-  on a new machine with not too much effort.
-
-  Currently this repo is optimized for macs.
-  But it is also possible to adjust it for usage with different Linux distributions.
-  Even a parallel setup and synchronization between a Linux and a MacOS system proved maintainable in the past.
-
-* Concepts
-  - The dotfiles are stored in git. They can be checked out to any folder on the target workstation.
-  - Via symlinks the dotfiles are "activated".
-  - The repo is copied into place via ~bootstrap.sh~ (rsync) instead of managing per-file symlinks.
-  - Complex configuration setups from 3rd parties are managed via [[https://git-scm.com/book/en/v2/Git-Tools-Submodules][git submodules]].
+| Directory      | Contents                                      |
+|----------------+-----------------------------------------------|
+| ~nix/~         | Home Manager flake and configuration          |
+| ~bin/~         | Custom scripts deployed to ~~/.local/bin/~    |
+| ~emacs/~       | Doom Emacs configuration (~config.org~)       |
+| ~claude/~      | Global Claude Code configuration              |
+| ~kitty/~       | Kitty terminal configuration                  |
+| ~byobu/~       | Byobu configuration                           |
+| ~hypr/~        | Hyprland configuration (Arch only)            |
+| ~sway/~        | Sway configuration (Arch only)                |
+| ~eww/~         | Eww widget system (Arch only)                 |
+| ~walker/~      | Walker launcher (Arch only)                   |
+| ~wayvnc/~      | Wayvnc configuration (Arch only)              |
+| ~systemd/~     | Systemd user services (Arch only)             |
+| ~plover/~      | Plover stenography configuration              |
+| ~opencode/~    | OpenCode AI configuration                     |
+| ~sbt/~         | SBT build tool configuration                  |
+| ~zsh/~         | ZSH/p10k configuration                        |
+| ~home/~        | Miscellaneous home directory files            |
+| ~clang/~       | CMake toolchain files                         |
 
 * Installation
-** Setup package manager and install
-  On MacOS we use [[https://brew.sh/][homebrew]] and install:
-    - awk
-    - aws-console
-    - aws-google-auth
-    - aws-iam-authenticator
-    - awscli
-    - bash
-    - bash-completion
-    - bash-language-server
-    - cmake
-    - coreutils
-    - emacs-plus@29
-    - gettext
-    - git
-    - git-lfs
-    - gnu-getopt
-    - gnupg
-    - graphviz
-    - helm
-    - kubectx
-    - kubernetes-cli
-    - make
-    - markdown
-    - node
-    - nvm
-    - pandoc
-    - plantuml
-    - rbenv
-    - scalastyle
-    - sops
-    - terraform-ls
-    - the_silver_searcher
-    - wget
-    - yaml-language-server
 
-  If possible a ~brew list~ on the old machine should be used to get a list of all installed packages
+** Prerequisites
 
-* Usage
-  Run ~./update.sh~ from time to time
+- Git (to clone this repo)
+- Nix package manager
 
-** Home Manager (MVP)
-   This repo now also contains an experimental standalone [[https://github.com/nix-community/home-manager][Home Manager]] setup under ~nix/~.
+** macOS
 
-*** Managed files
-   The following files are managed by Home Manager.
-   Do not edit the originals in ~git/~ or ~zsh/~ for day-to-day use; edit the Nix configuration instead.
+#+BEGIN_SRC sh
+  ./bootstrap-darwin.sh
+#+END_SRC
 
-   | Target file                      | Nix declaration                                    |
-   |----------------------------------+----------------------------------------------------|
-   | ~~/.p10k.zsh~                    | ~home.file.".p10k.zsh"~ in ~common.nix~            |
-   | ~~/.gitconfig~                   | ~programs.git~ in ~common.nix~                     |
-   | ~~/.config/git/ignore~           | ~programs.git.ignores~ in ~common.nix~             |
-   | ~~/.sbt/1.0/build.sbt~           | ~home.file.".sbt/1.0/build.sbt"~ in ~common.nix~  |
-   | ~~/.sbt/1.0/plugins/plugins.sbt~ | ~home.file.".sbt/1.0/plugins/..."~ in ~common.nix~ |
-   | ~~/.sbt/1.0/credentials.sbt~     | ~home.file.".sbt/1.0/credentials..."~ in ~common.nix~ |
-   | ~~/.sbt/repositories~            | ~home.file.".sbt/repositories"~ in ~common.nix~       |
-   | ~~/.oh-my-zsh/custom/themes/powerlevel10k~ | ~home.file.".oh-my-zsh/custom/themes/powerlevel10k"~ in ~common.nix~ |
+This script will:
+1. Install Nix (if not already installed)
+2. Link ~nix/config/~ to ~~/.config/nix~ (enables flakes)
+3. Optionally build and switch to the Home Manager configuration
 
-   The files ~git/.gitconfig~ and ~git/.gitignore_global~ remain in the repository as reference until each machine has been migrated.
+** Arch Linux
 
-*** Supported targets
-   - ~gunnar-dotfiles-darwin~ → current macOS architecture (~aarch64-darwin~)
-   - ~gunnar-dotfiles-arch~ → Arch Linux (~x86_64-linux~)
+#+BEGIN_SRC sh
+  ./bootstrap-arch.sh
+#+END_SRC
 
-*** Arch bootstrap helper
-   For Arch Linux, there is also a tiny helper script that walks through the first setup steps:
-   #+BEGIN_SRC sh
-      ./bootstrap-arch.sh
-    #+END_SRC
+Same flow as macOS, but installs Nix via ~yay~ and enables the nix daemon.
 
-*** Darwin bootstrap helper
-   For macOS, there is a matching helper script with the same flow:
-   #+BEGIN_SRC sh
-      ./bootstrap-darwin.sh
-    #+END_SRC
+* Day-to-day Usage
 
-*** Prerequisites
-   - Install Nix first, or use ~bootstrap-arch.sh~ on Arch Linux or ~bootstrap-darwin.sh~ on macOS.
-   - The repo-managed user-level Nix config now lives under ~nix/config/~.
-     It still needs to end up at ~~/.config/nix~ on your machine, for example via symlink or your normal dotfiles sync process.
-   - Enable flakes in the live ~~/.config/nix/nix.conf~ or in ~~/etc/nix/nix.conf~:
-     #+BEGIN_SRC conf
-       experimental-features = nix-command flakes
-     #+END_SRC
-   - If you are testing local changes, make sure newly added flake files are tracked by git before running flake commands.
+After initial setup, switch to the latest configuration with:
 
-*** Build before switch
-   Validate the configuration without activation first:
-   #+BEGIN_SRC sh
-     nix run github:nix-community/home-manager/release-25.11 -- build --flake ./nix#gunnar-dotfiles-darwin
-   #+END_SRC
+#+BEGIN_SRC sh
+  home-manager switch --flake ./nix#gunnar-dotfiles-darwin  # macOS
+  home-manager switch --flake ./nix#gunnar-dotfiles-arch    # Arch Linux
+#+END_SRC
 
-   On Arch Linux, use the Arch target instead:
-   #+BEGIN_SRC sh
-     nix run github:nix-community/home-manager/release-25.11 -- build --flake ./nix#gunnar-dotfiles-arch
-   #+END_SRC
+** Collision handling
 
-   Activate it only after the build succeeds:
-   #+BEGIN_SRC sh
-     nix run github:nix-community/home-manager/release-25.11 -- switch --flake ./nix#gunnar-dotfiles-darwin
-   #+END_SRC
+Home Manager refuses to overwrite unmanaged files.
+Use the ~-b backup~ flag on first switch to let it keep backups of existing files:
 
-   On Arch Linux, use the Arch target instead:
-   #+BEGIN_SRC sh
-     nix run github:nix-community/home-manager/release-25.11 -- switch --flake ./nix#gunnar-dotfiles-arch
-   #+END_SRC
+#+BEGIN_SRC sh
+  home-manager switch -b backup --flake ./nix#gunnar-dotfiles-darwin
+#+END_SRC
 
-*** Collision handling
-   Home Manager refuses to overwrite unmanaged target files.
-   If ~~/.p10k.zsh~ or ~~/.gitconfig~ already exists as an unmanaged file, move it aside first or use the ~-b backup~ flag to let Home Manager keep a backup during the first switch:
-   #+BEGIN_SRC sh
-      nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ./nix#gunnar-dotfiles-darwin
-   #+END_SRC
+** Validating without activating
 
-   On Arch Linux, use the Arch target instead:
-   #+BEGIN_SRC sh
-     nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ./nix#gunnar-dotfiles-arch
-   #+END_SRC
+#+BEGIN_SRC sh
+  home-manager build --flake ./nix#gunnar-dotfiles-darwin
+#+END_SRC
 
-*** Rollback
-   To stop using this setup:
-   - stop activating the relevant Home Manager target
-   - remove the Home Manager-managed symlinks or generation output (~~/.p10k.zsh~, ~~/.gitconfig~, ~~/.gitignore_global~)
-   - restore any previous files from the backups you created during first activation
+* Home Manager targets
 
-   The backup-based first activation flow above is the intended rollback path.
+| Target                    | Platform              |
+|---------------------------+-----------------------|
+| ~gunnar-dotfiles-darwin~  | macOS (~aarch64-darwin~) |
+| ~gunnar-dotfiles-arch~    | Arch Linux (~x86_64-linux~) |
 
-* Essential Tools
-** bootstrap.sh
-  Copies the tracked configuration into ~$HOME~ using ~rsync~.
+* Notes
 
-  Dry run first (recommended):
-  #+BEGIN_SRC
-    ./bootstrap.sh -n
-  #+END_SRC
-
-  Apply the changes once the output looks right:
-  #+BEGIN_SRC
-    ./bootstrap.sh
-  #+END_SRC
-
-** AWS
-*** TODO Contains credentials, needs gpg
-
-* Optional But Helpful And Fun Tools
-  - byobu
-  - thefuck
-  - fasd
-  - jq
-  - pass
-  - watch
-  - Ollama (local LLMs for code/chat)
-
-** Local LLM (Ollama)
-  Run powerful local models for coding and chat.
-
-  Quick start:
-  #+BEGIN_SRC
-    bin/ollama-install.sh --yes --start
-    bin/ollama-coder.sh --repl              # interactive coder chat (qwen2.5-coder:7b)
-    bin/ollama-coder.sh "Write a Bash script..."
-  #+END_SRC
-
-  Tips:
-  - Use ~-m qwen2.5-coder:14b~ for higher quality if you have RAM/VRAM.
-  - General models (non-coding): ~llama3.1:8b~, ~qwen2.5:7b~.
-  - Server host: set ~OLLAMA_HOST~ or pass ~--host~ to scripts.
-
-* brew
-* sdkman
-  https://sdkman.io/
-
-* Tools
-** ssh
-** aws
-** kubectl + kubectx + kubens
-
-* Not Yet Documented
-** TODO gnupg
-** TODO password-store
+- ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
+- ~emacs/.emacs.doom/~ (Doom Emacs itself) is a git submodule, managed outside Home Manager.
+- The ~ista/~ directory is a private git submodule with work-specific configuration.
+- ~nix/config/nix.conf~ enables flakes and must be linked to ~~/.config/nix~ before running any nix commands. The bootstrap scripts handle this.

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, inputs, ... }:
 {
   home.file.".local/bin/emacs-capture.sh" = { source = ../../bin/emacs-capture.sh; executable = true; };
   home.file.".local/bin/emacs-upgrade.sh" = { source = ../../bin/emacs-upgrade.sh; executable = true; };
@@ -31,11 +31,15 @@
   home.file.".emacs-profile".source = ../../emacs/.emacs-profile;
   home.file.".emacs-profiles.el".source = ../../emacs/.emacs-profiles.el;
 
+  home.file.".emacs.d/init.el".source = "${inputs.chemacs2}/init.el";
+  home.file.".emacs.d/early-init.el".source = "${inputs.chemacs2}/early-init.el";
+  home.file.".emacs.d/chemacs.el".source = "${inputs.chemacs2}/chemacs.el";
+
   programs.zsh = {
     sessionVariables = {
       EDITOR = "emacsclient -t";
     };
-    initContent = lib.mkOrder 500 ''
+    initContent = lib.mkAfter ''
       [[ -d $HOME/.emacs.doom/bin ]] && path_append "$HOME/.emacs.doom/bin"
     '';
   };

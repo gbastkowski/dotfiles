@@ -1,5 +1,6 @@
 .private
 /result
+/nix/result
 **/*.backup
 /sbt/1.0/swoval-jni/
 /README.html

@@ -15,6 +15,10 @@
       url = "github:jeffreytse/zsh-vi-mode";
       flake = false;
     };
+    ista-dotfiles = {
+      url = "git+ssh://git@github.com/gbastkowski/ista-dotfiles";
+      flake = false;
+    };
   };
 
   outputs = { nixpkgs, home-manager, ... }@inputs: {

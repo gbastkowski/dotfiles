@@ -33,6 +33,10 @@
   home.file.".config/kitty/kitty.conf".source = ../../kitty/kitty.conf;
   home.file.".config/kitty/current-theme.conf".source = ../../kitty/current-theme.conf;
 
+  home.sessionVariables = {
+    LIBRARY_PATH = "/opt/homebrew/lib/gcc/current:/opt/homebrew/opt/libgccjit/lib/gcc/current:/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/15";
+  };
+
   programs.zsh.initContent = ''
     # Homebrew
     if [[ -x /opt/homebrew/bin/brew ]]; then

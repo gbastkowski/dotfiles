@@ -14,5 +14,5 @@ if_confirmed "Do you want to install nix?"                                &&  ya
 if_confirmed "Do you want to enable the nix daemon service?"              &&  sudo systemctl enable --now nix-daemon.service
 if_confirmed "Do you want to link nix/config to ~/.config/nix?"           &&  ln -sfn "$repo_root/nix/config" "$HOME/.config/nix"
 if_confirmed "Do you want to verify flakes with 'nix flake show ./nix'?"  &&  cd "$repo_root" && nix flake show ./nix
-if_confirmed "Do you want to build the Home Manager config?"              &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- build --flake ./nix#gunnar-dotfiles-arch
-if_confirmed "Do you want to switch to the Home Manager config?"          &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ./nix#gunnar-dotfiles-arch
+if_confirmed "Do you want to build the Home Manager config?"              &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- build --flake ./nix#arch-dotfiles
+if_confirmed "Do you want to switch to the Home Manager config?"          &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ./nix#arch-dotfiles

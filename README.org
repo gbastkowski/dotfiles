@@ -56,8 +56,8 @@ Same flow as macOS, but installs Nix via ~yay~ and enables the nix daemon.
 After initial setup, switch to the latest configuration with:
 
 #+BEGIN_SRC sh
-  home-manager switch --flake ./nix#gunnar-dotfiles-darwin  # macOS
-  home-manager switch --flake ./nix#gunnar-dotfiles-arch    # Arch Linux
+  home-manager switch --flake ./nix#darwin-dotfiles  # macOS
+  home-manager switch --flake ./nix#arch-dotfiles    # Arch Linux
 #+END_SRC
 
 ** Collision handling
@@ -66,21 +66,21 @@ Home Manager refuses to overwrite unmanaged files.
 Use the ~-b backup~ flag on first switch to let it keep backups of existing files:
 
 #+BEGIN_SRC sh
-  home-manager switch -b backup --flake ./nix#gunnar-dotfiles-darwin
+  home-manager switch -b backup --flake ./nix#darwin-dotfiles
 #+END_SRC
 
 ** Validating without activating
 
 #+BEGIN_SRC sh
-  home-manager build --flake ./nix#gunnar-dotfiles-darwin
+  home-manager build --flake ./nix#darwin-dotfiles
 #+END_SRC
 
 * Home Manager targets
 
 | Target                    | Platform              |
 |---------------------------+-----------------------|
-| ~gunnar-dotfiles-darwin~  | macOS (~aarch64-darwin~) |
-| ~gunnar-dotfiles-arch~    | Arch Linux (~x86_64-linux~) |
+| ~darwin-dotfiles~  | macOS (~aarch64-darwin~) |
+| ~arch-dotfiles~    | Arch Linux (~x86_64-linux~) |
 
 * Notes
 

@@ -19,7 +19,7 @@
 
   outputs = { nixpkgs, home-manager, ... }@inputs: {
     homeConfigurations = {
-      "gunnar-dotfiles-darwin" = home-manager.lib.homeManagerConfiguration {
+      "darwin-dotfiles" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         extraSpecialArgs = { inherit inputs; };
         modules = [
@@ -28,7 +28,7 @@
         ];
       };
 
-      "gunnar-dotfiles-arch" = home-manager.lib.homeManagerConfiguration {
+      "arch-dotfiles" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         extraSpecialArgs = { inherit inputs; };
         modules = [

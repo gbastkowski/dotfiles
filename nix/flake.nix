@@ -28,6 +28,7 @@
         extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home/common.nix
+          ./home/emacs.nix
           ./home/darwin.nix
         ];
       };
@@ -37,6 +38,7 @@
         extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home/common.nix
+          ./home/emacs.nix
           ./home/arch.nix
         ];
       };

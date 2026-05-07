@@ -40,8 +40,8 @@ echo
 
 echo "switching home-manager configuration ..."
 case "$OSTYPE" in
-    arch*)    home-manager switch --flake "$DOTFILES_DIR/nix#arch-dotfiles" ;;
-    darwin*)  home-manager switch --flake "$DOTFILES_DIR/nix#darwin-dotfiles" ;;
+    arch*)    home-manager switch --flake "$DOTFILES_DIR#arch-dotfiles" ;;
+    darwin*)  home-manager switch --flake "$DOTFILES_DIR#darwin-dotfiles" ;;
 esac
 echo
 

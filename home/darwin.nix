@@ -3,7 +3,7 @@
   home.username = "gunnar.bastkowski";
   home.homeDirectory = "/Users/gunnar.bastkowski";
 
-  home.file.".aliases".source = ../../home/.aliases;
+  home.file.".aliases".source = ../home/.aliases;
 
   home.file.".ista_profile".source = "${inputs.ista-dotfiles}/.ista_profile";
   home.file.".ista_rc".source = "${inputs.ista-dotfiles}/.ista_rc";

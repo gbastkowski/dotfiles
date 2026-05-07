@@ -38,7 +38,7 @@ Run the single bootstrap script — it detects the OS automatically:
 The script will walk through each step interactively:
 1. Install Nix (~curl~ on macOS, ~yay~ on Arch)
 2. Enable the Nix daemon (Arch only)
-3. Link ~nix/config/~ to ~~/.config/nix~ (enables flakes)
+3. Link ~config/~ to ~~/.config/nix~ (enables flakes)
 4. Build and switch to the Home Manager configuration
 5. Clone and install Doom Emacs into ~~/.emacs.doom/~
 
@@ -47,12 +47,12 @@ Home Manager refuses to overwrite unmanaged files.
 Use the ~-b backup~ flag on first switch to let it keep backups of existing files:
 
 #+BEGIN_SRC sh
-  home-manager switch -b backup --flake ./nix#darwin-dotfiles
+  home-manager switch -b backup --flake .#darwin-dotfiles
 #+END_SRC
 
 ** Validating without activating
 #+BEGIN_SRC sh
-  home-manager build --flake ./nix#darwin-dotfiles
+  home-manager build --flake .#darwin-dotfiles
 #+END_SRC
 
 * Day-to-day Usage
@@ -103,6 +103,6 @@ Running ~home-manager switch~ compares the current generation with the new one a
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
 - ~emacs/.emacs.doom/~ (Doom Emacs itself) is cloned independently by ~bootstrap.sh~, not managed by Home Manager.
 - ~ista-dotfiles~ is a private repo included as a Nix flake input (not a submodule).
-- ~nix/config/nix.conf~ enables flakes and must be linked to ~~/.config/nix~ before running any nix commands.
+- ~config/nix.conf~ enables flakes and must be linked to ~~/.config/nix~ before running any nix commands.
   ~bootstrap.sh~ handles this.
 - After a gcc or libgccjit upgrade, re-run ~doom env~ to refresh the environment snapshot for GUI Emacs.

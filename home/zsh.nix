@@ -1,6 +1,6 @@
 { inputs, lib, ... }:
 {
-  home.file.".p10k.zsh".source = ../../zsh/.p10k.zsh;
+  home.file.".p10k.zsh".source = ../zsh/.p10k.zsh;
   home.file.".oh-my-zsh/custom/themes/powerlevel10k".source = inputs.powerlevel10k;
   home.file.".oh-my-zsh/custom/plugins/zsh-vi-mode".source = inputs.zsh-vi-mode;
 
@@ -127,7 +127,7 @@
 
       # PATH additions
       [[ -d $HOME/.bin ]] && path_prepend "$HOME/.bin"
-      [[ -d $HOME/go/bin ]] && path_prepend "$HOME/go/bin"
+      [[ -d $HO../bin ]] && path_prepend "$HO../bin"
       path_prepend "./node_modules/.bin"
       [[ -d $HOME/.local/bin ]] && path_append "$HOME/.local/bin"
     '')

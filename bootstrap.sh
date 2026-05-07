@@ -26,8 +26,8 @@ case "$(uname -s)" in
     ;;
 esac
 
-if_confirmed "Do you want to link nix/config to ~/.config/nix?"           &&  ln -sfn "$repo_root/nix/config" "$HOME/.config/nix"
-if_confirmed "Do you want to verify flakes with 'nix flake show ./nix'?"  &&  cd "$repo_root" && nix flake show ./nix
-if_confirmed "Do you want to build the Home Manager config?"              &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- build --flake "./nix#$hm_target"
-if_confirmed "Do you want to switch to the Home Manager config?"          &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake "./nix#$hm_target"
+if_confirmed "Do you want to link config to ~/.config/nix?"               &&  ln -sfn "$repo_root/config" "$HOME/.config/nix"
+if_confirmed "Do you want to verify flakes with 'nix flake show'?"        &&  cd "$repo_root" && nix flake show
+if_confirmed "Do you want to build the Home Manager config?"              &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- build --flake ".#$hm_target"
+if_confirmed "Do you want to switch to the Home Manager config?"          &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ".#$hm_target"
 if_confirmed "Do you want to install Doom Emacs?"                         &&  git clone git@github.com:gbastkowski/doomemacs.git "$HOME/.emacs.doom" && "$HOME/.emacs.doom/bin/doom" install

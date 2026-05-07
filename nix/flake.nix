@@ -54,6 +54,7 @@
           ./home/emacs.nix
           ./home/kitty.nix
           ./home/claude.nix
+          ./home/plover.nix
           ./home/arch.nix
         ];
       };

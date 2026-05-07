@@ -39,6 +39,7 @@
           ./home/kitty.nix
           ./home/claude.nix
           ./home/plover.nix
+          ./home/sbt.nix
           ./home/darwin.nix
         ];
       };
@@ -55,6 +56,7 @@
           ./home/kitty.nix
           ./home/claude.nix
           ./home/plover.nix
+          ./home/sbt.nix
           ./home/arch.nix
         ];
       };

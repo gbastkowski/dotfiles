@@ -32,6 +32,8 @@
         extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home/common.nix
+          ./home/bin.nix
+          ./home/gpg.nix
           ./home/zsh.nix
           ./home/tmux.nix
           ./home/git.nix
@@ -49,6 +51,8 @@
         extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home/common.nix
+          ./home/bin.nix
+          ./home/gpg.nix
           ./home/zsh.nix
           ./home/tmux.nix
           ./home/git.nix

@@ -72,6 +72,37 @@ Use the ~-b backup~ flag on first switch to let it keep backups of existing file
 | ~darwin-dotfiles~ | macOS (~aarch64-darwin~)    |
 | ~arch-dotfiles~   | Arch Linux (~x86_64-linux~) |
 
+* Nix & Home Manager Primer
+A brief glossary for the concepts used in this repo.
+
+** Nix
+A purely functional package manager and build system.
+Packages are built in isolation and stored in the /nix/store (e.g. ~/nix/store/abc123-emacs-29.4/~).
+Nothing is installed globally; everything is linked or referenced from there.
+
+** Flake
+A self-contained Nix project with pinned inputs and declared outputs.
+~nix/flake.nix~ is this repo's flake — it declares all external dependencies (nixpkgs, home-manager, powerlevel10k, etc.) and the two Home Manager configurations as outputs.
+~nix/flake.lock~ pins every input to an exact git revision, making builds reproducible.
+
+** Flake input
+An external source (git repo, tarball) that the flake depends on.
+Inputs with ~flake = false~ are plain repos without their own ~flake.nix~, consumed as raw file trees (e.g. chemacs2, powerlevel10k).
+
+** Home Manager
+A tool that applies a Nix configuration to a user's home directory.
+It manages dotfiles, shell config, and some programs declaratively — the ~home.file~ attribute set maps source files to ~$HOME~ paths as read-only symlinks into the Nix store.
+
+** home.file
+Declares a symlink from a source file (in the repo or Nix store) into ~$HOME~.
+Files managed this way are read-only; Home Manager owns them.
+
+** programs.*
+Higher-level Home Manager modules (e.g. ~programs.zsh~, ~programs.tmux~, ~programs.git~) that generate config files and wire up shell integration automatically.
+
+** Activation
+Running ~home-manager switch~ compares the current generation with the new one and atomically applies the diff: it creates/removes symlinks, installs packages, and runs any activation scripts.
+
 * Notes
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
 - ~emacs/.emacs.doom/~ (Doom Emacs itself) is cloned independently by ~bootstrap.sh~, not managed by Home Manager.

@@ -43,7 +43,6 @@ The script will walk through each step interactively:
 5. Clone and install Doom Emacs into ~~/.emacs.doom/~
 
 ** Collision handling
-
 Home Manager refuses to overwrite unmanaged files.
 Use the ~-b backup~ flag on first switch to let it keep backups of existing files:
 
@@ -52,7 +51,6 @@ Use the ~-b backup~ flag on first switch to let it keep backups of existing file
 #+END_SRC
 
 ** Validating without activating
-
 #+BEGIN_SRC sh
   home-manager build --flake ./nix#darwin-dotfiles
 #+END_SRC
@@ -65,8 +63,8 @@ Run the upgrade script to pull the latest dotfiles, apply the Home Manager confi
 #+END_SRC
 
 * Home Manager targets
-| Target            | Platform                    |
-|-------------------+-----------------------------|
+| Target          | Platform                  |
+|-----------------+---------------------------|
 | ~darwin-dotfiles~ | macOS (~aarch64-darwin~)    |
 | ~arch-dotfiles~   | Arch Linux (~x86_64-linux~) |
 

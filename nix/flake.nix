@@ -19,6 +19,10 @@
       url = "git+ssh://git@github.com/gbastkowski/ista-dotfiles";
       flake = false;
     };
+    chemacs2 = {
+      url = "github:plexus/chemacs2";
+      flake = false;
+    };
   };
 
   outputs = { nixpkgs, home-manager, ... }@inputs: {

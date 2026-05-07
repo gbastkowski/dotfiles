@@ -7,7 +7,6 @@
   home.file.".p10k.zsh".source = ../../zsh/.p10k.zsh;
   home.file.".local/bin/checkmail.sh"        = { source = ../../bin/checkmail.sh;        executable = true; };
   home.file.".local/bin/eos-capture-video.sh"= { source = ../../bin/eos-capture-video.sh;executable = true; };
-  home.file.".local/bin/git-ensure-remotes.sh"={ source = ../../bin/git-ensure-remotes.sh;executable = true; };
   home.file.".local/bin/install-xmlls.sh"    = { source = ../../bin/install-xmlls.sh;    executable = true; };
   home.file.".local/bin/linux.include.sh"    = { source = ../../bin/linux.include.sh;    executable = true; };
   home.file.".local/bin/macos.include.sh"    = { source = ../../bin/macos.include.sh;    executable = true; };

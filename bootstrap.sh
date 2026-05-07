@@ -30,5 +30,4 @@ if_confirmed "Do you want to link nix/config to ~/.config/nix?"           &&  ln
 if_confirmed "Do you want to verify flakes with 'nix flake show ./nix'?"  &&  cd "$repo_root" && nix flake show ./nix
 if_confirmed "Do you want to build the Home Manager config?"              &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- build --flake "./nix#$hm_target"
 if_confirmed "Do you want to switch to the Home Manager config?"          &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake "./nix#$hm_target"
-if_confirmed "Do you want to install Chemacs2 (Emacs profile switcher)?"  &&  git clone https://github.com/plexus/chemacs2.git /tmp/chemacs2 && cp /tmp/chemacs2/{early-init.el,init.el,chemacs.el} "$HOME/.emacs.d/"
 if_confirmed "Do you want to install Doom Emacs?"                         &&  git clone git@github.com:gbastkowski/doomemacs.git "$HOME/.emacs.doom" && "$HOME/.emacs.doom/bin/doom" install

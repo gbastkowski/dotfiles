@@ -1,4 +1,4 @@
 { ... }:
 {
-  home.file.".byobu".source = ../byobu/.byobu;
+  home.file.".byobu".source = ../byobu;
 }

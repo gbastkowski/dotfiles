@@ -4,81 +4,6 @@ SCRIPTPATH="$(cd "$(dirname "$0")" && pwd)"
 DOTFILES_DIR="$(cd "$SCRIPTPATH/.." && pwd)"
 ORIGINAL_DIR="$(pwd)"
 
-sdkman_noninteractive_upgrade() {
-	if ! declare -F sdk >/dev/null 2>&1; then
-		echo "warning: sdk command not available; skipping sdkman upgrade"
-		return 0
-	fi
-
-	if ! declare -F __sdkman_secure_curl >/dev/null 2>&1; then
-		echo "warning: sdkman helpers missing; skipping sdkman upgrade"
-		return 0
-	fi
-
-	if [ -z "${SDKMAN_CANDIDATES_DIR:-}" ] || [ ! -d "$SDKMAN_CANDIDATES_DIR" ]; then
-		echo "warning: no sdkman candidates directory; skipping sdkman upgrade"
-		return 0
-	fi
-
-	local candidate_path candidate default_version
-	local -a installed_candidates=()
-
-	for candidate_path in "$SDKMAN_CANDIDATES_DIR"/*; do
-		[ -d "$candidate_path" ] || continue
-		candidate="$(basename "$candidate_path")"
-		installed_candidates+=("$candidate")
-	done
-
-	if [ ${#installed_candidates[@]} -eq 0 ]; then
-		echo "no sdkman candidates installed, skipping sdkman upgrade"
-		return 0
-	fi
-
-	local -a upgrade_candidates=()
-	local -a upgrade_versions=()
-	local sdkman_api="${SDKMAN_CANDIDATES_API:-https://api.sdkman.io/2}"
-
-	for candidate in "${installed_candidates[@]}"; do
-		default_version="$(
-			__sdkman_secure_curl "${sdkman_api}/candidates/default/${candidate}" 2>/dev/null || true
-		)"
-
-		if [ -z "$default_version" ]; then
-			continue
-		fi
-
-		if [ -d "${SDKMAN_CANDIDATES_DIR}/${candidate}/${default_version}" ]; then
-			continue
-		fi
-
-		local validation_endpoint="${sdkman_api}/candidates/validate/${candidate}/${default_version}/${SDKMAN_PLATFORM:-unknown}"
-		local validation_result="$(__sdkman_secure_curl "$validation_endpoint" 2>/dev/null || true)"
-
-		if [ "$validation_result" = "valid" ]; then
-			upgrade_candidates+=("$candidate")
-			upgrade_versions+=("$default_version")
-		else
-			echo "warning: sdkman candidate ${candidate} default ${default_version} unavailable on ${SDKMAN_PLATFORM:-unknown}; skipping"
-		fi
-	done
-
-	if [ ${#upgrade_candidates[@]} -eq 0 ]; then
-		echo "All sdkman candidates already up to date or skipped"
-		return 0
-	fi
-
-	local previous_auto_answer="${sdkman_auto_answer:-false}"
-	sdkman_auto_answer=true
-	local idx candidate_name candidate_version
-	for idx in "${!upgrade_candidates[@]}"; do
-		candidate_name="${upgrade_candidates[$idx]}"
-		candidate_version="${upgrade_versions[$idx]}"
-		echo "Installing ${candidate_name} default ${candidate_version} ..."
-		__sdk_install "$candidate_name" "$candidate_version" || echo "warning: failed to install ${candidate_name} ${candidate_version}"
-	done
-	sdkman_auto_answer="$previous_auto_answer"
-}
-
 # Change to dotfiles directory
 cd "$DOTFILES_DIR" || {
 	echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"
@@ -98,19 +23,10 @@ upgrade_system_and_packages
 
 upgrade_python_packages
 
-if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
-    echo "updating sdkman"
-	# shellcheck disable=SC1090
-	source "$HOME/.sdkman/bin/sdkman-init.sh"
-	sdk selfupdate || echo "warning: sdkman selfupdate failed"
-	sdkman_noninteractive_upgrade
-	echo
-fi
-
 if command -v npm >/dev/null 2>&1; then
 	echo "updating ccline (npm) ..."
-	npm update -g @cometix/ccline || echo "warning: failed to update ccline"
-	npm update -g tweakcc || echo "warning: failed to update tweakcc"
+	npm update -g @cometix/ccline      || echo "warning: failed to update ccline"
+	npm update -g tweakcc              || echo "warning: failed to update tweakcc"
 	npm update -g @fission-ai/openspec || echo "warning: failed to update openspec"
 	echo
 else
@@ -124,8 +40,8 @@ echo
 
 echo "switching home-manager configuration ..."
 case "$OSTYPE" in
-arch*)    home-manager switch --flake "$DOTFILES_DIR/nix#arch-dotfiles" ;;
-darwin*)  home-manager switch --flake "$DOTFILES_DIR/nix#darwin-dotfiles" ;;
+    arch*)    home-manager switch --flake "$DOTFILES_DIR/nix#arch-dotfiles" ;;
+    darwin*)  home-manager switch --flake "$DOTFILES_DIR/nix#darwin-dotfiles" ;;
 esac
 echo
 

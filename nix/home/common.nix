@@ -1,8 +1,14 @@
-{ inputs, lib, ... }:
+{ inputs, lib, pkgs, ... }:
 {
   programs.home-manager.enable = true;
 
   home.stateVersion = "25.11";
+
+  home.packages = with pkgs; [
+    temurin-bin-21
+    scala_3
+    sbt
+  ];
 
   home.file.".p10k.zsh".source = ../../zsh/.p10k.zsh;
   home.file.".local/bin/checkmail.sh"        = { source = ../../bin/checkmail.sh;        executable = true; };
@@ -62,7 +68,6 @@
         "pass"
         "sbt"
         "scala"
-        "sdk"
         "screen"
         "virtualenv"
         "zsh-vi-mode"
@@ -91,7 +96,6 @@
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       MANPAGER = "less -X";
-      SDKMAN_DIR = "$HOME/.sdkman";
       NVM_DIR = "$HOME/.nvm";
     };
 
@@ -175,9 +179,6 @@
 
       # rbenv
       eval "$(rbenv init - zsh)"
-
-      # sdkman
-      [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
       # cargo
       [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"

@@ -86,16 +86,12 @@ cd "$DOTFILES_DIR" || {
 }
 
 OSTYPE="$("$SCRIPTPATH/ostype.sh")"
-# [ -f $HOME/.bashrc ] && $HOME/.bashrc
 
 case "$OSTYPE" in
-arch*) . "$SCRIPTPATH/linux.include.sh" ;;
-darwin*) . "$SCRIPTPATH/macos.include.sh" ;;
-termux*) . "$SCRIPTPATH/termux.include.sh" ;;
-*)
-	echo "unknown: $OSTYPE"
-	exit 1
-	;;
+    arch*)   . "$SCRIPTPATH/linux.include.sh" ;;
+    darwin*) . "$SCRIPTPATH/macos.include.sh" ;;
+    termux*) . "$SCRIPTPATH/termux.include.sh" ;;
+    *)       echo "unknown: $OSTYPE"; exit 1 ;;
 esac
 
 upgrade_system_and_packages
@@ -103,7 +99,7 @@ upgrade_system_and_packages
 upgrade_python_packages
 
 if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
-	echo "updating sdkman"
+    echo "updating sdkman"
 	# shellcheck disable=SC1090
 	source "$HOME/.sdkman/bin/sdkman-init.sh"
 	sdk selfupdate || echo "warning: sdkman selfupdate failed"

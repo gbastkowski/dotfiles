@@ -42,14 +42,6 @@ The script will walk through each step interactively:
 4. Build and switch to the Home Manager configuration
 5. Clone and install Doom Emacs into ~~/.emacs.doom/~
 
-* Day-to-day Usage
-Run the upgrade script to pull the latest dotfiles, apply the Home Manager configuration, and update Doom Emacs:
-
-#+BEGIN_SRC sh
-  ~/.local/bin/system-upgrade.sh
-#+END_SRC
-
-
 ** Collision handling
 
 Home Manager refuses to overwrite unmanaged files.
@@ -63,6 +55,13 @@ Use the ~-b backup~ flag on first switch to let it keep backups of existing file
 
 #+BEGIN_SRC sh
   home-manager build --flake ./nix#darwin-dotfiles
+#+END_SRC
+
+* Day-to-day Usage
+Run the upgrade script to pull the latest dotfiles, apply the Home Manager configuration, and update Doom Emacs:
+
+#+BEGIN_SRC sh
+  ~/.local/bin/system-upgrade.sh
 #+END_SRC
 
 * Home Manager targets

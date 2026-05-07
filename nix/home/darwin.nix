@@ -8,9 +8,6 @@
   home.file.".ista_profile".source = "${inputs.ista-dotfiles}/.ista_profile";
   home.file.".ista_rc".source = "${inputs.ista-dotfiles}/.ista_rc";
 
-  home.file.".config/kitty/kitty.conf".source = ../../kitty/kitty.conf;
-  home.file.".config/kitty/current-theme.conf".source = ../../kitty/current-theme.conf;
-
   home.sessionVariables = {
     LIBRARY_PATH = "/opt/homebrew/lib/gcc/current:/opt/homebrew/opt/libgccjit/lib/gcc/current:/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/15";
   };

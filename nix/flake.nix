@@ -36,6 +36,8 @@
           ./home/tmux.nix
           ./home/git.nix
           ./home/emacs.nix
+          ./home/claude.nix
+          ./home/plover.nix
           ./home/darwin.nix
         ];
       };

@@ -2,26 +2,27 @@
 A [[https://github.com/nix-community/home-manager][Home Manager]]-based dotfiles setup for macOS and Arch Linux.
 
 * Structure
-| Directory | Contents                                 |
-|-----------+------------------------------------------|
-| ~nix/~      | Home Manager flake and configuration     |
-| ~bin/~      | Custom scripts deployed to ~~/.local/bin/~ |
-| ~emacs/~    | Doom Emacs configuration (~config.org~)    |
-| ~claude/~   | Global Claude Code configuration         |
-| ~kitty/~    | Kitty terminal configuration             |
-| ~byobu/~    | Byobu configuration                      |
-| ~hypr/~     | Hyprland configuration (Arch only)       |
-| ~sway/~     | Sway configuration (Arch only)           |
-| ~eww/~      | Eww widget system (Arch only)            |
-| ~walker/~   | Walker launcher (Arch only)              |
-| ~wayvnc/~   | Wayvnc configuration (Arch only)         |
-| ~systemd/~  | Systemd user services (Arch only)        |
-| ~plover/~   | Plover stenography configuration         |
-| ~opencode/~ | OpenCode AI configuration                |
-| ~sbt/~      | SBT build tool configuration             |
-| ~zsh/~      | ZSH/p10k configuration                   |
-| ~home/~     | Miscellaneous home directory files       |
-| ~clang/~    | CMake toolchain files                    |
+| Path          | Contents                                       |
+|---------------+------------------------------------------------|
+| ~flake.nix~   | Home Manager flake (inputs and targets)        |
+| ~home/~       | Home Manager modules (~*.nix~)                 |
+| ~config/~     | Nix configuration (~nix.conf~, enables flakes) |
+| ~bin/~        | Custom scripts deployed to ~~/.local/bin/~     |
+| ~emacs/~      | Doom Emacs configuration (~config.org~)        |
+| ~claude/~     | Global Claude Code configuration               |
+| ~kitty/~      | Kitty terminal configuration                   |
+| ~byobu/~      | Byobu configuration                            |
+| ~hypr/~       | Hyprland configuration (Arch only)             |
+| ~sway/~       | Sway configuration (Arch only)                 |
+| ~eww/~        | Eww widget system (Arch only)                  |
+| ~walker/~     | Walker launcher (Arch only)                    |
+| ~wayvnc/~     | Wayvnc configuration (Arch only)               |
+| ~systemd/~    | Systemd user services (Arch only)              |
+| ~plover/~     | Plover stenography configuration               |
+| ~opencode/~   | OpenCode AI configuration                      |
+| ~sbt/~        | SBT build tool configuration                   |
+| ~zsh/~        | ZSH/p10k configuration                         |
+| ~clang/~      | CMake toolchain files                          |
 
 * Installation
 ** Prerequisites

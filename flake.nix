@@ -33,7 +33,9 @@
         modules = [
           ./home/common.nix
           ./home/bin.nix
+          ./home/byobu.nix
           ./home/gpg.nix
+          ./home/idea.nix
           ./home/zsh.nix
           ./home/tmux.nix
           ./home/git.nix
@@ -52,7 +54,9 @@
         modules = [
           ./home/common.nix
           ./home/bin.nix
+          ./home/byobu.nix
           ./home/gpg.nix
+          ./home/idea.nix
           ./home/zsh.nix
           ./home/tmux.nix
           ./home/git.nix

@@ -102,10 +102,6 @@ upgrade_system_and_packages
 
 upgrade_python_packages
 
-echo "normalizing git remotes (submodules) ..."
-"$SCRIPTPATH/git-ensure-remotes.sh" || echo "warning: failed to normalize submodule remotes"
-echo
-
 if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
 	echo "updating sdkman"
 	# shellcheck disable=SC1090
@@ -126,53 +122,24 @@ else
 	echo
 fi
 
-echo "updating dotfiles ..."
-echo
-
-echo "updating oh-my-zsh ..."
-git -C zsh/.oh-my-zsh checkout -q master 2>/dev/null || true
-git -C zsh/.oh-my-zsh fetch --all
-EDITOR=vim git -C zsh/.oh-my-zsh merge upstream/master
-echo
-
-echo "updating powerlevel10k ..."
-git -C powerlevel10k pull
-echo
-
-echo "updating zsh-vi-mode ..."
-git -C zsh-vi-mode checkout -q master 2>/dev/null || true
-git -C zsh-vi-mode pull
-echo
-
-echo "updating chemacs2 ..."
-git -C emacs/.emacs.d fetch --all
-EDITOR=vim git -C emacs/.emacs.d checkout main
-if git -C emacs/.emacs.d show-ref --verify --quiet refs/remotes/upstream/main; then
-	EDITOR=vim git -C emacs/.emacs.d merge upstream/main
-else
-	EDITOR=vim git -C emacs/.emacs.d merge upstream/master
-fi
-EDITOR=vim git -C emacs/.emacs.d push
-echo
-
-echo "updating doomemacs ..."
-git -C emacs/.emacs.doom fetch --all
-EDITOR=vim git -C emacs/.emacs.doom checkout master
-EDITOR=vim git -C emacs/.emacs.doom merge upstream/master
-EDITOR=vim git -C emacs/.emacs.doom push
-echo
-
-echo "pushing submodules to origin ..."
-git -C zsh/.oh-my-zsh pull --rebase origin master || true
-git -C zsh/.oh-my-zsh push origin
-git -C emacs/.emacs.d push origin
-echo
-
-echo "pushing dotfiles to origin ..."
-git add .
-EDITOR=vim git commit -m "Update dotfiles and submodules"
+echo "pulling dotfiles ..."
 git pull --rebase origin main
-git push origin
+echo
+
+echo "switching home-manager configuration ..."
+case "$OSTYPE" in
+arch*)    home-manager switch --flake "$DOTFILES_DIR/nix#arch-dotfiles" ;;
+darwin*)  home-manager switch --flake "$DOTFILES_DIR/nix#darwin-dotfiles" ;;
+esac
+echo
+
+echo "updating doom emacs ..."
+if command -v doom >/dev/null 2>&1; then
+	doom upgrade
+	doom sync
+else
+	echo "doom not found, skipping"
+fi
 
 echo "current state:"
 git status

@@ -49,12 +49,6 @@ Run the upgrade script to pull the latest dotfiles, apply the Home Manager confi
   ~/.local/bin/system-upgrade.sh
 #+END_SRC
 
-To apply only the Home Manager configuration (without a full system upgrade):
-
-#+BEGIN_SRC sh
-  home-manager switch --flake ./nix#darwin-dotfiles  # macOS
-  home-manager switch --flake ./nix#arch-dotfiles    # Arch Linux
-#+END_SRC
 
 ** Collision handling
 

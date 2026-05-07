@@ -8,6 +8,7 @@
     temurin-bin-21
     scala_3
     sbt
+    nodejs_22
   ];
 
   home.file.".p10k.zsh".source = ../../zsh/.p10k.zsh;
@@ -64,7 +65,6 @@
         "history-substring-search"
         "kubectl"
         "mvn"
-        "nvm"
         "pass"
         "sbt"
         "scala"
@@ -96,7 +96,6 @@
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       MANPAGER = "less -X";
-      NVM_DIR = "$HOME/.nvm";
     };
 
     initContent = lib.mkMerge [
@@ -166,7 +165,6 @@
       [[ -d $HOME/.bin ]] && path_prepend "$HOME/.bin"
       [[ -d $HOME/go/bin ]] && path_prepend "$HOME/go/bin"
       path_prepend "./node_modules/.bin"
-      [[ -d $HOME/.rbenv/bin ]] && path_prepend "$HOME/.rbenv/bin"
       [[ -d $HOME/.local/bin ]] && path_append "$HOME/.local/bin"
     '')
     (lib.mkAfter ''
@@ -176,9 +174,6 @@
 
       # p10k config
       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-
-      # rbenv
-      eval "$(rbenv init - zsh)"
 
       # cargo
       [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"

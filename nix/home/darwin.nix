@@ -49,10 +49,6 @@
       path_prepend "/opt/homebrew/bin"
     fi
 
-    # nvm via homebrew
-    [[ -s "/opt/homebrew/opt/nvm/nvm.sh" ]] && source "/opt/homebrew/opt/nvm/nvm.sh"
-    [[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ]] && source "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-
     # sqlite
     [[ -d /usr/local/opt/sqlite/bin ]] && path_prepend "/usr/local/opt/sqlite/bin"
 

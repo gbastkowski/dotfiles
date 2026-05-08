@@ -21,8 +21,12 @@ case "$(uname -s)" in
     ;;
   Linux)
     hm_target="arch-dotfiles"
-    if_confirmed "Do you want to install nix?"                                &&  yay -S nix
-    if_confirmed "Do you want to enable the nix daemon service?"              &&  sudo systemctl enable --now nix-daemon.service
+    if command -v nix >/dev/null 2>&1; then
+      echo "Nix already installed, skipping."
+    else
+      if_confirmed "Do you want to install nix?" && yay -S nix
+    fi
+    if_confirmed "Do you want to enable the nix daemon service?" && sudo systemctl enable --now nix-daemon.service
     ;;
   *)
     echo "Unsupported OS: $(uname -s)"

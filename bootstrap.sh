@@ -1,50 +1,33 @@
 #!/usr/bin/env bash
 
-cd "$(dirname "${BASH_SOURCE}")";
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-git pull origin main;
-
-usage() {
-    echo "Usage: $0 [-f|--force] [-n|--dry-run]";
-    exit 1;
+if_confirmed() {
+	read -r -p "$1 [Y/n] " answer || true
+	case "${answer:-Y}" in
+        [Yy] | [Yy][Ee][Ss] | "") return 0 ;;
+        *)                        return 1 ;;
+	esac
 }
 
-doIt() {
-	  rsync --exclude ".git/" \
-          --exclude ".gitmodules" \
-          --exclude ".DS_Store" \
-          --exclude "*.sh" \
-		      --exclude "README.md" \
-          --exclude "LICENSE-MIT.txt" \
-          -avh --no-perms . ~;
-    if [ -f "$HOME/.gnupg/pinentry-wrapper" ]; then
-      chmod 700 "$HOME/.gnupg/pinentry-wrapper";
-    fi
-	source ~/.bash_profile;
-}
+case "$(uname -s)" in
+  Darwin)
+    hm_target="darwin-dotfiles"
+    if_confirmed "Do you want to install nix?"                                &&  sh <(curl -L https://nixos.org/nix/install)
+    ;;
+  Linux)
+    hm_target="arch-dotfiles"
+    if_confirmed "Do you want to install nix?"                                &&  yay -S nix
+    if_confirmed "Do you want to enable the nix daemon service?"              &&  sudo systemctl enable --now nix-daemon.service
+    ;;
+  *)
+    echo "Unsupported OS: $(uname -s)"
+    exit 1
+    ;;
+esac
 
-while getopts "fn" o; do
-    case "${o}" in
-        f)
-            f=true
-            ;;
-        n)
-            n=true
-            ;;
-        *)
-            usage
-            ;;
-    esac
-done
-shift $((OPTIND-1))
-
-if [ "${f}" ]; then
-	doIt;
-else
-	read -p "This may overwrite existing files in your home directory. Are you sure? (y/n) " -n 1;
-	echo "";
-	if [[ $REPLY =~ ^[Yy]$ ]]; then
-		doIt;
-	fi;
-fi;
-unset doIt;
+if_confirmed "Do you want to link config to ~/.config/nix?"               &&  ln -sfn "$repo_root/config" "$HOME/.config/nix"
+if_confirmed "Do you want to verify flakes with 'nix flake show'?"        &&  cd "$repo_root" && nix flake show
+if_confirmed "Do you want to build the Home Manager config?"              &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- build --flake ".#$hm_target"
+if_confirmed "Do you want to switch to the Home Manager config?"          &&  cd "$repo_root" && nix run github:nix-community/home-manager/release-25.11 -- switch -b backup --flake ".#$hm_target"
+if_confirmed "Do you want to install Doom Emacs?"                         &&  git clone git@github.com:gbastkowski/doomemacs.git "$HOME/.emacs.doom" && "$HOME/.emacs.doom/bin/doom" install

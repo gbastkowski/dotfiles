@@ -8,7 +8,6 @@ A [[https://github.com/nix-community/home-manager][Home Manager]]-based dotfiles
 | ~home/~       | Home Manager modules (~*.nix~)                 |
 | ~config/~     | Nix configuration (~nix.conf~, enables flakes) |
 | ~bin/~        | Custom scripts deployed to ~~/.local/bin/~     |
-| ~gnupg/~      | GPG agent configuration                        |
 | ~emacs/~      | Doom Emacs configuration (~config.org~)        |
 | ~claude/~     | Global Claude Code configuration               |
 | ~kitty/~      | Kitty terminal configuration                   |

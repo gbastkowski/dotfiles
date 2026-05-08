@@ -13,7 +13,11 @@ if_confirmed() {
 case "$(uname -s)" in
   Darwin)
     hm_target="darwin-dotfiles"
-    if_confirmed "Do you want to install nix?"                                &&  sh <(curl -L https://nixos.org/nix/install)
+    if command -v nix >/dev/null 2>&1; then
+      echo "Nix already installed, skipping."
+    else
+      if_confirmed "Do you want to install nix?" && sh <(curl -L https://nixos.org/nix/install)
+    fi
     ;;
   Linux)
     hm_target="arch-dotfiles"

@@ -10,13 +10,24 @@ cd "$DOTFILES_DIR" || {
 	exit 1
 }
 
-OSTYPE="$("$SCRIPTPATH/ostype.sh")"
-
-case "$OSTYPE" in
-    arch*)   . "$SCRIPTPATH/linux.include.sh" ;;
-    darwin*) . "$SCRIPTPATH/macos.include.sh" ;;
-    termux*) . "$SCRIPTPATH/termux.include.sh" ;;
-    *)       echo "unknown: $OSTYPE"; exit 1 ;;
+case "$(uname -a)" in
+  *Android*)
+    upgrade_system_and_packages() { pkg update && pkg upgrade; }
+    upgrade_python_packages()     { echo "no python to upgrade"; }
+    HM_TARGET="arch-dotfiles"
+    ;;
+  *arch*)
+    upgrade_system_and_packages() { yay -Syu; hyprpm update; }
+    upgrade_python_packages()     { pipx upgrade-all; }
+    HM_TARGET="arch-dotfiles"
+    ;;
+  *Darwin*)
+    upgrade_system_and_packages() { softwareupdate -l; brew update && brew upgrade; }
+    upgrade_python_packages()     { pipx upgrade-all; }
+    HM_TARGET="darwin-dotfiles"
+    ;;
+  *)
+    echo "unknown OS: $(uname -a)"; exit 1 ;;
 esac
 
 upgrade_system_and_packages
@@ -39,10 +50,7 @@ git pull --rebase origin main
 echo
 
 echo "switching home-manager configuration ..."
-case "$OSTYPE" in
-    arch*)    home-manager switch --flake "$DOTFILES_DIR#arch-dotfiles" ;;
-    darwin*)  home-manager switch --flake "$DOTFILES_DIR#darwin-dotfiles" ;;
-esac
+home-manager switch --flake "$DOTFILES_DIR#$HM_TARGET"
 echo
 
 echo "updating doom emacs ..."

@@ -34,6 +34,7 @@
           ./home/common.nix
           ./home/bin.nix
           ./home/byobu.nix
+          ./home/direnv.nix
           ./home/gpg.nix
           ./home/idea.nix
           ./home/zsh.nix
@@ -55,6 +56,7 @@
           ./home/common.nix
           ./home/bin.nix
           ./home/byobu.nix
+          ./home/direnv.nix
           ./home/gpg.nix
           ./home/idea.nix
           ./home/zsh.nix

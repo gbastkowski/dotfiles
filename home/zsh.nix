@@ -15,7 +15,6 @@
       theme = "powerlevel10k/powerlevel10k";
       plugins = [
         "common-aliases"
-        "direnv"
         "docker"
         "docker-compose"
         "dotenv"

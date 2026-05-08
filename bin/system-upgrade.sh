@@ -4,44 +4,33 @@ SCRIPTPATH="$(cd "$(dirname "$0")" && pwd)"
 DOTFILES_DIR="$(cd "$SCRIPTPATH/.." && pwd)"
 ORIGINAL_DIR="$(pwd)"
 
-# Change to dotfiles directory
-cd "$DOTFILES_DIR" || {
-	echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"
-	exit 1
-}
+cd "$DOTFILES_DIR" || { echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"; exit 1; }
 
 case "$(uname -a)" in
   *Android*)
-    upgrade_system_and_packages() { pkg update && pkg upgrade; }
-    upgrade_python_packages()     { echo "no python to upgrade"; }
+    pkg update && pkg upgrade
     HM_TARGET="arch-dotfiles"
     ;;
   *arch*)
-    upgrade_system_and_packages() { yay -Syu; hyprpm update; }
-    upgrade_python_packages()     { pipx upgrade-all; }
+    yay -Syu && hyprpm update
+    pipx upgrade-all
     HM_TARGET="arch-dotfiles"
     ;;
   *Darwin*)
-    upgrade_system_and_packages() { softwareupdate -l; brew update && brew upgrade; }
-    upgrade_python_packages()     { pipx upgrade-all; }
+    softwareupdate -l
+    brew update && brew upgrade
+    pipx upgrade-all
     HM_TARGET="darwin-dotfiles"
     ;;
   *)
     echo "unknown OS: $(uname -a)"; exit 1 ;;
 esac
 
-upgrade_system_and_packages
-
-upgrade_python_packages
-
 if command -v npm >/dev/null 2>&1; then
 	echo "updating ccline (npm) ..."
 	npm update -g @cometix/ccline      || echo "warning: failed to update ccline"
 	npm update -g tweakcc              || echo "warning: failed to update tweakcc"
 	npm update -g @fission-ai/openspec || echo "warning: failed to update openspec"
-	echo
-else
-	echo "npm not found, skipping ccline update"
 	echo
 fi
 
@@ -64,8 +53,6 @@ fi
 echo "current state:"
 git status
 
-# Return to original directory
 cd "$ORIGINAL_DIR" || exit 1
-
 echo
 echo "done :-)"

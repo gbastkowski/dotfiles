@@ -117,6 +117,9 @@
       if command -v gpg-connect-agent >/dev/null 2>&1; then
         export GPG_TTY="$(tty)"
         gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
+        if [[ "$(uname)" == "Linux" ]]; then
+          export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+        fi
       fi
 
       # kitty socket

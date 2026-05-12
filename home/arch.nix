@@ -49,7 +49,7 @@
   home.file.".config/systemd/user/sway-headless.service".source = ../systemd/user/sway-headless.service;
 
   programs.zsh.initContent = lib.mkMerge [
-    (lib.mkOrder 500 ''
+    (lib.mkOrder 600 ''
       # PATH additions (Linux-specific)
       [[ -d /usr/local/bin ]] && path_prepend "/usr/local/bin"
     '')

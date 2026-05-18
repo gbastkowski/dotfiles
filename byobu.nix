@@ -13,7 +13,5 @@
     ".byobu/status".source       = ./byobu/status;
     ".byobu/status-e".source     = ./byobu/status-e;
     ".byobu/statusrc".source     = ./byobu/statusrc;
-    ".byobu/windows".source      = ./byobu/windows;
-    ".byobu/windows.tmux".source = ./byobu/windows.tmux;
   };
 }

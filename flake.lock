@@ -53,27 +53,6 @@
         "url": "ssh://git@github.com/gbastkowski/ista-dotfiles"
       }
     },
-    "nix-darwin": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1772129556,
-        "narHash": "sha256-Utk0zd8STPsUJPyjabhzPc5BpPodLTXrwkpXBHYnpeg=",
-        "owner": "LnL7",
-        "repo": "nix-darwin",
-        "rev": "ebec37af18215214173c98cf6356d0aca24a2585",
-        "type": "github"
-      },
-      "original": {
-        "owner": "LnL7",
-        "ref": "nix-darwin-25.11",
-        "repo": "nix-darwin",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1776434932,
@@ -111,7 +90,6 @@
         "chemacs2": "chemacs2",
         "home-manager": "home-manager",
         "ista-dotfiles": "ista-dotfiles",
-        "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs",
         "powerlevel10k": "powerlevel10k",
         "zsh-vi-mode": "zsh-vi-mode"

@@ -21,30 +21,3 @@ Near :gmail-local:
 Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail" "[Gmail]/Trash"
 Create Both
 SyncState *
-
-IMAPAccount mobimeo
-Host imap.gmail.com
-User gunnar.bastkowski@mobimeo.com
-PassCmd "op read \"op://private/gmail application password mobimeo/password\""
-SSLType IMAPS
-CertificateFile /etc/ssl/certs/ca-certificates.crt
-
-IMAPStore mobimeo-remote
-Account mobimeo
-
-MaildirStore mobimeo-local
-SubFolders Verbatim
-Path ~/Mail/gunnar.bastkowski@mobimeo.com/
-Inbox ~/Mail/gunnar.bastkowski@mobimeo.com/INBOX/
-
-# With mbsync 1.4.0 and later: Use 'Far' instead of 'Master', and
-# 'Near' instead of 'Slave'.
-Channel mobimeo
-Far :mobimeo-remote:
-Near :mobimeo-local:
-Patterns *
-Expunge None
-CopyArrivalDate yes
-Sync All
-Create Both
-SyncState *

@@ -31,22 +31,22 @@
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         extraSpecialArgs = { inherit inputs; };
         modules = [
-          ./home/common.nix
-          ./home/bin.nix
-          ./home/byobu.nix
-          ./home/direnv.nix
-          ./home/gpg.nix
-          ./home/idea.nix
-          ./home/zsh.nix
-          ./home/tmux.nix
-          ./home/git.nix
-          ./home/emacs.nix
-          ./home/kitty.nix
-          ./home/claude.nix
-          ./home/plover.nix
-          ./home/sbt.nix
-          ./home/hammerspoon.nix
-          ./home/darwin.nix
+          ./common.nix
+          ./bin.nix
+          ./byobu.nix
+          ./direnv.nix
+          ./gpg.nix
+          ./idea.nix
+          ./zsh.nix
+          ./tmux.nix
+          ./git.nix
+          ./emacs.nix
+          ./kitty.nix
+          ./claude.nix
+          ./plover.nix
+          ./sbt.nix
+          ./hammerspoon.nix
+          ./darwin.nix
         ];
       };
 
@@ -54,21 +54,21 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         extraSpecialArgs = { inherit inputs; };
         modules = [
-          ./home/common.nix
-          ./home/bin.nix
-          ./home/byobu.nix
-          ./home/direnv.nix
-          ./home/gpg.nix
-          ./home/idea.nix
-          ./home/zsh.nix
-          ./home/tmux.nix
-          ./home/git.nix
-          ./home/emacs.nix
-          ./home/kitty.nix
-          ./home/claude.nix
-          ./home/plover.nix
-          ./home/sbt.nix
-          ./home/arch.nix
+          ./common.nix
+          ./bin.nix
+          ./byobu.nix
+          ./direnv.nix
+          ./gpg.nix
+          ./idea.nix
+          ./zsh.nix
+          ./tmux.nix
+          ./git.nix
+          ./emacs.nix
+          ./kitty.nix
+          ./claude.nix
+          ./plover.nix
+          ./sbt.nix
+          ./arch.nix
         ];
       };
     };

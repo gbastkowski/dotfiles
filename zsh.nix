@@ -55,6 +55,7 @@
       OPENCODE_EXPERIMENTAL_OXFMT = "true";
       OPENCODE_EXPERIMENTAL_FILEWATCHER = "true";
       OPENCODE_EXPERIMENTAL_ICON_DISCOVERY = "true";
+      LOCAL_ENDPOINT = "http://localhost:11434/v1";
       NODE_REPL_HISTORY = "~/.node_history";
       NODE_REPL_HISTORY_SIZE = "32768";
       NODE_REPL_MODE = "sloppy";

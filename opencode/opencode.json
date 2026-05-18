@@ -1,27 +1,24 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode-go/kimi-k2.6",
-  "small_model": "opencode-go/deepseek-v4-flash",
+  "model": "ollama/qwen-coder",
+  "small_model": "ollama/qwen-coder",
   "instructions": [
     "CLAUDE.md",
     "CONTRIBUTING.md",
     "docs/guidelines.md"
   ],
-  "plugin": [
-    "@zenobius/opencode-skillful",
-    "oh-my-openagent@latest"
-  ],
+  "plugin": [],
   "tools": {
-    "bash": true,
-    "glob": true,
-    "grep": true,
-    "list": true,
-    "patch": true,
-    "skill": true,
-    "todoread": true,
-    "todowrite": true,
-    "webfetch": true,
-    "write": true
+    "bash": false,
+    "glob": false,
+    "grep": false,
+    "list": false,
+    "patch": false,
+    "skill": false,
+    "todoread": false,
+    "todowrite": false,
+    "webfetch": false,
+    "write": false
   },
   "formatter": {
     "scalafmt": {
@@ -75,35 +72,15 @@
     }
   },
   "provider": {
-    "mistral": {
-      "npm": "@ai-sdk/mistral",
-      "name": "Mistral AI",
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama",
       "options": {
-        "apiKey": "{env:MISTRAL_API_KEY}"
+        "baseURL": "http://localhost:11434/v1"
       },
       "models": {
-        "mistral-medium-latest": {
-          "name": "Mistral Medium (Latest)",
-          "variants": {
-            "none": {},
-            "low": {},
-            "medium": {},
-            "high": {},
-            "xhigh": {}
-          }
-        },
-        "mistral-large-latest": {
-          "name": "Mistral Large (Latest)",
-          "variants": {
-            "none": {},
-            "low": {},
-            "medium": {},
-            "high": {},
-            "xhigh": {}
-          }
-        },
-        "magistral-medium-latest": {
-          "name": "Magistral Medium (Latest)",
+        "qwen-coder": {
+          "name": "Qwen Coder 14B",
           "variants": {
             "none": {},
             "low": {},

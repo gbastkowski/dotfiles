@@ -2,81 +2,81 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "hephaestus": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "oracle": {
-      "model": "mistral/mistral-large-latest",
+      "model": "ollama/qwen-coder",
       "variant": "high"
     },
     "explore": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "multimodal-looker": {
-      "model": "mistral/mistral-large-latest",
+      "model": "ollama/qwen-coder",
       "variant": "high"
     },
     "prometheus": {
-      "model": "mistral/mistral-large-latest",
+      "model": "ollama/qwen-coder",
       "variant": "high"
     },
     "metis": {
-      "model": "mistral/mistral-large-latest",
+      "model": "ollama/qwen-coder",
       "variant": "high"
     },
     "momus": {
-      "model": "mistral/magistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "xhigh"
     },
     "atlas": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "sisyphus-junior": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "librarian": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "mistral/mistral-large-latest",
+      "model": "ollama/qwen-coder",
       "variant": "high"
     },
     "ultrabrain": {
-      "model": "mistral/magistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "xhigh"
     },
     "deep": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "quick": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "low"
     },
     "unspecified-low": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "unspecified-high": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "writing": {
-      "model": "mistral/mistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "medium"
     },
     "artistry": {
-      "model": "mistral/magistral-medium-latest",
+      "model": "ollama/qwen-coder",
       "variant": "xhigh"
     }
   },

@@ -52,7 +52,7 @@
     in {
       homeConfigurations = {
         "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon.nix ./ista.nix ];
-        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr.nix ./akiko.nix ];
+        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./akiko.nix ];
       };
     };
 }

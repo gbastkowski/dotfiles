@@ -38,3 +38,8 @@ This is a dotfiles repository for macOS and Linux. It manages shell, editor, and
 ## Agent-Specific Instructions
 - Changes must be idempotent, host‑agnostic, and avoid destructive ops.
 - Ensure new files are copied by `bootstrap.sh` (adjust excludes only if absolutely required).
+
+## Package Management
+- `.opencode/` uses **npm** exclusively for its `@opencode-ai/plugin` dependency.
+- Do not introduce `bun.lock` or other lockfiles there — only `package-lock.json` is tracked.
+- `opencode/` contains only static config files and has no package management.

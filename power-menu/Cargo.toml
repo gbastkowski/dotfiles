@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gtk = "0.18.2"
-gtk-layer-shell = "0.8.2"
+gtk = { version = "0.10", package = "gtk4" }
+gio = { version = "0.21", features = ["v2_72"] }
+gtk4-layer-shell = "0.7"
 
 [profile.release]
 opt-level = 3

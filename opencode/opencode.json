@@ -52,9 +52,9 @@
       "enabled": true,
       "command": [
         "node",
-        "/Users/gunnar.bastkowski/git/gbastkowski/mcp-emacs/bin/mcp-emacs.js",
+        "{env:HOME}/git/gbastkowski/mcp-emacs/bin/mcp-emacs.js",
         "--emacsclient-executable",
-        "/opt/homebrew/bin/emacsclient"
+        "emacsclient"
       ]
     },
     "ista_jira_confluence": {
@@ -62,7 +62,7 @@
       "enabled": true,
       "command": [
         "node",
-        "/Users/gunnar.bastkowski/git/rdm/ai/mcp-jira-confluence/dist/index.js",
+        "{env:HOME}/git/rdm/ai/mcp-jira-confluence/dist/index.js",
         "--jira-url",
         "https://ista.atlassian.net",
         "--confluence-url",

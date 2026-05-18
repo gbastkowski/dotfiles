@@ -5,6 +5,4 @@
   home.file.".claude/statusline.sh".source = ./claude/statusline.sh;
   home.file.".claude/commands".source = ./claude/commands;
   home.file.".claude/agents".source = ./claude/agents;
-  home.file.".config/opencode/opencode.json".source = ./opencode/opencode.json;
-  home.file.".config/opencode/oh-my-openagent.json".source = ./opencode/oh-my-openagent.json;
 }

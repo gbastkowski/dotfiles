@@ -40,6 +40,7 @@
         ./emacs.nix
         ./kitty.nix
         ./claude.nix
+        ./opencode
         ./plover.nix
         ./sbt
       ];

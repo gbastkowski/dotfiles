@@ -1,0 +1,79 @@
+button {
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  background-image: none;
+}
+
+button.power-button {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: transparent;
+  background-image: none;
+  color: #d8d0bf;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  transition: all 0.2s ease;
+  margin: 4px 0;
+}
+
+button.power-button:hover {
+  background: #e0aa56;
+  background-image: none;
+  color: #161411;
+  box-shadow: none;
+}
+
+button.power-button:active {
+  background: linear-gradient(180deg, #f0c674 0%, #d89a43 100%);
+  background-image: linear-gradient(180deg, #f0c674 0%, #d89a43 100%);
+  color: #161411;
+  box-shadow: none;
+}
+
+button.cancel-button {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 20px;
+  margin-top: 10px;
+  border-radius: 10px;
+  color: #d8d0bf;
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+button.cancel-button:hover {
+  background: #e0aa56;
+  background-image: none;
+  color: #161411;
+  box-shadow: none;
+}
+
+button label {
+  color: inherit;
+}
+
+.status-label {
+  font-size: 12px;
+  color: #c65d4a;
+  margin-top: 8px;
+}
+
+window {
+  background-color: rgba(51, 51, 63, 0.82);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}

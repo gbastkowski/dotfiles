@@ -14,7 +14,7 @@ fn main() {
 fn build_ui(app: &gtk::Application) {
     let window = gtk::ApplicationWindow::new(app);
     window.set_title(Some("Power Menu"));
-    window.set_default_size(280, 360);
+    window.set_default_size(800, 500);
     window.set_resizable(false);
 
     window.init_layer_shell();
@@ -28,23 +28,22 @@ fn build_ui(app: &gtk::Application) {
     main_box.set_margin_bottom(20);
     main_box.set_margin_start(20);
     main_box.set_margin_end(20);
+    main_box.set_vexpand(true);
+    main_box.set_valign(gtk::Align::Center);
 
-    let title = gtk::Label::new(Some("Power Menu"));
-    title.add_css_class("title");
-    main_box.append(&title);
-
-    let separator = gtk::Separator::new(gtk::Orientation::Horizontal);
-    main_box.append(&separator);
-
-    let button_grid = gtk::Grid::new();
-    button_grid.set_column_spacing(15);
-    button_grid.set_row_spacing(15);
+    let button_box = gtk::Box::new(gtk::Orientation::Vertical, 10);
+    button_box.set_width_request(240);
+    button_box.set_halign(gtk::Align::Center);
 
     let status_label = gtk::Label::new(None);
     status_label.add_css_class("status-label");
     status_label.set_visible(false);
 
-    create_power_button(&button_grid, "Shutdown", 0, 0, &status_label, || {
+    create_power_button(&button_box, "⏾  Suspend", &status_label, || {
+        run_command_chain(&[&["systemctl", "suspend"], &["pm-suspend"]])
+    });
+
+    create_power_button(&button_box, "⏻  Shutdown", &status_label, || {
         run_command_chain(&[
             &["systemctl", "poweroff"],
             &["shutdown", "-h", "now"],
@@ -52,7 +51,7 @@ fn build_ui(app: &gtk::Application) {
         ])
     });
 
-    create_power_button(&button_grid, "Reboot", 1, 0, &status_label, || {
+    create_power_button(&button_box, "↻  Reboot", &status_label, || {
         run_command_chain(&[
             &["systemctl", "reboot"],
             &["shutdown", "-r", "now"],
@@ -60,23 +59,25 @@ fn build_ui(app: &gtk::Application) {
         ])
     });
 
-    create_power_button(&button_grid, "Suspend", 0, 1, &status_label, || {
-        run_command_chain(&[&["systemctl", "suspend"], &["pm-suspend"]])
-    });
-
-    create_power_button(&button_grid, "Logout", 1, 1, &status_label, || {
+    create_power_button(&button_box, "⎋  Logout", &status_label, || {
         run_command_chain(&[&["hyprctl", "dispatch", "exit"]])
     });
 
-    main_box.append(&button_grid);
+    main_box.append(&button_box);
+
+    let cancel_box = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    cancel_box.set_width_request(240);
+    cancel_box.set_halign(gtk::Align::Center);
 
     let cancel_button = gtk::Button::with_label("Cancel");
     cancel_button.add_css_class("cancel-button");
+    cancel_button.set_hexpand(true);
     let window_clone = window.clone();
     cancel_button.connect_clicked(move |_| {
         window_clone.close();
     });
-    main_box.append(&cancel_button);
+    cancel_box.append(&cancel_button);
+    main_box.append(&cancel_box);
 
     main_box.append(&status_label);
 
@@ -116,15 +117,14 @@ fn run_command_chain(commands: &[&[&str]]) -> Result<(), String> {
 }
 
 fn create_power_button(
-    grid: &gtk::Grid,
+    box_container: &gtk::Box,
     label: &str,
-    col: i32,
-    row: i32,
     status: &gtk::Label,
     action: impl Fn() -> Result<(), String> + 'static,
 ) {
     let button = gtk::Button::with_label(label);
     button.add_css_class("power-button");
+    button.set_hexpand(true);
 
     let status = status.clone();
     button.connect_clicked(move |_| match action() {
@@ -137,60 +137,39 @@ fn create_power_button(
         }
     });
 
-    grid.attach(&button, col, row, 1, 1);
+    box_container.append(&button);
 }
 
 fn apply_css_styling() {
     let css_provider = gtk::CssProvider::new();
-    css_provider.load_from_data(
-        r#"
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #e5e9f0;
-        }
 
-        .power-button {
-            font-size: 14px;
-            padding: 12px 0;
-            border-radius: 8px;
-            background-color: #4c566a;
-            color: #e5e9f0;
-            border: 1px solid #434c5e;
-            transition: all 0.2s ease;
-        }
+    let css_paths = [
+        format!(
+            "{}/.config/power-menu/style.css",
+            std::env::var("HOME").unwrap_or_default()
+        ),
+        format!(
+            "{}/.local/share/power-menu/style.css",
+            std::env::var("HOME").unwrap_or_default()
+        ),
+        "/usr/share/power-menu/style.css".to_string(),
+    ];
 
-        .power-button:hover {
-            background-color: #5e81ac;
-            border-color: #81a1c1;
-            color: #eceff4;
+    let mut loaded = false;
+    for path in &css_paths {
+        if std::path::Path::new(path).exists() {
+            css_provider.load_from_path(path);
+            loaded = true;
+            break;
         }
+    }
 
-        .cancel-button {
-            font-size: 14px;
-            padding: 8px 0;
-            margin-top: 10px;
-            color: #d8dee9;
-        }
-
-        .cancel-button:hover {
-            color: #ffffff;
-        }
-
-        .status-label {
-            font-size: 12px;
-            color: #bf616a;
-            margin-top: 8px;
-        }
-
-        window {
-            background-color: #2e3440;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        "#,
-    );
+    if !loaded {
+        eprintln!(
+            "Warning: Could not find style.css. Checked: {:?}",
+            css_paths
+        );
+    }
 
     if let Some(display) = gtk::gdk::Display::default() {
         gtk::style_context_add_provider_for_display(

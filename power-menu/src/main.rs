@@ -40,7 +40,7 @@ fn build_ui(app: &gtk::Application) {
     status_label.set_visible(false);
 
     create_power_button(&button_box, "⏾  Suspend", &status_label, || {
-        run_command_chain(&[&["systemctl", "suspend"], &["pm-suspend"]])
+        run_command_chain(&[&["systemctl", "suspend", "-i"], &["pm-suspend"]])
     });
 
     create_power_button(&button_box, "⏻  Shutdown", &status_label, || {

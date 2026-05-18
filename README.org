@@ -101,6 +101,22 @@ Higher-level Home Manager modules (e.g. ~programs.zsh~, ~programs.tmux~, ~progra
 ** Activation
 Running ~home-manager switch~ compares the current generation with the new one and atomically applies the diff: it creates/removes symlinks, installs packages, and runs any activation scripts.
 
+* Common Home Manager Commands
+| Command                                              | Purpose                                                              |
+|------------------------------------------------------+----------------------------------------------------------------------|
+| ~home-manager switch --flake .#darwin-dotfiles~      | Build the configuration and activate it (creates a new generation).  |
+| ~home-manager build --flake .#darwin-dotfiles~       | Build only; produces a ~result~ symlink without touching ~$HOME~.    |
+| ~home-manager switch -b backup --flake .#...~        | First-time switch — back up unmanaged files that would collide.      |
+| ~home-manager generations~                           | List previous generations with timestamps and store paths.           |
+| ~/nix/var/nix/profiles/per-user/$USER/home-manager-N-link/activate~ | Roll back by activating an older generation directly.   |
+| ~home-manager news --flake .#darwin-dotfiles~        | Show news entries from modules (breaking changes, deprecations).     |
+| ~home-manager expire-generations '-30 days'~         | Delete generations older than the cutoff.                            |
+| ~nix flake update~                                   | Refresh all flake inputs (nixpkgs, home-manager, etc.) in ~flake.lock~. |
+| ~nix flake lock --update-input nixpkgs~              | Update a single input only.                                          |
+| ~nix-collect-garbage -d~                             | Garbage-collect old store paths after expiring generations.          |
+
+Replace ~darwin-dotfiles~ with ~arch-dotfiles~ on Arch Linux.
+
 * Notes
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
 - ~emacs/.emacs.doom/~ (Doom Emacs itself) is cloned independently by ~bootstrap.sh~, not managed by Home Manager.

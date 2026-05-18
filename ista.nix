@@ -27,9 +27,6 @@
     # sqlite
     [[ -d /usr/local/opt/sqlite/bin ]] && path_prepend "/usr/local/opt/sqlite/bin"
 
-    # iterm2
-    test -e "''${HOME}/.iterm2_shell_integration.zsh" && source "''${HOME}/.iterm2_shell_integration.zsh"
-
     # Docker Desktop completions
     if [[ -d /Users/gunnar.bastkowski/.docker/completions ]]; then
       fpath=(/Users/gunnar.bastkowski/.docker/completions $fpath)

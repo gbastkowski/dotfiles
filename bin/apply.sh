@@ -9,4 +9,4 @@ case "$(hostname -s)" in
   *) echo "unknown host: $(hostname -s)"; exit 1 ;;
 esac
 
-exec home-manager switch --flake "${DOTFILES}#${target}" "$@"
+exec home-manager switch -b backup --flake "${DOTFILES}#${target}" "$@"

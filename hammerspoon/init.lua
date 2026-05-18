@@ -2,6 +2,9 @@
 -- Hotkey: Cmd+Shift+Space.
 -- Requires Teams: Settings -> Privacy -> Manage API -> third-party API enabled.
 
+hs.allowAppleScript(true)
+require("hs.ipc")
+
 local TOKEN_FILE = os.getenv("HOME") .. "/.hammerspoon/teams_token"
 local WS_URL_BASE = "ws://localhost:8124"
 local MANUFACTURER = "Hammerspoon"

@@ -5,14 +5,6 @@
 
   home.file.".aliases".source = ./home/.aliases;
 
-  # Hyprland
-  home.file.".config/hypr/hyprland.conf".source = ./hypr/hyprland.conf;
-  home.file.".config/hypr/hypridle.conf".source = ./hypr/hypridle.conf;
-  home.file.".config/hypr/hyprlock.conf".source = ./hypr/hyprlock.conf;
-  home.file.".config/hypr/hyprpaper.conf".source = ./hypr/hyprpaper.conf;
-  home.file.".config/hypr/screenshot.sh" = { source = ./hypr/screenshot.sh; executable = true; };
-  home.file.".config/hypr/switch-workspace.sh" = { source = ./hypr/switch-workspace.sh; executable = true; };
-
   # Sway
   home.file.".config/sway/autostart".source = ./sway/autostart;
   home.file.".config/sway/config".source = ./sway/config;

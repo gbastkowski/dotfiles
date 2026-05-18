@@ -39,3 +39,5 @@ claude/backups/
 /.agent-shell/
 /claude/mcp-needs-auth-cache.json
 /.opencode/plans/
+/power-menu/target/
+/.claude/scheduled_tasks.lock

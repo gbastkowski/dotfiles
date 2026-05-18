@@ -806,6 +806,91 @@ configured at ~/.config/.jira/.config.yml."
             (insert "  :END:\n")))))
     (message "Wrote %d issue(s) to %s" (length issues) gunnar/jira-assigned-file)))
 #+end_src
+**** vcs-todos-fetch
+#+begin_src emacs-lisp
+(defcustom gunnar/gitlab-todos-file (expand-file-name "gitlab-todos.org" org-directory)
+  "Path to the org file that gunnar/fetch-gitlab-todos-to-org overwrites."
+  :type 'file
+  :group 'gunnar)
+
+(defcustom gunnar/github-notifications-file (expand-file-name "github-notifications.org" org-directory)
+  "Path to the org file that gunnar/fetch-github-notifications-to-org overwrites."
+  :type 'file
+  :group 'gunnar)
+
+(defun gunnar/--vcs-parse-json (cmd)
+  "Run CMD, parse stdout as a JSON array, return list of alists (or nil on failure)."
+  (let ((json (shell-command-to-string cmd)))
+    (condition-case _
+        (json-parse-string json :array-type 'list :object-type 'alist)
+      (error nil))))
+
+(defun gunnar/fetch-gitlab-todos-to-org ()
+  "Fetch pending GitLab todos via the glab CLI and write them as org.
+Overwrites `gunnar/gitlab-todos-file' on each run."
+  (interactive)
+  (unless (executable-find "glab") (user-error "glab CLI not found on PATH"))
+  (let ((todos (gunnar/--vcs-parse-json "glab api '/todos?state=pending' 2>/dev/null")))
+    (with-temp-file gunnar/gitlab-todos-file
+      (insert "#+TITLE: GitLab Todos\n")
+      (insert (format-time-string "#+UPDATED: [%Y-%m-%d %a %H:%M]\n\n"))
+      (if (null todos)
+          (insert "No pending GitLab todos.\n")
+        (dolist (t1 todos)
+          (let* ((title   (or (alist-get 'title (alist-get 'target t1))
+                              (alist-get 'body t1) ""))
+                 (ttype   (or (alist-get 'target_type t1) ""))
+                 (action  (or (alist-get 'action_name t1) ""))
+                 (project (or (alist-get 'path_with_namespace (alist-get 'project t1)) ""))
+                 (author  (or (alist-get 'name (alist-get 'author t1)) ""))
+                 (url     (or (alist-get 'target_url t1) ""))
+                 (created (or (alist-get 'created_at t1) "")))
+            (insert (format "* TODO %s :gitlab:\n" title))
+            (insert "  :PROPERTIES:\n")
+            (insert (format "  :GITLAB_TYPE: %s\n" ttype))
+            (insert (format "  :GITLAB_ACTION: %s\n" action))
+            (insert (format "  :GITLAB_PROJECT: %s\n" project))
+            (insert (format "  :GITLAB_AUTHOR: %s\n" author))
+            (insert (format "  :GITLAB_URL: %s\n" url))
+            (insert (format "  :GITLAB_CREATED: %s\n" created))
+            (insert "  :END:\n")))))
+    (message "Wrote %d GitLab todo(s) to %s" (length todos) gunnar/gitlab-todos-file)))
+
+(defun gunnar/fetch-github-notifications-to-org ()
+  "Fetch unread GitHub notifications via the gh CLI and write them as org.
+Overwrites `gunnar/github-notifications-file' on each run."
+  (interactive)
+  (unless (executable-find "gh") (user-error "gh CLI not found on PATH"))
+  (let ((notes (gunnar/--vcs-parse-json "gh api /notifications 2>/dev/null")))
+    (with-temp-file gunnar/github-notifications-file
+      (insert "#+TITLE: GitHub Notifications\n")
+      (insert (format-time-string "#+UPDATED: [%Y-%m-%d %a %H:%M]\n\n"))
+      (if (null notes)
+          (insert "No unread GitHub notifications.\n")
+        (dolist (n notes)
+          (let* ((subject (alist-get 'subject n))
+                 (title   (or (alist-get 'title subject) ""))
+                 (ntype   (or (alist-get 'type subject) ""))
+                 (reason  (or (alist-get 'reason n) ""))
+                 (repo    (or (alist-get 'full_name (alist-get 'repository n)) ""))
+                 (url     (or (alist-get 'url subject) ""))
+                 (updated (or (alist-get 'updated_at n) "")))
+            (insert (format "* TODO %s :github:\n" title))
+            (insert "  :PROPERTIES:\n")
+            (insert (format "  :GITHUB_TYPE: %s\n" ntype))
+            (insert (format "  :GITHUB_REASON: %s\n" reason))
+            (insert (format "  :GITHUB_REPO: %s\n" repo))
+            (insert (format "  :GITHUB_URL: %s\n" url))
+            (insert (format "  :GITHUB_UPDATED: %s\n" updated))
+            (insert "  :END:\n")))))
+    (message "Wrote %d GitHub notification(s) to %s" (length notes) gunnar/github-notifications-file)))
+
+(defun gunnar/fetch-vcs-todos-to-org ()
+  "Refresh both GitLab todos and GitHub notifications org files."
+  (interactive)
+  (gunnar/fetch-gitlab-todos-to-org)
+  (gunnar/fetch-github-notifications-to-org))
+#+end_src
 **** agenda-views
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))

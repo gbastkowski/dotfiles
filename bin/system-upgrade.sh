@@ -6,24 +6,23 @@ ORIGINAL_DIR="$(pwd)"
 
 cd "$DOTFILES_DIR" || { echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"; exit 1; }
 
-case "$(uname -a)" in
-  *Android*)
-    pkg update && pkg upgrade
-    HM_TARGET="arch-dotfiles"
-    ;;
-  *arch*)
-    yay -Syu && hyprpm update
-    pipx upgrade-all
-    HM_TARGET="arch-dotfiles"
-    ;;
-  *Darwin*)
+case "$(hostname -s)" in
+  deess1mac*)
     softwareupdate -l
     brew update && brew upgrade
     pipx upgrade-all
-    HM_TARGET="darwin-dotfiles"
+    HM_TARGET="ista-dotfiles"
+    ;;
+  akiko*)
+    case "$(uname -a)" in
+      *Android*) pkg update && pkg upgrade ;;
+      *)         yay -Syu && hyprpm update ;;
+    esac
+    pipx upgrade-all
+    HM_TARGET="akiko-dotfiles"
     ;;
   *)
-    echo "unknown OS: $(uname -a)"; exit 1 ;;
+    echo "unknown host: $(hostname -s)"; exit 1 ;;
 esac
 
 if command -v npm >/dev/null 2>&1; then

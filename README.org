@@ -31,7 +31,7 @@ A [[https://github.com/nix-community/home-manager][Home Manager]]-based dotfiles
 - Nix package manager
 
 ** Bootstrap
-Run the single bootstrap script — it detects the OS automatically:
+Run the single bootstrap script — it detects the host automatically:
 
 #+BEGIN_SRC sh
   ./bootstrap.sh
@@ -49,12 +49,12 @@ Home Manager refuses to overwrite unmanaged files.
 Use the ~-b backup~ flag on first switch to let it keep backups of existing files:
 
 #+BEGIN_SRC sh
-  home-manager switch -b backup --flake .#darwin-dotfiles
+  home-manager switch -b backup --flake .#ista-dotfiles
 #+END_SRC
 
 ** Validating without activating
 #+BEGIN_SRC sh
-  home-manager build --flake .#darwin-dotfiles
+  home-manager build --flake .#ista-dotfiles
 #+END_SRC
 
 * Day-to-day Usage
@@ -65,10 +65,10 @@ Run the upgrade script to pull the latest dotfiles, apply the Home Manager confi
 #+END_SRC
 
 * Home Manager targets
-| Target          | Platform                  |
-|-----------------+---------------------------|
-| ~darwin-dotfiles~ | macOS (~aarch64-darwin~)    |
-| ~arch-dotfiles~   | Arch Linux (~x86_64-linux~) |
+| Target            | Host        | Platform                  |
+|-------------------+-------------+---------------------------|
+| ~ista-dotfiles~   | deess1mac*  | macOS (~aarch64-darwin~)    |
+| ~akiko-dotfiles~  | akiko*      | Arch Linux (~x86_64-linux~) |
 
 * Nix & Home Manager Primer
 A brief glossary for the concepts used in this repo.
@@ -104,18 +104,18 @@ Running ~home-manager switch~ compares the current generation with the new one a
 * Common Home Manager Commands
 | Command                                              | Purpose                                                              |
 |------------------------------------------------------+----------------------------------------------------------------------|
-| ~home-manager switch --flake .#darwin-dotfiles~      | Build the configuration and activate it (creates a new generation).  |
-| ~home-manager build --flake .#darwin-dotfiles~       | Build only; produces a ~result~ symlink without touching ~$HOME~.    |
+| ~home-manager switch --flake .#ista-dotfiles~      | Build the configuration and activate it (creates a new generation).  |
+| ~home-manager build --flake .#ista-dotfiles~       | Build only; produces a ~result~ symlink without touching ~$HOME~.    |
 | ~home-manager switch -b backup --flake .#...~        | First-time switch — back up unmanaged files that would collide.      |
 | ~home-manager generations~                           | List previous generations with timestamps and store paths.           |
 | ~/nix/var/nix/profiles/per-user/$USER/home-manager-N-link/activate~ | Roll back by activating an older generation directly.   |
-| ~home-manager news --flake .#darwin-dotfiles~        | Show news entries from modules (breaking changes, deprecations).     |
+| ~home-manager news --flake .#ista-dotfiles~        | Show news entries from modules (breaking changes, deprecations).     |
 | ~home-manager expire-generations '-30 days'~         | Delete generations older than the cutoff.                            |
 | ~nix flake update~                                   | Refresh all flake inputs (nixpkgs, home-manager, etc.) in ~flake.lock~. |
 | ~nix flake lock --update-input nixpkgs~              | Update a single input only.                                          |
 | ~nix-collect-garbage -d~                             | Garbage-collect old store paths after expiring generations.          |
 
-Replace ~darwin-dotfiles~ with ~arch-dotfiles~ on Arch Linux.
+Replace ~ista-dotfiles~ with ~akiko-dotfiles~ on Arch Linux.
 
 * Notes
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).

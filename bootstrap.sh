@@ -10,17 +10,17 @@ if_confirmed() {
 	esac
 }
 
-case "$(uname -s)" in
-  Darwin)
-    hm_target="darwin-dotfiles"
+case "$(hostname -s)" in
+  deess1mac*)
+    hm_target="ista-dotfiles"
     if command -v nix >/dev/null 2>&1; then
       echo "Nix already installed, skipping."
     else
       if_confirmed "Do you want to install nix?" && sh <(curl -L https://nixos.org/nix/install)
     fi
     ;;
-  Linux)
-    hm_target="arch-dotfiles"
+  akiko*)
+    hm_target="akiko-dotfiles"
     if command -v nix >/dev/null 2>&1; then
       echo "Nix already installed, skipping."
     else
@@ -29,7 +29,7 @@ case "$(uname -s)" in
     if_confirmed "Do you want to enable the nix daemon service?" && sudo systemctl enable --now nix-daemon.service
     ;;
   *)
-    echo "Unsupported OS: $(uname -s)"
+    echo "Unknown host: $(hostname -s)"
     exit 1
     ;;
 esac

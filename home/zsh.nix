@@ -63,6 +63,14 @@
       MANPAGER = "less -X";
     };
 
+    envExtra = ''
+      # SSH agent socket via gpg-agent (all shells: login, interactive, non-interactive)
+      if command -v gpgconf >/dev/null 2>&1; then
+        sock="$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)"
+        [[ -n "$sock" ]] && export SSH_AUTH_SOCK="$sock"
+      fi
+    '';
+
     initContent = lib.mkMerge [
      (lib.mkOrder 500 ''
       # Return early for IntelliJ environment reader
@@ -117,9 +125,6 @@
       if command -v gpg-connect-agent >/dev/null 2>&1; then
         export GPG_TTY="$(tty)"
         gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
-        if [[ "$(uname)" == "Linux" ]]; then
-          export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-        fi
       fi
 
       # kitty socket

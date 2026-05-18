@@ -37,9 +37,11 @@ Enable automatic reversion of buffers when files change on disk.
 
 *** General Configuration
 #+begin_src emacs-lisp
-(cond ((eq system-type 'gnu/linux) (setenv "SSH_AUTH_SOCK" "/run/user/1000/gnupg/S.gpg-agent.ssh"))
-      ((eq system-type 'darwin)    (setenv "SSH_AUTH_SOCK" "/Users/gunnar.bastkowski/.gnupg/S.gpg-agent.ssh"))
-      (t                           (setenv "SSH_AUTH_SOCK" "")))
+(when (executable-find "gpgconf")
+  (let ((sock (string-trim
+               (shell-command-to-string "gpgconf --list-dirs agent-ssh-socket"))))
+    (unless (string-empty-p sock)
+      (setenv "SSH_AUTH_SOCK" sock))))
 
 (setq! auth-sources                       '(password-store))
 

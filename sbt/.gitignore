@@ -12,3 +12,4 @@
 boot/
 preloaded/
 target/
+/.sbt/

@@ -45,6 +45,7 @@
           ./home/claude.nix
           ./home/plover.nix
           ./home/sbt.nix
+          ./home/hammerspoon.nix
           ./home/darwin.nix
         ];
       };

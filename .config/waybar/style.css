@@ -118,6 +118,7 @@ tooltip {
 #idle_inhibitor,
 #custom-volume,
 #network,
+#disk,
 #load,
 #temperature,
 #cpu,
@@ -129,10 +130,21 @@ tooltip {
   color: #cf8e7a;
 }
 
+#disk.warning,
+#memory.warning {
+  color: #e0aa56;
+}
+
+#disk.critical,
+#memory.critical {
+  color: #c65d4a;
+}
+
 #load,
 #temperature,
 #cpu,
-#memory {
+#memory,
+#disk {
   padding-right: 8px;
   padding-left: 8px;
 }

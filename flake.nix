@@ -7,6 +7,10 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     powerlevel10k = {
       url = "github:romkatv/powerlevel10k";
       flake = false;
@@ -25,7 +29,7 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }@inputs:
+  outputs = { nixpkgs, home-manager, nix-darwin, ... }@inputs:
     let
       commonModules = [
         ./common.nix
@@ -53,6 +57,23 @@
       homeConfigurations = {
         "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon ./mvn ./ista.nix ];
         "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./akiko.nix ];
+      };
+
+      darwinConfigurations.deess1mac = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./darwin
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.users."gunnar.bastkowski" = { ... }: {
+              imports = commonModules ++ [ ./hammerspoon ./mvn ./ista.nix ];
+            };
+          }
+        ];
       };
     };
 }

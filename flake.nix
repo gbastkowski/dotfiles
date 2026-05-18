@@ -51,7 +51,7 @@
       };
     in {
       homeConfigurations = {
-        "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon ./ista.nix ];
+        "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon ./mvn ./ista.nix ];
         "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./akiko.nix ];
       };
     };

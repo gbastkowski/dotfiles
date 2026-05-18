@@ -25,52 +25,34 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }@inputs: {
-    homeConfigurations = {
-      "ista-dotfiles" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-        extraSpecialArgs = { inherit inputs; };
-        modules = [
-          ./common.nix
-          ./bin.nix
-          ./byobu.nix
-          ./direnv.nix
-          ./gpg.nix
-          ./idea.nix
-          ./zsh.nix
-          ./tmux.nix
-          ./git.nix
-          ./emacs.nix
-          ./kitty.nix
-          ./claude.nix
-          ./plover.nix
-          ./sbt.nix
-          ./hammerspoon.nix
-          ./darwin.nix
-        ];
-      };
+  outputs = { nixpkgs, home-manager, ... }@inputs:
+    let
+      commonModules = [
+        ./common.nix
+        ./bin.nix
+        ./byobu.nix
+        ./direnv.nix
+        ./gpg.nix
+        ./idea.nix
+        ./zsh.nix
+        ./tmux.nix
+        ./git.nix
+        ./emacs.nix
+        ./kitty.nix
+        ./claude.nix
+        ./plover.nix
+        ./sbt.nix
+      ];
 
-      "akiko-dotfiles" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      mkHost = system: hostModules: home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.${system};
         extraSpecialArgs = { inherit inputs; };
-        modules = [
-          ./common.nix
-          ./bin.nix
-          ./byobu.nix
-          ./direnv.nix
-          ./gpg.nix
-          ./idea.nix
-          ./zsh.nix
-          ./tmux.nix
-          ./git.nix
-          ./emacs.nix
-          ./kitty.nix
-          ./claude.nix
-          ./plover.nix
-          ./sbt.nix
-          ./arch.nix
-        ];
+        modules = commonModules ++ hostModules;
+      };
+    in {
+      homeConfigurations = {
+        "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon.nix ./darwin.nix ];
+        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./arch.nix ];
       };
     };
-  };
 }

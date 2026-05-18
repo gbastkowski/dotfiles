@@ -14,7 +14,7 @@ fn main() {
 fn build_ui(app: &gtk::Application) {
     let window = gtk::ApplicationWindow::new(app);
     window.set_title(Some("Power Menu"));
-    window.set_default_size(280, 320);
+    window.set_default_size(280, 360);
     window.set_resizable(false);
 
     window.init_layer_shell();
@@ -40,24 +40,32 @@ fn build_ui(app: &gtk::Application) {
     button_grid.set_column_spacing(15);
     button_grid.set_row_spacing(15);
 
-    create_power_button(&button_grid, "Shutdown", 0, 0, || {
-        Command::new("systemctl").arg("poweroff").status().ok();
+    let status_label = gtk::Label::new(None);
+    status_label.add_css_class("status-label");
+    status_label.set_visible(false);
+
+    create_power_button(&button_grid, "Shutdown", 0, 0, &status_label, || {
+        run_command_chain(&[
+            &["systemctl", "poweroff"],
+            &["shutdown", "-h", "now"],
+            &["poweroff"],
+        ])
     });
 
-    create_power_button(&button_grid, "Reboot", 1, 0, || {
-        Command::new("systemctl").arg("reboot").status().ok();
+    create_power_button(&button_grid, "Reboot", 1, 0, &status_label, || {
+        run_command_chain(&[
+            &["systemctl", "reboot"],
+            &["shutdown", "-r", "now"],
+            &["reboot"],
+        ])
     });
 
-    create_power_button(&button_grid, "Suspend", 0, 1, || {
-        Command::new("systemctl").arg("suspend").status().ok();
+    create_power_button(&button_grid, "Suspend", 0, 1, &status_label, || {
+        run_command_chain(&[&["systemctl", "suspend"], &["pm-suspend"]])
     });
 
-    create_power_button(&button_grid, "Logout", 1, 1, || {
-        Command::new("hyprctl")
-            .arg("dispatch")
-            .arg("exit")
-            .status()
-            .ok();
+    create_power_button(&button_grid, "Logout", 1, 1, &status_label, || {
+        run_command_chain(&[&["hyprctl", "dispatch", "exit"]])
     });
 
     main_box.append(&button_grid);
@@ -70,11 +78,41 @@ fn build_ui(app: &gtk::Application) {
     });
     main_box.append(&cancel_button);
 
+    main_box.append(&status_label);
+
     window.set_child(Some(&main_box));
 
-    apply_css_styling(&window);
+    apply_css_styling();
 
     window.present();
+}
+
+fn run_command_chain(commands: &[&[&str]]) -> Result<(), String> {
+    let mut last_error = String::from("No commands available");
+
+    for cmd_parts in commands {
+        if cmd_parts.is_empty() {
+            continue;
+        }
+        let mut cmd = Command::new(cmd_parts[0]);
+        cmd.args(&cmd_parts[1..]);
+
+        match cmd.status() {
+            Ok(status) if status.success() => return Ok(()),
+            Ok(status) => {
+                last_error = format!(
+                    "{} exited with code {}",
+                    cmd_parts[0],
+                    status.code().unwrap_or(-1)
+                );
+            }
+            Err(e) => {
+                last_error = format!("{}: {e}", cmd_parts[0]);
+            }
+        }
+    }
+
+    Err(last_error)
 }
 
 fn create_power_button(
@@ -82,25 +120,27 @@ fn create_power_button(
     label: &str,
     col: i32,
     row: i32,
-    action: impl Fn() + Send + Sync + 'static,
+    status: &gtk::Label,
+    action: impl Fn() -> Result<(), String> + 'static,
 ) {
     let button = gtk::Button::with_label(label);
     button.add_css_class("power-button");
 
-    let action_copy = std::sync::Arc::new(action);
-    let action_clone = std::sync::Arc::clone(&action_copy);
-
-    button.connect_clicked(move |_| {
-        let action = std::sync::Arc::clone(&action_clone);
-        std::thread::spawn(move || {
-            action();
-        });
+    let status = status.clone();
+    button.connect_clicked(move |_| match action() {
+        Ok(()) => {
+            status.set_visible(false);
+        }
+        Err(msg) => {
+            status.set_text(&format!("Error: {msg}"));
+            status.set_visible(true);
+        }
     });
 
     grid.attach(&button, col, row, 1, 1);
 }
 
-fn apply_css_styling(_window: &gtk::ApplicationWindow) {
+fn apply_css_styling() {
     let css_provider = gtk::CssProvider::new();
     css_provider.load_from_data(
         r#"
@@ -136,6 +176,12 @@ fn apply_css_styling(_window: &gtk::ApplicationWindow) {
 
         .cancel-button:hover {
             color: #ffffff;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #bf616a;
+            margin-top: 8px;
         }
 
         window {

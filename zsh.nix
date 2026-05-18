@@ -50,7 +50,11 @@
       TERM = "xterm-256color";
       DEFAULT_USER = "gunnar";
       GTAGSLABEL = "pygments";
-      OPENCODE_EXPERIMENTAL = "true";
+      OPENCODE_EXPERIMENTAL_LSP_TOOL = "true";
+      OPENCODE_EXPERIMENTAL_PLAN_MODE = "true";
+      OPENCODE_EXPERIMENTAL_OXFMT = "true";
+      OPENCODE_EXPERIMENTAL_FILEWATCHER = "true";
+      OPENCODE_EXPERIMENTAL_ICON_DISCOVERY = "true";
       NODE_REPL_HISTORY = "~/.node_history";
       NODE_REPL_HISTORY_SIZE = "32768";
       NODE_REPL_MODE = "sloppy";

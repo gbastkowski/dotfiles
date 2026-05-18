@@ -9,7 +9,7 @@
   "margin-bottom": 0,
   "modules-left":   ["custom/shutdown", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["idle_inhibitor",  "clock", "custom/weather", "mpd", "custom/emacs-task"],
-  "modules-right":  ["network", "custom/volume", "load", "temperature", "cpu", "memory", "tray"],
+  "modules-right":  ["network", "custom/bluetooth", "custom/volume", "load", "temperature", "cpu", "memory", "tray"],
   "mpd": {
     "format": "  {stateIcon}",
     "format-disconnected": "  off",
@@ -87,6 +87,13 @@
       "tooltip": "Power Menu",
       "on-click": "$HOME/.local/bin/power-menu",
       "interval": 0
+    },
+    "custom/bluetooth": {
+      "exec": "$HOME/.config/waybar/scripts/bluetooth-status.sh",
+      "return-type": "json",
+      "interval": 5,
+      "on-click": "$HOME/.config/waybar/scripts/bluetooth-status.sh --toggle",
+      "tooltip": true
     },
     "tray": {
       "spacing": 10

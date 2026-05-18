@@ -26,6 +26,7 @@ tooltip {
 #custom-emacs-task,
 #mpd,
 #idle_inhibitor,
+#custom-bluetooth,
 #custom-volume,
 #network,
 #load,
@@ -148,6 +149,20 @@ tooltip {
 #network.disconnected,
 #custom-volume.muted {
   color: #cf8e7a;
+}
+
+#custom-bluetooth {
+  color: #d8d0bf;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+#custom-bluetooth.connected {
+  color: #66b044;
+}
+
+#custom-bluetooth.disabled {
+  color: #5a5a6a;
 }
 
 #network {

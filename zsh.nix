@@ -1,6 +1,6 @@
 { inputs, lib, ... }:
 {
-  home.file.".p10k.zsh".source = ../zsh/.p10k.zsh;
+  home.file.".p10k.zsh".source = ./zsh/.p10k.zsh;
   home.file.".oh-my-zsh/custom/themes/powerlevel10k".source = inputs.powerlevel10k;
   home.file.".oh-my-zsh/custom/plugins/zsh-vi-mode".source = inputs.zsh-vi-mode;
 

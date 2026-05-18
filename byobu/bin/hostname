@@ -1,0 +1,18 @@
+#!/bin/bash -e
+#
+# Custom byobu hostname module.
+# Maps deess1mac* hosts to "ista" for compactness; passes other hosts through.
+
+__hostname_detail() {
+	hostname -f 2>/dev/null
+}
+
+__hostname() {
+	local h
+	h=$(hostname -s 2>/dev/null || hostname)
+	[ -n "$h" ] || return
+	case "$h" in
+		deess1mac*) h="ista" ;;
+	esac
+	color bold2; printf "%s" "$h"; color --
+}

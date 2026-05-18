@@ -13,5 +13,6 @@
     ".byobu/status".source       = ./byobu/status;
     ".byobu/status-e".source     = ./byobu/status-e;
     ".byobu/statusrc".source     = ./byobu/statusrc;
+    ".byobu/bin/hostname"        = { source = ./byobu/bin/hostname; executable = true; };
   };
 }

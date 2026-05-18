@@ -764,6 +764,48 @@ Creates today's journal file if it doesn't exist."
     (kill-new markdown)
     (message "Copied region as Markdown")))
 #+end_src
+**** jira-fetch-assigned
+#+begin_src emacs-lisp
+(defcustom gunnar/jira-assigned-file (expand-file-name "jira-assigned.org" org-directory)
+  "Path to the org file that gunnar/jira-fetch-assigned-to-org overwrites."
+  :type 'file
+  :group 'gunnar)
+
+(defun gunnar/jira-fetch-assigned-to-org ()
+  "Fetch unresolved Jira issues assigned to the current user and write them as org.
+Overwrites `gunnar/jira-assigned-file' on each run.  Requires the `jira' CLI
+configured at ~/.config/.jira/.config.yml."
+  (interactive)
+  (unless (executable-find "jira") (user-error "jira CLI not found on PATH"))
+  (let* ((jql "assignee = currentUser() AND resolution = Unresolved")
+         (cmd (format "jira issue list -q %s --raw 2>/dev/null"
+                      (shell-quote-argument jql)))
+         (json (shell-command-to-string cmd))
+         (issues (condition-case _ (json-parse-string json :array-type 'list :object-type 'alist)
+                   (error nil))))
+    (with-temp-file gunnar/jira-assigned-file
+      (insert "#+TITLE: Assigned Jira Issues\n")
+      (insert (format-time-string "#+UPDATED: [%Y-%m-%d %a %H:%M]\n\n"))
+      (if (null issues)
+          (insert "No unresolved issues assigned.\n")
+        (dolist (i issues)
+          (let* ((key      (alist-get 'key i))
+                 (fields   (alist-get 'fields i))
+                 (summary  (alist-get 'summary fields))
+                 (status   (alist-get 'name (alist-get 'status fields)))
+                 (priority (alist-get 'name (alist-get 'priority fields)))
+                 (itype    (alist-get 'name (alist-get 'issueType fields)))
+                 (todo     (if (member status '("Done" "Closed" "Resolved")) "DONE" "TODO")))
+            (insert (format "* %s %s %s :%s:\n" todo key summary key))
+            (insert "  :PROPERTIES:\n")
+            (insert (format "  :JIRA_KEY: %s\n" key))
+            (insert (format "  :JIRA_STATUS: %s\n" (or status "")))
+            (insert (format "  :JIRA_PRIORITY: %s\n" (or priority "")))
+            (insert (format "  :JIRA_TYPE: %s\n" (or itype "")))
+            (insert (format "  :JIRA_URL: https://ista.atlassian.net/browse/%s\n" key))
+            (insert "  :END:\n")))))
+    (message "Wrote %d issue(s) to %s" (length issues) gunnar/jira-assigned-file)))
+#+end_src
 **** agenda-views
 #+begin_src emacs-lisp
 (defun gunnar/org-agenda-show-inbox         (&optional arg) (interactive "P") (org-agenda arg "c"))

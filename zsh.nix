@@ -83,6 +83,9 @@
         source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
       fi
 
+      # oh-my-zsh "screen" plugin hostname override: map deess1mac* → ista
+      _GET_HOST='h=$(hostname -s 2>/dev/null || hostname); case "$h" in deess1mac*) h=ista ;; esac; echo "$h"'
+
       # PATH helpers
       _path_contains() {
         dir=$1

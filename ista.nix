@@ -5,6 +5,8 @@
 
   home.file.".aliases".source = ./home/.aliases;
 
+  home.file.".m2/settings.xml".source = ./mvn/settings.xml;
+
   home.file.".ista_profile".source = "${inputs.ista-dotfiles}/.ista_profile";
   home.file.".ista_rc".source = "${inputs.ista-dotfiles}/.ista_rc";
 

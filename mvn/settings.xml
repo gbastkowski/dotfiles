@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd"
+          xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <servers>
+    <server>
+      <id>central</id>
+      <username>gunnar.bastkowski@ista.com</username>
+      <password>{XrjhkyqV4dsHdhEnjOTJ+J9uraxtUWsm6hRBTEmkGckC59T+jlNn7tz1WpuLAxZlEWagcs6EyXPwtiC+fuy9530hwFyhusi2KOnn/J4Q77nGU4Psb+nhTt/kOy3wiF2j}</password>
+    </server>
+    <server>
+      <id>snapshots</id>
+      <username>gunnar.bastkowski@ista.com</username>
+      <password>{XrjhkyqV4dsHdhEnjOTJ+J9uraxtUWsm6hRBTEmkGckC59T+jlNn7tz1WpuLAxZlEWagcs6EyXPwtiC+fuy9530hwFyhusi2KOnn/J4Q77nGU4Psb+nhTt/kOy3wiF2j}</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>artifactory</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <name>maven</name>
+          <url>https://ista.jfrog.io/artifactory/maven</url>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>snapshots</id>
+          <name>maven</name>
+          <url>https://ista.jfrog.io/artifactory/maven</url>
+          <snapshots />
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <name>maven</name>
+          <url>https://ista.jfrog.io/artifactory/maven</url>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>snapshots</id>
+          <name>maven</name>
+          <url>https://ista.jfrog.io/artifactory/maven</url>
+          <snapshots />
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>artifactory</activeProfile>
+  </activeProfiles>
+</settings>

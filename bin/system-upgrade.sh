@@ -11,7 +11,6 @@ case "$(hostname -s)" in
     softwareupdate -l
     brew update && brew upgrade
     pipx upgrade-all
-    HM_TARGET="ista-dotfiles"
     ;;
   akiko*)
     case "$(uname -a)" in
@@ -19,7 +18,6 @@ case "$(hostname -s)" in
       *)         yay -Syu && hyprpm update ;;
     esac
     pipx upgrade-all
-    HM_TARGET="akiko-dotfiles"
     ;;
   *)
     echo "unknown host: $(hostname -s)"; exit 1 ;;
@@ -38,7 +36,7 @@ git pull --rebase origin main
 echo
 
 echo "switching home-manager configuration ..."
-home-manager switch --flake "$DOTFILES_DIR#$HM_TARGET"
+"$DOTFILES_DIR/bin/apply.sh"
 echo
 
 echo "updating doom emacs ..."

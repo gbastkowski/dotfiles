@@ -85,7 +85,7 @@
       "format": "",
       "format-alt": "",
       "tooltip": "Power Menu",
-      "on-click": "$HOME/.config/waybar/scripts/shutdown-menu.sh --show-menu",
+      "on-click": "$HOME/.local/bin/power-menu",
       "interval": 0
     },
     "tray": {

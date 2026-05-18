@@ -41,7 +41,7 @@
         ./kitty.nix
         ./claude.nix
         ./plover.nix
-        ./sbt.nix
+        ./sbt
       ];
 
       mkHost = system: hostModules: home-manager.lib.homeManagerConfiguration {

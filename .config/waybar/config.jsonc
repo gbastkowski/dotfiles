@@ -111,6 +111,14 @@
         "critical": 80
       }
     },
+    "temperature": {
+      "format": " {temperatureC}°C",
+      "tooltip-format": "Thermal zone: {thermal_zone}"
+    },
+    "cpu": {
+      "format": " {usage}%",
+      "tooltip-format": "CPU usage: {usage}%"
+    },
     "tray": {
       "spacing": 10
     }

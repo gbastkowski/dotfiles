@@ -3,6 +3,8 @@ set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 
+PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
 case "$(hostname -s)" in
   deess1mac*) target="ista-dotfiles" ;;
   akiko*)     target="akiko-dotfiles" ;;

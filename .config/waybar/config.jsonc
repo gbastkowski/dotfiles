@@ -10,7 +10,7 @@
   "margin-bottom": 0,
   "modules-left":   ["hyprland/workspaces", "hyprland/window"],
   "modules-center": ["idle_inhibitor", "mpd", "custom/emacs-task"],
-  "modules-right":  ["custom/bluetooth", "custom/volume", "disk", "load", "temperature", "cpu", "memory", "tray"],
+  "modules-right":  [],
   "mpd": {
     "format": "  {stateIcon}",
     "format-disconnected": "  off",
@@ -56,54 +56,6 @@
     "interval": 1,
     "tooltip": true
   },
-  "custom/volume": {
-    "exec": "$HOME/.config/waybar/scripts/volume-status.sh",
-    "return-type": "json",
-    "interval": 1,
-    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-    "on-click-right": "pavucontrol",
-    "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
-    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-    "tooltip": true
-  },
-  "custom/bluetooth": {
-    "exec": "$HOME/.config/waybar/scripts/bluetooth-status.sh",
-    "return-type": "json",
-    "interval": 5,
-    "on-click": "$HOME/.config/waybar/scripts/bluetooth-status.sh --toggle",
-    "tooltip": true
-  },
-  "disk": {
-    "format": "󰋊 {percentage_used}%",
-    "tooltip-format": "Used: {used} / {total}",
-    "states": {
-      "warning": 80,
-      "critical": 90
-    }
-  },
-  "memory": {
-    "format": "󰍛 {percentage}%",
-    "tooltip-format": "Used: {used:0.1f}GB\nFree: {free:0.1f}GB\nTotal: {total:0.1f}GB",
-    "states": {
-      "warning": 50,
-      "critical": 80
-    }
-  },
-  "load": {
-    "format": " {load1}",
-    "tooltip-format": "Load avg: {load1} {load5} {load15}"
-  },
-  "temperature": {
-    "format": " {temperatureC}°C",
-    "tooltip-format": "Thermal zone: {thermal_zone}"
-  },
-  "cpu": {
-    "format": " {usage}%",
-    "tooltip-format": "CPU usage: {usage}%"
-  },
-  "tray": {
-    "spacing": 10
-  }
 }, {
   "output": "DP-1",
   "layer": "top",

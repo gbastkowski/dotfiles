@@ -96,7 +96,7 @@
       "tooltip": true
     },
     "disk": {
-      "format": "💾 {percentage_used}%",
+      "format": "󰋊 {percentage_used}%",
       "tooltip-format": "Used: {used} / {total}",
       "states": {
         "warning": 80,

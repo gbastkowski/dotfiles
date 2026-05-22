@@ -9,7 +9,7 @@
   "margin-right": 0,
   "margin-bottom": 0,
   "modules-left":   ["hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["idle_inhibitor", "mpd", "custom/emacs-task"],
+  "modules-center": ["mpd", "custom/emacs-task"],
   "modules-right":  [],
   "mpd": {
     "format": "  {stateIcon}",
@@ -22,15 +22,6 @@
     "tooltip-format": "{artist} - {title}",
     "on-click": "mpc toggle",
     "on-click-right": "mpc stop"
-  },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "",
-      "deactivated": ""
-    },
-    "tooltip-format-activated": "Idle inhibition enabled",
-    "tooltip-format-deactivated": "Idle inhibition disabled"
   },
   "hyprland/workspaces": {
     "all-outputs": false,
@@ -55,7 +46,7 @@
     "return-type": "json",
     "interval": 1,
     "tooltip": true
-  },
+  }
 }, {
   "output": "DP-1",
   "layer": "top",

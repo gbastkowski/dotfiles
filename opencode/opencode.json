@@ -69,6 +69,15 @@
         "--token-command",
         "pass show ista/jira-api-token-mcp"
       ]
+    },
+    "tmux": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "@audibleblink/tmux-mcp-server"
+      ]
     }
   },
   "provider": {

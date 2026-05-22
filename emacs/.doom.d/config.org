@@ -619,7 +619,25 @@ Creates today's journal file if it doesn't exist."
        org-journal-file-header                (lambda (time) (concat
                                                               "#+TITLE: " (format-time-string "%Y-%m-%d") "\n"
                                                               "#+CATEGORY: Journal\n"
-                                                              "\n\n"))
+                                                              "#+IDENTITY:\n"
+                                                              "#+ENERGY: L/M/H\n"
+                                                              "\n"
+                                                              "* Intention — the one thing\n"
+                                                              "- \n"
+                                                              "\n"
+                                                              "* Habits :habits:\n"
+                                                              "- [ ] Use pomodoro\n"
+                                                              "- [ ] Eat apple\n"
+                                                              "- [ ] Water bottle\n"
+                                                              "- [ ] Do exercise\n"
+                                                              "\n"
+                                                              "* Evening review\n"
+                                                              "- [ ] Inbox processed\n"
+                                                              "- [ ] Habits ticked / scored\n"
+                                                              "- Wins:\n"
+                                                              "- Friction:\n"
+                                                              "- Tomorrow's one thing:\n"
+                                                              "\n"))
        org-journal-find-file                  'find-file)
 
 #+end_src

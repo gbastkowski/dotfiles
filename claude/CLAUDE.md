@@ -19,8 +19,8 @@
 
 # Installed Tools
 - `gh` - GitHub CLI for repository management
-- `glab` - GitLab CLI for repository management
-- `jira` - Jira CLI for issue management
+- `glab` - GitLab MCP server for repository management (fallback to glab cli)
+- `jira` - Jira CLI for issue management (fallback only; prefer the Jira MCP server)
 
 # SBT and Scala
 - publishLocal means "run 'sbt publishLocal'"
@@ -29,10 +29,14 @@
 
 # Jira
 
+## Tooling
+- Prefer the Jira MCP server (`mcp__claude_ai_Atlassian__*` or `plugin:jira-assistant`) for reading, creating, transitioning, and assigning issues.
+- Use the `jira` CLI only as a fallback (e.g., MCP unavailable or auth failing).
+
 ## Project Configuration
 - Default project: SQDD09
 - Jira URL: https://ista.atlassian.net
-- Config file: ~/.config/.jira/.config.yml
+- Config file: ~/.config/.jira/.config.yml (CLI fallback only)
 - A jira issue with digits (e.g. 1234) only usually refers to the precise issue key SQDD09-1234
 
 ## Available Issue Types
@@ -89,8 +93,8 @@ The SQDD09 project has the following issue types:
 # Git and Gitlab Workflow
 
 ## General Rules
-- Prefer one-line git commit messages
-- Prefix with the current ticket number only if a ticket number has been mentioned in the conversation
+- Follow tbaggery's commit-message conventions (imperative-mood subject ~50 chars, no trailing period; blank line; optional body wrapped at ~72 chars explaining *why*)
+- Do NOT prefix the subject with the Jira ticket number — the ticket lives in the branch name / MR description
 - Don't add "generated with Claude Code"
 
 ## Gitlab User Handles

@@ -93,8 +93,8 @@ The SQDD09 project has the following issue types:
 # Git and Gitlab Workflow
 
 ## General Rules
-- Prefer one-line git commit messages
-- Prefix with the current ticket number only if a ticket number has been mentioned in the conversation
+- Follow tbaggery's commit-message conventions (imperative-mood subject ~50 chars, no trailing period; blank line; optional body wrapped at ~72 chars explaining *why*)
+- Do NOT prefix the subject with the Jira ticket number — the ticket lives in the branch name / MR description
 - Don't add "generated with Claude Code"
 
 ## Gitlab User Handles

@@ -1,4 +1,111 @@
-{
+[{
+  "output": "HDMI-A-1",
+  "layer": "top",
+  "position": "top",
+  "height": 40,
+  "spacing": 10,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+  "margin-bottom": 0,
+  "modules-left":   ["hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["idle_inhibitor", "mpd", "custom/emacs-task"],
+  "modules-right":  ["custom/bluetooth", "custom/volume", "disk", "load", "temperature", "cpu", "memory", "tray"],
+  "mpd": {
+    "format": "  {stateIcon}",
+    "format-disconnected": "  off",
+    "format-stopped": "  stop",
+    "state-icons": {
+      "paused": "",
+      "playing": ""
+    },
+    "tooltip-format": "{artist} - {title}",
+    "on-click": "mpc toggle",
+    "on-click-right": "mpc stop"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    },
+    "tooltip-format-activated": "Idle inhibition enabled",
+    "tooltip-format-deactivated": "Idle inhibition disabled"
+  },
+  "hyprland/workspaces": {
+    "all-outputs": false,
+    "active-only": false,
+    "disable-scroll": false,
+    "sort-by-number": true,
+    "format": "{name}",
+    "on-click": "activate"
+  },
+  "hyprland/window": {
+    "max-length": 64,
+    "separate-outputs": true,
+    "rewrite": {
+      "(.*) - Mozilla Firefox": "$1",
+      "(.*) — Mozilla Firefox": "$1",
+      "(.*) - Emacs": "$1",
+      "(.*) — kitty": "$1"
+    }
+  },
+  "custom/emacs-task": {
+    "exec": "$HOME/.config/waybar/scripts/emacs-task-status.sh",
+    "return-type": "json",
+    "interval": 1,
+    "tooltip": true
+  },
+  "custom/volume": {
+    "exec": "$HOME/.config/waybar/scripts/volume-status.sh",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "pavucontrol",
+    "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+    "tooltip": true
+  },
+  "custom/bluetooth": {
+    "exec": "$HOME/.config/waybar/scripts/bluetooth-status.sh",
+    "return-type": "json",
+    "interval": 5,
+    "on-click": "$HOME/.config/waybar/scripts/bluetooth-status.sh --toggle",
+    "tooltip": true
+  },
+  "disk": {
+    "format": "󰋊 {percentage_used}%",
+    "tooltip-format": "Used: {used} / {total}",
+    "states": {
+      "warning": 80,
+      "critical": 90
+    }
+  },
+  "memory": {
+    "format": "󰍛 {percentage}%",
+    "tooltip-format": "Used: {used:0.1f}GB\nFree: {free:0.1f}GB\nTotal: {total:0.1f}GB",
+    "states": {
+      "warning": 50,
+      "critical": 80
+    }
+  },
+  "load": {
+    "format": " {load1}",
+    "tooltip-format": "Load avg: {load1} {load5} {load15}"
+  },
+  "temperature": {
+    "format": " {temperatureC}°C",
+    "tooltip-format": "Thermal zone: {thermal_zone}"
+  },
+  "cpu": {
+    "format": " {usage}%",
+    "tooltip-format": "CPU usage: {usage}%"
+  },
+  "tray": {
+    "spacing": 10
+  }
+}, {
+  "output": "DP-1",
   "layer": "top",
   "position": "top",
   "height": 40,
@@ -8,7 +115,7 @@
   "margin-right": 0,
   "margin-bottom": 0,
   "modules-left":   ["custom/shutdown", "hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["idle_inhibitor",  "clock", "custom/weather", "mpd", "custom/emacs-task"],
+  "modules-center": ["idle_inhibitor", "clock", "custom/weather", "mpd", "custom/emacs-task"],
   "modules-right":  ["network", "custom/bluetooth", "custom/volume", "disk", "load", "temperature", "cpu", "memory", "tray"],
   "mpd": {
     "format": "  {stateIcon}",
@@ -78,52 +185,52 @@
     "on-click-right": "pavucontrol",
     "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
     "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-      "tooltip": true
-    },
-    "custom/shutdown": {
-      "return-type": "json",
-      "format": "",
-      "format-alt": "",
-      "tooltip": "Power Menu",
-      "on-click": "$HOME/.local/bin/power-menu",
-      "interval": 0
-    },
-    "custom/bluetooth": {
-      "exec": "$HOME/.config/waybar/scripts/bluetooth-status.sh",
-      "return-type": "json",
-      "interval": 5,
-      "on-click": "$HOME/.config/waybar/scripts/bluetooth-status.sh --toggle",
-      "tooltip": true
-    },
-    "disk": {
-      "format": "󰋊 {percentage_used}%",
-      "tooltip-format": "Used: {used} / {total}",
-      "states": {
-        "warning": 80,
-        "critical": 90
-      }
-    },
-    "memory": {
-      "format": "󰍛 {percentage}%",
-      "tooltip-format": "Used: {used:0.1f}GB\nFree: {free:0.1f}GB\nTotal: {total:0.1f}GB",
-      "states": {
-        "warning": 50,
-        "critical": 80
-      }
-    },
-    "load": {
-      "format": " {load1}",
-      "tooltip-format": "Load avg: {load1} {load5} {load15}"
-    },
-    "temperature": {
-      "format": " {temperatureC}°C",
-      "tooltip-format": "Thermal zone: {thermal_zone}"
-    },
-    "cpu": {
-      "format": " {usage}%",
-      "tooltip-format": "CPU usage: {usage}%"
-    },
-    "tray": {
-      "spacing": 10
+    "tooltip": true
+  },
+  "custom/shutdown": {
+    "return-type": "json",
+    "format": "",
+    "format-alt": "",
+    "tooltip": "Power Menu",
+    "on-click": "$HOME/.local/bin/power-menu",
+    "interval": 0
+  },
+  "custom/bluetooth": {
+    "exec": "$HOME/.config/waybar/scripts/bluetooth-status.sh",
+    "return-type": "json",
+    "interval": 5,
+    "on-click": "$HOME/.config/waybar/scripts/bluetooth-status.sh --toggle",
+    "tooltip": true
+  },
+  "disk": {
+    "format": "󰋊 {percentage_used}%",
+    "tooltip-format": "Used: {used} / {total}",
+    "states": {
+      "warning": 80,
+      "critical": 90
     }
+  },
+  "memory": {
+    "format": "󰍛 {percentage}%",
+    "tooltip-format": "Used: {used:0.1f}GB\nFree: {free:0.1f}GB\nTotal: {total:0.1f}GB",
+    "states": {
+      "warning": 50,
+      "critical": 80
+    }
+  },
+  "load": {
+    "format": " {load1}",
+    "tooltip-format": "Load avg: {load1} {load5} {load15}"
+  },
+  "temperature": {
+    "format": " {temperatureC}°C",
+    "tooltip-format": "Thermal zone: {thermal_zone}"
+  },
+  "cpu": {
+    "format": " {usage}%",
+    "tooltip-format": "CPU usage: {usage}%"
+  },
+  "tray": {
+    "spacing": 10
   }
+}]

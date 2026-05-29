@@ -2,81 +2,81 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/kimi-k2.6",
       "variant": "medium"
     },
     "hephaestus": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-pro",
       "variant": "medium"
     },
     "oracle": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/glm-5.1",
       "variant": "high"
     },
     "explore": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-flash",
       "variant": "medium"
     },
     "multimodal-looker": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/mimo-v2.5-pro",
       "variant": "high"
     },
     "prometheus": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/glm-5.1",
       "variant": "high"
     },
     "metis": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/qwen3.6-plus",
       "variant": "high"
     },
     "momus": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/glm-5.1",
       "variant": "xhigh"
     },
     "atlas": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-pro",
       "variant": "medium"
     },
     "sisyphus-junior": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-flash",
       "variant": "medium"
     },
     "librarian": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-flash",
       "variant": "medium"
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/kimi-k2.6",
       "variant": "high"
     },
     "ultrabrain": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/glm-5.1",
       "variant": "xhigh"
     },
     "deep": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-pro",
       "variant": "medium"
     },
     "quick": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/qwen3.5-plus",
       "variant": "low"
     },
     "unspecified-low": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-flash",
       "variant": "medium"
     },
     "unspecified-high": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/deepseek-v4-pro",
       "variant": "medium"
     },
     "writing": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/kimi-k2.6",
       "variant": "medium"
     },
     "artistry": {
-      "model": "ollama/qwen-coder",
+      "model": "opencode-go/glm-5.1",
       "variant": "xhigh"
     }
   },

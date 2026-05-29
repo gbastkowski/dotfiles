@@ -1,0 +1,84 @@
+* {
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+}
+
+window {
+  background-color: rgba(22, 20, 17, 0.85);
+}
+
+button {
+  border-radius: 12px;
+  border: 2px solid transparent;
+  color: #d8d0bf;
+  background-color: rgba(51, 51, 63, 0.7);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 25%;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 6px;
+  padding: 14px 0;
+  min-width: 140px;
+  min-height: 60px;
+  transition: all 0.2s ease;
+}
+
+button:focus,
+button:active,
+button:hover {
+  background-color: #e0aa56;
+  color: #161411;
+  outline-style: none;
+  border-color: #e0aa56;
+}
+
+#lock {
+  background-image: image(url("/usr/share/wlogout/icons/lock.png"),
+      url("/usr/local/share/wlogout/icons/lock.png"));
+  background-size: 32px;
+  background-position: top 12px center;
+  padding-top: 48px;
+}
+
+#logout {
+  background-image: image(url("/usr/share/wlogout/icons/logout.png"),
+      url("/usr/local/share/wlogout/icons/logout.png"));
+  background-size: 32px;
+  background-position: top 12px center;
+  padding-top: 48px;
+}
+
+#suspend {
+  background-image: image(url("/usr/share/wlogout/icons/suspend.png"),
+      url("/usr/local/share/wlogout/icons/suspend.png"));
+  background-size: 32px;
+  background-position: top 12px center;
+  padding-top: 48px;
+}
+
+#hibernate {
+  background-image: image(url("/usr/share/wlogout/icons/hibernate.png"),
+      url("/usr/local/share/wlogout/icons/hibernate.png"));
+  background-size: 32px;
+  background-position: top 12px center;
+  padding-top: 48px;
+}
+
+#shutdown {
+  background-image: image(url("/usr/share/wlogout/icons/shutdown.png"),
+      url("/usr/local/share/wlogout/icons/shutdown.png"));
+  background-size: 32px;
+  background-position: top 12px center;
+  padding-top: 48px;
+}
+
+#reboot {
+  background-image: image(url("/usr/share/wlogout/icons/reboot.png"),
+      url("/usr/local/share/wlogout/icons/reboot.png"));
+  background-size: 32px;
+  background-position: top 12px center;
+  padding-top: 48px;
+}

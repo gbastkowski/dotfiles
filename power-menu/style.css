@@ -12,9 +12,9 @@ button {
 }
 
 button.power-button {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  padding: 14px 20px;
+  padding: 12px 20px;
   border-radius: 10px;
   background: transparent;
   background-image: none;
@@ -22,7 +22,6 @@ button.power-button {
   border: none;
   box-shadow: none;
   outline: none;
-  transition: all 0.2s ease;
   margin: 4px 0;
 }
 
@@ -52,7 +51,6 @@ button.cancel-button {
   border: none;
   box-shadow: none;
   outline: none;
-  transition: all 0.2s ease;
 }
 
 button.cancel-button:hover {
@@ -64,6 +62,7 @@ button.cancel-button:hover {
 
 button label {
   color: inherit;
+  text-align: center;
 }
 
 .status-label {
@@ -72,8 +71,12 @@ button label {
   margin-top: 8px;
 }
 
-window {
-  background-color: rgba(51, 51, 63, 0.82);
+.power-menu-window {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.power-menu-panel {
+  background-color: rgba(51, 51, 63, 0.93);
   border-radius: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }

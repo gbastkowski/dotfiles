@@ -1,0 +1,18 @@
+polkit.addRule(function(action, subject) {
+    var allowedUsers = ["gunnar", "rangun"];
+    var allowedActions = [
+        "org.freedesktop.login1.suspend",
+        "org.freedesktop.login1.suspend-multiple-sessions",
+        "org.freedesktop.login1.hibernate",
+        "org.freedesktop.login1.hibernate-multiple-sessions",
+        "org.freedesktop.login1.power-off",
+        "org.freedesktop.login1.power-off-multiple-sessions",
+        "org.freedesktop.login1.reboot",
+        "org.freedesktop.login1.reboot-multiple-sessions"
+    ];
+    if (allowedActions.indexOf(action.id) >= 0 &&
+        allowedUsers.indexOf(subject.user) >= 0 &&
+        subject.active == true) {
+        return polkit.Result.YES;
+    }
+});

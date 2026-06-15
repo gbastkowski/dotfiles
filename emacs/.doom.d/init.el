@@ -41,7 +41,7 @@
                     (vertico +icons +childframe)
         :ui         deft                              ; notational velocity for Emacs
                     doom
-                    doom-dashboard
+                    dashboard
                     doom-quit
                     (emoji +unicode +github)
                     hl-todo                           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW

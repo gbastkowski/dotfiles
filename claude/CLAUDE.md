@@ -100,9 +100,11 @@ The SQDD09 project has the following issue types:
 ## Gitlab User Handles
 Me: Gunnar.Bastkowski
 Teammates:
+- David: David.Lopez.Extern
+
+Former teammates:
 - Nitin: Nitin.Soni1
 - Benny: Benny.Lach
-- David: David.Lopez.Extern
 
 ## GitLab Merge Requests
 - Add the related Jira issue to the merge request description.

@@ -117,6 +117,35 @@ Running ~home-manager switch~ compares the current generation with the new one a
 
 Replace ~ista-dotfiles~ with ~akiko-dotfiles~ on Arch Linux.
 
+* Password store
+~password-store.nix~ wires ~~/.password-store~ to a self-hosted bare git repo on each ~home-manager switch~.
+
+** Prerequisites
+- ~gpg~ available on ~PATH~ (installed via ~home.packages~).
+- At least one GPG secret key imported.
+  Activation fails loudly if no secret key is present.
+  Follow-up: [[https://github.com/gbastkowski/dotfiles/issues/35][gbastkowski/dotfiles#35]] tracks adding GPG init to bootstrap.
+
+** Behavior
+- On a machine without ~~/.password-store~: clones the remote.
+- On a machine with the store but no ~origin~: adds the configured remote.
+- On a machine with a mismatched ~origin~: aborts the switch.
+- Otherwise: silent no-op.
+
+** Sync workflow
+Sync is manual.
+After making changes on one machine:
+
+#+BEGIN_SRC sh
+  pass git push
+#+END_SRC
+
+On another machine, before reading or editing secrets:
+
+#+BEGIN_SRC sh
+  pass git pull
+#+END_SRC
+
 * Notes
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
 - ~emacs/.emacs.doom/~ (Doom Emacs itself) is cloned independently by ~bootstrap.sh~, not managed by Home Manager.

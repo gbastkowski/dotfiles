@@ -41,6 +41,7 @@
         ./kitty.nix
         ./claude.nix
         ./opencode
+        ./password-store.nix
         ./plover.nix
         ./sbt
       ];

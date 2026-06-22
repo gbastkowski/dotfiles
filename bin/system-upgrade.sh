@@ -31,9 +31,19 @@ if command -v npm >/dev/null 2>&1; then
 	echo
 fi
 
-echo "pulling dotfiles ..."
-git pull --rebase origin main
-echo
+if [ -z "$SYSTEM_UPGRADE_REEXEC" ]; then
+	echo "pulling dotfiles ..."
+	before="$(git rev-parse HEAD)"
+	git pull --rebase origin main
+	after="$(git rev-parse HEAD)"
+	echo
+
+	if [ "$before" != "$after" ]; then
+		echo "system-upgrade.sh updated, restarting ..."
+		echo
+		SYSTEM_UPGRADE_REEXEC=1 exec "$DOTFILES_DIR/bin/system-upgrade.sh" "$@"
+	fi
+fi
 
 echo "switching home-manager configuration ..."
 "$DOTFILES_DIR/bin/apply.sh"

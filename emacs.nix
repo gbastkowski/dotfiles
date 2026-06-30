@@ -18,6 +18,8 @@
   home.file.".doom.d/modules/tools/claude-code/packages.el".source = ./emacs/.doom.d/modules/tools/claude-code/packages.el;
   home.file.".doom.d/modules/tools/codex/config.el".source = ./emacs/.doom.d/modules/tools/codex/config.el;
   home.file.".doom.d/modules/tools/codex/packages.el".source = ./emacs/.doom.d/modules/tools/codex/packages.el;
+  home.file.".doom.d/modules/tools/mcp-emacs/config.el".source = ./emacs/.doom.d/modules/tools/mcp-emacs/config.el;
+  home.file.".doom.d/modules/tools/mcp-emacs/packages.el".source = ./emacs/.doom.d/modules/tools/mcp-emacs/packages.el;
   home.file.".doom.d/openai/playground/openai-playground.el".source = ./emacs/.doom.d/openai/playground/openai-playground.el;
   home.file.".doom.d/openspec/changes/find-or-create-task-refile-function/.openspec.yaml".source = ./emacs/.doom.d/openspec/changes/find-or-create-task-refile-function/.openspec.yaml;
   home.file.".doom.d/openspec/changes/find-or-create-task-refile-function/design.md".source = ./emacs/.doom.d/openspec/changes/find-or-create-task-refile-function/design.md;

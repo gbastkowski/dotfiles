@@ -19,7 +19,7 @@
 
 # Installed Tools
 - `gh` - GitHub CLI for repository management
-- `glab` - GitLab MCP server for repository management (fallback to glab cli)
+- `glab` - GitLab CLI (fallback; prefer the gitlab-assistant plugin / GitLab MCP server)
 - `jira` - Jira CLI for issue management (fallback only; prefer the Jira MCP server)
 
 # SBT and Scala
@@ -91,6 +91,10 @@ The SQDD09 project has the following issue types:
 - Let implementation details emerge during work rather than planning everything in the issue
 
 # Git and Gitlab Workflow
+
+## Tooling
+- Prefer the gitlab-assistant plugin (`plugin:gitlab-assistant` skills) and its GitLab MCP server for pipeline analysis, MR creation, and MR review.
+- The MCP server runs `glab` under the hood; use the `glab` CLI directly only as a fallback.
 
 ## General Rules
 - Follow tbaggery's commit-message conventions (imperative-mood subject ~50 chars, no trailing period; blank line; optional body wrapped at ~72 chars explaining *why*)

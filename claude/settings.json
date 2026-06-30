@@ -7,6 +7,7 @@
   },
   "enabledPlugins": {
     "jira-assistant@mdb-ai-tooling": true,
+    "gitlab-assistant@mdb-gitlab-tools": true,
     "ista-presentation@ista-marketplace": true,
     "caveman@caveman": true
   },
@@ -15,6 +16,12 @@
       "source": {
         "source": "git",
         "url": "git@gitlab.com:ista-se/cas/dsp-mdb/ai-tooling/jira-assistant-claude-plugin.git"
+      }
+    },
+    "mdb-gitlab-tools": {
+      "source": {
+        "source": "git",
+        "url": "git@gitlab.com:ista-se/cas/dsp-mdb/ai-tooling/gitlab-assistant-claude-plugin.git"
       }
     },
     "ista-marketplace": {

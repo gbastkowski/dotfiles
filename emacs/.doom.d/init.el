@@ -39,9 +39,9 @@
 (doom!
         :completion (corfu +icons +orderless +dabbrev)
                     (vertico +icons +childframe)
-        :ui         deft                              ; notational velocity for Emacs
+        :ui         dashboard
+                    deft                              ; notational velocity for Emacs
                     doom
-                    dashboard
                     doom-quit
                     (emoji +unicode +github)
                     hl-todo                           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
@@ -66,7 +66,8 @@
         :editor     (evil +everywhere)
                     file-templates
                     fold
-                    ;;(format +onsave)                ; automated prettiness
+                    (format +lsp)
+                    god
                     ;;lispy                           ; vim for lisp, for people who don't like vim
                     multiple-cursors                  ; editing in many places at once
                     ;;objed                           ; text object editing for the innocent
@@ -77,6 +78,7 @@
         :emacs      (dired +icons)
                     electric
                     (ibuffer +icons)
+                    tramp
                     undo
                     vc
         :term       eshell                            ; the elisp shell that works everywhere
@@ -88,8 +90,8 @@
                     grammar
         :tools      ;;ai
                     ;;ansible
-                    ;;claude-code
-                    codex
+                    claude-code
+                    ;; codex
                     ;;biblio                          ; Writes a PhD for you (citation needed)
                     ;;collab                          ; buffers with friends
                     ;;debugger                        ; FIXME stepping through code, to help you add bugs
@@ -104,10 +106,7 @@
                     make                              ; run make tasks from Emacs
                     (pass +auth)
                     pdf                               ; pdf enhancements
-                    ;;prodigy                         ; FIXME managing external services & code builders
-                    ;;rgb                             ; creating color strings
-                    ;;taskrunner                      ; taskrunner for all your projects
-                    ;;terraform
+                    (terraform +lsp)
                     tmux                              ; an API for interacting with tmux
                     tree-sitter
                     ;;upload                          ; map local to remote projects via ssh/ftp
@@ -185,6 +184,5 @@
                     everywhere                        ; *leave* Emacs!? You must be joking
                     ;;irc                             ; how neckbeards socialize
                     ;;(rss +org)                      ; emacs as an RSS reader
-                    ;;twitter                         ; twitter client https://twitter.com/vnought
        :config      literate
                     (default +bindings +gnupg +smartparens))

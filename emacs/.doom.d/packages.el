@@ -74,10 +74,6 @@
 (package! org-present)
 (package! visual-fill-column)
 
-(package! mcp-emacs         :recipe (:host github :repo   "gbastkowski/mcp-emacs"
-                                                  :branch "main"
-                                                  :files  ("packages/emacs/lisp/*.el")))
-
 (package! opencode          :recipe (:host gitlab :repo   "rogs/opencode.el"))
 
 (package! shell-maker       :recipe (:host github :repo   "xenodium/shell-maker"))

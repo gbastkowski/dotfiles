@@ -174,6 +174,13 @@
 
       unalias run-help 2>/dev/null || true
       autoload run-help
+
+      # zsh-vi-mode clobbers keybindings on lazy init; re-bind atuin Ctrl-R after.
+      if command -v atuin >/dev/null 2>&1; then
+        zvm_after_init() {
+          bindkey '^r' atuin-search
+        }
+      fi
     '')
     ];
   };

@@ -154,6 +154,8 @@
       # p10k config
       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
+      export GITHUB_MCP_PAT="$(pass show github.com/mcp-token 2>/dev/null)"
+
       # cargo
       [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 

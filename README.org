@@ -146,6 +146,26 @@ On another machine, before reading or editing secrets:
   pass git pull
 #+END_SRC
 
+* GitHub MCP server (Claude Code)
+The GitHub MCP server (~https://api.githubcopilot.com/mcp/~) authenticates with a fine-grained personal access token, not OAuth — its auth server does not support dynamic client registration, so ~/mcp~ in-app auth fails.
+
+The token is kept out of the config and out of git:
+- Stored in ~password-store~ under ~github.com/mcp-token~.
+- ~zsh.nix~ exports it as ~GITHUB_MCP_PAT~ on shell start (~pass show github.com/mcp-token~).
+- ~~/.claude.json~ references it in the server's ~Authorization~ header as ~Bearer ${GITHUB_MCP_PAT}~; Claude Code expands the variable at launch.
+
+** Setup
+1. Create a fine-grained token at https://github.com/settings/tokens (Metadata read; Contents/Issues/Pull requests read or write as needed).
+2. Store it: ~pass insert -f github.com/mcp-token~.
+3. Launch Claude Code from a fresh shell so ~GITHUB_MCP_PAT~ is in the environment.
+
+** Rotating
+Replace the secret and restart Claude Code — no config change needed:
+
+#+BEGIN_SRC sh
+  pass insert -f github.com/mcp-token
+#+END_SRC
+
 * Notes
 - ~emacs/.doom.d/~ is linked file-by-file so that ~~/.doom.d~ remains a writable directory (required by ~doom sync~).
 - ~emacs/.emacs.doom/~ (Doom Emacs itself) is cloned independently by ~bootstrap.sh~, not managed by Home Manager.

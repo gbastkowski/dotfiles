@@ -52,7 +52,7 @@ echo
 echo "updating doom emacs ..."
 if command -v doom >/dev/null 2>&1; then
 	doom upgrade
-	doom sync
+	doom sync -u
 else
 	echo "doom not found, skipping"
 fi

@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/git/gbastkowski/mcp-atuin/hooks/claude-atuin-record.sh"
+            "command": "$HOME/.claude/hooks/claude-atuin-record.sh"
           }
         ]
       }

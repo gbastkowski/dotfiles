@@ -23,7 +23,7 @@ Comprehensive dotfiles for macOS/Linux development using git submodules.
 ## Active Components
 - ZSH/Oh-My-ZSH shell configuration
 - Doom Emacs (config.org is the only relevant Emacs configuration)
-- Hyprland/Yabai window management
+- Hyprland (Linux) / Hammerspoon (macOS) window management
 - tmux terminal multiplexer
 - Homebrew package management
 - Custom bin/ scripts

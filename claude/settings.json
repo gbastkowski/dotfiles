@@ -31,6 +31,19 @@
       }
     }
   },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/git/gbastkowski/mcp-atuin/hooks/claude-atuin-record.sh"
+          }
+        ]
+      }
+    ]
+  },
   "alwaysThinkingEnabled": false,
   "voice": {
     "enabled": true,

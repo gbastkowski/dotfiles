@@ -449,6 +449,35 @@ accept completion from copilot and fallback to company
 #+end_src
 
 
+* Tmux
+Uses the Doom =:tools tmux= module's raw =+tmux= passthrough to send a single
+key to the active tmux pane.
+** Functions
+#+begin_src emacs-lisp
+(defun gunnar/tmux-send-key (key)
+  "Send a single KEY to the active tmux pane.
+KEY is a tmux send-keys token, e.g. \"q\", \"Enter\", \"C-c\", \"Escape\"."
+  (interactive "sTmux key: ")
+  (+tmux "send-keys %s" key))
+#+end_src
+** Keybindings
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("T" . "Tmux")
+       :desc "Send 1 to tmux"     :n "1"   (cmd! (gunnar/tmux-send-key "1"))
+       :desc "Send 2 to tmux"     :n "2"   (cmd! (gunnar/tmux-send-key "2"))
+       :desc "Send 3 to tmux"     :n "3"   (cmd! (gunnar/tmux-send-key "3"))
+       :desc "Send Tab to tmux"   :n "TAB" (cmd! (gunnar/tmux-send-key "Tab"))
+       :desc "Send Enter to tmux" :n "RET" (cmd! (gunnar/tmux-send-key "Enter"))
+       :desc "Send Esc to tmux"   :n "e"   (cmd! (gunnar/tmux-send-key "Escape"))
+       :desc "Send Up to tmux"    :n "k"   (cmd! (gunnar/tmux-send-key "Up"))
+       :desc "Send Down to tmux"  :n "j"   (cmd! (gunnar/tmux-send-key "Down"))
+       :desc "Send Left to tmux"  :n "h"   (cmd! (gunnar/tmux-send-key "Left"))
+       :desc "Send Right to tmux" :n "l"   (cmd! (gunnar/tmux-send-key "Right"))
+       :desc "Send key to tmux"   :n "K"   #'gunnar/tmux-send-key))
+#+end_src
+
+
 * Org Mode
 Most of the stuff here is to implement a GTD workflow.
 Inspiration can be obtained from

@@ -9,7 +9,7 @@
   home.file.".ista_rc".source = "${inputs.ista-dotfiles}/.ista_rc";
 
   home.sessionVariables = {
-    LIBRARY_PATH = "/opt/homebrew/lib/gcc/current:/opt/homebrew/opt/libgccjit/lib/gcc/current:/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/15";
+    LIBRARY_PATH = "/opt/homebrew/lib/gcc/current:/opt/homebrew/opt/libgccjit/lib/gcc/current:/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/16";
   };
 
   programs.zsh.initContent = ''

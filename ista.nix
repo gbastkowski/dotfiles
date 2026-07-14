@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   home.username = "gunnar.bastkowski";
   home.homeDirectory = "/Users/gunnar.bastkowski";
@@ -49,4 +49,8 @@
     # Coursier
     [[ -d "$HOME/Library/Application Support/Coursier/bin" ]] && path_append "$HOME/Library/Application Support/Coursier/bin"
   '';
+
+
+  # Ista-specific opencode config (override common)
+  home.file.".config/opencode/opencode.json".source = lib.mkForce ./opencode/opencode-ista.json;
 }

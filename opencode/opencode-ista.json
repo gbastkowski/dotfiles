@@ -47,6 +47,22 @@
         "emacsclient"
       ]
     },
+    "ista_jira_confluence": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "node",
+        "{env:HOME}/git/rdm/ai/mcp-jira-confluence/dist/index.js",
+        "--jira-url",
+        "https://ista.atlassian.net",
+        "--confluence-url",
+        "https://ista.atlassian.net/wiki",
+        "--email",
+        "gunnar.bastkowski@ista.com",
+        "--token-command",
+        "pass show ista/jira-api-token-mcp"
+      ]
+    },
     "tmux": {
       "type": "local",
       "enabled": true,

@@ -207,6 +207,21 @@ Keep the menu bar disabled in terminal frames (including emacsclient -t).
           (lambda (frame) (unless (display-graphic-p frame) (with-selected-frame frame (menu-bar-mode -1)))))
 #+end_src
 
+** Fix "attempt to close surrogate minibuffer frame"
+=vertico-posframe= creates a child frame per parent frame that borrows the
+parent's minibuffer (a "surrogate minibuffer frame").
+Deleting the parent while that child still exists errors with
+"attempt to close surrogate minibuffer frame".
+Delete posframe children before the parent.
+#+begin_src emacs-lisp
+(add-hook 'delete-frame-functions
+          (lambda (frame)
+            (dolist (child (frame-list))
+              (when (and (frame-live-p child)
+                         (eq (frame-parameter child 'parent-frame) frame))
+                (delete-frame child t)))))
+#+end_src
+
 
 * Editing
 ** Duplicate

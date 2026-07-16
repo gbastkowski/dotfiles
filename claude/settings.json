@@ -9,9 +9,16 @@
     "jira-assistant@mdb": true,
     "gitlab-assistant@mdb": true,
     "ista-presentation@ista-marketplace": true,
-    "caveman@caveman": true
+    "caveman@caveman": true,
+    "mcp-emacs@mcp-emacs": true
   },
   "extraKnownMarketplaces": {
+    "mcp-emacs": {
+      "source": {
+        "source": "github",
+        "repo": "gbastkowski/mcp-emacs"
+      }
+    },
     "mdb": {
       "source": {
         "source": "git",

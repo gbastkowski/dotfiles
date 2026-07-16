@@ -2,20 +2,14 @@
 
 (use-package! websocket)
 
-(use-package! monet
-  :config (monet-mode))
-
 (use-package! eat
   :commands (eat eat-other-window eat-project))
 
-(use-package! claude-code
-  :config 
-  (claude-code-mode)
-  (map! :leader
-        :desc "Claude Code" "e" claude-code-command-map))
-
 (use-package! claude-code-ide
+  :init
+  (setq claude-code-ide-terminal-backend 'eat)
   :config
-  (claude-code-ide-emacs-tools-setup)
+  ;; Emacs code-intelligence tools are provided by mcp-emacs, so the
+  ;; built-in tools server is intentionally left disabled here.
   (map! :leader
-        :desc "Claude Code IDE" "E" #'claude-code-ide-menu))
+        :desc "Claude Code" "e" #'claude-code-ide-menu))

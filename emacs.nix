@@ -14,7 +14,6 @@
   home.file.".doom.d/modules/tools/ai/config.el".source = ./emacs/.doom.d/modules/tools/ai/config.el;
   home.file.".doom.d/modules/tools/ai/packages.el".source = ./emacs/.doom.d/modules/tools/ai/packages.el;
   home.file.".doom.d/modules/tools/claude-code/config.el".source = ./emacs/.doom.d/modules/tools/claude-code/config.el;
-  home.file.".doom.d/modules/tools/claude-code/functions.el".source = ./emacs/.doom.d/modules/tools/claude-code/functions.el;
   home.file.".doom.d/modules/tools/claude-code/packages.el".source = ./emacs/.doom.d/modules/tools/claude-code/packages.el;
   home.file.".doom.d/modules/tools/codex/config.el".source = ./emacs/.doom.d/modules/tools/codex/config.el;
   home.file.".doom.d/modules/tools/codex/packages.el".source = ./emacs/.doom.d/modules/tools/codex/packages.el;

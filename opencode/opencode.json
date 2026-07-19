@@ -55,9 +55,9 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
+        "sh",
+        "-c",
+        "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
       ]
     }
   },

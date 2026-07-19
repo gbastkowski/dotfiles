@@ -28,8 +28,11 @@ let
     };
     context7 = {
       type = "stdio";
-      command = "npx";
-      args = [ "-y" "@upstash/context7-mcp" ];
+      command = "sh";
+      args = [
+        "-c"
+        "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
+      ];
       env = { };
     };
   };

@@ -50,6 +50,13 @@ let
     "jira-assistant@mdb"
     "mcp-emacs@mcp-emacs"
   ];
+
+  # Agent skill packages to install via the `skills` CLI (github.com/... owner/repo).
+  # They are fetched into ~/.agents/skills and symlinked into ~/.claude/skills on
+  # activation. Unlike plugins, skills are not tracked in settings.json.
+  skillPackages = [
+    "remotion-dev/skills"
+  ];
 in
 {
   home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
@@ -93,6 +100,22 @@ in
         for plugin in ${lib.escapeShellArgs plugins}; do
           run "$claude_bin" plugin install --scope user "$plugin" >/dev/null 2>&1 \
             || echo "failed to install plugin $plugin" >&2
+        done
+      fi
+    '';
+
+  home.activation.claudeSkills =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:$HOME/.local/bin:$PATH"
+      npx_bin="$(command -v npx || true)"
+      if [ -z "$npx_bin" ]; then
+        echo "npx not on PATH, skipping skill seeding" >&2
+      else
+        # Fetch each package into ~/.agents/skills and symlink into ~/.claude/skills.
+        # -g installs at user scope, -a claude targets Claude Code, -y skips prompts.
+        for pkg in ${lib.escapeShellArgs skillPackages}; do
+          run "$npx_bin" --yes skills add "$pkg" -g -a claude -y >/dev/null 2>&1 \
+            || echo "failed to install skill package $pkg" >&2
         done
       fi
     '';

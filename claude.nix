@@ -26,6 +26,12 @@ let
       args = [ "/Users/gunnar.bastkowski/git/gbastkowski/mcp-atuin/dist/index.js" ];
       env = { };
     };
+    context7 = {
+      type = "stdio";
+      command = "npx";
+      args = [ "-y" "@upstash/context7-mcp" ];
+      env = { };
+    };
   };
 
   mcpJson = pkgs.writeText "claude-mcp.json" (builtins.toJSON mcpServers);

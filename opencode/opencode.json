@@ -50,6 +50,15 @@
         "-y",
         "@audibleblink/tmux-mcp-server"
       ]
+    },
+    "context7": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     }
   },
   "provider": {

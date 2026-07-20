@@ -24,6 +24,11 @@
              mcp-emacs-run-switch
              mcp-emacs-run-kill
              mcp-emacs-run-toggle)
+  :config
+  ;; Doom's +popup catch-all (^\*) would otherwise capture the runner buffer
+  ;; into a bottom popup, overriding the runner's own directional window.
+  (when (fboundp 'set-popup-rule!)
+    (set-popup-rule! "^\\*claude:" :ignore t))
   :init
   (map! :leader
         (:prefix ("E" . "Claude runner")

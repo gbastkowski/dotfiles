@@ -23,12 +23,16 @@
              mcp-emacs-run-list
              mcp-emacs-run-switch
              mcp-emacs-run-kill
-             mcp-emacs-run-toggle)
+             mcp-emacs-run-toggle
+             mcp-emacs-explain-selection-in-current-session)
   :config
   ;; Doom's +popup catch-all (^\*) would otherwise capture the runner buffer
   ;; into a bottom popup, overriding the runner's own directional window.
   (when (fboundp 'set-popup-rule!)
-    (set-popup-rule! "^\\*claude:" :ignore t))
+    (set-popup-rule! "^\\*claude:" :ignore t)
+    ;; Same for the popup output window (e.g. *mcp-emacs:explain*): let the
+    ;; package place it in its own directional split rather than a +popup.
+    (set-popup-rule! "^\\*mcp-emacs:" :ignore t))
   :init
   (map! :leader
         (:prefix ("E" . "Claude runner")
@@ -39,4 +43,6 @@
          :desc "List live sessions"         "l" #'mcp-emacs-run-list
          :desc "Switch to a session"        "s" #'mcp-emacs-run-switch
          :desc "Kill this project's session" "k" #'mcp-emacs-run-kill
-         :desc "Toggle runner window"       "t" #'mcp-emacs-run-toggle)))
+         :desc "Toggle runner window"       "t" #'mcp-emacs-run-toggle
+         (:prefix ("a" . "AI actions")
+          :desc "Explain selection"         "e" #'mcp-emacs-explain-selection-in-current-session))))

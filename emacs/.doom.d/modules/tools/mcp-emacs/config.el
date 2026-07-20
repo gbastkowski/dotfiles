@@ -24,7 +24,14 @@
              mcp-emacs-run-switch
              mcp-emacs-run-kill
              mcp-emacs-run-toggle
-             mcp-emacs-explain-selection-in-current-session)
+             mcp-emacs-explain-selection-in-current-session
+             mcp-emacs-run-send-return
+             mcp-emacs-run-send-1
+             mcp-emacs-run-send-2
+             mcp-emacs-run-send-3
+             mcp-emacs-run-send-shift-tab
+             mcp-emacs-run-send-up
+             mcp-emacs-run-send-down)
   :config
   ;; Doom's +popup catch-all (^\*) would otherwise capture the runner buffer
   ;; into a bottom popup, overriding the runner's own directional window.
@@ -42,7 +49,15 @@
          :desc "Resume a conversation"      "r" #'mcp-emacs-run-resume
          :desc "List live sessions"         "l" #'mcp-emacs-run-list
          :desc "Switch to a session"        "s" #'mcp-emacs-run-switch
-         :desc "Kill this project's session" "k" #'mcp-emacs-run-kill
+         :desc "Kill this project's session" "K" #'mcp-emacs-run-kill
          :desc "Toggle runner window"       "t" #'mcp-emacs-run-toggle
          (:prefix ("a" . "AI actions")
-          :desc "Explain selection"         "e" #'mcp-emacs-explain-selection-in-current-session))))
+          :desc "Explain selection"         "e" #'mcp-emacs-explain-selection-in-current-session)
+         (:prefix ("k" . "Send keystroke")
+          :desc "Return"                    "RET" #'mcp-emacs-run-send-return
+          :desc "Choose 1"                  "1"   #'mcp-emacs-run-send-1
+          :desc "Choose 2"                  "2"   #'mcp-emacs-run-send-2
+          :desc "Choose 3"                  "3"   #'mcp-emacs-run-send-3
+          :desc "Cycle mode (shift-tab)"    "<tab>" #'mcp-emacs-run-send-shift-tab
+          :desc "Up"                        "p"   #'mcp-emacs-run-send-up
+          :desc "Down"                      "n"   #'mcp-emacs-run-send-down))))

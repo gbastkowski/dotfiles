@@ -10,6 +10,24 @@
   :init
   (add-hook 'emacs-startup-hook #'mcp-emacs-server-ensure))
 
+;; Native opencode HTTP/SSE client.  The server runs as an on-demand launchd
+;; agent (see the opencode home-manager module) so its sessions survive Emacs
+;; restarts; `opencode-client-serve' kickstarts that agent.  The basic-auth
+;; password is read from pass, matching how the launchd agent gets it.
+(use-package! opencode-client
+  :defer t
+  :commands (opencode-client-connect
+             opencode-client-serve
+             opencode-client-create-session
+             opencode-client-switch-session
+             opencode-client-list-sessions
+             opencode-client-delete-session
+             opencode-client-send-prompt
+             opencode-client-interrupt)
+  :init
+  (setq opencode-client-launchd-label "org.nix-community.home.opencode-serve"
+        opencode-client-password-command "pass show private/opencode/server-password"))
+
 ;; Terminal runner that launches the Claude CLI inside Emacs (eat backend),
 ;; one primary session per project, reaching editor tools through the MCP
 ;; server above. Intended to replace claude-code-ide; kept alongside it for

@@ -7,4 +7,4 @@
 (package! mcp-emacs  :recipe (:host github :repo "gbastkowski/mcp-emacs"
                               :branch "main"
                               :files ("elisp/*.el"))
-  :pin "5d9ffcdc6cc49bd1d916cf78b05bd3ee545df9d4")
+  :pin "011974c6d57538bdfbcf301d7bdc6c626ab4118b")

@@ -42,15 +42,6 @@
       "url": "http://localhost:8765/mcp",
       "enabled": true
     },
-    "tmux": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "@audibleblink/tmux-mcp-server"
-      ]
-    },
     "context7": {
       "type": "local",
       "enabled": true,

@@ -106,8 +106,12 @@ in
 
   home.activation.claudeSkills =
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:$HOME/.local/bin:$PATH"
-      npx_bin="$(command -v npx || true)"
+      # Look up npx via the user's real tool dirs, but keep the extra dirs
+      # AFTER $PATH and scope it to this lookup only. A global `export` here
+      # would put /usr/bin ahead of hm's coreutils for the rest of the
+      # activation, so the later linkGeneration cleanup hits BSD `readlink -e`
+      # and aborts.
+      npx_bin="$(PATH="$PATH:/opt/homebrew/bin:/usr/local/bin:/usr/bin:$HOME/.local/bin" command -v npx || true)"
       if [ -z "$npx_bin" ]; then
         echo "npx not on PATH, skipping skill seeding" >&2
       else

@@ -48,20 +48,12 @@ Enable automatic reversion of buffers when files change on disk.
 (setq! fill-column                        120
        fci-rule-color                     "#555555"
        fci-rule-width                     1)
-(global-display-fill-column-indicator-mode)
-
-;; Tidy up Claude terminal buffers (*claude:PROJECT* and
-;; *claude-code[...]*): the fill-column indicator is just visual noise,
-;; and `visual-fill-column-mode' throws arithmetic-overflow errors while
-;; the eat terminal window resizes, so keep both off there.
-(defun gb/disable-fci-in-claude-buffers ()
-  "Disable fill-column indicator and visual-fill-column in Claude buffers."
-  (when (string-match-p "\\`\\*claude" (buffer-name))
-    (display-fill-column-indicator-mode -1)
-    (when (bound-and-true-p visual-fill-column-mode)
-      (visual-fill-column-mode -1))))
-(add-hook 'eat-mode-hook #'gb/disable-fci-in-claude-buffers)
-(add-hook 'vterm-mode-hook #'gb/disable-fci-in-claude-buffers)
+;; Show the fill-column indicator only where a fill column is meaningful:
+;; code and prose buffers. Terminals (eat/vterm, incl. Claude buffers),
+;; dired, magit, help, and other tool buffers have no fill column, so we
+;; opt in per mode rather than enabling it globally and excluding them.
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+(add-hook 'text-mode-hook #'display-fill-column-indicator-mode)
 
 (setq! tab-width                          8)
 

@@ -41,6 +41,7 @@
              mcp-emacs-run-list
              mcp-emacs-run-switch
              mcp-emacs-run-kill
+             mcp-emacs-run-quit
              mcp-emacs-run-toggle
              mcp-emacs-explain-selection-in-current-session
              mcp-emacs-run-send-return
@@ -68,6 +69,7 @@
          :desc "List live sessions"         "l" #'mcp-emacs-run-list
          :desc "Switch to a session"        "s" #'mcp-emacs-run-switch
          :desc "Kill this project's session" "K" #'mcp-emacs-run-kill
+         :desc "Quit session (graceful)"    "q" #'mcp-emacs-run-quit
          :desc "Toggle runner window"       "t" #'mcp-emacs-run-toggle
          :desc "Explain selection"          "x" #'mcp-emacs-explain-selection-in-current-session
          :desc "Send Return"                "RET"   #'mcp-emacs-run-send-return

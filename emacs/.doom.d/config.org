@@ -1092,7 +1092,19 @@ Overwrites `gunnar/github-notifications-file' on each run."
   :defer t
   :init
   (setq visual-fill-column-center-text t
-        visual-fill-column-width 110))
+        visual-fill-column-width 110)
+  :config
+  ;; While a window is resizing (e.g. the eat terminal in Claude
+  ;; buffers) both `window-width' and `window-width ... remap' can
+  ;; momentarily be 0. In `visual-fill-column--set-margins' that makes
+  ;; the `remap-scale' divisor 0.0, so `(round (/ x 0.0))' is +inf and
+  ;; signals an arithmetic-overflow error that spams *Messages*. Skip
+  ;; margin setting whenever the window has no usable width.
+  (define-advice visual-fill-column--set-margins
+      (:around (fn window) gb/guard-zero-width)
+    (when (and (> (window-width window) 0)
+               (> (window-width window 'remap) 0))
+      (funcall fn window))))
 
 (defun gunnar/org-present-prepare-slide (&rest _)
   (org-overview)

@@ -69,13 +69,11 @@
          :desc "Switch to a session"        "s" #'mcp-emacs-run-switch
          :desc "Kill this project's session" "K" #'mcp-emacs-run-kill
          :desc "Toggle runner window"       "t" #'mcp-emacs-run-toggle
-         (:prefix ("a" . "AI actions")
-          :desc "Explain selection"         "e" #'mcp-emacs-explain-selection-in-current-session)
-         (:prefix ("k" . "Send keystroke")
-          :desc "Return"                    "RET" #'mcp-emacs-run-send-return
-          :desc "Choose 1"                  "1"   #'mcp-emacs-run-send-1
-          :desc "Choose 2"                  "2"   #'mcp-emacs-run-send-2
-          :desc "Choose 3"                  "3"   #'mcp-emacs-run-send-3
-          :desc "Cycle mode (shift-tab)"    "<tab>" #'mcp-emacs-run-send-shift-tab
-          :desc "Up"                        "p"   #'mcp-emacs-run-send-up
-          :desc "Down"                      "n"   #'mcp-emacs-run-send-down))))
+         :desc "Explain selection"          "x" #'mcp-emacs-explain-selection-in-current-session
+         :desc "Send Return"                "RET"   #'mcp-emacs-run-send-return
+         :desc "Send 1"                     "1"     #'mcp-emacs-run-send-1
+         :desc "Send 2"                     "2"     #'mcp-emacs-run-send-2
+         :desc "Send 3"                     "3"     #'mcp-emacs-run-send-3
+         :desc "Send shift-tab (cycle)"     "<tab>" #'mcp-emacs-run-send-shift-tab
+         :desc "Send Up"                    "p"     #'mcp-emacs-run-send-up
+         :desc "Send Down"                  "n"     #'mcp-emacs-run-send-down)))

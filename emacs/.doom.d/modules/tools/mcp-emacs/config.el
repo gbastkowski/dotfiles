@@ -34,7 +34,7 @@
 ;; now under a distinct SPC E prefix so both can be exercised.
 (use-package! mcp-emacs-run
   :defer t
-  :commands (mcp-emacs-run
+  :commands (mcp-emacs-run-new
              mcp-emacs-run-start
              mcp-emacs-run-continue
              mcp-emacs-run-resume
@@ -61,7 +61,7 @@
   :init
   (map! :leader
         (:prefix ("E" . "Claude runner")
-         :desc "Start / switch to session"  "e" #'mcp-emacs-run
+         :desc "Start new session"          "e" #'mcp-emacs-run-new
          :desc "Start session hidden"       "E" #'mcp-emacs-run-start
          :desc "Continue last conversation" "c" #'mcp-emacs-run-continue
          :desc "Resume a conversation"      "r" #'mcp-emacs-run-resume

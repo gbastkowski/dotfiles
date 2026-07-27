@@ -50,11 +50,12 @@ Enable automatic reversion of buffers when files change on disk.
        fci-rule-width                     1)
 (global-display-fill-column-indicator-mode)
 
-;; Disable the fill-column indicator in Claude Code IDE terminal buffers,
-;; where the vertical rule is just visual noise.
+;; Disable the fill-column indicator in Claude terminal buffers
+;; (*claude:PROJECT* and *claude-code[...]*), where the vertical rule
+;; is just visual noise.
 (defun gb/disable-fci-in-claude-buffers ()
-  "Turn off `display-fill-column-indicator-mode' in *claude-code[...]* buffers."
-  (when (string-prefix-p "*claude-code[" (buffer-name))
+  "Turn off `display-fill-column-indicator-mode' in Claude terminal buffers."
+  (when (string-match-p "\\`\\*claude" (buffer-name))
     (display-fill-column-indicator-mode -1)))
 (add-hook 'eat-mode-hook #'gb/disable-fci-in-claude-buffers)
 (add-hook 'vterm-mode-hook #'gb/disable-fci-in-claude-buffers)

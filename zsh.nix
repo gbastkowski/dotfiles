@@ -141,6 +141,10 @@
       fi
 
       # PATH additions
+      # Front the nix-profile bin so GNU coreutils (readlink -e, etc.) win
+      # over the BSD /usr/bin variants; home-manager's activation cleanup
+      # subscript inherits this and otherwise crashes on `readlink -e`.
+      [[ -d $HOME/.nix-profile/bin ]] && path_prepend "$HOME/.nix-profile/bin"
       [[ -d $HOME/.bin ]] && path_prepend "$HOME/.bin"
       [[ -d $HO../bin ]] && path_prepend "$HO../bin"
       path_prepend "./node_modules/.bin"

@@ -5,6 +5,7 @@
   home.stateVersion = "25.11";
 
   home.packages = with pkgs; [
+    coreutils
     temurin-bin-21
     scala_3
     sbt

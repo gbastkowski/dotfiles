@@ -49,6 +49,7 @@ let
     "gitlab-assistant@mdb"
     "jira-assistant@mdb"
     "mcp-emacs@mcp-emacs"
+    "mcp-latex@mcp-latex"
   ];
 
   # Agent skill packages to install via the `skills` CLI (github.com/... owner/repo).

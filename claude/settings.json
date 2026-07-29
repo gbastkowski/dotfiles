@@ -10,13 +10,20 @@
     "gitlab-assistant@mdb": true,
     "ista-presentation@ista-marketplace": true,
     "caveman@caveman": true,
-    "mcp-emacs@mcp-emacs": true
+    "mcp-emacs@mcp-emacs": true,
+    "mcp-latex@mcp-latex": true
   },
   "extraKnownMarketplaces": {
     "mcp-emacs": {
       "source": {
         "source": "github",
         "repo": "gbastkowski/mcp-emacs"
+      }
+    },
+    "mcp-latex": {
+      "source": {
+        "source": "github",
+        "repo": "gbastkowski/mcp-latex"
       }
     },
     "mdb": {

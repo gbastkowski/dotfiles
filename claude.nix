@@ -98,9 +98,17 @@ in
         # Marketplaces and enabled state are declared in claude/settings.json, seeded
         # above as a mutable file so `plugin install` can fetch each plugin's content
         # into the ~/.claude/plugins cache (and update enabledPlugins) without EACCES.
+        #
+        # Refresh all marketplaces from their git sources first, so a subsequent
+        # update/install pulls the latest plugin content rather than a stale cache.
+        run "$claude_bin" plugin marketplace update >/dev/null 2>&1 \
+          || echo "failed to update marketplaces" >&2
         for plugin in ${lib.escapeShellArgs plugins}; do
-          run "$claude_bin" plugin install --scope user "$plugin" >/dev/null 2>&1 \
-            || echo "failed to install plugin $plugin" >&2
+          # `plugin update` refreshes an already-installed plugin; fall back to
+          # install for a first-time seed. (update requires a restart to apply.)
+          run "$claude_bin" plugin update --scope user "$plugin" >/dev/null 2>&1 \
+            || run "$claude_bin" plugin install --scope user "$plugin" >/dev/null 2>&1 \
+            || echo "failed to install/update plugin $plugin" >&2
         done
       fi
     '';

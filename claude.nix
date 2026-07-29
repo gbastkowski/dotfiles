@@ -124,4 +124,27 @@ in
         done
       fi
     '';
+
+  # The mcp-latex plugin's Docker engine pulls a private image from ghcr
+  # (ghcr.io/gbastkowski/mcp-latex-tex). Log Docker into ghcr using the gh
+  # token so `docker pull` works non-interactively at render time. Best-effort:
+  # skipped if gh or docker is unavailable, or gh is not authenticated.
+  home.activation.claudeGhcrLogin =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      tool_path="/opt/homebrew/bin:/usr/local/bin:/usr/bin:$HOME/.local/bin:$PATH"
+      gh_bin="$(PATH="$tool_path" command -v gh || true)"
+      docker_bin="$(PATH="$tool_path" command -v docker || true)"
+      if [ -z "$gh_bin" ] || [ -z "$docker_bin" ]; then
+        echo "gh or docker not on PATH, skipping ghcr login" >&2
+      else
+        token="$("$gh_bin" auth token 2>/dev/null || true)"
+        if [ -z "$token" ]; then
+          echo "gh not authenticated, skipping ghcr login" >&2
+        else
+          printf '%s' "$token" \
+            | run "$docker_bin" login ghcr.io -u gbastkowski --password-stdin >/dev/null 2>&1 \
+            || echo "ghcr login failed" >&2
+        fi
+      fi
+    '';
 }

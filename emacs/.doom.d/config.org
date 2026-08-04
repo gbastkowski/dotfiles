@@ -204,6 +204,20 @@ toggle, without overloading `SPC t w'.
 (map! :leader :desc "Toggle truncate lines" :n "tW" #'toggle-truncate-lines)
 #+end_src
 
+#+begin_src emacs-lisp
+(defun gunnar/toggle-window-dedicated ()
+  "Toggle whether the selected window is dedicated to its buffer."
+  (interactive)
+  (let* ((window (selected-window))
+         (dedicated (window-dedicated-p window)))
+    (set-window-dedicated-p window (not dedicated))
+    (message "Window %sdedicated to %s"
+             (if dedicated "no longer " "")
+             (buffer-name))))
+
+(map! :leader :desc "Toggle window dedication" :n "te" #'gunnar/toggle-window-dedicated)
+#+end_src
+
 ** TTY Menu Bar
 Keep the menu bar disabled in terminal frames (including emacsclient -t).
 #+begin_src emacs-lisp

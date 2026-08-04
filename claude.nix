@@ -9,12 +9,6 @@ let
       type = "sse";
       url = "http://localhost:64342/sse";
     };
-    tmux = {
-      type = "stdio";
-      command = "npx";
-      args = [ "-y" "tmux-mcp" "--shell-type=zsh" ];
-      env = { };
-    };
     github = {
       type = "http";
       url = "https://api.githubcopilot.com/mcp/";

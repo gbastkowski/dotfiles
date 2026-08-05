@@ -14,6 +14,11 @@ in
   home.file.".config/opencode/opencode.json".source = ./opencode.json;
   home.file.".config/opencode/oh-my-openagent.json".source = ./oh-my-openagent.json;
 
+  # Custom slash commands and agents. These dirs already existed here but were
+  # never linked, so opencode only ever saw its built-in commands.
+  home.file.".config/opencode/command".source = ./command;
+  home.file.".config/opencode/agent".source = ./agent;
+
   # On-demand opencode server: loaded at login but not started (no RunAtLoad,
   # no KeepAlive). Emacs starts it with `launchctl kickstart`
   # (opencode-client-launchd-label = "org.nix-community.home.opencode-serve"),

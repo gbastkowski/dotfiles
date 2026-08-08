@@ -2,83 +2,84 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "claude-code/claude-sonnet-5",
+      "model": "opencode-go/kimi-k3",
       "variant": "medium"
     },
     "hephaestus": {
-      "model": "claude-code/claude-sonnet-5",
+      "model": "opencode-go/kimi-k3",
       "variant": "medium"
     },
     "oracle": {
-      "model": "claude-code/claude-opus-4-8",
+      "model": "opencode-go/glm-5.2",
       "variant": "high"
     },
     "explore": {
-      "model": "claude-code/claude-haiku-4-5",
+      "model": "opencode-go/qwen3.7-plus",
       "variant": "medium"
     },
     "multimodal-looker": {
-      "model": "claude-code/claude-sonnet-5",
+      "model": "opencode-go/kimi-k3",
       "variant": "high"
     },
     "prometheus": {
-      "model": "claude-code/claude-opus-4-8",
+      "model": "opencode-go/glm-5.2",
       "variant": "high"
     },
     "metis": {
-      "model": "claude-code/claude-sonnet-5",
+      "model": "opencode-go/glm-5.2",
       "variant": "high"
     },
     "momus": {
-      "model": "claude-code/claude-opus-4-8",
+      "model": "opencode-go/glm-5.2",
       "variant": "xhigh"
     },
     "atlas": {
-      "model": "claude-code/claude-sonnet-5",
+      "model": "opencode-go/kimi-k3",
       "variant": "medium"
     },
     "sisyphus-junior": {
-      "model": "claude-code/claude-haiku-4-5",
+      "model": "opencode-go/kimi-k3",
       "variant": "medium"
     },
     "librarian": {
-      "model": "claude-code/claude-haiku-4-5",
+      "model": "opencode-go/qwen3.7-plus",
       "variant": "medium"
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "claude-code/claude-sonnet-5",
-      "variant": "high"
+      "model": "opencode-go/kimi-k3",
+      "variant": "max"
     },
     "ultrabrain": {
-      "model": "claude-code/claude-opus-4-8",
+      "model": "opencode-go/glm-5.2",
       "variant": "xhigh"
     },
     "deep": {
-      "model": "claude-code/claude-sonnet-5",
+      "model": "opencode-go/kimi-k3",
       "variant": "medium"
     },
     "quick": {
-      "model": "claude-code/claude-haiku-4-5",
+      "model": "opencode-go/minimax-m2.7",
       "variant": "low"
     },
     "unspecified-low": {
-      "model": "claude-code/claude-haiku-4-5",
+      "model": "opencode-go/kimi-k2.7-code",
       "variant": "medium"
     },
     "unspecified-high": {
-      "model": "claude-code/claude-sonnet-5",
-      "variant": "medium"
+      "model": "opencode-go/kimi-k3",
+      "variant": "max"
     },
     "writing": {
-      "model": "claude-code/claude-sonnet-5",
-      "variant": "medium"
+      "model": "opencode-go/kimi-k3",
+      "variant": "low"
     },
     "artistry": {
-      "model": "claude-code/claude-opus-4-8",
+      "model": "opencode-go/glm-5.2",
       "variant": "high"
     }
   },
   "_migrations": []
 }
+

@@ -104,11 +104,9 @@
       }
     }
   },
-  "disabled_providers": ["openai", "opencode", "opencode-go"],
+  "disabled_providers": ["openai", "opencode"],
   "experimental": {
     "policies": [
-      { "effect": "deny", "action": "provider.use", "resource": "openai" },
-      { "effect": "deny", "action": "provider.use", "resource": "opencode" },
       { "effect": "deny", "action": "provider.use", "resource": "opencode-go" }
     ]
   }

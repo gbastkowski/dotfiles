@@ -59,6 +59,14 @@
         "-y",
         "github:gbastkowski/mcp-latex"
       ]
+    },
+    "hyprland": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "node",
+        "/home/gunnar/git/gbastkowski/mcp-hyprland/dist/index.js"
+      ]
     }
   },
   "provider": {

@@ -67,6 +67,16 @@
         "node",
         "/home/gunnar/git/gbastkowski/mcp-hyprland/dist/index.js"
       ]
+    },
+    "qgis": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "uvx",
+        "--from",
+        "https://github.com/nkarasiak/qgis-mcp/archive/refs/heads/main.zip",
+        "qgis-mcp-server"
+      ]
     }
   },
   "provider": {

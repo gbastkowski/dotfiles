@@ -6,8 +6,7 @@
       "variant": "medium"
     },
     "hephaestus": {
-      "model": "opencode-go/kimi-k3",
-      "variant": "medium"
+      "disable": true
     },
     "oracle": {
       "model": "opencode-go/glm-5.2",

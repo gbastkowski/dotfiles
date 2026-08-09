@@ -1,7 +1,0 @@
-(include "./modules/icon-module.yuck")
-
-(defwidget github []
-  (icon-module      :icon               " "
-                    :overlay            {(github-poll > 0) ? github-poll : ""}))
-
-(defpoll github-poll :initial "0" :interval "1s" "./modules/github.sh")

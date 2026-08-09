@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-weather_script="$HOME/git/gbastkowski/dotfiles/eww/modules/weather/weather.sh"
+weather_script="$HOME/git/gbastkowski/dotfiles/.config/waybar/scripts/weather.sh"
 
 if [[ ! -x "$weather_script" ]]; then
   printf '{"text":"","tooltip":"Weather script unavailable","class":"unavailable"}\n'

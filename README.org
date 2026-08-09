@@ -14,7 +14,6 @@ A [[https://github.com/nix-community/home-manager][Home Manager]]-based dotfiles
 | ~byobu/~      | Byobu configuration                            |
 | ~hypr/~       | Hyprland configuration (Arch only)             |
 | ~sway/~       | Sway configuration (Arch only)                 |
-| ~eww/~        | Eww widget system (Arch only)                  |
 | ~walker/~     | Walker launcher (Arch only)                    |
 | ~wayvnc/~     | Wayvnc configuration (Arch only)               |
 | ~systemd/~    | Systemd user services (Arch only)              |

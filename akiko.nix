@@ -15,9 +15,6 @@
   home.file.".config/sway/variables".source = ./sway/variables;
   home.file.".config/sway/workspaces".source = ./sway/workspaces;
 
-  # Eww (widget system)
-  home.file.".config/eww".source = ./eww;
-
   # Walker (application launcher)
   home.file.".config/walker/config.toml".source = ./walker/config.toml;
   home.file.".config/walker/themes/catppuccin.css".source = ./walker/themes/catppuccin.css;

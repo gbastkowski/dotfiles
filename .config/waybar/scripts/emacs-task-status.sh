@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source_script="$HOME/git/gbastkowski/dotfiles/eww/modules/emacs/emacs.sh"
+source_script="$HOME/git/gbastkowski/dotfiles/.config/waybar/scripts/emacs.sh"
 
 if [[ ! -x "$source_script" ]]; then
   printf '{"text":"","tooltip":"Emacs task script unavailable","class":"hidden"}\n'

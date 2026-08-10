@@ -29,6 +29,12 @@ let
       ];
       env = { };
     };
+    dotfiles = {
+      type = "stdio";
+      command = "node";
+      args = [ "${config.home.homeDirectory}/git/gbastkowski/dotfiles/mcp/dist/index.js" ];
+      env = { };
+    };
   };
 
   mcpJson = pkgs.writeText "claude-mcp.json" (builtins.toJSON mcpServers);
@@ -38,6 +44,7 @@ let
   # (extraKnownMarketplaces / enabledPlugins); this list only drives fetching the
   # plugin content into the writable ~/.claude/plugins cache on activation.
   plugins = [
+    "dotfiles@dotfiles"
     "caveman@caveman"
     "ista-presentation@ista-marketplace"
     "gitlab-assistant@mdb"

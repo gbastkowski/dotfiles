@@ -1,0 +1,10 @@
+{
+  "name": "dotfiles",
+  "description": "Gunnar's dotfiles: home-manager flake and bin scripts (apply, system-upgrade) exposed as MCP tools, plus skills for keeping the setup maintained.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Gunnar Bastkowski"
+  },
+  "homepage": "https://github.com/gbastkowski/dotfiles"
+}

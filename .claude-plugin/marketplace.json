@@ -1,0 +1,13 @@
+{
+  "name": "dotfiles",
+  "owner": {
+    "name": "Gunnar Bastkowski"
+  },
+  "plugins": [
+    {
+      "name": "dotfiles",
+      "source": "./",
+      "description": "Gunnar's dotfiles: apply the home-manager config and run full system upgrades via the mcp-dotfiles server, plus skills."
+    }
+  ]
+}

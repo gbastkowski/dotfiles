@@ -11,7 +11,8 @@
     "ista-presentation@ista-marketplace": true,
     "caveman@caveman": true,
     "mcp-emacs@mcp-emacs": true,
-    "mcp-latex@mcp-latex": true
+    "mcp-latex@mcp-latex": true,
+    "dotfiles@dotfiles": true
   },
   "extraKnownMarketplaces": {
     "mcp-emacs": {
@@ -24,6 +25,12 @@
       "source": {
         "source": "github",
         "repo": "gbastkowski/mcp-latex"
+      }
+    },
+    "dotfiles": {
+      "source": {
+        "source": "github",
+        "repo": "gbastkowski/dotfiles"
       }
     },
     "mdb": {
@@ -85,8 +92,5 @@
     "enabled": true,
     "mode": "hold"
   },
-  "voiceEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754085994342
-  }
+  "voiceEnabled": true
 }

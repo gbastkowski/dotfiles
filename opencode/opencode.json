@@ -12,7 +12,6 @@
     "@khalilgharbaoui/opencode-claude-code-plugin"
   ],
   "tools": {
-    "bash": false,
     "glob": false,
     "grep": false,
     "list": false,

@@ -482,6 +482,26 @@ accept completion from copilot and fallback to company
          :desc "OpenCode menu" "o" #'opencode-menu)))
 #+end_src
 
+*** OpenCode client backend (mcp-emacs agent-backend)
+The shared agent-backend layer picks which client to drive.  Which one is
+*usable* is a per-machine fact (a CLI can be installed yet unusable, e.g. no
+Claude subscription), so the preference is a per-machine condition, not a
+runtime probe: akiko has no Claude subscription and runs opencode; the work
+Mac uses Claude.  `agent-backend-start` then opens the right backend with
+the same keymap and transcript either way.
+
+#+begin_src emacs-lisp
+(use-package! opencode-client)   ; already on the load path via mcp-emacs
+(use-package! claude-client)
+(if (string= (system-name) "akiko")
+    (setq agent-backend-preference 'opencode)
+  (setq agent-backend-preference 'claude))
+#+end_src
+
+One opencode server runs per project, each on its own free port, so
+several projects can run opencode sessions in parallel without colliding
+on a fixed address.
+
 
 * Tmux
 Uses the Doom =:tools tmux= module's raw =+tmux= passthrough to send a single

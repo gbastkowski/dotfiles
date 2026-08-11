@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/deepseek-v4-flash",
+  "small_model": "opencode-go/deepseek-v4-flash",
+  "instructions": [],
+  "tools": {
+    "bash": false,
+    "edit": false,
+    "read": false,
+    "write": false,
+    "glob": false,
+    "grep": false,
+    "list": false,
+    "patch": false,
+    "skill": false,
+    "todoread": false,
+    "todowrite": false,
+    "webfetch": false
+  },
+  "agent": {
+    "chat": {
+      "description": "Terse sidebar chat assistant",
+      "mode": "all",
+      "tools": {},
+      "prompt": "You are a terse assistant for a Linux / Hyprland user. Reply concisely, no preamble, no restating the question. Wrap shell commands or code in fenced ```code``` blocks. If you don't know, say so in one line."
+    }
+  }
+}

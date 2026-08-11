@@ -10,6 +10,18 @@
   :init
   (add-hook 'emacs-startup-hook #'mcp-emacs-server-ensure))
 
+;; Terminal-free Claude client (agent-backend subclass, stream-json over a
+;; subprocess).  Runs alongside the opencode client; agent-backend-preference
+;; picks which one agent-backend-start opens per machine.
+(use-package! claude-client
+  :defer t
+  :commands (claude-client-start
+             claude-client-send
+             claude-client-interrupt
+             claude-client-add-note
+             claude-client-resume
+             claude-client-quit))
+
 ;; Native opencode HTTP/SSE client.  The server runs as an on-demand launchd
 ;; agent (see the opencode home-manager module) so its sessions survive Emacs
 ;; restarts; `opencode-client-serve' kickstarts that agent.  The basic-auth

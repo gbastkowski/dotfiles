@@ -491,8 +491,8 @@ Mac uses Claude.  `agent-backend-start` then opens the right backend with
 the same keymap and transcript either way.
 
 #+begin_src emacs-lisp
-(use-package! opencode-client)   ; already on the load path via mcp-emacs
-(use-package! claude-client)
+;; Plain setq: agent-backend-preference is a defcustom, and both client
+;; features are declared by the :tools mcp-emacs module, not here.
 (if (string= (system-name) "akiko")
     (setq agent-backend-preference 'opencode)
   (setq agent-backend-preference 'claude))

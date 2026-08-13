@@ -1,0 +1,10 @@
+{
+  "name": "opencode-rangun-plugin",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.4.0"
+  }
+}

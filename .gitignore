@@ -43,3 +43,4 @@ claude/backups/
 /mcp/node_modules/
 /mcp/dist/
 /.claude/scheduled_tasks.lock
+/quickshell/ai/plugins/rangun/node_modules/

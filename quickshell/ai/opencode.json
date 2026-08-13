@@ -1,7 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode-go/deepseek-v4-flash",
-  "small_model": "opencode-go/deepseek-v4-flash",
+  "plugin": [
+    "./plugins/rangun"
+  ],
+  "model": "ollama/qwen3.5:9b",
+  "small_model": "ollama/qwen3.5:9b",
   "instructions": [],
   "tools": {
     "bash": false,
@@ -17,12 +20,40 @@
     "todowrite": false,
     "webfetch": false
   },
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "qwen3.5:9b": {
+          "name": "Qwen 3.5 9B"
+        },
+        "qwen-fast": {
+          "name": "Qwen Fast"
+        }
+      }
+    }
+  },
   "agent": {
     "chat": {
       "description": "Terse sidebar chat assistant",
       "mode": "all",
       "tools": {},
-      "prompt": "You are a terse assistant for a Linux / Hyprland user. Reply concisely, no preamble, no restating the question. Wrap shell commands or code in fenced ```code``` blocks. If you don't know, say so in one line."
+      "prompt": "You are a terse assistant for a Linux / Hyprland user. Reply concisely, no preamble, no restating the question, no thinking out loud. Wrap shell commands or code in fenced ```code``` blocks. If you don't know, say so in one line."
+    },
+    "rangun": {
+      "description": "Thin relay that delegates to the Rangun assistant",
+      "mode": "all",
+      "tools": {
+        "ask-rangun": true,
+        "lsp": false,
+        "task": false
+      },
+      "prompt": "You are a thin relay to the Rangun assistant. Call the ask-rangun tool with the user's question verbatim, then reply with EXACTLY the tool's output \u2014 no preamble, no restating, no extra text, no code fences.",
+      "model": "opencode-go/deepseek-v4-flash"
     }
   }
 }

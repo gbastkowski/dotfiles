@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 
 // AI chat panel for the sidebar. Two interchangeable backends, toggled in
 // the header:
@@ -12,9 +14,12 @@ import Quickshell.Io
 Rectangle {
     id: root
 
+    // Backend: opencode serve, routed to the local ollama provider
+    // (qwen3.5:9b via the ai/opencode.json config). Direct-ollama code stays
+    // below as a fallback: set this to false to use it.
     property bool useOpencode: true
-    property string ollamaModel: "qwen-fast:latest"
-    property string ocModel: "deepseek-v4-flash"
+    property string ollamaModel: "qwen3.5:9b" // answers without narrating its thinking
+    property string ocModel: "qwen3.5:9b" // served by the ollama provider
     property string ocEndpoint: "http://127.0.0.1:4097"
     property string ocPort: "4097"
     property string ocAgent: "chat"
@@ -41,12 +46,18 @@ Rectangle {
     property int _epoch: 0
     property int _activeEpoch: -1
     property string _pendingPrompt: ""
+    property string _pendingAgent: ""
 
     // opencode session (one per conversation) and last raw response
     property string ocSessionID: ""
     property string lastOcResponse: ""
 
     color: "transparent"
+
+    // grabs keyboard focus for the panel window (used by the global shortcut)
+    HyprlandFocusGrab {
+        id: focusGrab
+    }
 
     ListModel { id: chatModel }
 
@@ -140,7 +151,7 @@ Rectangle {
         stdout: StdioCollector {
             onStreamFinished: { root.lastOcResponse = this.text; }
         }
-        onExited: { if (root.busy && root.useOpencode) root.finishTurn() }
+        onExited: { if (root.busy && root.useOpencode) root.finishOcTurn() }
     }
 
     // persistent SSE stream of server events (token deltas)
@@ -196,26 +207,30 @@ Rectangle {
             }
             if (root._pendingPrompt) {
                 var p = root._pendingPrompt
+                var ag = root._pendingAgent || root.ocAgent
                 root._pendingPrompt = ""
-                root.appendTurn(p)
+                root._pendingAgent = ""
+                root.appendTurn(p, ag === "rangun" ? "rangun" : "chat")
                 if (root.ocSessionID.length === 0) {
                     ocSessProc.pendingPrompt = p
                     ocSessProc.command = ["curl", "-s", "-m", "10",
                         "-X", "POST", root.ocEndpoint + "/session",
                         "-H", "Content-Type: application/json",
-                        "-d", JSON.stringify({ agent: root.ocAgent, title: "sidebar" })]
+                        "-d", JSON.stringify({ agent: ag, title: "sidebar" })]
                     ocSessProc.running = false
                     ocSessProc.running = true
                 } else {
-                    root.postOcMessage(p)
+                    root.postOcMessage(p, ag)
                 }
             }
         } else if (root.ocStatus !== "off" && root._ocStartAttempted < 2) {
             // not up yet: on first probe attempts, launch the server detached
             if (root._ocStartAttempted === 0) {
                 root._ocStartAttempted += 1
-                ocStartProc.command = ["opencode", "serve", "--port", root.ocPort, "--pure", "--hostname", "127.0.0.1"]
-                ocStartProc.environment = { OPENCODE_CONFIG: root.ocConfigPath }
+                ocStartProc.command = ["opencode", "serve", "--port", root.ocPort, "--hostname", "127.0.0.1"]
+                // isolate from ~/.config/opencode: the widget config self-contains
+                // providers + plugins, so the server must not merge global configs.
+                ocStartProc.environment = { XDG_CONFIG_HOME: root.ocWorkDir + "/xdg" }
                 ocStartProc.workingDirectory = root.ocWorkDir
                 ocStartProc.startDetached() // instance method, no args
             } else {
@@ -261,7 +276,7 @@ Rectangle {
         root.postOcMessage(ocSessProc.pendingPrompt)
     }
 
-    function postOcMessage(prompt) {
+    function postOcMessage(prompt, agent) {
         root.streamingText = ""
         root.busy = true
         root._activeEpoch = root._epoch
@@ -269,30 +284,32 @@ Rectangle {
         ocMsgProc.command = ["curl", "-sN", "-m", "300",
             "-X", "POST", root.ocEndpoint + "/session/" + root.ocSessionID + "/message",
             "-H", "Content-Type: application/json",
-            "-d", JSON.stringify({ agent: root.ocAgent, parts: [{ type: "text", text: prompt }] })]
+            "-d", JSON.stringify({ agent: agent || root.ocAgent, parts: [{ type: "text", text: prompt }] })]
         ocMsgProc.running = false
         ocMsgProc.running = true
         root.updateStreamingRow()
     }
 
-    function sendOc(prompt) {
+    function sendOc(prompt, agent) {
         if (root.ocStatus !== "on") {
             root._pendingPrompt = prompt // flushed by onOcHealth once the server is up
+            root._pendingAgent = agent || root.ocAgent
             root.ocEnsure()
             return
         }
-        root.appendTurn(prompt)
+        root.appendTurn(prompt, agent === "rangun" ? "rangun" : "chat")
         root._pendingPrompt = ""
+        var ag = agent || root.ocAgent
         if (root.ocSessionID.length === 0) {
             ocSessProc.pendingPrompt = prompt
             ocSessProc.command = ["curl", "-s", "-m", "10",
                 "-X", "POST", root.ocEndpoint + "/session",
                 "-H", "Content-Type: application/json",
-                "-d", JSON.stringify({ agent: root.ocAgent, title: "sidebar" })]
+                "-d", JSON.stringify({ agent: ag, title: "sidebar" })]
             ocSessProc.running = false
             ocSessProc.running = true
         } else {
-            root.postOcMessage(prompt)
+            root.postOcMessage(prompt, ag)
         }
     }
 
@@ -305,7 +322,7 @@ Rectangle {
     function finishTurnWith(text) { // opencode fallback (error/empty)
         root.busy = false
         root.streamingText = text
-        chatModel.set(chatModel.count - 1, { role: "assistant", text: text })
+        root.setAssistantRow(text)
         root.history.push({ role: "assistant", content: text })
         chatList.positionViewAtEnd()
     }
@@ -328,21 +345,29 @@ Rectangle {
         }
         if (finalText.length === 0) finalText = "⚠ no response from opencode"
         root.streamingText = finalText
-        chatModel.set(chatModel.count - 1, { role: "assistant", text: finalText })
+        root.setAssistantRow(finalText)
         root.history.push({ role: "assistant", content: finalText })
         chatList.positionViewAtEnd()
     }
 
     // ---- shared logic ----------------------------------------------------
+    // update the streaming row, preserving its source tag (chat/rangun)
+    function setAssistantRow(text) {
+        var src = "chat"
+        if (chatModel.count > 0) src = chatModel.get(chatModel.count - 1).source || "chat"
+        chatModel.set(chatModel.count - 1, { role: "assistant", text: text, source: src })
+    }
+
     function updateStreamingRow() {
-        chatModel.set(chatModel.count - 1, { role: "assistant", text: root.streamingText })
+        root.setAssistantRow(root.streamingText)
         chatList.positionViewAtEnd()
     }
 
-    function appendTurn(prompt) {
-        chatModel.append({ role: "user", text: prompt })
+    function appendTurn(prompt, source) {
+        var src = source || "chat"
+        chatModel.append({ role: "user", text: prompt, source: src })
         root.history.push({ role: "user", content: prompt })
-        chatModel.append({ role: "assistant", text: "" })
+        chatModel.append({ role: "assistant", text: "", source: src })
         root._epoch += 1
         chatProc.gen = root._epoch
         chatList.positionViewAtEnd()
@@ -353,6 +378,12 @@ Rectangle {
         var prompt = input.text.trim()
         if (prompt.length === 0) return
         input.text = ""
+        // /rangun <question> delegates to the Rangun assistant (Hermes on smarty:3000)
+        if (prompt === "/rangun" || prompt.indexOf("/rangun ") === 0) {
+            var rq = prompt.length > 7 ? prompt.substring(8).trim() : ""
+            if (rq.length > 0) { root.sendOc(rq, "rangun"); return }
+            return
+        }
         if (root.useOpencode) { root.sendOc(prompt); return }
         // ollama
         root.appendTurn(prompt)
@@ -397,16 +428,14 @@ Rectangle {
         input.forceActiveFocus()
     }
 
-    function toggleBackend() {
-        if (root.busy) return
-        root.useOpencode = !root.useOpencode
-        root.clearChat()
-        if (root.useOpencode) {
-            root.ocEnsure()
-        } else {
-            probeProc.running = false
-            probeProc.running = true
+    // Focus the chat input and give the panel keyboard focus (global shortcut).
+    function focusInput() {
+        var win = QsWindow.window
+        if (win) {
+            focusGrab.windows = [win]
+            focusGrab.active = true
         }
+        input.forceActiveFocus()
     }
 
     // Programmatic entry point (used by tests / external bindings).
@@ -436,44 +465,22 @@ Rectangle {
         // header
         Row {
             Layout.fillWidth: true
-            Layout.preferredHeight: 22
+            Layout.preferredHeight: 26
             spacing: 6
             Text {
                 height: 22
                 text: "AI Chat"
                 color: "#48bc00"
-                font.pixelSize: 13
+                font.pixelSize: 17
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
-            }
-            // backend toggle pill
-            Rectangle {
-                height: 18
-                width: backendLabel.implicitWidth + 14
-                radius: 9
-                color: root.useOpencode ? "#1e4a00" : "#2a2a2a"
-                border.width: 1
-                border.color: root.useOpencode ? "#2f6a00" : "#3a3a3a"
-                anchors.verticalCenter: parent.verticalCenter
-                Text {
-                    id: backendLabel
-                    anchors.centerIn: parent
-                    text: root.useOpencode ? "opencode" : "ollama"
-                    color: root.useOpencode ? "#7dff66" : "#aaaaaa"
-                    font.pixelSize: 9
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    enabled: !root.busy
-                    onClicked: root.toggleBackend()
-                }
             }
             Item { Layout.fillWidth: true; height: 1 }
             Text {
                 height: 22
                 text: "clear"
                 color: root.busy ? "#555" : "#8a8a8a"
-                font.pixelSize: 11
+                font.pixelSize: 13
                 verticalAlignment: Text.AlignVCenter
                 MouseArea {
                     anchors.fill: parent
@@ -489,7 +496,7 @@ Rectangle {
             visible: root.statusText.length > 0
             text: root.statusText
             color: "#ff6b6b"
-            font.pixelSize: 10
+            font.pixelSize: 13
             wrapMode: Text.Wrap
         }
 
@@ -500,35 +507,38 @@ Rectangle {
             Layout.fillHeight: true
             model: chatModel
             clip: true
-            spacing: 6
+            spacing: 8
 
             delegate: Item {
                 id: wrap
                 required property string role
                 required property string text
+                property string source: "chat"
                 readonly property bool isUser: role === "user"
+                readonly property bool isRangun: source === "rangun"
                 width: chatList.width
                 height: bubble.height
 
                 Rectangle {
                     id: bubble
                     property bool isUser: wrap.isUser
+                    property bool isRangun: wrap.isRangun
                     x: isUser ? wrap.width - width : 0
-                    width: Math.min(msg.implicitWidth + 24, wrap.width - 16)
-                    height: msg.implicitHeight + 16
+                    width: Math.min(msg.implicitWidth + 24, wrap.width - 24)
+                    height: msg.implicitHeight + 24
                     radius: 10
-                    color: isUser ? "#1e4a00" : "#2a2a2a"
-                    border.width: 1
-                    border.color: isUser ? "#2f6a00" : "#3a3a3a"
+                    color: isRangun ? (isUser ? "#0e2a4a" : "#14222e") : (isUser ? "#1e4a00" : "#2a2a2a")
+                    border.width: isRangun ? 2 : 1
+                    border.color: isRangun ? "#3f6fb0" : (isUser ? "#2f6a00" : "#3a3a3a")
 
                     Text {
                         id: msg
-                        x: 8
-                        y: 8
-                        width: bubble.width - 16
+                        x: 12
+                        y: 12
+                        width: bubble.width - 24
                         text: wrap.text
                         color: "#e8e8e8"
-                        font.pixelSize: 12
+                        font.pixelSize: 16
                         wrapMode: Text.Wrap
                     }
                 }
@@ -538,13 +548,13 @@ Rectangle {
         // input row
         Row {
             Layout.fillWidth: true
-            Layout.preferredHeight: 36
-            spacing: 6
+            Layout.preferredHeight: 50
+            spacing: 8
 
             Rectangle {
                 id: inputBox
                 width: parent.width - sendBtn.width - parent.spacing
-                height: 36
+                height: 50
                 radius: 8
                 color: "#1d1d1d"
                 border.width: 1
@@ -559,7 +569,7 @@ Rectangle {
                         : !root.ready ? "starting…"
                         : "ask…"
                     color: "#5a5a5a"
-                    font.pixelSize: 12
+                    font.pixelSize: 16
                     verticalAlignment: Text.AlignVCenter
                     z: -1
                     enabled: false
@@ -571,7 +581,7 @@ Rectangle {
                     anchors.leftMargin: 10
                     anchors.rightMargin: 10
                     color: "#eee"
-                    font.pixelSize: 12
+                    font.pixelSize: 16
                     verticalAlignment: Text.AlignVCenter
                     clip: true
                     enabled: root.ready
@@ -582,8 +592,8 @@ Rectangle {
 
             Rectangle {
                 id: sendBtn
-                width: 40
-                height: 36
+                width: 52
+                height: 50
                 radius: 8
                 color: root.busy ? "#7a1f1f" : (root.ready ? "#48bc00" : "#333")
 
@@ -591,7 +601,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: root.busy ? "■" : "➤"
                     color: "white"
-                    font.pixelSize: 13
+                    font.pixelSize: 18
                 }
 
                 MouseArea {

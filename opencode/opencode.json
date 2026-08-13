@@ -84,6 +84,18 @@
         "node",
         "/home/gunnar/git/gbastkowski/dotfiles/mcp/dist/index.js"
       ]
+    },
+    "blender": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp",
+        "--with",
+        "mcp[cli]>=1.2.0,<2",
+        "blender-mcp"
+      ]
     }
   },
   "provider": {

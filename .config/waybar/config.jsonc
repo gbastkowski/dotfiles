@@ -106,10 +106,11 @@
       "mode": "month",
       "mode-mon-col": 3,
       "weeks-pos": "right"
-    }
-  },
+    },
+    "on-click": "sh -c 'echo calendar >> /tmp/qs-widget-trigger'"},
   "custom/weather": {
     "exec": "$HOME/.config/waybar/scripts/weather-status.sh",
+  "on-click": "sh -c 'echo weather >> /tmp/qs-widget-trigger'",
     "return-type": "json",
     "interval": 900,
     "tooltip": true

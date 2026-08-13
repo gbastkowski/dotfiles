@@ -16,8 +16,8 @@ let
     };
     atuin = {
       type = "stdio";
-      command = "node";
-      args = [ "${config.home.homeDirectory}/git/gbastkowski/mcp-atuin/dist/index.js" ];
+      command = "npx";
+      args = [ "-y" "github:gbastkowski/mcp-atuin" ];
       env = { };
     };
     context7 = {

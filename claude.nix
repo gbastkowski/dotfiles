@@ -17,7 +17,7 @@ let
     atuin = {
       type = "stdio";
       command = "node";
-      args = [ "/Users/gunnar.bastkowski/git/gbastkowski/mcp-atuin/dist/index.js" ];
+      args = [ "${config.home.homeDirectory}/git/gbastkowski/mcp-atuin/dist/index.js" ];
       env = { };
     };
     context7 = {

@@ -66,6 +66,18 @@
         "-c",
         "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
       ]
+    },
+    "akiko": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "github:gbastkowski/mcp-proxy"
+      ],
+      "env": {
+        "MCP_PROXY_HOST": "akiko"
+      }
     }
   },
   "provider": {
@@ -111,12 +123,28 @@
       }
     }
   },
-  "disabled_providers": ["openai", "opencode", "opencode-go"],
+  "disabled_providers": [
+    "openai",
+    "opencode",
+    "opencode-go"
+  ],
   "experimental": {
     "policies": [
-      { "effect": "deny", "action": "provider.use", "resource": "openai" },
-      { "effect": "deny", "action": "provider.use", "resource": "opencode" },
-      { "effect": "deny", "action": "provider.use", "resource": "opencode-go" }
+      {
+        "effect": "deny",
+        "action": "provider.use",
+        "resource": "openai"
+      },
+      {
+        "effect": "deny",
+        "action": "provider.use",
+        "resource": "opencode"
+      },
+      {
+        "effect": "deny",
+        "action": "provider.use",
+        "resource": "opencode-go"
+      }
     ]
   }
 }

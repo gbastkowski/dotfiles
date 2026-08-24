@@ -35,6 +35,8 @@
   home.file.".config/systemd/user/offlineimap-mu.service".source = ./systemd/user/offlineimap-mu.service;
   home.file.".config/systemd/user/offlineimap-mu.timer".source = ./systemd/user/offlineimap-mu.timer;
   home.file.".config/systemd/user/pgadmin4.service".source = ./systemd/user/pgadmin4.service;
+  home.file.".config/systemd/user/blender-mcp.service".source = ./systemd/user/blender-mcp.service;
+  home.file.".config/systemd/user/qgis-mcp.service".source = ./systemd/user/qgis-mcp.service;
   home.file.".config/systemd/user/sway-headless.service".source = ./systemd/user/sway-headless.service;
 
   programs.zsh.initContent = lib.mkMerge [

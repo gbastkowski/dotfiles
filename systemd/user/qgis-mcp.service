@@ -1,0 +1,20 @@
+[Unit]
+Description=QGIS MCP HTTP server (streamable-http on :8000/mcp)
+Documentation=https://github.com/nkarasiak/qgis-mcp
+After=network.target
+
+[Service]
+Type=simple
+# stdio client process; connects to the running QGIS instance via its plugin.
+# The FastMCP streamable-http server binds default 127.0.0.1:8000, endpoint /mcp.
+Environment=QGIS_MCP_TRANSPORT=streamable-http
+ExecStart=/usr/bin/uvx --from "https://github.com/nkarasiak/qgis-mcp/archive/refs/heads/main.zip" qgis-mcp-server
+Restart=on-failure
+RestartSec=3
+
+# Hardening (mirrors the pgadmin service)
+SystemCallArchitectures=native
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

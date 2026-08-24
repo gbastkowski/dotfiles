@@ -1,0 +1,18 @@
+[Unit]
+Description=Blender MCP HTTP server (streamable-http on :8001)
+Documentation=https://www.blender.org/lab/mcp-server/
+After=network.target
+
+[Service]
+Type=simple
+# stdio client process; connects to the running Blender add-on over TCP :9876.
+ExecStart=/usr/bin/uvx --from "git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp" --with "mcp[cli]>=1.2.0,<2" blender-mcp --transport http --port 8001
+Restart=on-failure
+RestartSec=3
+
+# Hardening (mirrors the pgadmin service)
+SystemCallArchitectures=native
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

@@ -15,8 +15,6 @@
   home.file.".doom.d/modules/tools/ai/packages.el".source = ./emacs/.doom.d/modules/tools/ai/packages.el;
   home.file.".doom.d/modules/tools/claude-code/config.el".source = ./emacs/.doom.d/modules/tools/claude-code/config.el;
   home.file.".doom.d/modules/tools/claude-code/packages.el".source = ./emacs/.doom.d/modules/tools/claude-code/packages.el;
-  home.file.".doom.d/modules/tools/codex/config.el".source = ./emacs/.doom.d/modules/tools/codex/config.el;
-  home.file.".doom.d/modules/tools/codex/packages.el".source = ./emacs/.doom.d/modules/tools/codex/packages.el;
   home.file.".doom.d/modules/tools/mcp-emacs/config.el".source = ./emacs/.doom.d/modules/tools/mcp-emacs/config.el;
   home.file.".doom.d/modules/tools/mcp-emacs/packages.el".source = ./emacs/.doom.d/modules/tools/mcp-emacs/packages.el;
   home.file.".doom.d/openai/playground/openai-playground.el".source = ./emacs/.doom.d/openai/playground/openai-playground.el;

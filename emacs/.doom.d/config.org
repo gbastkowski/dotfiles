@@ -472,17 +472,6 @@ accept completion from copilot and fallback to company
 (use-package! openai-playground)
 #+end_src
 
-** OpenCode
-#+begin_src emacs-lisp
-(after! opencode
-  (setq opencode-terminal-type 'vterm
-        opencode-split-direction 'vertical)
-  (map! :leader
-        (:prefix ("D" . "OpenCode")
-         :desc "OpenCode menu" "o" #'opencode-menu)))
-#+end_src
-
-
 * Tmux
 Uses the Doom =:tools tmux= module's raw =+tmux= passthrough to send a single
 key to the active tmux pane.

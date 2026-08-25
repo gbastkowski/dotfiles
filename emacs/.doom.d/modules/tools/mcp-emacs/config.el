@@ -28,10 +28,10 @@
   (setq opencode-client-launchd-label "org.nix-community.home.opencode-serve"
         opencode-client-password-command "pass show private/opencode/server-password"))
 
-;; Terminal runner that launches the Claude CLI inside Emacs (eat backend),
-;; one primary session per project, reaching editor tools through the MCP
-;; server above. Intended to replace claude-code-ide; kept alongside it for
-;; now under a distinct SPC E prefix so both can be exercised.
+;; Terminal runner: the Claude CLI in an eat buffer, one session per
+;; project.  Raw-TUI fallback under SPC A t when the structured path on
+;; SPC A cannot reach something.  Issue #56 tracks the verbs still only
+;; here (selection sharing, multi-session list/switch).
 (use-package! mcp-emacs-run
   :defer t
   :commands (mcp-emacs-run-new
@@ -61,21 +61,54 @@
     (set-popup-rule! "^\\*mcp-emacs:" :ignore t))
   :init
   (map! :leader
-        (:prefix ("E" . "Claude runner")
-         :desc "Start new session"          "e" #'mcp-emacs-run-new
-         :desc "Start session hidden"       "E" #'mcp-emacs-run-start
-         :desc "Continue last conversation" "c" #'mcp-emacs-run-continue
-         :desc "Resume a conversation"      "r" #'mcp-emacs-run-resume
-         :desc "List live sessions"         "l" #'mcp-emacs-run-list
-         :desc "Switch to a session"        "s" #'mcp-emacs-run-switch
-         :desc "Kill this project's session" "K" #'mcp-emacs-run-kill
-         :desc "Quit session (graceful)"    "q" #'mcp-emacs-run-quit
-         :desc "Toggle runner window"       "t" #'mcp-emacs-run-toggle
-         :desc "Explain selection"          "x" #'mcp-emacs-explain-selection-in-current-session
-         :desc "Send Return"                "RET"   #'mcp-emacs-run-send-return
-         :desc "Send 1"                     "1"     #'mcp-emacs-run-send-1
-         :desc "Send 2"                     "2"     #'mcp-emacs-run-send-2
-         :desc "Send 3"                     "3"     #'mcp-emacs-run-send-3
-         :desc "Send shift-tab (cycle)"     "<tab>" #'mcp-emacs-run-send-shift-tab
-         :desc "Send Up"                    "p"     #'mcp-emacs-run-send-up
-         :desc "Send Down"                  "n"     #'mcp-emacs-run-send-down)))
+        ;; SPC A is labelled by the agent-backend block below.
+        (:prefix "A"
+         (:prefix ("t" . "terminal (fallback)")
+          :desc "Start new session"          "e" #'mcp-emacs-run-new
+          :desc "Start session hidden"       "E" #'mcp-emacs-run-start
+          :desc "Continue last conversation" "c" #'mcp-emacs-run-continue
+          :desc "Resume a conversation"      "r" #'mcp-emacs-run-resume
+          :desc "List live sessions"         "l" #'mcp-emacs-run-list
+          :desc "Switch to a session"        "s" #'mcp-emacs-run-switch
+          :desc "Kill this project's session" "K" #'mcp-emacs-run-kill
+          :desc "Quit session (graceful)"    "q" #'mcp-emacs-run-quit
+          :desc "Toggle runner window"       "w" #'mcp-emacs-run-toggle
+          :desc "Explain selection"          "x" #'mcp-emacs-explain-selection-in-current-session
+          :desc "Send Return"                "RET"   #'mcp-emacs-run-send-return
+          :desc "Send 1"                     "1"     #'mcp-emacs-run-send-1
+          :desc "Send 2"                     "2"     #'mcp-emacs-run-send-2
+          :desc "Send 3"                     "3"     #'mcp-emacs-run-send-3
+          :desc "Send shift-tab (cycle)"     "<tab>" #'mcp-emacs-run-send-shift-tab
+          :desc "Send Up"                    "p"     #'mcp-emacs-run-send-up
+          :desc "Send Down"                  "n"     #'mcp-emacs-run-send-down))))
+
+;; Backend-agnostic agent runner: the first-class path.
+;; `agent-backend-preference' picks opencode or Claude.  Both client modes
+;; derive from `agent-backend-mode', so C-c C-s/-i/-n/-q/-r work in the
+;; conversation buffer too.
+(use-package! agent-backend
+  :defer t
+  :commands (agent-backend-start
+             agent-backend-send-command
+             agent-backend-add-note-command
+             agent-backend-interrupt-command
+             agent-backend-quit-command
+             agent-backend-resume-command)
+  :init
+  ;; `auto' would start opencode whenever its launchd server answers.
+  (setq agent-backend-preference 'claude)
+  (map! :leader
+        (:prefix ("A" . "AI agent")
+         :desc "Start agent"         "a" #'agent-backend-start
+         :desc "Send prompt"         "s" #'agent-backend-send-command
+         :desc "Add note"            "n" #'agent-backend-add-note-command
+         :desc "Interrupt turn"      "i" #'agent-backend-interrupt-command
+         :desc "Resume conversation" "r" #'agent-backend-resume-command
+         :desc "Quit conversation"   "q" #'agent-backend-quit-command))
+  :config
+  ;; Doom's +popup catch-all (^\*) would override each client's own
+  ;; directional window.  `*claude-client*' has no colon, so the
+  ;; "^\\*claude:" rule above does not cover it.
+  (when (fboundp 'set-popup-rule!)
+    (set-popup-rule! "^\\*claude-client\\*" :ignore t)
+    (set-popup-rule! "^\\*opencode" :ignore t)))

@@ -90,7 +90,6 @@
         :tools      ;;ai
                     ;;ansible
                     claude-code
-                    ;; codex
                     mcp-emacs
                     ;;biblio                          ; Writes a PhD for you (citation needed)
                     ;;collab                          ; buffers with friends

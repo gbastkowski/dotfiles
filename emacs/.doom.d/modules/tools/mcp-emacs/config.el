@@ -114,15 +114,18 @@
     (set-popup-rule! "^\\*claude-client" :ignore t)
     (set-popup-rule! "^\\*opencode" :ignore t)))
 
-;; Conversation list/switch.  These are claude-client's own commands rather
-;; than agent-backend generics -- the backend protocol has no session verbs
-;; yet (mcp-emacs#56), so they are bound directly for now.
+;; Conversation window and session management.  These are claude-client's
+;; own commands rather than agent-backend generics -- the backend protocol
+;; has no session verbs yet (mcp-emacs#56), so they are bound directly.
+;; `w' mirrors the eat runner's SPC A t w toggle.
 (use-package! claude-client
   :defer t
   :commands (claude-client-list
-             claude-client-switch)
+             claude-client-switch
+             claude-client-toggle)
   :init
   (map! :leader
         (:prefix "A"
-         :desc "List conversations"   "l" #'claude-client-list
-         :desc "Switch conversation"  "w" #'claude-client-switch)))
+         :desc "Toggle conversation window" "w" #'claude-client-toggle
+         :desc "List conversations"         "l" #'claude-client-list
+         :desc "Switch conversation"        "S" #'claude-client-switch)))

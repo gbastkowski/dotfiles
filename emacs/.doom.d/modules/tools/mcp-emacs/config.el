@@ -61,8 +61,10 @@
     (set-popup-rule! "^\\*mcp-emacs:" :ignore t))
   :init
   (map! :leader
-        ;; SPC A is labelled by the agent-backend block below.
-        (:prefix "A"
+        ;; SPC A carries its label here.  A second `map!' that re-declares the
+        ;; prefix *with* a description builds a fresh keymap and drops whatever
+        ;; the earlier block bound, so only one block may name it.
+        (:prefix ("A" . "AI agent")
          (:prefix ("t" . "terminal (fallback)")
           :desc "Start new session"          "e" #'mcp-emacs-run-new
           :desc "Start session hidden"       "E" #'mcp-emacs-run-start
@@ -98,7 +100,9 @@
   ;; `auto' would start opencode whenever its launchd server answers.
   (setq agent-backend-preference 'claude)
   (map! :leader
-        (:prefix ("A" . "AI agent")
+        ;; Labelled by the mcp-emacs-run block above; naming it here too would
+        ;; rebuild the map and drop the SPC A t sub-prefix.
+        (:prefix "A"
          :desc "Start agent"         "a" #'agent-backend-start
          :desc "Send prompt"         "s" #'agent-backend-send-command
          :desc "Add note"            "n" #'agent-backend-add-note-command

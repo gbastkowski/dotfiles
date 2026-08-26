@@ -107,8 +107,22 @@
          :desc "Quit conversation"   "q" #'agent-backend-quit-command))
   :config
   ;; Doom's +popup catch-all (^\*) would override each client's own
-  ;; directional window.  `*claude-client*' has no colon, so the
-  ;; "^\\*claude:" rule above does not cover it.
+  ;; directional window.  Conversation buffers are
+  ;; `*claude-client:<project>:<n>*', so match the prefix rather than the
+  ;; whole name; `*opencode...' likewise.
   (when (fboundp 'set-popup-rule!)
-    (set-popup-rule! "^\\*claude-client\\*" :ignore t)
+    (set-popup-rule! "^\\*claude-client" :ignore t)
     (set-popup-rule! "^\\*opencode" :ignore t)))
+
+;; Conversation list/switch.  These are claude-client's own commands rather
+;; than agent-backend generics -- the backend protocol has no session verbs
+;; yet (mcp-emacs#56), so they are bound directly for now.
+(use-package! claude-client
+  :defer t
+  :commands (claude-client-list
+             claude-client-switch)
+  :init
+  (map! :leader
+        (:prefix "A"
+         :desc "List conversations"   "l" #'claude-client-list
+         :desc "Switch conversation"  "w" #'claude-client-switch)))

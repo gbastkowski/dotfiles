@@ -10,10 +10,10 @@
   :init
   (add-hook 'emacs-startup-hook #'mcp-emacs-server-ensure))
 
-;; Native opencode HTTP/SSE client.  The server runs as an on-demand launchd
-;; agent (see the opencode home-manager module) so its sessions survive Emacs
-;; restarts; `opencode-client-serve' kickstarts that agent.  The basic-auth
-;; password is read from pass, matching how the launchd agent gets it.
+;; Native opencode HTTP/SSE client.
+;; The server runs as an on-demand launchd agent (see the opencode home-manager module)
+;; so its sessions survive Emacs restarts; `opencode-client-serve' kickstarts that agent.
+;; The basic-auth password is read from pass, matching how the launchd agent gets it.
 (use-package! opencode-client
   :defer t
   :commands (opencode-client-connect
@@ -28,10 +28,7 @@
   (setq opencode-client-launchd-label "org.nix-community.home.opencode-serve"
         opencode-client-password-command "pass show private/opencode/server-password"))
 
-;; Terminal runner: the Claude CLI in an eat buffer, one session per
-;; project.  Raw-TUI fallback under SPC A t when the structured path on
-;; SPC A cannot reach something.  Issue #56 tracks the verbs still only
-;; here (selection sharing, multi-session list/switch).
+;; Terminal runner: the Claude CLI in an eat buffer, one session per project.  
 (use-package! mcp-emacs-run
   :defer t
   :commands (mcp-emacs-run-new
@@ -85,9 +82,8 @@
           :desc "Send Down"                  "n"     #'mcp-emacs-run-send-down))))
 
 ;; Backend-agnostic agent runner: the first-class path.
-;; `agent-backend-preference' picks opencode or Claude.  Both client modes
-;; derive from `agent-backend-mode', so C-c C-s/-i/-n/-q/-r work in the
-;; conversation buffer too.
+;; `agent-backend-preference' picks opencode or Claude.
+;; Both client modes derive from `agent-backend-mode', so C-c C-s/-i/-n/-q/-r work in the conversation buffer too.
 (use-package! agent-backend
   :defer t
   :commands (agent-backend-start

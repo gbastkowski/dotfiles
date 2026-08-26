@@ -19,4 +19,8 @@ in
   home.file."${ploverDir}/emily-modifiers.py".source = ./plover/emily-modifiers.py;
   home.file."${ploverDir}/emily-symbols.py".source = ./plover/emily-symbols.py;
   home.file."${ploverDir}/jeff-phrasing.py".source = ./plover/jeff-phrasing.py;
+
+  # Plover looks for plugins under <config>/plugins/<platform>/lib/python/site-packages.
+  # Without these the `lapwing` system plugin is missing and plover.cfg fails to validate.
+  home.file."${ploverDir}/plugins".source = ./plover/plugins;
 }

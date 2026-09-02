@@ -7,4 +7,6 @@
 (package! mcp-emacs  :recipe (:host github :repo "gbastkowski/mcp-emacs"
                               :branch "main"
                               :files ("elisp/*.el"))
-  :pin "2d3c6026430cda35964b7a9f3caedc22dd18730e")
+  ;; A release tag rather than a SHA: straight resolves either, and the
+  ;; version says what this is.  Cut releases with the repo's bin/release.sh.
+  :pin "v1.8.0")

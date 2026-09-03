@@ -61,6 +61,7 @@
                     (vc-gutter +pretty)
                     vi-tilde-fringe
                     window-select
+                    window-transient                  ; private: Spacemacs-style SPC w . hydra
                     workspaces
                     zen
         :editor     (evil +everywhere)

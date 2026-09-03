@@ -7,6 +7,6 @@
 (package! mcp-emacs  :recipe (:host github :repo "gbastkowski/mcp-emacs"
                               :branch "main"
                               :files ("elisp/*.el"))
-  ;; v1.8.0.  Doom's `:pin' takes a commit hash only -- it abbreviates the
+  ;; v1.9.0.  Doom's `:pin' takes a commit hash only -- it abbreviates the
   ;; value with `substring', so a tag name errors out (doom-packages.el).
-  :pin "1ad6adf11a90efae8a9e19846a7f344cedf6686d")
+  :pin "a1914e2d7043fc5f382ab6118065e02de6e441d6")

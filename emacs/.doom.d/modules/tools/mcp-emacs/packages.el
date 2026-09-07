@@ -5,9 +5,10 @@
 ;; plz: HTTP/SSE backend for the opencode client (soft dependency of mcp-emacs).
 (package! plz)
 (package! mcp-emacs  :recipe (:host github :repo "gbastkowski/mcp-emacs"
-                              :branch "compose-prompts-in-a-buffer"
                               :files ("elisp/*.el"))
-  ;; Trying out the prompt composition buffer before merging.  Doom's `:pin'
-  ;; takes a commit hash only -- it abbreviates the value with `substring',
-  ;; so a tag name errors out (doom-packages.el).
-  :pin "821bf9c7c9ca22382e00a4b25c91b5fae1e6ccda")
+  ;; Doom's `:pin' takes a commit hash only -- it abbreviates the value with
+  ;; `substring', so a tag name errors out (doom-packages.el).
+  ;;
+  ;; Merge of gate-tool-permissions-in-emacs, ahead of the 1.12.0 release:
+  ;; running the permission gate locally before cutting the tag.
+  :pin "3e7312bfe64daf9f60e2b0c700a81ea41c47cf33")

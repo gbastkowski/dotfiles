@@ -109,10 +109,13 @@
   ;; Doom's +popup catch-all (^\*) would override each client's own
   ;; directional window.  Conversation buffers are
   ;; `*claude-client:<project>:<n>*', so match the prefix rather than the
-  ;; whole name; `*opencode...' likewise.
+  ;; whole name; `*opencode...' likewise.  Prompt composition buffers
+  ;; (`*agent-prompt: <conversation>*') split their conversation's window
+  ;; themselves, so they need the same exemption.
   (when (fboundp 'set-popup-rule!)
     (set-popup-rule! "^\\*claude-client" :ignore t)
-    (set-popup-rule! "^\\*opencode" :ignore t)))
+    (set-popup-rule! "^\\*opencode" :ignore t)
+    (set-popup-rule! "^\\*agent-prompt" :ignore t)))
 
 ;; Conversation window and session management.  These are claude-client's
 ;; own commands rather than agent-backend generics -- the backend protocol

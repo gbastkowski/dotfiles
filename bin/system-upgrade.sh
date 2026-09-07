@@ -31,6 +31,12 @@ if command -v npm >/dev/null 2>&1; then
 	echo
 fi
 
+if command -v opencode >/dev/null 2>&1; then
+	echo "clearing opencode cache ..."
+	rm -rf "$HOME/.cache/opencode"
+	echo
+fi
+
 if [ -z "$SYSTEM_UPGRADE_REEXEC" ]; then
 	echo "pulling dotfiles ..."
 	before="$(git rev-parse HEAD)"

@@ -9,6 +9,5 @@
   ;; Doom's `:pin' takes a commit hash only -- it abbreviates the value with
   ;; `substring', so a tag name errors out (doom-packages.el).
   ;;
-  ;; Merge of gate-tool-permissions-in-emacs, ahead of the 1.12.0 release:
-  ;; running the permission gate locally before cutting the tag.
-  :pin "3e7312bfe64daf9f60e2b0c700a81ea41c47cf33")
+  ;; v1.12.0
+  :pin "3b5e25f4169c175f0cb0dd87a67465cc13eff302")

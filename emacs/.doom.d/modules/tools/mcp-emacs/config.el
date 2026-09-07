@@ -100,7 +100,6 @@
         ;; rebuild the map and drop the SPC A t sub-prefix.
         (:prefix "A"
          :desc "Start agent"         "a" #'agent-backend-start
-         :desc "Send prompt"         "s" #'agent-backend-send-command
          :desc "Add note"            "n" #'agent-backend-add-note-command
          :desc "Interrupt turn"      "i" #'agent-backend-interrupt-command
          :desc "Resume conversation" "r" #'agent-backend-resume-command
@@ -123,12 +122,18 @@
 ;; `w' mirrors the eat runner's SPC A t w toggle.
 (use-package! claude-client
   :defer t
-  :commands (claude-client-list
+  :commands (claude-client-send-prompt
+             claude-client-list
              claude-client-switch
              claude-client-toggle)
   :init
   (map! :leader
         (:prefix "A"
+         ;; `s' rather than `agent-backend-send-command': that one reads from
+         ;; the minibuffer and refuses outside a conversation buffer -- which
+         ;; is where you are whenever you have something to say about the code
+         ;; in front of you (mcp-emacs#79).
+         :desc "Send prompt"                "s" #'claude-client-send-prompt
          :desc "Toggle conversation window" "w" #'claude-client-toggle
          :desc "List conversations"         "l" #'claude-client-list
          :desc "Switch conversation"        "S" #'claude-client-switch)))

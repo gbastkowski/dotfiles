@@ -26,6 +26,7 @@
   home.file.".doom.d/openspec/changes/find-or-create-task-refile-function/specs/task-refile-to-today/spec.md".source = ./emacs/.doom.d/openspec/changes/find-or-create-task-refile-function/specs/task-refile-to-today/spec.md;
   home.file.".doom.d/openspec/changes/find-or-create-task-refile-function/tasks.md".source = ./emacs/.doom.d/openspec/changes/find-or-create-task-refile-function/tasks.md;
   home.file.".doom.d/scala/customs/scala-customs.el".source = ./emacs/.doom.d/scala/customs/scala-customs.el;
+  home.file.".doom.d/snippets/claude-client-mode/testsnip".source = ./emacs/.doom.d/snippets/claude-client-mode/testsnip;
   home.file.".doom.d/snippets/openai/openai.http".source = ./emacs/.doom.d/snippets/openai/openai.http;
   home.file.".doom.d/snippets/openai/openai.org".source = ./emacs/.doom.d/snippets/openai/openai.org;
   home.file.".doom.d/themes/gunnar-theme.el".source = ./emacs/.doom.d/themes/gunnar-theme.el;

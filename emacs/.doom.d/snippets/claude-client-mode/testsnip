@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: test snippet
+# key: tsnip
+# --
+## Problem
+$1
+
+## Expected
+$2
+
+## Notes
+$0

@@ -9,6 +9,7 @@
     "jira-assistant@mdb": true,
     "gitlab-assistant@mdb": true,
     "ista-presentation@ista-marketplace": true,
+    "update-project-docs@ista-marketplace": true,
     "caveman@caveman": true,
     "mcp-emacs@mcp-emacs": true,
     "mcp-latex@mcp-latex": true,

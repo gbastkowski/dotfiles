@@ -114,6 +114,8 @@ Former teammates:
 - Add the related Jira issue to the merge request description.
   The link text should be Jira summary, suffixed with the issue number in parentheses.
 - Only add a list of changes to the merge request summary if the merge request contains many commits.
+- Always strive for descriptions terse enough to read and understand in under a minute.
+  If that isn't sensible, put a summary at the beginning and move the further information to the end.
 
 # Database Access (RDM)
 - Use `rdmctl postgres psql <env> <database>` to connect to databases

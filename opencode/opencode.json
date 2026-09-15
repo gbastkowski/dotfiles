@@ -64,7 +64,7 @@
       "enabled": true,
       "command": [
         "node",
-        "/home/gunnar/git/gbastkowski/mcp-hyprland/dist/index.js"
+        "{env:HOME}/git/gbastkowski/mcp-hyprland/dist/index.js"
       ]
     },
     "qgis": {
@@ -77,7 +77,7 @@
       "enabled": true,
       "command": [
         "node",
-        "/home/gunnar/git/gbastkowski/dotfiles/mcp/dist/index.js"
+        "{env:HOME}/git/gbastkowski/dotfiles/mcp/dist/index.js"
       ]
     },
     "blender": {

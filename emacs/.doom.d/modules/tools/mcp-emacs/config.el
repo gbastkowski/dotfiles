@@ -137,3 +137,26 @@
          :desc "Toggle conversation window" "w" #'claude-client-toggle
          :desc "List conversations"         "l" #'claude-client-list
          :desc "Switch conversation"        "S" #'claude-client-switch)))
+
+;; Filing issues about mcp-emacs itself, without an assistant in the loop.
+;; The `report_tooling_issue' MCP tool covers the assistant-driven path; these
+;; two are for the idea that arrives mid-task, where opening a conversation to
+;; dictate a bug report is more interruption than the report is worth.
+(use-package! mcp-emacs-report
+  :defer t
+  :commands (mcp-emacs-report-bug
+             mcp-emacs-report-feature)
+  :init
+  (map! :leader
+        (:prefix "A"
+         ;; `g' for github.  Named here because no earlier block claims it --
+         ;; unlike "A" itself, which is labelled by the mcp-emacs-run block.
+         (:prefix ("g" . "github")
+          :desc "File a bug report"     "b" #'mcp-emacs-report-bug
+          :desc "File a feature request" "f" #'mcp-emacs-report-feature)))
+  :config
+  ;; The composition buffer is an `*agent-prompt: ...*' buffer, already exempt
+  ;; from Doom's +popup catch-all by the agent-backend block above.  The
+  ;; recovery buffer shown when filing fails is not, and it wants to be read.
+  (when (fboundp 'set-popup-rule!)
+    (set-popup-rule! "^\\*mcp-emacs-report\\*" :size 0.4 :select t :quit t)))

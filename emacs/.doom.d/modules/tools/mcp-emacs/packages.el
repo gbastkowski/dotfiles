@@ -9,5 +9,5 @@
   ;; Doom's `:pin' takes a commit hash only -- it abbreviates the value with
   ;; `substring', so a tag name errors out (doom-packages.el).
   ;;
-  ;; v1.12.0
-  :pin "3b5e25f4169c175f0cb0dd87a67465cc13eff302")
+  ;; v1.12.3
+  :pin "39bf3db1341896b5989b761523665d8418ea6f37")

@@ -10,6 +10,10 @@
 
   home.sessionVariables = {
     LIBRARY_PATH = "/opt/homebrew/lib/gcc/current:/opt/homebrew/opt/libgccjit/lib/gcc/current:/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/16";
+
+    # This machine is renamed by Jamf, so bin/apply.sh and bin/system-upgrade.sh
+    # cannot match on hostname. Declare the identity they should use instead.
+    DOTFILES_HOSTNAME = "deess1mac";
   };
 
   programs.zsh.initContent = ''

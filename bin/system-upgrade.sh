@@ -6,7 +6,9 @@ ORIGINAL_DIR="$(pwd)"
 
 cd "$DOTFILES_DIR" || { echo "Error: Cannot find dotfiles directory at $DOTFILES_DIR"; exit 1; }
 
-case "$(hostname -s)" in
+host="${DOTFILES_HOSTNAME:-$(hostname -s)}"
+
+case "$host" in
   deess1mac*)
     softwareupdate -l
     brew update && brew upgrade
@@ -20,7 +22,7 @@ case "$(hostname -s)" in
     pipx upgrade-all
     ;;
   *)
-    echo "unknown host: $(hostname -s)"; exit 1 ;;
+    echo "unknown host: $host; set DOTFILES_HOSTNAME"; exit 1 ;;
 esac
 
 if command -v npm >/dev/null 2>&1; then

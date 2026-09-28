@@ -25,6 +25,15 @@
                       (concat lib-dir path-separator current)
                     lib-dir)))))))
 
+;; Serialize async native-compilation.  With parallel jobs, a batch of sibling
+;; files finishing at once nests their "finished" sentinels: Emacs' own
+;; `comp--accept-and-process-async-output' calls `accept-process-output', which
+;; fires the next finished sentinel before the previous one returns, and the
+;; innermost `native-elisp-load' can block with the command loop unreachable --
+;; no keyboard input, no server socket.  One job at a time removes the race at
+;; the cost of slower post-update compiles.
+(setq native-comp-async-jobs-number 1)
+
 ;; NOTE Press 'SPC h d h' (or 'C-h d h' for non-vim users) to access Doom's
 ;;      documentation. There you'll find a link to Doom's Module Index where all
 ;;      of our modules are listed, including what flags they support.

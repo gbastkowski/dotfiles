@@ -28,6 +28,8 @@ split_horizontal = "prefix+s"
 split_vertical   = "prefix+v"
 
 # Tabs stand in for byobu windows: "bind -r <" / "bind -r >" / "bind ` last-window".
+# Cmd+[ / Cmd+] are handled in kitty/kitty.conf, which translates them into
+# prefix+comma / prefix+period; herdr never sees a cmd chord itself.
 previous_tab = ["prefix+comma", "prefix+p"]
 next_tab     = ["prefix+period", "prefix+n"]
 last_pane    = "prefix+backtick"
@@ -57,6 +59,10 @@ tab_bar_position = "bottom"
 # Hide the Spaces/Agents sidebar by default; prefix+b brings it back.
 sidebar_start_collapsed = true
 sidebar_collapsed_mode  = "hidden"
+
+# Marker in the outer terminal title so kitty can scope its `--when-focus-on`
+# keymaps to herdr panes (see kitty/kitty.conf).
+window_title = "herdr: {workspace}"
 
 # Stand-in for the byobu status line (byobu/status showed logo, session, hostname).
 tab_bar_right = [

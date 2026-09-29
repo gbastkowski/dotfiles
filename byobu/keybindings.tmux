@@ -1,7 +1,6 @@
-set -g prefix C-b
-set -g prefix2 C-a
+set -g prefix C-a
+unbind C-b
 unbind-key -n F12
-bind C-b send-prefix
 bind C-a send-prefix
 
 set -g xterm-keys on

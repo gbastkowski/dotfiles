@@ -31,7 +31,6 @@
         ./common.nix
         ./atuin.nix
         ./bin.nix
-        ./byobu.nix
         ./direnv.nix
         ./gpg.nix
         ./herdr.nix

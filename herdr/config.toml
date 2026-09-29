@@ -1,0 +1,68 @@
+onboarding = false
+
+# Ported from byobu/keybindings.tmux. Prefix is C-a, matching the byobu/tmux
+# setup; ctrl+b stays free. Where byobu had a prefix binding and a prefix-free
+# Alt binding for the same action, both are listed as an array.
+
+[keys]
+prefix = "ctrl+a"
+
+# Pane focus: prefix+hjkl (byobu "bind -r h select-pane -L")
+# plus prefix-free alt+hjkl (byobu "bind -n M-h select-pane -L").
+focus_pane_left  = ["prefix+h", "alt+h"]
+focus_pane_down  = ["prefix+j", "alt+j"]
+focus_pane_up    = ["prefix+k", "alt+k"]
+focus_pane_right = ["prefix+l", "alt+l"]
+
+# Resize: byobu bound prefix+HJKL to resize-pane. herdr also has a modal
+# resize mode (prefix+r) which is closer to "-r" repeat behaviour.
+resize_pane_left  = "prefix+shift+h"
+resize_pane_down  = "prefix+shift+j"
+resize_pane_up    = "prefix+shift+k"
+resize_pane_right = "prefix+shift+l"
+resize_mode       = "prefix+r"
+
+# Splits: byobu "bind s split-window -v" / "bind v split-window -h".
+# herdr names splits by the resulting divider, so s -> horizontal, v -> vertical.
+split_horizontal = "prefix+s"
+split_vertical   = "prefix+v"
+
+# Tabs stand in for byobu windows: "bind -r <" / "bind -r >" / "bind ` last-window".
+previous_tab = ["prefix+comma", "prefix+p"]
+next_tab     = ["prefix+period", "prefix+n"]
+last_pane    = "prefix+backtick"
+new_tab      = "prefix+c"
+close_tab    = "prefix+shift+x"
+rename_tab   = "prefix+shift+t"
+switch_tab   = "prefix+1..9"
+
+# Pane lifecycle.
+close_pane = "prefix+x"
+zoom       = "prefix+z"
+copy_mode  = "prefix+["
+
+# byobu had "bind -n M-d detach-client".
+detach = ["prefix+q", "alt+d"]
+
+# Sidebar holds Spaces + Agents; toggle it since it starts hidden below.
+toggle_sidebar = "prefix+b"
+
+reload_config = "prefix+shift+r"
+help          = "prefix+?"
+
+[ui]
+# Tab row below the panes.
+tab_bar_position = "bottom"
+
+# Hide the Spaces/Agents sidebar by default; prefix+b brings it back.
+sidebar_start_collapsed = true
+sidebar_collapsed_mode  = "hidden"
+
+# Stand-in for the byobu status line (byobu/status showed logo, session, hostname).
+tab_bar_right = [
+  { type = "hostname" },
+  { type = "datetime" },
+]
+
+[terminal]
+new_cwd = "follow"

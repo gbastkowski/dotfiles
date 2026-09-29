@@ -34,6 +34,7 @@
         ./byobu.nix
         ./direnv.nix
         ./gpg.nix
+        ./herdr.nix
         ./idea.nix
         ./zsh.nix
         ./tmux.nix

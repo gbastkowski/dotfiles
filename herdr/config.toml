@@ -70,5 +70,11 @@ tab_bar_right = [
   { type = "datetime" },
 ]
 
+[ui.sound]
+# Absolute paths dodge relative resolution against the nix-store symlink target.
+# Files deployed from herdr/sounds/ via herdr.nix.
+done_path    = "/Users/gunnar.bastkowski/.config/herdr/sounds/done.mp3"
+request_path = "/Users/gunnar.bastkowski/.config/herdr/sounds/request.mp3"
+
 [terminal]
 new_cwd = "follow"

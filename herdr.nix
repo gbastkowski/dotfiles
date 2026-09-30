@@ -9,4 +9,8 @@
   #
   # Apply changes to a running server with `herdr server reload-config`.
   home.file.".config/herdr/config.toml".source = ./herdr/config.toml;
+
+  # Notification sounds. config.toml resolves these by absolute path to avoid
+  # relative-path ambiguity against the nix-store symlink target.
+  home.file.".config/herdr/sounds".source = ./herdr/sounds;
 }

@@ -28,10 +28,10 @@ split_horizontal = "prefix+s"
 split_vertical   = "prefix+v"
 
 # Tabs stand in for byobu windows: "bind -r <" / "bind -r >" / "bind ` last-window".
-# Cmd+[ / Cmd+] are handled in kitty/kitty.conf, which translates them into
-# prefix+comma / prefix+period; herdr never sees a cmd chord itself.
-previous_tab = ["prefix+comma", "prefix+p"]
-next_tab     = ["prefix+period", "prefix+n"]
+# Cmd+[ / Cmd+] (super on Linux) are passed through by kitty/herdr.conf via
+# send_key, which needs herdr to have the kitty keyboard protocol enabled.
+previous_tab = ["prefix+comma", "prefix+p", "super+["]
+next_tab     = ["prefix+period", "prefix+n", "super+]"]
 last_pane    = "prefix+backtick"
 new_tab      = "prefix+c"
 close_tab    = "prefix+shift+x"

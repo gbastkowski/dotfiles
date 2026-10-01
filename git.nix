@@ -84,6 +84,12 @@
       # Local overrides
       "/*.local.org"
       "/*.local.md"
+      "*scratch*"
+
+      # aider runtime state
+      "/.aider.chat.history.md"
+      "/.aider.input.history"
+      "/.aider.tags.cache.v4/"
 
       # Claude runtime state
       "**/.claude/settings.local.json"
@@ -95,6 +101,9 @@
       "/claude/shell-snapshots/"
       "/claude/statsig/"
       "/claude/todos/"
+
+      # oh-my-openagent (opencode) runtime state
+      ".omo/"
     ];
   };
 }

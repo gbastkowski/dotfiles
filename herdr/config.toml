@@ -72,9 +72,10 @@ tab_bar_right = [
 
 [ui.sound]
 # Absolute paths dodge relative resolution against the nix-store symlink target.
-# Files deployed from herdr/sounds/ via herdr.nix.
-done_path    = "/Users/gunnar.bastkowski/.config/herdr/sounds/done.mp3"
-request_path = "/Users/gunnar.bastkowski/.config/herdr/sounds/request.mp3"
+# Files deployed from herdr/sounds/ via herdr.nix, which replaces @HOME@ with
+# home.homeDirectory.
+done_path    = "@HOME@/.config/herdr/sounds/done.mp3"
+request_path = "@HOME@/.config/herdr/sounds/request.mp3"
 
 [terminal]
 new_cwd = "follow"

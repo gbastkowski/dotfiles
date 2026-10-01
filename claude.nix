@@ -29,12 +29,6 @@ let
       ];
       env = { };
     };
-    firefox-devtools = {
-      type = "stdio";
-      command = "npx";
-      args = [ "-y" "@mozilla/firefox-devtools-mcp@latest" "--tool-preset" "developer" ];
-      env = { };
-    };
     dotfiles = {
       type = "stdio";
       command = "node";

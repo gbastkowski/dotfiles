@@ -30,7 +30,16 @@ case "$host" in
   akiko*)
     case "$(uname -a)" in
       *Android*) step pkg update; step pkg upgrade ;;
-      *)         step yay -Syu; step hyprpm update ;;
+      *)
+        step yay -Syu
+        # herdr panes do not inherit the compositor's env, so derive it at call time and skip when headless.
+        HYPRLAND_INSTANCE_SIGNATURE="$(hyprctl instances -j 2>/dev/null | jq -r '.[0].instance // empty')"
+        export HYPRLAND_INSTANCE_SIGNATURE
+        if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]
+        then step hyprpm update
+        else echo "skipping hyprpm update (no running Hyprland instance)"
+        fi
+        ;;
     esac
     step pipx upgrade-all
     ;;

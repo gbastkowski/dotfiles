@@ -13,6 +13,7 @@ in
 {
   home.file.".config/opencode/opencode.json".source = ./opencode.json;
   home.file.".config/opencode/oh-my-openagent.json".source = ./oh-my-openagent.json;
+  home.file.".omo/omo.jsonc".source = ./omo.jsonc;
 
   # Custom slash commands and agents. These dirs already existed here but were
   # never linked, so opencode only ever saw its built-in commands.

@@ -9,10 +9,10 @@ prefix = "ctrl+a"
 
 # Pane focus: prefix+hjkl (byobu "bind -r h select-pane -L")
 # plus prefix-free alt+hjkl (byobu "bind -n M-h select-pane -L").
-focus_pane_left  = ["prefix+h", "alt+h"]
-focus_pane_down  = ["prefix+j", "alt+j"]
-focus_pane_up    = ["prefix+k", "alt+k"]
-focus_pane_right = ["prefix+l", "alt+l"]
+focus_pane_left  = ["prefix+h", "alt+h", "super+shift+h"]
+focus_pane_down  = ["prefix+j", "alt+j", "super+shift+j"]
+focus_pane_up    = ["prefix+k", "alt+k", "super+shift+k"]
+focus_pane_right = ["prefix+l", "alt+l", "super+shift+l"]
 
 # Resize: byobu bound prefix+HJKL to resize-pane. herdr also has a modal
 # resize mode (prefix+r) which is closer to "-r" repeat behaviour.
@@ -24,24 +24,25 @@ resize_mode       = "prefix+r"
 
 # Splits: byobu "bind s split-window -v" / "bind v split-window -h".
 # herdr names splits by the resulting divider, so s -> horizontal, v -> vertical.
-split_horizontal = "prefix+s"
-split_vertical   = "prefix+v"
+split_horizontal = ["prefix+s", "super+e"]
+split_vertical   = ["prefix+v", "super+d"]
 
 # Tabs stand in for byobu windows: "bind -r <" / "bind -r >" / "bind ` last-window".
-# Cmd+[ / Cmd+] (super on Linux) are passed through by kitty/herdr.conf via
-# send_key, which needs herdr to have the kitty keyboard protocol enabled.
+# The super+... chords (Cmd on macOS) are passed through unchanged by
+# kitty/herdr.conf via send_key, which needs herdr to have the kitty keyboard
+# protocol enabled.
 previous_tab = ["prefix+comma", "prefix+p", "super+["]
 next_tab     = ["prefix+period", "prefix+n", "super+]"]
 last_pane    = "prefix+backtick"
-new_tab      = "prefix+c"
+new_tab      = ["prefix+c", "super+t"]
 close_tab    = "prefix+shift+x"
-rename_tab   = "prefix+shift+t"
-switch_tab   = "prefix+1..9"
+rename_tab   = ["prefix+shift+t", "super+,"]
+switch_tab   = ["prefix+1..9", "super+1..9"]
 
 # Pane lifecycle.
 close_pane = "prefix+x"
 zoom       = "prefix+z"
-copy_mode  = "prefix+["
+copy_mode  = ["prefix+[", "super+;"]
 
 # byobu had "bind -n M-d detach-client".
 detach = ["prefix+q", "alt+d"]

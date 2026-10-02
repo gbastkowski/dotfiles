@@ -132,14 +132,5 @@
   "disabled_providers": [
     "openai",
     "opencode"
-  ],
-  "experimental": {
-    "policies": [
-      {
-        "effect": "deny",
-        "action": "provider.use",
-        "resource": "opencode-go"
-      }
-    ]
-  }
+  ]
 }

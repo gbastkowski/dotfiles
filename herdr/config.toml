@@ -34,6 +34,13 @@ split_vertical   = ["prefix+v", "super+d"]
 previous_tab = ["prefix+comma", "prefix+p", "super+["]
 next_tab     = ["prefix+period", "prefix+n", "super+]"]
 last_pane    = "prefix+backtick"
+
+# Workspaces are the level above tabs: Cmd+{ / Cmd+} (= Cmd+Shift+[ / ]) next
+# to Cmd+[ / Cmd+] for tabs. Both spellings, since it depends on how the
+# terminal reports the shifted bracket.
+previous_workspace = ["super+{", "super+shift+["]
+next_workspace     = ["super+}", "super+shift+]"]
+
 new_tab      = ["prefix+c", "super+t"]
 close_tab    = "prefix+shift+x"
 rename_tab   = ["prefix+shift+t", "super+,"]

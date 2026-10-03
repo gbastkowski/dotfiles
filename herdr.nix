@@ -20,12 +20,9 @@
   # relative-path ambiguity against the nix-store symlink target.
   home.file.".config/herdr/sounds".source = ./herdr/sounds;
 
-  # Persistent headless server, independent of Hyprland. logind lingering is
-  # enabled for gunnar, so WantedBy=default.target starts it at boot and it
-  # keeps running (and stays reachable over `herdr --remote`) even when no
-  # one is logged in. Panes inherit this unit's environment, so per-session
-  # Hyprland variables are intentionally absent: tooling that needs them must
-  # resolve them at call time (see bin/system-upgrade.sh).
+  # Persistent headless server, independent of Hyprland.
+  # if logind lingering is enabled, WantedBy=default.target starts it at boot and it
+  # keeps running (and stays reachable over `herdr --remote`) even when no one is logged in.
   systemd.user.services.herdr = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "herdr terminal workspace server";

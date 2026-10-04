@@ -9,10 +9,10 @@ prefix = "ctrl+a"
 
 # Pane focus: prefix+hjkl (byobu "bind -r h select-pane -L")
 # plus prefix-free alt+hjkl (byobu "bind -n M-h select-pane -L").
-focus_pane_left  = ["prefix+h", "alt+h", "super+shift+h"]
-focus_pane_down  = ["prefix+j", "alt+j", "super+shift+j"]
-focus_pane_up    = ["prefix+k", "alt+k", "super+shift+k"]
-focus_pane_right = ["prefix+l", "alt+l", "super+shift+l"]
+focus_pane_left  = ["prefix+h", "alt+h"]
+focus_pane_down  = ["prefix+j", "alt+j"]
+focus_pane_up    = ["prefix+k", "alt+k"]
+focus_pane_right = ["prefix+l", "alt+l"]
 
 # Resize: byobu bound prefix+HJKL to resize-pane. herdr also has a modal
 # resize mode (prefix+r) which is closer to "-r" repeat behaviour.

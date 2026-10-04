@@ -16,6 +16,7 @@ Variants {
     PanelWindow {
       required property var modelData
       screen: modelData
+      readonly property HyprlandMonitor screenMonitor: Hyprland.monitorFor(screen)
 
       anchors {
         top: true
@@ -27,21 +28,40 @@ Variants {
       color: Qt.rgba(51 / 255, 51 / 255, 63 / 255, 0.55)
 
       // Far left: power menu button (matches waybar `custom/shutdown`).
-      Text {
+      Rectangle {
         id: powerButton
         anchors {
           left: parent.left
           leftMargin: 12
           verticalCenter: parent.verticalCenter
         }
-        text: "\uf011" //  nerd font power symbol
-        color: "#efe3c8"
-        font.family: "Ubuntu Nerd Font"
-        font.pixelSize: 20
-        font.weight: Font.Bold
+        height: 28
+        width: powerIcon.implicitWidth + 28 // waybar padding: 0 14px
+        radius: 10
+        color: powerMouse.containsMouse ? "#e0aa56" : "transparent"
+
+        Behavior on color {
+          ColorAnimation { duration: 120 }
+        }
+
+        Text {
+          id: powerIcon
+          anchors.centerIn: parent
+          text: "\uf011" //  nerd font power symbol
+          color: powerMouse.containsMouse ? "#161411" : "#efe3c8"
+          font.family: "Ubuntu Nerd Font"
+          font.pixelSize: 20
+          font.weight: Font.Bold
+
+          Behavior on color {
+            ColorAnimation { duration: 120 }
+          }
+        }
 
         MouseArea {
+          id: powerMouse
           anchors.fill: parent
+          hoverEnabled: true
           onClicked: Quickshell.execDetached(["/home/gunnar/.local/bin/power-menu"])
         }
       }
@@ -61,6 +81,13 @@ Variants {
 
           delegate: Rectangle {
             required property var modelData
+            visible: {
+              if (modelData.monitor) {
+                return screenMonitor && modelData.monitor.name === screenMonitor.name
+              }
+              // Special (scratchpad) workspaces have no monitor; show on the focused screen.
+              return screenMonitor && screenMonitor.focused
+            }
             height: 28
             radius: 10
             implicitWidth: label.implicitWidth + 20 // horizontal padding

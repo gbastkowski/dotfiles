@@ -29,6 +29,9 @@
     "disable-scroll": false,
     "sort-by-number": true,
     "format": "{name}",
+    "format-icons": {
+      "special:magic": "M"
+    },
     "on-click": "activate"
   },
   "hyprland/window": {
@@ -87,6 +90,9 @@
     "disable-scroll": false,
     "sort-by-number": true,
     "format": "{name}",
+    "format-icons": {
+      "special:magic": "M"
+    },
     "on-click": "activate"
   },
   "hyprland/window": {

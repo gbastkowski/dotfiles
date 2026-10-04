@@ -7,10 +7,10 @@ set -euo pipefail
 # BOE J560T09 panel. It is selected by EDID (mfg/model) so the command stays
 # correct even if the I2C bus / ddcutil display numbering changes.
 #
-# Usage: monitor-control <on|off>
+# Usage: monitor-control <on|off|status>
 
 usage() {
-  echo "Usage: monitor-control <on|off>" >&2
+  echo "Usage: monitor-control <on|off|status>" >&2
   exit 2
 }
 
@@ -20,6 +20,14 @@ case "${1:-}" in
     ;;
   off)
     ddcutil setvcp D6 0x05 --mfg BOE --model J560T09
+    ;;
+  status)
+    val="$(ddcutil getvcp D6 --mfg BOE --model J560T09 --terse 2>/dev/null | awk '{print $NF}')"
+    case "$val" in
+      x01)     echo "on" ;;
+      x04|x05) echo "off" ;;
+      *)       echo "unreachable" >&2; exit 1 ;;
+    esac
     ;;
   *)
     usage

@@ -55,7 +55,7 @@
     in {
       homeConfigurations = {
         "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon ./local-sshd ./mvn ./raycast.nix ./ista.nix ];
-        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./wlogout ./akiko.nix ];
+        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./quickshell ./wlogout ./akiko.nix ];
       };
     };
 }

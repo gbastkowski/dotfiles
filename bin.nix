@@ -3,6 +3,7 @@
   home.file.".local/bin/checkmail.sh"        = { source = ./bin/checkmail.sh;        executable = true; };
   home.file.".local/bin/eos-capture-video.sh"= { source = ./bin/eos-capture-video.sh;executable = true; };
   home.file.".local/bin/install-xmlls.sh"    = { source = ./bin/install-xmlls.sh;    executable = true; };
+  home.file.".local/bin/monitor-control"       = { source = ./bin/monitor-control;      executable = true; };
   home.file.".local/bin/ollama-coder.sh"     = { source = ./bin/ollama-coder.sh;     executable = true; };
   home.file.".local/bin/ollama-install.sh"   = { source = ./bin/ollama-install.sh;   executable = true; };
   home.file.".local/bin/release.sh"          = { source = ./bin/release.sh;          executable = true; };

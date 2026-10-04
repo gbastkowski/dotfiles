@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Turn the portable monitor on or off via DDC/CI.
+#
+# The portable is a UPERFECT 16" 2K (2560x1600, 120 Hz) built around a
+# BOE J560T09 panel. It is selected by EDID (mfg/model) so the command stays
+# correct even if the I2C bus / ddcutil display numbering changes.
+#
+# Usage: monitor-control <on|off>
+
+usage() {
+  echo "Usage: monitor-control <on|off>" >&2
+  exit 2
+}
+
+case "${1:-}" in
+  on)
+    ddcutil setvcp D6 0x01 --mfg BOE --model J560T09
+    ;;
+  off)
+    ddcutil setvcp D6 0x05 --mfg BOE --model J560T09
+    ;;
+  *)
+    usage
+    ;;
+esac

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Mirror the new Samsung Galaxy (SM-S921B) onto this desktop via scrcpy.
+set -euo pipefail
+
+serial="RFCWC1C1YVE"
+
+exec scrcpy --serial "$serial" --stay-awake "$@"

@@ -88,6 +88,10 @@
       }
     ]
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "alwaysThinkingEnabled": false,
   "voice": {
     "enabled": true,

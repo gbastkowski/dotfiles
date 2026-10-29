@@ -1,28 +1,43 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Turn the portable monitor on or off via DDC/CI.
+# Control the portable monitor (UPERFECT 16" 2K, BOE J560T09 panel) on or off,
+# keeping Hyprland in sync so it stops/starts rendering to it accordingly.
 #
-# The portable is a UPERFECT 16" 2K (2560x1600, 120 Hz) built around a
-# BOE J560T09 panel. It is selected by EDID (mfg/model) so the command stays
-# correct even if the I2C bus / ddcutil display numbering changes.
+# Selected by EDID (mfg/model) so it stays correct regardless of I2C bus order.
+# A DDC/CI power-off keeps the HDMI link up, which is invisible to Hyprland, so
+# we also enable/disable the Hyprland output explicitly.
 #
 # Usage: monitor-control <on|off|status>
+
+MFG="BOE"
+MODEL="J560T09"
+HYPR_OUTPUT="HDMI-A-1"
+# Rule Hyprland uses to (re-)enable the output: mode,position,scale.
+HYPR_ON_RULE="preferred,-2560x560,1"
 
 usage() {
   echo "Usage: monitor-control <on|off|status>" >&2
   exit 2
 }
 
+# Only talk to Hyprland when it's actually running (no-op in the text console).
+hyprctl_if_running() {
+  pgrep -x Hyprland >/dev/null 2>&1 || return 0
+  hyprctl "$@"
+}
+
 case "${1:-}" in
   on)
-    ddcutil setvcp D6 0x01 --mfg BOE --model J560T09
+    ddcutil setvcp D6 0x01 --mfg "$MFG" --model "$MODEL"
+    hyprctl_if_running keyword monitor "${HYPR_OUTPUT},${HYPR_ON_RULE}"
     ;;
   off)
-    ddcutil setvcp D6 0x05 --mfg BOE --model J560T09
+    hyprctl_if_running keyword monitor "${HYPR_OUTPUT},disable"
+    ddcutil setvcp D6 0x05 --mfg "$MFG" --model "$MODEL"
     ;;
   status)
-    val="$(ddcutil getvcp D6 --mfg BOE --model J560T09 --terse 2>/dev/null | awk '{print $NF}')"
+    val="$(ddcutil getvcp D6 --mfg "$MFG" --model "$MODEL" --terse 2>/dev/null | awk '{print $NF}')"
     case "$val" in
       x01)     echo "on" ;;
       x04|x05) echo "off" ;;

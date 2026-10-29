@@ -93,6 +93,9 @@
              agent-backend-quit-command
              agent-backend-resume-command)
   :init
+  ;; Prefer opencode outright; `auto' would fall back to Claude whenever
+  ;; the opencode server is unreachable, which is not wanted here.
+  (setq agent-backend-preference 'opencode)
   (map! :leader
         ;; Labelled by the mcp-emacs-run block above; naming it here too would
         ;; rebuild the map and drop the SPC A t sub-prefix.

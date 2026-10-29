@@ -8,7 +8,7 @@ set -euo pipefail
 # A DDC/CI power-off keeps the HDMI link up, which is invisible to Hyprland, so
 # we also enable/disable the Hyprland output explicitly.
 #
-# Usage: monitor-control <on|off|status>
+# Usage: monitor-control <on|off|toggle|status>
 
 MFG="BOE"
 MODEL="J560T09"
@@ -17,7 +17,7 @@ HYPR_OUTPUT="HDMI-A-1"
 HYPR_ON_RULE="preferred,-2560x560,1"
 
 usage() {
-  echo "Usage: monitor-control <on|off|status>" >&2
+  echo "Usage: monitor-control <on|off|toggle|status>" >&2
   exit 2
 }
 
@@ -27,24 +27,35 @@ hyprctl_if_running() {
   hyprctl "$@"
 }
 
+# Raw DDC/CI power value: x01 = on, x04/x05 = off, empty = unreachable.
+read_power() {
+  ddcutil getvcp D6 --mfg "$MFG" --model "$MODEL" --terse 2>/dev/null | awk '{print $NF}'
+}
+
+is_on() {
+  [ "$(read_power)" = "x01" ]
+}
+
+power_on() {
+  ddcutil setvcp D6 0x01 --mfg "$MFG" --model "$MODEL"
+  hyprctl_if_running keyword monitor "${HYPR_OUTPUT},${HYPR_ON_RULE}"
+}
+
+power_off() {
+  hyprctl_if_running keyword monitor "${HYPR_OUTPUT},disable"
+  ddcutil setvcp D6 0x05 --mfg "$MFG" --model "$MODEL"
+}
+
 case "${1:-}" in
-  on)
-    ddcutil setvcp D6 0x01 --mfg "$MFG" --model "$MODEL"
-    hyprctl_if_running keyword monitor "${HYPR_OUTPUT},${HYPR_ON_RULE}"
-    ;;
-  off)
-    hyprctl_if_running keyword monitor "${HYPR_OUTPUT},disable"
-    ddcutil setvcp D6 0x05 --mfg "$MFG" --model "$MODEL"
-    ;;
+  on)     power_on ;;
+  off)    power_off ;;
+  toggle) if is_on; then power_off; else power_on; fi ;;
   status)
-    val="$(ddcutil getvcp D6 --mfg "$MFG" --model "$MODEL" --terse 2>/dev/null | awk '{print $NF}')"
-    case "$val" in
+    case "$(read_power)" in
       x01)     echo "on" ;;
       x04|x05) echo "off" ;;
       *)       echo "unreachable" >&2; exit 1 ;;
     esac
     ;;
-  *)
-    usage
-    ;;
+  *)      usage ;;
 esac

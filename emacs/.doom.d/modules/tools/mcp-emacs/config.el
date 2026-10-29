@@ -93,8 +93,6 @@
              agent-backend-quit-command
              agent-backend-resume-command)
   :init
-  ;; `auto' would start opencode whenever its launchd server answers.
-  (setq agent-backend-preference 'claude)
   (map! :leader
         ;; Labelled by the mcp-emacs-run block above; naming it here too would
         ;; rebuild the map and drop the SPC A t sub-prefix.

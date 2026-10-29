@@ -2,6 +2,266 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json",
   "_migrations": [
-    "2026-07-opencode-config-unification"
-  ]
+    "2026-07-opencode-config-unification",
+    "2026-08-reasoning-unification",
+    "2026-09-opencode-routing-notice"
+  ],
+  "[opencode]": {
+    "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json",
+    "agents": {
+      "sisyphus": {
+        "model": "anthropic/claude-opus-5-5",
+        "variant": "max",
+        "fallback_models": [
+          {
+            "model": "opencode-go/kimi-k3"
+          }
+        ]
+      },
+      "oracle": {
+        "model": "google/gemini-4-argon",
+        "variant": "high",
+        "fallback_models": [
+          {
+            "model": "google/gemini-3.1-pro-preview",
+            "variant": "high"
+          },
+          {
+            "model": "anthropic/claude-opus-5-5",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/glm-5.2"
+          }
+        ]
+      },
+      "librarian": {
+        "model": "anthropic/claude-haiku-5-5",
+        "variant": "medium",
+        "fallback_models": [
+          {
+            "model": "opencode-go/qwen3.7-plus"
+          },
+          {
+            "model": "opencode-go/minimax-m2.7"
+          }
+        ]
+      },
+      "explore": {
+        "model": "anthropic/claude-haiku-5-5",
+        "variant": "medium",
+        "fallback_models": [
+          {
+            "model": "opencode-go/qwen3.7-plus"
+          },
+          {
+            "model": "opencode-go/minimax-m2.7"
+          }
+        ]
+      },
+      "multimodal-looker": {
+        "model": "opencode-go/kimi-k3"
+      },
+      "prometheus": {
+        "model": "anthropic/claude-fable-5-1",
+        "variant": "high",
+        "fallback_models": [
+          {
+            "model": "anthropic/claude-opus-5-5",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/kimi-k3",
+            "variant": "high"
+          }
+        ]
+      },
+      "metis": {
+        "model": "anthropic/claude-fable-5-1",
+        "variant": "high",
+        "fallback_models": [
+          {
+            "model": "anthropic/claude-opus-5-5",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/kimi-k3",
+            "variant": "high"
+          }
+        ]
+      },
+      "momus": {
+        "model": "anthropic/claude-opus-5-5",
+        "variant": "max",
+        "fallback_models": [
+          {
+            "model": "google/gemini-4-argon",
+            "variant": "high"
+          },
+          {
+            "model": "google/gemini-3.1-pro-preview",
+            "variant": "high"
+          },
+          {
+            "model": "opencode-go/glm-5.2"
+          }
+        ]
+      },
+      "atlas": {
+        "model": "anthropic/claude-sonnet-5",
+        "fallback_models": [
+          {
+            "model": "opencode-go/kimi-k3"
+          },
+          {
+            "model": "opencode-go/minimax-m3"
+          },
+          {
+            "model": "opencode-go/minimax-m2.7"
+          }
+        ]
+      },
+      "sisyphus-junior": {
+        "model": "anthropic/claude-sonnet-5",
+        "fallback_models": [
+          {
+            "model": "opencode-go/kimi-k3"
+          },
+          {
+            "model": "opencode-go/minimax-m3"
+          },
+          {
+            "model": "opencode-go/minimax-m2.7"
+          }
+        ]
+      }
+    },
+    "categories": {
+      "visual-engineering": {
+        "model": "google/gemini-4-argon",
+        "variant": "low",
+        "fallback_models": [
+          {
+            "model": "anthropic/claude-fable-5-1",
+            "variant": "high"
+          },
+          {
+            "model": "anthropic/claude-opus-5-5",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/kimi-k3",
+            "variant": "high"
+          }
+        ]
+      },
+      "ultrabrain": {
+        "model": "opencode/gpt-5-nano"
+      },
+      "deep-low": {
+        "model": "opencode/gpt-5-nano"
+      },
+      "deep-high": {
+        "model": "opencode/gpt-5-nano"
+      },
+      "artistry": {
+        "model": "anthropic/claude-fable-5-1",
+        "variant": "high",
+        "fallback_models": [
+          {
+            "model": "anthropic/claude-opus-5-5",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/kimi-k3",
+            "variant": "high"
+          }
+        ]
+      },
+      "quick": {
+        "model": "anthropic/claude-haiku-5-5",
+        "variant": "medium",
+        "fallback_models": [
+          {
+            "model": "opencode-go/minimax-m3",
+            "variant": "high"
+          },
+          {
+            "model": "opencode-go/minimax-m2.7",
+            "variant": "high"
+          }
+        ]
+      },
+      "unspecified-low": {
+        "model": "anthropic/claude-sonnet-5-5",
+        "variant": "medium",
+        "fallback_models": [
+          {
+            "model": "opencode-go/mimo-v2.6-pro"
+          },
+          {
+            "model": "opencode-go/grok-4.7",
+            "variant": "high"
+          },
+          {
+            "model": "opencode-go/glm-5.3",
+            "variant": "high"
+          },
+          {
+            "model": "anthropic/claude-sonnet-5",
+            "variant": "low"
+          },
+          {
+            "model": "opencode-go/deepseek-v4-pro",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/mimo-v2.5-pro"
+          }
+        ]
+      },
+      "unspecified-high": {
+        "model": "anthropic/claude-sonnet-5-5",
+        "variant": "medium",
+        "fallback_models": [
+          {
+            "model": "opencode-go/mimo-v2.6-pro"
+          },
+          {
+            "model": "opencode-go/grok-4.7",
+            "variant": "high"
+          },
+          {
+            "model": "opencode-go/glm-5.3",
+            "variant": "high"
+          },
+          {
+            "model": "anthropic/claude-sonnet-5",
+            "variant": "low"
+          },
+          {
+            "model": "opencode-go/deepseek-v4-pro",
+            "variant": "max"
+          },
+          {
+            "model": "opencode-go/mimo-v2.5-pro"
+          }
+        ]
+      },
+      "writing": {
+        "model": "google/gemini-4-argon",
+        "variant": "low",
+        "fallback_models": [
+          {
+            "model": "anthropic/claude-opus-5-5",
+            "variant": "low"
+          },
+          {
+            "model": "anthropic/claude-opus-4-6",
+            "variant": "max"
+          }
+        ]
+      }
+    }
+  }
 }

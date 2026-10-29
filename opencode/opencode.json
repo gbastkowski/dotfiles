@@ -8,7 +8,8 @@
     "docs/guidelines.md"
   ],
   "plugin": [
-    "@khalilgharbaoui/opencode-claude-code-plugin"
+    "@khalilgharbaoui/opencode-claude-code-plugin",
+    "oh-my-openagent@latest"
   ],
   "tools": {
     "glob": false,

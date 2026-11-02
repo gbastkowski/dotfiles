@@ -10,18 +10,6 @@
   "plugin": [
     "oh-my-openagent@latest"
   ],
-  "tools": {
-    "bash": false,
-    "glob": false,
-    "grep": false,
-    "list": false,
-    "patch": false,
-    "skill": false,
-    "todoread": false,
-    "todowrite": false,
-    "webfetch": false,
-    "write": false
-  },
   "formatter": {
     "scalafmt": {
       "command": [

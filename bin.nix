@@ -1,6 +1,5 @@
 { ... }:
 {
-  home.file.".local/bin/checkmail.sh"        = { source = ./bin/checkmail.sh;        executable = true; };
   home.file.".local/bin/eos-capture-video.sh"= { source = ./bin/eos-capture-video.sh;executable = true; };
   home.file.".local/bin/install-xmlls.sh"    = { source = ./bin/install-xmlls.sh;    executable = true; };
   home.file.".local/bin/monitor-control"       = { source = ./bin/monitor-control;      executable = true; };

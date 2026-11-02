@@ -9,5 +9,6 @@
   home.file.".local/bin/release.sh"          = { source = ./bin/release.sh;          executable = true; };
   home.file.".local/bin/show-newgalaxy"      = { source = ./bin/show-newgalaxy;      executable = true; };
   home.file.".local/bin/system-upgrade.sh"  = { source = ./bin/system-upgrade.sh;   executable = true; };
+  home.file.".local/bin/system-upgrade-review.py" = { source = ./bin/system-upgrade-review.py; executable = true; };
   home.file.".local/bin/ensure-local-bin-in-path" = { source = ./local/bin/ensure-local-bin-in-path; executable = true; };
 }

@@ -63,6 +63,33 @@ Run the upgrade script to pull the latest dotfiles, apply the Home Manager confi
   ~/.local/bin/system-upgrade.sh
 #+END_SRC
 
+** Optional upgrade review
+#+BEGIN_SRC sh
+  bin/system-upgrade.sh --review
+#+END_SRC
+
+For a nonstandard checkout location, set ~DOTFILES_DIR~ when using the installed
+script. Requires Python 3 and OpenCode 2.x. After the upgrade, this previews only failed
+steps' stderr and unread, relevant Home Manager news (newest first, size-limited).
+Stdout and successful steps' stderr are excluded. News is not marked as read.
+
+Common credential patterns and secret-valued environment variables are redacted,
+but redaction is best-effort: inspect the preview before approving upload.
+Without explicit terminal confirmation, nothing is sent. Normal terminal output
+is unchanged; do not assume it is safe to share. Temporary captures are private
+and removed on normal exit.
+
+The review uses an isolated, tool-denied OpenCode instance and never applies its
+recommendations. Review failure does not change the upgrade's exit status.
+The model defaults to the global OpenCode ~model~ setting; override it with
+~SYSTEM_UPGRADE_REVIEW_MODEL=provider/model~. The approved report is stored in
+OpenCode's session history as well as sent to the selected provider.
+
+Offline tests (no package upgrades or model requests):
+#+BEGIN_SRC sh
+  PYTHONDONTWRITEBYTECODE=1 python3 bin/tests/test-system-upgrade-review.py
+#+END_SRC
+
 * Home Manager targets
 | Target            | Host        | Platform                  |
 |-------------------+-------------+---------------------------|

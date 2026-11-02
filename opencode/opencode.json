@@ -36,20 +36,6 @@
     }
   },
   "mcp": {
-    "emacs": {
-      "type": "remote",
-      "url": "http://localhost:8765/mcp",
-      "enabled": true
-    },
-    "context7": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "sh",
-        "-c",
-        "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
-      ]
-    },
     "latex": {
       "type": "local",
       "enabled": true,

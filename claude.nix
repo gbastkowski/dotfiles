@@ -20,13 +20,8 @@ let
       args = [ "-y" "github:gbastkowski/mcp-atuin" ];
       env = { };
     };
-    context7 = {
+    context7 = config.programs.mcp.servers.context7 // {
       type = "stdio";
-      command = "sh";
-      args = [
-        "-c"
-        "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
-      ];
       env = { };
     };
     dotfiles = {

@@ -56,6 +56,6 @@
 
 
   # Ista-specific OpenAI-only opencode config (override common)
-  home.file.".config/opencode/opencode.json".source = lib.mkForce ./opencode/opencode-ista.json;
+  programs.opencode.settings = lib.mkForce (builtins.fromJSON (builtins.readFile ./opencode/opencode-ista.json));
   home.file.".omo/omo.jsonc".source = lib.mkForce ./opencode/omo-ista.jsonc;
 }

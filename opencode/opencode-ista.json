@@ -36,11 +36,6 @@
     }
   },
   "mcp": {
-    "emacs": {
-      "type": "remote",
-      "url": "http://localhost:8765/mcp",
-      "enabled": true
-    },
     "ista_jira_confluence": {
       "type": "local",
       "enabled": true,
@@ -57,15 +52,6 @@
         "pass show ista/jira-api-token-mcp"
       ]
     },
-    "context7": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "sh",
-        "-c",
-        "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
-      ]
-    },
     "akiko": {
       "type": "local",
       "enabled": true,
@@ -74,7 +60,7 @@
         "-y",
         "github:gbastkowski/mcp-proxy"
       ],
-      "env": {
+      "environment": {
         "MCP_PROXY_HOST": "akiko"
       }
     }

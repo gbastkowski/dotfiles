@@ -11,7 +11,30 @@ let
   '';
 in
 {
-  home.file.".config/opencode/opencode.json".source = ./opencode.json;
+  programs.opencode = {
+    enable = true;
+    # Keep the existing Homebrew/system installation.
+    package = null;
+    settings = builtins.fromJSON (builtins.readFile ./opencode.json);
+    enableMcpIntegration = true;
+  };
+
+  # Home Manager 25.11 still generates config.json; OpenCode uses opencode.json.
+  xdg.configFile."opencode/config.json".target = "opencode/opencode.json";
+
+  programs.mcp = {
+    enable = true;
+    servers = {
+      emacs.url = "http://localhost:8765/mcp";
+      context7 = {
+        command = "sh";
+        args = [
+          "-c"
+          "CONTEXT7_API_KEY=\"$(pass show private/context7/api-key)\" exec npx -y @upstash/context7-mcp"
+        ];
+      };
+    };
+  };
   home.file.".omo/omo.jsonc".source = ./omo.jsonc;
 
   # Custom slash commands and agents. These dirs already existed here but were

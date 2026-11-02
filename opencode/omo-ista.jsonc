@@ -1,0 +1,5 @@
+// Use OmO defaults; OpenCode restricts ista to the OpenAI provider.
+// Keep this host-specific file to avoid inheriting the shared custom routing.
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json"
+}

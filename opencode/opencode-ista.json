@@ -1,15 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "claude-code/claude-sonnet-5",
-  "small_model": "claude-code/claude-haiku-4-5",
+  "model": "openai/gpt-6.1-sol",
+  "small_model": "openai/gpt-6.1-terra",
   "instructions": [
-    "CLAUDE.md",
+    "AGENTS.md",
     "CONTRIBUTING.md",
     "docs/guidelines.md"
   ],
   "plugin": [
-    "oh-my-openagent@latest",
-    "@khalilgharbaoui/opencode-claude-code-plugin"
+    "oh-my-openagent@latest"
   ],
   "tools": {
     "bash": false,
@@ -81,50 +80,9 @@
     }
   },
   "provider": {
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama",
-      "options": {
-        "baseURL": "http://localhost:11434/v1"
-      },
-      "models": {
-        "qwen-tools": {
-          "name": "Qwen 3.5 9B",
-          "tools": true,
-          "variants": {
-            "none": {},
-            "low": {},
-            "medium": {},
-            "high": {},
-            "xhigh": {}
-          }
-        },
-        "qwen-fast": {
-          "name": "Qwen 3 4B",
-          "tools": true,
-          "variants": {
-            "none": {},
-            "low": {},
-            "medium": {},
-            "high": {},
-            "xhigh": {}
-          }
-        },
-        "qwen-coder": {
-          "name": "Qwen Coder 14B",
-          "variants": {
-            "none": {},
-            "low": {},
-            "medium": {},
-            "high": {},
-            "xhigh": {}
-          }
-        }
-      }
-    }
   },
+  "enabled_providers": ["openai"],
   "disabled_providers": [
-    "openai",
     "opencode",
     "opencode-go"
   ],
@@ -132,6 +90,11 @@
     "policies": [
       {
         "effect": "deny",
+        "action": "provider.use",
+        "resource": "*"
+      },
+      {
+        "effect": "allow",
         "action": "provider.use",
         "resource": "openai"
       },

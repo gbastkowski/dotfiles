@@ -40,7 +40,6 @@
         ./git.nix
         ./emacs.nix
         ./kitty.nix
-        ./claude.nix
         ./opencode
         ./password-store.nix
         ./plover.nix
@@ -55,7 +54,7 @@
     in {
       homeConfigurations = {
         "ista-dotfiles"  = mkHost "aarch64-darwin" [ ./hammerspoon ./local-sshd ./mvn ./raycast.nix ./ista.nix ];
-        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./quickshell ./wlogout ./akiko.nix ];
+        "akiko-dotfiles" = mkHost "x86_64-linux"   [ ./hypr ./quickshell ./wlogout ./claude.nix ./akiko.nix ];
       };
     };
 }

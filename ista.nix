@@ -55,6 +55,7 @@
   '';
 
 
-  # Ista-specific opencode config (override common)
+  # Ista-specific OpenAI-only opencode config (override common)
   home.file.".config/opencode/opencode.json".source = lib.mkForce ./opencode/opencode-ista.json;
+  home.file.".omo/omo.jsonc".source = lib.mkForce ./opencode/omo-ista.jsonc;
 }

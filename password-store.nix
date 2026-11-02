@@ -34,7 +34,7 @@ in
       echo "password-store: adding origin -> $REMOTE"
       "$GIT" -C "$STORE" remote add origin "$REMOTE"
     elif [ "$CURRENT" != "$REMOTE" ]; then
-      echo "password-store: origin mismatch ($CURRENT != $REMOTE); aborting" >&2
+      echo "password-store: origin mismatch; aborting" >&2
       exit 1
     fi
   '';

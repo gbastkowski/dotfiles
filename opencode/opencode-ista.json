@@ -24,32 +24,43 @@
     }
   },
   "mcp": {
-    "ista_jira_confluence": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "node",
-        "{env:HOME}/git/rdm/ai/mcp-jira-confluence/dist/index.js",
-        "--jira-url",
-        "https://ista.atlassian.net",
-        "--confluence-url",
-        "https://ista.atlassian.net/wiki",
-        "--email",
-        "gunnar.bastkowski@ista.com",
-        "--token-command",
-        "pass show ista/jira-api-token-mcp"
-      ]
-    },
-    "akiko": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "github:gbastkowski/mcp-proxy"
-      ],
-      "environment": {
-        "MCP_PROXY_HOST": "akiko"
+    "servers": {
+      "ista_jira_confluence": {
+        "type": "local",
+        "command": [
+          "node",
+          "{env:HOME}/git/rdm/ai/mcp-jira-confluence/dist/index.js",
+          "--jira-url",
+          "https://ista.atlassian.net",
+          "--confluence-url",
+          "https://ista.atlassian.net/wiki",
+          "--email",
+          "gunnar.bastkowski@ista.com",
+          "--token-command",
+          "pass show ista/jira-api-token-mcp"
+        ]
+      },
+      "akiko": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "github:gbastkowski/mcp-proxy"
+        ],
+        "environment": {
+          "MCP_PROXY_HOST": "akiko"
+        }
+      },
+      "firefox": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "@mozilla/firefox-devtools-mcp@latest",
+          "--connect-existing",
+          "--marionette-port",
+          "2829"
+        ]
       }
     }
   },

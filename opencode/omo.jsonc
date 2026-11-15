@@ -156,13 +156,13 @@
         ]
       },
       "ultrabrain": {
-        "model": "opencode/gpt-5-nano"
+        "model": "openai/gpt-6.1-sol"
       },
       "deep-low": {
-        "model": "opencode/gpt-5-nano"
+        "model": "openai/gpt-6.1-sol"
       },
       "deep-high": {
-        "model": "opencode/gpt-5-nano"
+        "model": "openai/gpt-6.1-sol"
       },
       "artistry": {
         "model": "anthropic/claude-fable-5-1",

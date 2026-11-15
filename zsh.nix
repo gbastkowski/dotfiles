@@ -166,6 +166,9 @@
       # local bin helper
       [[ -f "$HOME/.local/bin/ensure-local-bin-in-path" ]] && source "$HOME/.local/bin/ensure-local-bin-in-path"
 
+      # Run the repository script independently of the current directory.
+      alias system-upgrade='bash "$HOME/git/gbastkowski/dotfiles/bin/system-upgrade.sh"'
+
       # Shell functions
       mcd() { mkdir "$1" && cd "$1"; }
       pman() {

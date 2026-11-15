@@ -99,10 +99,11 @@ case "$host" in
 esac
 
 if command -v npm >/dev/null 2>&1; then
-	echo "updating ccline (npm) ..."
+	echo "updating npm packages ..."
 	step npm update -g @cometix/ccline
 	step npm update -g tweakcc
 	step npm update -g @fission-ai/openspec
+	step npm update -g omo-ai
 	echo
 fi
 

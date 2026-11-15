@@ -1,4 +1,4 @@
-{ inputs, lib, ... }:
+{ inputs, lib, pkgs, ... }:
 {
   home.username = "gunnar.bastkowski";
   home.homeDirectory = "/Users/gunnar.bastkowski";
@@ -58,4 +58,13 @@
   # Ista-specific OpenAI-only opencode config (override common)
   programs.opencode.settings = lib.mkForce (builtins.fromJSON (builtins.readFile ./opencode/opencode-ista.json));
   home.file.".omo/omo.jsonc".source = lib.mkForce ./opencode/omo-ista.jsonc;
+
+  # Native's interactive TUI uses settings.json, not model_profile.
+  # Merge managed values into writable files, preserving other runtime settings.
+  home.activation.omoNativeSettings =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run ${pkgs.python3}/bin/python3 ${./opencode/configure-native.py} \
+        "$HOME/.omo/agent" \
+        ${lib.escapeShellArg "!${pkgs.pass}/bin/pass show ista/openai-api-key"}
+    '';
 }

@@ -29,6 +29,7 @@
     let
       commonModules = [
         ./common.nix
+        ./agents.nix
         ./atuin.nix
         ./bin.nix
         ./direnv.nix

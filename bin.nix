@@ -1,6 +1,7 @@
 { ... }:
 {
   home.file.".local/bin/eos-capture-video.sh"= { source = ./bin/eos-capture-video.sh;executable = true; };
+  home.file.".local/bin/firefox-marionette.sh" = { source = ./bin/firefox-marionette.sh; executable = true; };
   home.file.".local/bin/install-xmlls.sh"    = { source = ./bin/install-xmlls.sh;    executable = true; };
   home.file.".local/bin/monitor-control"       = { source = ./bin/monitor-control;      executable = true; };
   home.file.".local/bin/ollama-coder.sh"     = { source = ./bin/ollama-coder.sh;     executable = true; };

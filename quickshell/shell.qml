@@ -41,6 +41,7 @@ Variants {
       readonly property string btScript: Quickshell.env("HOME") + "/git/gbastkowski/dotfiles/.config/waybar/scripts/bluetooth-status.sh"
       readonly property string volScript: Quickshell.env("HOME") + "/git/gbastkowski/dotfiles/.config/waybar/scripts/volume-status.sh"
       readonly property string sysScript: Quickshell.env("HOME") + "/.config/quickshell/scripts/system-status.sh"
+      readonly property string monitorScript: Quickshell.env("HOME") + "/.local/bin/monitor-control"
 
       anchors {
         top: true
@@ -289,6 +290,21 @@ Variants {
         }
         spacing: 14
         visible: screenMonitor && screenMonitor.name === "DP-1"
+        // Portable monitor toggle (UPERFECT) — only on the main DP-1 bar.
+        Text {
+          id: monitorToggle
+          text: "\uf108"
+          color: "#f4e7c2"
+          font.family: "Ubuntu Nerd Font"
+          font.pixelSize: 20
+
+          MouseArea {
+            id: monitorMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: Quickshell.execDetached(["bash", monitorScript, "toggle"])
+          }
+        }
 
         Text {
           id: netLabel

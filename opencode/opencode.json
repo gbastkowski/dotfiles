@@ -116,7 +116,6 @@
     }
   },
   "disabled_providers": [
-    "openai",
     "opencode"
   ]
 }

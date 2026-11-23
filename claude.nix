@@ -47,13 +47,6 @@ let
     "mcp-emacs@mcp-emacs"
     "mcp-latex@mcp-latex"
   ];
-
-  # Agent skill packages to install via the `skills` CLI (github.com/... owner/repo).
-  # They are fetched into ~/.agents/skills and symlinked into ~/.claude/skills on
-  # activation. Unlike plugins, skills are not tracked in settings.json.
-  skillPackages = [
-    "remotion-dev/skills"
-  ];
 in
 {
   home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
@@ -105,26 +98,6 @@ in
           run "$claude_bin" plugin update --scope user "$plugin" >/dev/null 2>&1 \
             || run "$claude_bin" plugin install --scope user "$plugin" >/dev/null 2>&1 \
             || echo "failed to install/update plugin $plugin" >&2
-        done
-      fi
-    '';
-
-  home.activation.claudeSkills =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      # Look up npx via the user's real tool dirs, but keep the extra dirs
-      # AFTER $PATH and scope it to this lookup only. A global `export` here
-      # would put /usr/bin ahead of hm's coreutils for the rest of the
-      # activation, so the later linkGeneration cleanup hits BSD `readlink -e`
-      # and aborts.
-      npx_bin="$(PATH="$PATH:/opt/homebrew/bin:/usr/local/bin:/usr/bin:$HOME/.local/bin" command -v npx || true)"
-      if [ -z "$npx_bin" ]; then
-        echo "npx not on PATH, skipping skill seeding" >&2
-      else
-        # Fetch each package into ~/.agents/skills and symlink into ~/.claude/skills.
-        # -g installs at user scope, -a claude targets Claude Code, -y skips prompts.
-        for pkg in ${lib.escapeShellArgs skillPackages}; do
-          run "$npx_bin" --yes skills add "$pkg" -g -a claude -y >/dev/null 2>&1 \
-            || echo "failed to install skill package $pkg" >&2
         done
       fi
     '';

@@ -45,6 +45,10 @@ Enable automatic reversion of buffers when files change on disk.
 
 (setq! auth-sources                       '(password-store))
 
+;; Use the agent's pinentry (and macOS Keychain), not Doom's loopback prompt.
+(after! epa
+  (setq epg-pinentry-mode 'ask))
+
 (setq! fill-column                        120
        fci-rule-color                     "#555555"
        fci-rule-width                     1)

@@ -32,6 +32,14 @@
         "type": "remote",
         "url": "https://mcp.atlassian.com/v2/mcp"
       },
+      "gitlab": {
+        "type": "remote",
+        "url": "https://gitlab.com/api/v4/mcp"
+      },
+      "intellij": {
+        "type": "remote",
+        "url": "http://127.0.0.1:64342/stream"
+      },
       "akiko": {
         "type": "local",
         "command": [
